@@ -71,7 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)/glm;$(ProjectDir)/include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\glm;$(SolutionDir)\freeglut\include;$(ProjectDir)\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -148,9 +148,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\OsirisSDK\OMatrixStack.h" />
+    <ClInclude Include="include\OsirisSDK\OMesh.h" />
+    <ClInclude Include="include\OsirisSDK\OMeshBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OMatrixStack.cpp" />
+    <ClCompile Include="src\OMesh.cpp" />
+    <ClCompile Include="src\OMeshBuffer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
