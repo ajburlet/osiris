@@ -6,10 +6,6 @@
 
 class OMatrixStack
 {
-private:
-	glm::mat4x4 currMtx;
-	std::stack<glm::mat4x4> _stack;
-
 public:
 	OMatrixStack();
 	virtual ~OMatrixStack();
@@ -28,5 +24,9 @@ public:
 
 	void scale(const glm::vec3& factorVec);
 	void scale(const float& uniformFactor);
+
+private:
+	glm::mat4x4 _currMtx;
+	std::stack<glm::mat4x4> _stack;
 };
 

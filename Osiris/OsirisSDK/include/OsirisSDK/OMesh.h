@@ -14,19 +14,19 @@ public:
 	OMesh();
 	virtual ~OMesh();
 
+	void addVertexData(float vx, float vy, float vz);
+	void addIndexData(GLuint vx, GLuint vy, GLuint vz);
+
+	void init();
 	void render(const OMatrixStack& mtx);
 
 protected:
-	void addVertexData(const glm::vec3 &v);
-	void addVertexData(float vx, float vy, float vz);
-
-	void addIndexData(const glm::vec3 &v);
-	void addIndexData(float vx, float vy, float vz);
+	virtual void setupAdditionalVertexArrays();
 
 private:
-	GLuint vaoObject;
+	GLuint _vaoObject;
 	
-	OMeshBuffer<float> vertexBuffer;
-	OMeshBuffer<GLuint> indexBuffer;
+	OMeshBuffer<float> _vertexBuffer;
+	OMeshBuffer<GLuint> _indexBuffer;
 };
 

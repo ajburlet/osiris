@@ -5,10 +5,13 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OsirisSDK", "OsirisSDK\OsirisSDK.vcxproj", "{6FB1DCC7-2D6E-490B-A75B-F78B2998046E}"
 	ProjectSection(ProjectDependencies) = postProject
+		{4F736F79-6543-DA47-9F6D-49B630E23675} = {4F736F79-6543-DA47-9F6D-49B630E23675}
 		{1AE4E979-0D35-4747-BF8E-DD60358F49DB} = {1AE4E979-0D35-4747-BF8E-DD60358F49DB}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freeglut", "freeglut\VisualStudio\2012\freeglut.vcxproj", "{1AE4E979-0D35-4747-BF8E-DD60358F49DB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glload", "glsdk_0_5_2\glload\glload.vcxproj", "{4F736F79-6543-DA47-9F6D-49B630E23675}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +71,26 @@ Global
 		{1AE4E979-0D35-4747-BF8E-DD60358F49DB}.Release|x64.Build.0 = Release|x64
 		{1AE4E979-0D35-4747-BF8E-DD60358F49DB}.Release|x86.ActiveCfg = Release|Win32
 		{1AE4E979-0D35-4747-BF8E-DD60358F49DB}.Release|x86.Build.0 = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Debug_Static|ARM.ActiveCfg = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Debug_Static|ARM.Build.0 = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Debug_Static|x64.ActiveCfg = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Debug_Static|x64.Build.0 = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Debug_Static|x86.ActiveCfg = Debug|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Debug_Static|x86.Build.0 = Debug|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Debug|ARM.ActiveCfg = Debug|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Debug|x64.ActiveCfg = Debug|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Debug|x86.ActiveCfg = Debug|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Debug|x86.Build.0 = Debug|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release_Static|ARM.ActiveCfg = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release_Static|ARM.Build.0 = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release_Static|x64.ActiveCfg = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release_Static|x64.Build.0 = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release_Static|x86.ActiveCfg = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release_Static|x86.Build.0 = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release|ARM.ActiveCfg = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release|x64.ActiveCfg = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release|x86.ActiveCfg = Release|Win32
+		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

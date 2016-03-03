@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GL\freeglut.h>
+#include <GL/freeglut.h>
 
 #ifndef OMESH_MALLOC_BLOCK
 #define OMESH_MALLOC_BLOCK	64
@@ -18,14 +18,14 @@ public:
 	const BType* buffer();
 	int count();
 
-	GLuint generateGLBufferObject();
+	GLuint generateGLBufferObject(GLenum bufferType);
 	GLuint glBufferObject();
 
 private:
-	BType *buffer;
-	unsigned int itemCount;
-	unsigned int size;
+	BType *_buffer;
+	unsigned int _itemCount;
+	unsigned int _size;
 
-	GLuint glBufferObject;
+	GLuint _glBufferObject;
 };
 

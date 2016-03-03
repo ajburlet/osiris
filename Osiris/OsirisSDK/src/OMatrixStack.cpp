@@ -3,7 +3,7 @@
 using namespace std;
 
 OMatrixStack::OMatrixStack() :
-	currMtx(1.0f)
+	_currMtx(1.0f)
 {
 	push();
 }
@@ -14,13 +14,13 @@ OMatrixStack::~OMatrixStack()
 
 void OMatrixStack::push()
 {
-	_stack.push(currMtx);
+	_stack.push(_currMtx);
 }
 
 void OMatrixStack::pop()
 {
 	_stack.pop();
-	currMtx = _stack.top();
+	_currMtx = _stack.top();
 }
 
 void OMatrixStack::translate(const glm::vec3 & dir)
@@ -36,7 +36,7 @@ void OMatrixStack::translate(const float & dx, const float & dy, const float & d
 	ret[3].y = dy;
 	ret[3].z = dz;
 
-	currMtx *= ret;
+	_currMtx *= ret;
 }
 
 void OMatrixStack::rotate(const glm::vec3 & axis, const float & angle)
@@ -68,7 +68,7 @@ void OMatrixStack::rotate(const float & axisX, const float & axisY, const float 
 	ret[2].y = cosComp*axisY*axisZ - axisX*sinA;
 	ret[2].z = axisZ*axisZ + (1 - axisZ*axisZ)*cosA;
 
-	currMtx *= ret;
+	_currMtx *= ret;
 }
 
 void OMatrixStack::rotateX(const float & angle)
@@ -84,7 +84,7 @@ void OMatrixStack::rotateX(const float & angle)
 	ret[1].y = -sinA;
 	ret[1].z = -cosA;
 
-	currMtx *= ret;
+	_currMtx *= ret;
 }
 
 void OMatrixStack::rotateY(const float & angle)
@@ -100,7 +100,7 @@ void OMatrixStack::rotateY(const float & angle)
 	ret[2].x = sinA;
 	ret[2].z = cosA;
 
-	currMtx *= ret;
+	_currMtx *= ret;
 }
 
 void OMatrixStack::rotateZ(const float & angle)
@@ -116,7 +116,7 @@ void OMatrixStack::rotateZ(const float & angle)
 	ret[1].x = -sinA;
 	ret[1].y = cosA;
 
-	currMtx *= ret;
+	_currMtx *= ret;
 }
 
 void OMatrixStack::scale(const glm::vec3 & factorVec)
@@ -127,7 +127,7 @@ void OMatrixStack::scale(const glm::vec3 & factorVec)
 	ret[1].y = factorVec.y;
 	ret[2].z = factorVec.z;
 
-	currMtx *= ret;
+	_currMtx *= ret;
 }
 
 void OMatrixStack::scale(const float & uniformFactor)

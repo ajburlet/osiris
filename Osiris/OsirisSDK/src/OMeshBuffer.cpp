@@ -1,16 +1,15 @@
 #include <stdlib.h>
 
-#define GL_GLEXT_PROTOTYPES
-#include <GL\GL.h>
+#include <glload/gl_3_3.h>
 
 #include "OsirisSDK\OMeshBuffer.h"
 
 template <class BType>
 OMeshBuffer<BType>::OMeshBuffer() :
-	buffer(NULL),
-	size(0),
-	itemCount(0),
-	glBufferObject(0)
+	_buffer(NULL),
+	_size(0),
+	_itemCount(0),
+	_glBufferObject(0)
 {
 
 }
@@ -18,51 +17,57 @@ OMeshBuffer<BType>::OMeshBuffer() :
 template<class BType>
 OMeshBuffer<BType>::~OMeshBuffer()
 {
-	free(buffer);
+	free(_buffer);
 }
 
 template<class BType>
 void OMeshBuffer<BType>::setSize(unsigned int new_size)
 {
-	size = new_size;
-	buffer = realloc(buffer, new_size*sizeof(BType)*3);
+	_size = new_size;
+	_buffer = realloc(_buffer, new_size*sizeof(BType)*3);
 }
 
 template<class BType>
 void OMeshBuffer<BType>::addData(BType x, BType y, BType z)
 {
-	unsigned int curPos = itemCount * 3;
+	unsigned int curPos = _itemCount * 3;
 
-	if (itemCount == size) setSize(size + OMESH_MALLOC_BLOCK);
+	if (_itemCount == _size) setSize(_size + OMESH_MALLOC_BLOCK);
 	
-	buffer[curPos] = x;
-	buffer[curPos + 1] = y;
-	buffer[curPos + 2] = z;
+	_buffer[curPos] = x;
+	_buffer[curPos + 1] = y;
+	_buffer[curPos + 2] = z;
 
-	itemCount++;
+	_itemCount++;
 }
 
 template<class BType>
 const BType * OMeshBuffer<BType>::buffer()
 {
-	return buffer;
+	return _buffer;
 }
 
 template<class BType>
 int OMeshBuffer<BType>::count()
 {
-	return itemCount;
+	return _itemCount;
 }
 
 template<class BType>
-GLuint OMeshBuffer<BType>::generateGLBufferObject()
+GLuint OMeshBuffer<BType>::generateGLBufferObject(GLenum bufferType)
 {
+	glGenBuffers(1, &_glBufferObject);
 
+	glBindBuffer(bufferType, _glBufferObject);
+	glBufferData(bufferType, _itemCount*sizeof(BType) * 3, _buffer, GL_STATIC_DRAW);
+	glBindBuffer(bufferType, 0);
+
+	return _glBufferObject;
 }
 
 template<class BType>
 GLuint OMeshBuffer<BType>::glBufferObject()
 {
-	return glBufferObject;
+	return _glBufferObject;
 }
 
