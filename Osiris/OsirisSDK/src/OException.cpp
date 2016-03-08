@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "OsirisSDK/OException.h"
 
 using namespace std;
@@ -17,5 +19,9 @@ OException::~OException()
 
 string OException::what() const
 {
-	return _what;
+	char strLineNbr[16];
+
+	snprintf(strLineNbr, 16, "%d", _line);
+
+	return "[" + _file + ": " + strLineNbr + "] " + _what;
 }

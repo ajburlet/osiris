@@ -12,7 +12,7 @@ public:
 	void setSource(const std::string& source);
 
 	GLuint compile();
-	GLuint glReference();
+	GLuint glReference() const;
 
 private:
 	std::string _shaderName;

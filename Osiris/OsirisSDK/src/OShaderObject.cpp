@@ -50,3 +50,8 @@ GLuint OShaderObject::compile()
 
 	return _shader;
 }
+
+GLuint OShaderObject::glReference() const
+{
+	return _shader;
+}
