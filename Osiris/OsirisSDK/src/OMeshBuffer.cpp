@@ -18,6 +18,7 @@ template<class BType>
 OMeshBuffer<BType>::~OMeshBuffer()
 {
 	free(_buffer);
+	if (_glBufferObject != 0) glDeleteBuffers(1, &glBufferObject);
 }
 
 template<class BType>
