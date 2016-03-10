@@ -1,10 +1,12 @@
 #include <glload/gl_3_3.h>
 
+#include "OsirisSDK/OException.h"
 #include "OsirisSDK/OMesh.h"
 
 
 OMesh::OMesh() :
-	_vaoObject(0)
+	_vaoObject(0),
+	_program(NULL)
 {
 }
 
@@ -48,7 +50,24 @@ void OMesh::init()
 
 void OMesh::render(const OMatrixStack &mtx)
 {
+	/* check if there is a shader program defined */
+	if (_program == NULL) throw OException("Mesh defined without a shader program.");
 
+	/* bind VAO */
+	glBindVertexArray(_vaoObject);
+
+	/* bind vertex buffer and program */
+	glBindBuffer(GL_VERTEX_ARRAY, _vertexBuffer.glReference()); 
+	glUseProgram(_program->glReference());
+
+	/* draw */
+	glDrawElements(GL_TRIANGLES, _indexBuffer.count(), GL_UNSIGNED_SHORT, 0);
+
+	/* unbind everything */
+	glBindBuffer(GL_VERTEX_ARRAY, 0);
+	glBindVertexArray(0);
+	glUseProgram(0);
+	
 }
 
 void OMesh::setupAdditionalVertexArrays()

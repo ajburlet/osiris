@@ -2,7 +2,7 @@
 
 #include <glload/gl_3_3.h>
 
-#include "OsirisSDK\OMeshBuffer.h"
+#include "OsirisSDK/OMeshBuffer.h"
 
 template <class BType>
 OMeshBuffer<BType>::OMeshBuffer() :
@@ -18,7 +18,7 @@ template<class BType>
 OMeshBuffer<BType>::~OMeshBuffer()
 {
 	free(_buffer);
-	if (_glBufferObject != 0) glDeleteBuffers(1, &glBufferObject);
+	if (_glBufferObject != 0) glDeleteBuffers(1, &_glBufferObject);
 }
 
 template<class BType>
@@ -43,13 +43,13 @@ void OMeshBuffer<BType>::addData(BType x, BType y, BType z)
 }
 
 template<class BType>
-const BType * OMeshBuffer<BType>::buffer()
+const BType * OMeshBuffer<BType>::buffer() const
 {
 	return _buffer;
 }
 
 template<class BType>
-int OMeshBuffer<BType>::count()
+int OMeshBuffer<BType>::count() const
 {
 	return _itemCount;
 }
@@ -67,7 +67,7 @@ GLuint OMeshBuffer<BType>::generateGLBufferObject(GLenum bufferType)
 }
 
 template<class BType>
-GLuint OMeshBuffer<BType>::glBufferObject()
+GLuint OMeshBuffer<BType>::glReference() const
 {
 	return _glBufferObject;
 }

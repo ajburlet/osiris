@@ -6,6 +6,7 @@
 
 #include "OMeshBuffer.h"
 #include "OMatrixStack.h"
+#include "OShaderProgram.h"
 
 
 class OMesh
@@ -28,5 +29,7 @@ private:
 	
 	OMeshBuffer<float> _vertexBuffer;
 	OMeshBuffer<GLuint> _indexBuffer;
+
+	OShaderProgram* _program;
 };
 

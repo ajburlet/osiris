@@ -15,11 +15,11 @@ public:
 	void setSize(unsigned int size);
 	void addData(BType x, BType y, BType z);
 
-	const BType* buffer();
-	int count();
+	const BType* buffer() const;
+	int count() const;
 
 	GLuint generateGLBufferObject(GLenum bufferType);
-	GLuint glBufferObject();
+	GLuint glReference() const;
 
 private:
 	BType *_buffer;
