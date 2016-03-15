@@ -4,9 +4,9 @@
 #include "OsirisSDK/OMesh.h"
 
 
-OMesh::OMesh() :
+OMesh::OMesh(OShaderProgram *program) :
 	_vaoObject(0),
-	_program(NULL)
+	_program(program)
 {
 }
 
@@ -48,7 +48,7 @@ void OMesh::init()
 	glBindVertexArray(0);
 }
 
-void OMesh::render(const OMatrixStack &mtx)
+void OMesh::render(OCamera *cam, OMatrixStack *mtx)
 {
 	/* check if there is a shader program defined */
 	if (_program == NULL) throw OException("Mesh defined without a shader program.");
@@ -56,10 +56,15 @@ void OMesh::render(const OMatrixStack &mtx)
 	/* bind VAO */
 	glBindVertexArray(_vaoObject);
 
-	/* bind vertex buffer and program */
+	/* bind vertex buffer */
 	glBindBuffer(GL_VERTEX_ARRAY, _vertexBuffer.glReference()); 
-	glUseProgram(_program->glReference());
 
+	/* prepare program -- assign necessary transformations */
+	glUseProgram(_program->glReference());
+	_program->setCamera(cam);
+	_program->setModelTransformation(mtx);
+	setupAdditionalShaderLocations();
+	
 	/* draw */
 	glDrawElements(GL_TRIANGLES, _indexBuffer.count(), GL_UNSIGNED_SHORT, 0);
 
@@ -67,9 +72,13 @@ void OMesh::render(const OMatrixStack &mtx)
 	glBindBuffer(GL_VERTEX_ARRAY, 0);
 	glBindVertexArray(0);
 	glUseProgram(0);
-	
 }
 
 void OMesh::setupAdditionalVertexArrays()
 {
+}
+
+void OMesh::setupAdditionalShaderLocations()
+{
+
 }

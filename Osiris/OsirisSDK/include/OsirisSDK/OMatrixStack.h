@@ -12,6 +12,7 @@ public:
 
 	void push();
 	void pop();
+	glm::mat4 top() const;
 
 	void translate(const glm::vec3 &dir);
 	void translate(const float& dx, const float& dy, const float& dz);
@@ -24,6 +25,9 @@ public:
 
 	void scale(const glm::vec3& factorVec);
 	void scale(const float& uniformFactor);
+
+	void perspective(float fieldOfViewDeg, float aspectRatio, float zNear, float zFar);
+	void camera(const glm::vec3 &position, const glm::vec3 &direction, const glm::vec3 &up = glm::vec3(0, 1, 0));
 
 private:
 	glm::mat4x4 _currMtx;

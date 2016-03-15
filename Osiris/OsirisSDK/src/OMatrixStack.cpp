@@ -1,6 +1,13 @@
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "OsirisSDK\OMatrixStack.h"
 
+#define PI	3.1415f
+
 using namespace std;
+
+float toRad = 2 * PI / 360;
+
 
 OMatrixStack::OMatrixStack() :
 	_currMtx(1.0f)
@@ -21,6 +28,11 @@ void OMatrixStack::pop()
 {
 	_stack.pop();
 	_currMtx = _stack.top();
+}
+
+glm::mat4 OMatrixStack::top() const
+{
+	return _currMtx;
 }
 
 void OMatrixStack::translate(const glm::vec3 & dir)
@@ -46,9 +58,9 @@ void OMatrixStack::rotate(const glm::vec3 & axis, const float & angle)
 
 void OMatrixStack::rotate(const float & axisX, const float & axisY, const float & axisZ, const float & angle)
 {
-	float cosA = cosf(angle);
+	float cosA = cosf(toRad*angle);
 	float cosComp = 1 - cosA;
-	float sinA = sinf(angle);
+	float sinA = sinf(toRad*angle);
 	float sinComp = 1 - sinA;
 
 	glm::mat4x4 ret(1.0f);
@@ -75,8 +87,8 @@ void OMatrixStack::rotateX(const float & angle)
 {
 	glm::mat4x4 ret(1.0f);
 
-	float sinA = sinf(angle);
-	float cosA = cosf(angle);
+	float sinA = sinf(toRad*angle);
+	float cosA = cosf(toRad*angle);
 
 	ret[1].y = sinA;
 	ret[1].z = cosA;
@@ -91,8 +103,8 @@ void OMatrixStack::rotateY(const float & angle)
 {
 	glm::mat4x4 ret(1.0f);
 
-	float sinA = sinf(angle);
-	float cosA = cosf(angle);
+	float sinA = sinf(toRad*angle);
+	float cosA = cosf(toRad*angle);
 	
 	ret[0].x = cosA;
 	ret[0].z = -sinA;
@@ -107,8 +119,8 @@ void OMatrixStack::rotateZ(const float & angle)
 {
 	glm::mat4x4 ret(1.0f);
 
-	float sinA = sinf(angle);
-	float cosA = cosf(angle);
+	float sinA = sinf(toRad*angle);
+	float cosA = cosf(toRad*angle);
 
 	ret[0].x = cosA;
 	ret[0].y = sinA;
@@ -134,5 +146,15 @@ void OMatrixStack::scale(const float & uniformFactor)
 {
 	glm::vec3 vec(1.0f);
 	scale(vec);
+}
+
+void OMatrixStack::perspective(float fieldOfViewDeg, float aspectRatio, float zNear, float zFar)
+{
+	_currMtx *= glm::perspective(fieldOfViewDeg, aspectRatio, zNear, zFar);
+}
+
+void OMatrixStack::camera(const glm::vec3 &position, const glm::vec3 &direction, const glm::vec3 &up)
+{
+	_currMtx *= glm::lookAt(position, direction, up);
 }
 

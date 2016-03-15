@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\OsirisSDK\OCamera.h" />
     <ClInclude Include="include\OsirisSDK\OException.h" />
     <ClInclude Include="include\OsirisSDK\OMatrixStack.h" />
     <ClInclude Include="include\OsirisSDK\OMesh.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="include\OsirisSDK\OShaderProgram.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\OCamera.cpp" />
     <ClCompile Include="src\OException.cpp" />
     <ClCompile Include="src\OMatrixStack.cpp" />
     <ClCompile Include="src\OMesh.cpp" />
