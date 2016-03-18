@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\OsirisSDK\OApplication.h" />
     <ClInclude Include="include\OsirisSDK\OCamera.h" />
     <ClInclude Include="include\OsirisSDK\OException.h" />
     <ClInclude Include="include\OsirisSDK\OMatrixStack.h" />
@@ -154,8 +155,10 @@
     <ClInclude Include="include\OsirisSDK\OMeshBuffer.h" />
     <ClInclude Include="include\OsirisSDK\OShaderObject.h" />
     <ClInclude Include="include\OsirisSDK\OShaderProgram.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\OApplication.cpp" />
     <ClCompile Include="src\OCamera.cpp" />
     <ClCompile Include="src\OException.cpp" />
     <ClCompile Include="src\OMatrixStack.cpp" />
@@ -163,6 +166,9 @@
     <ClCompile Include="src\OMeshBuffer.cpp" />
     <ClCompile Include="src\OShaderObject.cpp" />
     <ClCompile Include="src\OShaderProgram.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OsirisSDK.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
