@@ -1,3 +1,6 @@
+#ifndef _OMESHBUFFER_CPP_
+#define _OMESHBUFFER_CPP_
+
 #include <stdlib.h>
 
 #include <glload/gl_3_3.h>
@@ -25,7 +28,7 @@ template<class BType>
 void OMeshBuffer<BType>::setSize(unsigned int new_size)
 {
 	_size = new_size;
-	_buffer = realloc(_buffer, new_size*sizeof(BType)*3);
+	_buffer = (BType*) realloc(_buffer, new_size*sizeof(BType)*3);
 }
 
 template<class BType>
@@ -72,3 +75,4 @@ GLuint OMeshBuffer<BType>::glReference() const
 	return _glBufferObject;
 }
 
+#endif

@@ -22,8 +22,6 @@ OApplication::OApplication(const string& title, int argc, char **argv, int windo
 	glutCreateWindow(title.c_str());
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
-	init();
-
 	/* setup callbacks */
 	glutDisplayFunc(displayCallback);
 	glutKeyboardFunc(keyboardCallback);
@@ -37,6 +35,7 @@ OApplication::~OApplication()
 
 void OApplication::start()
 {
+	init();
 	glutMainLoop();
 }
 

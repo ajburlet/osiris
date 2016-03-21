@@ -29,3 +29,5 @@ private:
 	GLuint _glBufferObject;
 };
 
+#include "OMeshBuffer.cpp"
+
