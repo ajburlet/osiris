@@ -1,7 +1,8 @@
 #pragma once
 
-#include <gl/freeglut.h>
 #include <string>
+
+#include "GLdefs.h"
 
 #include "OMatrixStack.h"
 #include "OCamera.h"

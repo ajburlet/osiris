@@ -42,6 +42,12 @@
     <ClInclude Include="include\OsirisSDK\OApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\OsirisSDK\OVertexColorMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OsirisSDK\GLdefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OMatrixStack.cpp">
@@ -66,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\OApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OVertexColorMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

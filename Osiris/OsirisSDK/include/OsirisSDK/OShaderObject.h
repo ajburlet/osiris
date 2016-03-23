@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <GL/freeglut.h>
+#include "GLdefs.h"
 
 class OShaderObject
 {

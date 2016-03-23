@@ -1,11 +1,10 @@
-#include <glload/gl_3_3.h>
-
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OMesh.h"
 
 
 OMesh::OMesh(OShaderProgram *program) :
 	_vaoObject(0),
+	_vertexCount(0),
 	_program(program)
 {
 }
@@ -14,9 +13,25 @@ OMesh::~OMesh()
 {
 }
 
+void OMesh::setProgram(OShaderProgram * program)
+{
+	_program = program;
+}
+
+OShaderProgram * OMesh::getProgram()
+{
+	return _program;
+}
+
+int OMesh::vertexCount() const
+{
+	return _vertexCount;
+}
+
 void OMesh::addVertexData(float vx, float vy, float vz)
 {
 	_vertexBuffer.addData(vx, vy, vz);
+	_vertexCount++;
 }
 
 void OMesh::addIndexData(GLuint vx, GLuint vy, GLuint vz)
@@ -82,3 +97,14 @@ void OMesh::setupAdditionalShaderLocations()
 {
 
 }
+
+OMeshBuffer<float>* OMesh::vertexBuffer()
+{
+	return &_vertexBuffer;
+}
+
+OMeshBuffer<GLuint>* OMesh::indexBuffer()
+{
+	return &_indexBuffer;
+}
+

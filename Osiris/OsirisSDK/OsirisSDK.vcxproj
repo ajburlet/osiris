@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\OsirisSDK\GLdefs.h" />
     <ClInclude Include="include\OsirisSDK\OApplication.h" />
     <ClInclude Include="include\OsirisSDK\OCamera.h" />
     <ClInclude Include="include\OsirisSDK\OException.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="include\OsirisSDK\OMeshBuffer.h" />
     <ClInclude Include="include\OsirisSDK\OShaderObject.h" />
     <ClInclude Include="include\OsirisSDK\OShaderProgram.h" />
+    <ClInclude Include="include\OsirisSDK\OVertexColorMesh.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +172,7 @@
     <ClCompile Include="src\OMeshBuffer.cpp" />
     <ClCompile Include="src\OShaderObject.cpp" />
     <ClCompile Include="src\OShaderProgram.cpp" />
+    <ClCompile Include="src\OVertexColorMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OsirisSDK.rc" />

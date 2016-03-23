@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GL/freeglut.h>
+#include "GLdefs.h"
 
 #ifndef OMESH_MALLOC_BLOCK
 #define OMESH_MALLOC_BLOCK	64
@@ -13,7 +13,10 @@ public:
 	virtual ~OMeshBuffer();
 
 	void setSize(unsigned int size);
+	void addData(BType x);
+	void addData(BType x, BType y);
 	void addData(BType x, BType y, BType z);
+	void addData(BType x, BType y, BType z, BType w);
 
 	const BType* buffer() const;
 	int count() const;

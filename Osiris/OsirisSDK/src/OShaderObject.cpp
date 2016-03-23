@@ -1,5 +1,3 @@
-#include <glload/gl_3_3.h>
-
 #include "OsirisSDK/OShaderObject.h"
 #include "OsirisSDK/OException.h"
 

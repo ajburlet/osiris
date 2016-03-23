@@ -3,8 +3,6 @@
 
 #include <stdlib.h>
 
-#include <glload/gl_3_3.h>
-
 #include "OsirisSDK/OMeshBuffer.h"
 
 template <class BType>
@@ -28,21 +26,39 @@ template<class BType>
 void OMeshBuffer<BType>::setSize(unsigned int new_size)
 {
 	_size = new_size;
-	_buffer = (BType*) realloc(_buffer, new_size*sizeof(BType)*3);
+	_buffer = (BType*) realloc(_buffer, new_size*sizeof(BType));
+}
+
+template<class BType>
+void OMeshBuffer<BType>::addData(BType x)
+{
+	if (_itemCount == _size) setSize(_size + OMESH_MALLOC_BLOCK);
+	
+	_buffer[_itemCount++] = x;
+}
+
+template<class BType>
+void OMeshBuffer<BType>::addData(BType x, BType y)
+{
+	addData(x);
+	addData(y);
 }
 
 template<class BType>
 void OMeshBuffer<BType>::addData(BType x, BType y, BType z)
 {
-	unsigned int curPos = _itemCount * 3;
+	addData(x);
+	addData(y);
+	addData(z);
+}
 
-	if (_itemCount == _size) setSize(_size + OMESH_MALLOC_BLOCK);
-	
-	_buffer[curPos] = x;
-	_buffer[curPos + 1] = y;
-	_buffer[curPos + 2] = z;
-
-	_itemCount++;
+template<class BType>
+void OMeshBuffer<BType>::addData(BType x, BType y, BType z, BType w)
+{
+	addData(x);
+	addData(y);
+	addData(z);
+	addData(w);
 }
 
 template<class BType>
