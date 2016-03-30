@@ -1,9 +1,15 @@
+#ifdef WIN32
+#include <Windows.h>
+#include <cstdio>
+#include "resource.h"
+#endif
+
 #include "OsirisSDK/OShaderObject.h"
 #include "OsirisSDK/OException.h"
 
 using namespace std;
 
-OShaderObject::OShaderObject(const string &shaderName, GLenum shaderType, const string & source) :
+OShaderObject::OShaderObject(const string &shaderName, ShaderType shaderType, const string & source) :
 	_shaderName(shaderName),
 	_shaderType(shaderType),
 	_source(source),
@@ -21,6 +27,22 @@ void OShaderObject::setSource(const string & source)
 {
 	_source = source;
 }
+#ifdef WIN32
+void OShaderObject::setSourceFromResource(int resourceId)
+{
+	const char *data = NULL;
+	DWORD size = 0;
+
+	HMODULE handle = ::GetModuleHandle(NULL);
+	HRSRC rc = ::FindResource(handle, MAKEINTRESOURCE(resourceId), MAKEINTRESOURCE(OPENGL_SHADER));
+	HGLOBAL rcData = ::LoadResource(handle, rc);
+	size = ::SizeofResource(handle, rc);
+	data = static_cast<const char*>(::LockResource(rcData));
+
+	_source.append(data, size);
+	delete[] data;
+}
+#endif
 
 GLuint OShaderObject::compile()
 {

@@ -1,8 +1,19 @@
+#include "resource.h"
+
 #include "OsirisSDK/OVertexColorMesh.h"
 
+OShaderProgram* OVertexColorMesh::_colorVertexProgram = NULL;
 
 OVertexColorMesh::OVertexColorMesh() : OMesh()
 {
+	if (_colorVertexProgram == NULL) {
+		_colorVertexProgram = new OShaderProgram("ColorVertex");
+#ifdef WIN32
+		_colorVertexProgram->addShader(OShaderObject::ShaderType_Vertex, "VertexSmoothColor", IDR_SHADER_VERTEX_SMOOTHCOLOR);
+		_colorVertexProgram->addShader(OShaderObject::ShaderType_Fragment, "FragmentStandardColor", IDR_SHADER_FRAGMENT_STANDARDCOLOR);
+#endif
+	}
+	setProgram(_colorVertexProgram);
 }
 
 OVertexColorMesh::~OVertexColorMesh()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <list>
 
 #include "GLdefs.h"
 
@@ -21,12 +22,17 @@ public:
 	void setCamera(OCamera *camera);
 	void setModelTransformation(const OMatrixStack* modelMtx);
 	
-	void addShader(const OShaderObject* shader);
+	void addShader(OShaderObject* shader);
+#ifdef WIN32
+	void addShader(OShaderObject::ShaderType type, const std::string& name, int resourceId); 
+#endif
 	void compile();
 
 private:
 	std::string _programName;
 	GLuint _program;
+
+	std::list<OShaderObject*> _shaderList;
 
 	GLuint _modelMtxGlRef;
 	GLuint _perspectiveMtxGlRef;

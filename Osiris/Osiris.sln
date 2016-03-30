@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freeglut", "freeglut\Visual
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glload", "glsdk_0_5_2\glload\glload.vcxproj", "{4F736F79-6543-DA47-9F6D-49B630E23675}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OsirisDemo", "OsirisDemo\OsirisDemo.vcxproj", "{D43638E1-1862-4E54-A2E7-34E194139418}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Static|ARM = Debug_Static|ARM
@@ -91,6 +93,28 @@ Global
 		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release|x64.ActiveCfg = Release|Win32
 		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release|x86.ActiveCfg = Release|Win32
 		{4F736F79-6543-DA47-9F6D-49B630E23675}.Release|x86.Build.0 = Release|Win32
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug_Static|ARM.ActiveCfg = Release|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug_Static|ARM.Build.0 = Release|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug_Static|x64.ActiveCfg = Debug|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug_Static|x64.Build.0 = Debug|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug_Static|x86.ActiveCfg = Debug|Win32
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug_Static|x86.Build.0 = Debug|Win32
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug|ARM.ActiveCfg = Debug|Win32
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug|x64.ActiveCfg = Debug|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug|x64.Build.0 = Debug|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug|x86.ActiveCfg = Debug|Win32
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Debug|x86.Build.0 = Debug|Win32
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release_Static|ARM.ActiveCfg = Release|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release_Static|ARM.Build.0 = Release|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release_Static|x64.ActiveCfg = Release|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release_Static|x64.Build.0 = Release|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release_Static|x86.ActiveCfg = Release|Win32
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release_Static|x86.Build.0 = Release|Win32
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release|ARM.ActiveCfg = Release|Win32
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release|x64.ActiveCfg = Release|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release|x64.Build.0 = Release|x64
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release|x86.ActiveCfg = Release|Win32
+		{D43638E1-1862-4E54-A2E7-34E194139418}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

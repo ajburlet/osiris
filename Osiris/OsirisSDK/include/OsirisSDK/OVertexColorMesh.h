@@ -13,5 +13,7 @@ public:
 protected:
 	void setupAdditionalVertexArrays();
 
+private:
+	static OShaderProgram *_colorVertexProgram;
 };
 

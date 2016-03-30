@@ -44,13 +44,27 @@ void OShaderProgram::setModelTransformation(const OMatrixStack * modelMtx)
 	}
 }
 
-void OShaderProgram::addShader(const OShaderObject * shader)
+void OShaderProgram::addShader(OShaderObject * shader)
 {
-	glAttachShader(_program, shader->glReference());
+	_shaderList.push_back(shader);
 }
+
+#ifdef WIN32
+void OShaderProgram::addShader(OShaderObject::ShaderType type, const string& name, int resourceId)
+{
+	OShaderObject *obj = new OShaderObject(name, type);
+	obj->setSourceFromResource(resourceId);
+	addShader(obj);
+}
+#endif
 
 void OShaderProgram::compile()
 {
+	for (list<OShaderObject*>::iterator sit = _shaderList.begin(); sit != _shaderList.end(); sit++) {
+		(*sit)->compile();
+		glAttachShader(_program, (*sit)->glReference());
+	}
+
 	glLinkProgram(_program);
 
 	GLint status;
