@@ -6,7 +6,7 @@
 #	ifdef OSIRISSDK_EXPORTS
 #		define OAPI __declspec(dllexport)
 #	else
-#		define OPAI __declspec(dllimport)
+#		define OAPI __declspec(dllimport)
 #	endif
 #else
 #	define OAPI
