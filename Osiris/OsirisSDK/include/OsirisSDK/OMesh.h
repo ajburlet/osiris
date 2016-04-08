@@ -4,6 +4,7 @@
 #include <glm/mat4x4.hpp>
 
 #include "GLdefs.h"
+#include "defs.h"
 
 #include "OMeshBuffer.h"
 #include "OMatrixStack.h"
@@ -11,7 +12,7 @@
 #include "OCamera.h"
 
 
-class OMesh
+class OAPI OMesh
 {
 public:
 	OMesh(OShaderProgram *program=NULL);

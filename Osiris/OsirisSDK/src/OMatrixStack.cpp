@@ -1,6 +1,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "OsirisSDK\OMatrixStack.h"
+#include "OsirisSDK/OMatrixStack.h"
 
 #define PI	3.1415f
 
@@ -30,30 +30,30 @@ void OMatrixStack::pop()
 	_currMtx = _stack.top();
 }
 
-glm::mat4 OMatrixStack::top() const
+OMatrix4x4 OMatrixStack::top() const
 {
 	return _currMtx;
 }
 
-void OMatrixStack::translate(const glm::vec3 & dir)
+void OMatrixStack::translate(const OVector3 & dir)
 {
-	translate(dir.x, dir.y, dir.z);
+	translate(dir.x(), dir.y(), dir.z());
 }
 
 void OMatrixStack::translate(const float & dx, const float & dy, const float & dz)
 {
-	glm::mat4x4 ret(1.0f);
+	OMatrix4x4 ret(1.0f);
 
-	ret[3].x = dx;
-	ret[3].y = dy;
-	ret[3].z = dz;
+	ret.setValue(3, 0, dx);
+	ret.setValue(3, 1, dy);
+	ret.setValue(3, 2, dz);
 
 	_currMtx *= ret;
 }
 
-void OMatrixStack::rotate(const glm::vec3 & axis, const float & angle)
+void OMatrixStack::rotate(const OVector3 & axis, const float & angle)
 {
-	rotate(axis.x, axis.y, axis.z, angle);
+	rotate(axis.x(), axis.y(), axis.z(), angle);
 }
 
 void OMatrixStack::rotate(const float & axisX, const float & axisY, const float & axisZ, const float & angle)
@@ -63,88 +63,88 @@ void OMatrixStack::rotate(const float & axisX, const float & axisY, const float 
 	float sinA = sinf(toRad*angle);
 	float sinComp = 1 - sinA;
 
-	glm::mat4x4 ret(1.0f);
+	OMatrix4x4 ret(1.0f);
 
 	// 1st col
-	ret[0].x = axisX*axisX + (1 - axisX*axisX)*cosA;
-	ret[0].y = cosComp*axisX*axisY + axisZ*sinA;
-	ret[0].z = cosComp*axisX*axisZ - axisY*sinA;
+	ret.setValue(0, 0, axisX*axisX + (1 - axisX*axisX)*cosA);
+	ret.setValue(1, 0, cosComp*axisX*axisY + axisZ*sinA);
+	ret.setValue(2, 0, cosComp*axisX*axisZ - axisY*sinA);
 
 	// 2nd col
-	ret[1].x = cosComp*axisX*axisY - axisZ*sinA;
-	ret[1].y = axisY*axisY + (1 - axisY*axisY)*cosA;
-	ret[1].z = cosComp*axisY*axisZ + axisX*sinA;
+	ret.setValue(0, 1, cosComp*axisX*axisY - axisZ*sinA);
+	ret.setValue(1, 1, axisY*axisY + (1 - axisY*axisY)*cosA);
+	ret.setValue(2, 1, cosComp*axisY*axisZ + axisX*sinA);
 
 	// 3rd col
-	ret[2].x = cosComp*axisX*axisZ + axisY*sinA;
-	ret[2].y = cosComp*axisY*axisZ - axisX*sinA;
-	ret[2].z = axisZ*axisZ + (1 - axisZ*axisZ)*cosA;
+	ret.setValue(0, 2, cosComp*axisX*axisZ + axisY*sinA);
+	ret.setValue(1, 2, cosComp*axisY*axisZ - axisX*sinA);
+	ret.setValue(2, 2, axisZ*axisZ + (1 - axisZ*axisZ)*cosA);
 
 	_currMtx *= ret;
 }
 
 void OMatrixStack::rotateX(const float & angle)
 {
-	glm::mat4x4 ret(1.0f);
+	OMatrix4x4 ret(1.0f);
 
 	float sinA = sinf(toRad*angle);
 	float cosA = cosf(toRad*angle);
 
-	ret[1].y = sinA;
-	ret[1].z = cosA;
+	ret.setValue(1, 1, sinA);
+	ret.setValue(2, 1, cosA);
 
-	ret[1].y = -sinA;
-	ret[1].z = -cosA;
+	ret.setValue(1, 2, -sinA);
+	ret.setValue(2, 2, cosA);
 
 	_currMtx *= ret;
 }
 
 void OMatrixStack::rotateY(const float & angle)
 {
-	glm::mat4x4 ret(1.0f);
+	OMatrix4x4 ret(1.0f);
 
 	float sinA = sinf(toRad*angle);
 	float cosA = cosf(toRad*angle);
-	
-	ret[0].x = cosA;
-	ret[0].z = -sinA;
 
-	ret[2].x = sinA;
-	ret[2].z = cosA;
+	ret.setValue(0, 0, cosA);
+	ret.setValue(2, 0, -sinA);
+
+	ret.setValue(0, 2, sinA);
+	ret.setValue(2, 2, cosA);
 
 	_currMtx *= ret;
 }
 
 void OMatrixStack::rotateZ(const float & angle)
 {
-	glm::mat4x4 ret(1.0f);
+	OMatrix4x4 ret(1.0f);
 
 	float sinA = sinf(toRad*angle);
 	float cosA = cosf(toRad*angle);
 
-	ret[0].x = cosA;
-	ret[0].y = sinA;
+	ret.setValue(0, 0, cosA);
+	ret.setValue(1, 0, sinA);
 
-	ret[1].x = -sinA;
-	ret[1].y = cosA;
+	ret.setValue(0, 1, -sinA);
+	ret.setValue(1, 1, cosA);
 
 	_currMtx *= ret;
 }
 
-void OMatrixStack::scale(const glm::vec3 & factorVec)
+void OMatrixStack::scale(const OVector3 & factorVec)
 {
-	glm::mat4x4 ret(1.0f);
+	OMatrix4x4 ret(1.0f);
 
-	ret[0].x = factorVec.x;
-	ret[1].y = factorVec.y;
-	ret[2].z = factorVec.z;
+	ret.setValue(0, 0, factorVec.x());
+	ret.setValue(1, 1, factorVec.y());
+	ret.setValue(2, 2, factorVec.z());
 
 	_currMtx *= ret;
 }
 
 void OMatrixStack::scale(const float & uniformFactor)
 {
-	glm::vec3 vec(1.0f);
+	OVector3 vec(1.0f);
 	scale(vec);
 }
 

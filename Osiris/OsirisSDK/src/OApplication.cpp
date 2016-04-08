@@ -1,7 +1,9 @@
-#include <gl/freeglut.h>
 
+#include "OsirisSDK/GLdefs.h"
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OApplication.h"
+
+#include <gl/freeglut.h>
 
 using namespace std;
 
@@ -15,7 +17,7 @@ OApplication::OApplication(const string& title, int argc, char **argv, int windo
 	/* GLUT init */
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH | GLUT_STENCIL);
-	glutInitContextVersion(3, 3);
+	glutInitContextVersion(OSIRIS_GL_VERSION);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutInitWindowPosition(windowPos_x, windowPos_y);

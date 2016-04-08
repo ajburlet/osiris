@@ -4,17 +4,21 @@
 #include <list>
 
 #include "GLdefs.h"
+#include "defs.h"
 
 #include "OMatrixStack.h"
 #include "OCamera.h"
 
 #include "OShaderObject.h"
 
+#ifdef WIN32
+#	pragma warning (disable : 4251) /* STL is restricted for class internal usage only */
+#endif
 
-class OShaderProgram
+class OAPI OShaderProgram
 {
 public:
-	OShaderProgram(const std::string &name);
+	OShaderProgram(const char* name);
 	virtual ~OShaderProgram();
 
 	GLuint glReference() const;
@@ -24,7 +28,7 @@ public:
 	
 	void addShader(OShaderObject* shader);
 #ifdef WIN32
-	void addShader(OShaderObject::ShaderType type, const std::string& name, int resourceId); 
+	void addShader(OShaderObject::ShaderType type, const char* name, int resourceId); 
 #endif
 	void compile();
 

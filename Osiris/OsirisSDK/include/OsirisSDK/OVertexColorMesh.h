@@ -1,8 +1,10 @@
 #pragma once
 
+#include "defs.h"
+
 #include "OMesh.h"
 
-class OVertexColorMesh : public OMesh
+class OAPI OVertexColorMesh : public OMesh
 {
 public:
 	OVertexColorMesh();

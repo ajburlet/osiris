@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "defs.h"
 #include "OCamera.h"
 
 #define OAPPLICATION_DEFAULT_POSX	200
@@ -9,7 +10,7 @@
 #define OAPPLICATION_DEFAULT_WIDTH	640
 #define OAPPLICATION_DEFAULT_HEIGHT	480
 
-class OApplication
+class OAPI OApplication
 {
 public:
 	OApplication(const std::string &title, int argc, char **argv,

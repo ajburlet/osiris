@@ -2,9 +2,10 @@
 
 #include <glm/vec3.hpp>
 
+#include "defs.h"
 #include "OMatrixStack.h"
 
-class OCamera
+class OAPI OCamera
 {
 public:
 	OCamera(float fieldOfViewDeg=45.0f, float aspectRatio=4.0f/3, float zNear=1.0f, float zFar=5.0f, 

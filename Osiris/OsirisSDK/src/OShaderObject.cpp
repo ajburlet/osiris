@@ -9,7 +9,7 @@
 
 using namespace std;
 
-OShaderObject::OShaderObject(const string &shaderName, ShaderType shaderType, const string & source) :
+OShaderObject::OShaderObject(const char* shaderName, ShaderType shaderType, const char* source) :
 	_shaderName(shaderName),
 	_shaderType(shaderType),
 	_source(source),
@@ -23,7 +23,7 @@ OShaderObject::~OShaderObject()
 	if (_shader != 0) glDeleteShader(_shader);
 }
 
-void OShaderObject::setSource(const string & source)
+void OShaderObject::setSource(const char* source)
 {
 	_source = source;
 }
@@ -65,7 +65,8 @@ GLuint OShaderObject::compile()
 		std::string strInfoLog(infoLog);
 		delete[] infoLog;
 
-		throw OException("Shader compilation error [" + _shaderName + "]: " + strInfoLog);
+		string errMsg = "Shader compilation error [" + _shaderName + "]: " + strInfoLog;
+		throw OException(errMsg.c_str());
 	}
 
 	return _shader;

@@ -2,13 +2,19 @@
 
 #include <string>
 
-class OException
+#include "defs.h"
+
+#ifdef WIN32
+#	pragma warning (disable : 4251) /* std::string is encapsulated inside the class */
+#endif
+
+class OAPI OException
 {
 public:
-	OException(const std::string &file, int line, const std::string &what);
+	OException(const char* file, int line, const char* what);
 	virtual ~OException();
 
-	std::string what() const;
+	const char* what() const;
 private:
 	std::string _file;
 	int _line;

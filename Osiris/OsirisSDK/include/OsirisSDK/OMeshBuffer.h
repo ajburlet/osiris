@@ -1,12 +1,13 @@
 #pragma once
 
 #include "GLdefs.h"
+#include "defs.h"
 
 #ifndef OMESH_MALLOC_BLOCK
 #define OMESH_MALLOC_BLOCK	64
 #endif
 
-template <class BType> class OMeshBuffer
+template <class BType> class OAPI OMeshBuffer
 {
 public:
 	OMeshBuffer();
@@ -32,5 +33,5 @@ private:
 	GLuint _glBufferObject;
 };
 
-#include "OMeshBuffer.cpp"
+#include "src/OMeshBuffer.cpp"
 

@@ -14,6 +14,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glload", "glsdk_0_5_2\glload\glload.vcxproj", "{4F736F79-6543-DA47-9F6D-49B630E23675}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OsirisDemo", "OsirisDemo\OsirisDemo.vcxproj", "{D43638E1-1862-4E54-A2E7-34E194139418}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6FB1DCC7-2D6E-490B-A75B-F78B2998046E} = {6FB1DCC7-2D6E-490B-A75B-F78B2998046E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

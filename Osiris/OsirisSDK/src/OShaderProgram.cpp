@@ -1,11 +1,9 @@
-#include <glm/gtc/type_ptr.hpp>
-
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OShaderProgram.h"
 
 using namespace std;
 
-OShaderProgram::OShaderProgram(const string &name) :
+OShaderProgram::OShaderProgram(const char* name) :
 	_programName(name)
 {
 	_program = glCreateProgram();
@@ -33,14 +31,14 @@ void OShaderProgram::setCamera(OCamera * camera)
 
 	if (!perspectiveTransf || !cameraTransf) throw OException("Incomplete camera transformations.");
 
-	glUniformMatrix4fv(_perspectiveMtxGlRef, 1, GL_FALSE, glm::value_ptr(perspectiveTransf->top()));
-	glUniformMatrix4fv(_cameraMtxGlRef, 1, GL_FALSE, glm::value_ptr(cameraTransf->top()));
+	glUniformMatrix4fv(_perspectiveMtxGlRef, 1, GL_FALSE, perspectiveTransf->top().glArea());
+	glUniformMatrix4fv(_cameraMtxGlRef, 1, GL_FALSE, cameraTransf->top().glArea());
 }
 
 void OShaderProgram::setModelTransformation(const OMatrixStack * modelMtx)
 {
 	if (modelMtx != NULL) {
-		glUniformMatrix4fv(_modelMtxGlRef, 1, GL_FALSE, glm::value_ptr(modelMtx->top()));
+		glUniformMatrix4fv(_modelMtxGlRef, 1, GL_FALSE, modelMtx->top().glArea());
 	}
 }
 
@@ -50,7 +48,7 @@ void OShaderProgram::addShader(OShaderObject * shader)
 }
 
 #ifdef WIN32
-void OShaderProgram::addShader(OShaderObject::ShaderType type, const string& name, int resourceId)
+void OShaderProgram::addShader(OShaderObject::ShaderType type, const char* name, int resourceId)
 {
 	OShaderObject *obj = new OShaderObject(name, type);
 	obj->setSourceFromResource(resourceId);
@@ -79,6 +77,7 @@ void OShaderProgram::compile()
 		string strInfoLog(infoLog);
 		delete[] infoLog;
 
-		throw OException("Shader link error [" + _programName + "]: " + strInfoLog);
+		string errMsg = "Shader link error [" + _programName + "]: " + strInfoLog;
+		throw OException(errMsg.c_str());
 	}
 }
