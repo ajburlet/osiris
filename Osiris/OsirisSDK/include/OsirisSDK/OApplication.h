@@ -4,6 +4,7 @@
 
 #include "defs.h"
 #include "OCamera.h"
+#include "OMath.h"
 
 #define OAPPLICATION_DEFAULT_POSX	200
 #define OAPPLICATION_DEFAULT_POSY	200
@@ -24,6 +25,7 @@ public:
 
 protected:
 	virtual void init() = 0;
+	virtual void clearScreen();
 	virtual void update(int deltaTime_ms) = 0;
 	virtual void onKeyboardPress(unsigned char key, int mouse_x, int mouse_y);
 	void onWindowResize(int width, int height);

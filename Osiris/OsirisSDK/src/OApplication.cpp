@@ -54,6 +54,15 @@ void OApplication::start()
 	glutMainLoop();
 }
 
+void OApplication::clearScreen()
+{
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glClearDepth(1);
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
+
 void OApplication::onKeyboardPress(unsigned char key, int mouse_x, int mouse_y)
 {
 }
@@ -74,5 +83,8 @@ void OApplication::resizeCallback(int width, int height)
 
 void OApplication::displayCallback()
 {
+	_activeInstance->clearScreen();
 	_activeInstance->update(glutGet(GLUT_ELAPSED_TIME));
+	glutSwapBuffers();
+	glutPostRedisplay();
 }
