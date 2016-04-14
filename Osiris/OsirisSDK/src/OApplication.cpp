@@ -1,15 +1,15 @@
-
 #include "OsirisSDK/GLdefs.h"
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OApplication.h"
 
+#include <glload/gl_load.hpp>
 #include <gl/freeglut.h>
 
 using namespace std;
 
 OApplication* OApplication::_activeInstance = NULL;
 
-OApplication::OApplication(const string& title, int argc, char **argv, int windowPos_x, int windowPos_y, int windowWidth, int windowHeight)
+OApplication::OApplication(const char* title, int argc, char **argv, int windowPos_x, int windowPos_y, int windowWidth, int windowHeight)
 {
 	if (_activeInstance != NULL) throw OException("There is already an OApplication instance created.");
 	_activeInstance = this;
@@ -21,8 +21,16 @@ OApplication::OApplication(const string& title, int argc, char **argv, int windo
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutInitWindowPosition(windowPos_x, windowPos_y);
-	glutCreateWindow(title.c_str());
+	int window = glutCreateWindow(title);
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+
+	/* GLload init */
+	glload::LoadFunctions();
+	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+	if (!glload::IsVersionGEQ(OSIRIS_GL_VERSION)) {
+		glutDestroyWindow(window);
+		throw OException("Incorrect OpenGL version.");
+	}
 
 	/* setup callbacks */
 	glutDisplayFunc(displayCallback);
@@ -33,6 +41,11 @@ OApplication::OApplication(const string& title, int argc, char **argv, int windo
 OApplication::~OApplication()
 {
 	_activeInstance = NULL;
+}
+
+OCamera * OApplication::camera()
+{
+	return &_cam;
 }
 
 void OApplication::start()

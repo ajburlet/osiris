@@ -30,7 +30,7 @@ public:
 	void scale(const float& uniformFactor);
 
 	void perspective(float fieldOfViewDeg, float aspectRatio, float zNear, float zFar);
-	void camera(const glm::vec3 &position, const glm::vec3 &direction, const glm::vec3 &up = glm::vec3(0, 1, 0));
+	void camera(const OVector3 &position, const OVector3 &direction, const OVector3 &up = OVector3(0, 1, 0));
 
 private:
 	OMatrix4x4 _currMtx;

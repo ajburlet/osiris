@@ -18,7 +18,11 @@ public:
 	OVector3& operator=(const OVector3& in);
 	OVector3 operator*(const OVector3& in);
 	OVector3& operator*=(const OVector3& in);
-	
+
+#ifdef OSIRISSDK_EXPORTS
+	const glm::vec3 & glm() const;
+#endif
+
 	OVector3 cross(const OVector3& in) const;
 	static OVector3 cross(const OVector3& a, const OVector3& b);
 
@@ -47,6 +51,10 @@ public:
 #ifdef OSIRISSDK_EXPORTS
 	OMatrix4x4 operator*(const glm::mat4x4& in);
 	OMatrix4x4& operator*=(const glm::mat4x4& in);
+#endif
+
+#ifdef OSIRISSDK_EXPORTS
+	const glm::mat4x4 & glm() const;
 #endif
 
 	void setValue(int row, int col, float value);

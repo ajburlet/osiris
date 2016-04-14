@@ -13,10 +13,13 @@
 class OAPI OApplication
 {
 public:
-	OApplication(const std::string &title, int argc, char **argv,
+	OApplication(const char* title, int argc, char **argv,
 		int windowPos_x=OAPPLICATION_DEFAULT_POSX, int windowPos_y=OAPPLICATION_DEFAULT_POSY,
 		int windowWidth=OAPPLICATION_DEFAULT_WIDTH, int windowHeight=OAPPLICATION_DEFAULT_HEIGHT);
 	virtual ~OApplication();
+
+	OCamera* camera();
+
 	void start();
 
 protected:
@@ -27,7 +30,7 @@ protected:
 
 private:
 	static OApplication* _activeInstance;
-	OCamera cam;
+	OCamera _cam;
 
 	static void keyboardCallback(unsigned char key, int mouse_x, int mouse_y);
 	static void resizeCallback(int width, int height);

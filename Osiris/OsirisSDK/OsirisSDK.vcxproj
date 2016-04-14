@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(SolutionDir)\freeglut\lib\$(PlatformShortName)\$(Configuration);$(SolutionDir)\glsdk_0_5_2\glload\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)\glm;$(SolutionDir)\freeglut\include;$(SolutionDir)\glsdk_0_5_2\glload\include;$(ProjectDir)\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\glm;$(SolutionDir)\freeglut\include;$(SolutionDir)\glsdk_0_5_2\glload\include;$(ProjectDir)\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\lib\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,7 +162,7 @@
     <ClInclude Include="include\OsirisSDK\OMath.h" />
     <ClInclude Include="include\OsirisSDK\OMatrixStack.h" />
     <ClInclude Include="include\OsirisSDK\OMesh.h" />
-    <ClInclude Include="include\OsirisSDK\OMeshBuffer.h" />
+    <ClInclude Include="include\OsirisSDK\OMeshBuffer.hpp" />
     <ClInclude Include="include\OsirisSDK\OShaderObject.h" />
     <ClInclude Include="include\OsirisSDK\OShaderProgram.h" />
     <ClInclude Include="include\OsirisSDK\OVertexColorMesh.h" />
@@ -175,13 +175,9 @@
     <ClCompile Include="src\OMath.cpp" />
     <ClCompile Include="src\OMatrixStack.cpp" />
     <ClCompile Include="src\OMesh.cpp" />
-    <ClCompile Include="src\OMeshBuffer.cpp" />
     <ClCompile Include="src\OShaderObject.cpp" />
     <ClCompile Include="src\OShaderProgram.cpp" />
     <ClCompile Include="src\OVertexColorMesh.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\Vertex-OutputSmoothColor.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OsirisSDK.rc" />

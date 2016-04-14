@@ -6,11 +6,10 @@
 #include "GLdefs.h"
 #include "defs.h"
 
-#include "OMeshBuffer.h"
+#include "OMeshBuffer.hpp"
 #include "OMatrixStack.h"
 #include "OShaderProgram.h"
 #include "OCamera.h"
-
 
 class OAPI OMesh
 {

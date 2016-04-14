@@ -71,7 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\freeglut\include;$(SolutionDir)\glsdk_0_5_2\glload\include;$(SolutionDir)\glm\glm;$(SolutionDir)\OsirisSDK\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\freeglut\include;$(SolutionDir)\glsdk_0_5_2\glload\include;$(SolutionDir)\glm;$(SolutionDir)\OsirisSDK\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\freeglut\lib\$(PlatformShortName)\$(Configuration);$(SolutionDir)\glsdk_0_5_2\glload\lib;$(SolutionDir)\OsirisSDK\lib\$(Configuration);$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
   </PropertyGroup>

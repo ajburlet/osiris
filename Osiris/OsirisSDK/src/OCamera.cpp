@@ -1,6 +1,6 @@
-#include "..\include\OsirisSDK\OCamera.h"
+#include "OsirisSDK/OCamera.h"
 
-OCamera::OCamera(float fieldOfViewDeg, float aspectRatio, float zNear, float zFar, const glm::vec3 & pos, const glm::vec3 & dir) :
+OCamera::OCamera(float fieldOfViewDeg, float aspectRatio, float zNear, float zFar, const OVector3 & pos, const OVector3 & dir) :
 	_perspectiveChanged(true),
 	_cameraChanged(true),
 	_fieldOfViewDeg(fieldOfViewDeg),
@@ -38,13 +38,13 @@ void OCamera::setCameraLimits(float zNear, float zFar)
 	_zFar = zFar;
 }
 
-void OCamera::setPosition(const glm::vec3 & position)
+void OCamera::setPosition(const OVector3 & position)
 {
 	_cameraChanged = true;
 	_position = position;
 }
 
-void OCamera::setDirection(const glm::vec3 & direction)
+void OCamera::setDirection(const OVector3 & direction)
 {
 	_cameraChanged = true;
 	_direction = direction;
@@ -70,12 +70,12 @@ float OCamera::farLimit() const
 	return _zFar;
 }
 
-glm::vec3 OCamera::position() const
+OVector3 OCamera::position() const
 {
 	return _position;
 }
 
-glm::vec3 OCamera::direction() const
+OVector3 OCamera::direction() const
 {
 	return _direction;
 }

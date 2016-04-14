@@ -49,6 +49,13 @@ OVector3 & OVector3::operator*=(const OVector3 & in)
 	return *this;
 }
 
+#ifdef OSIRISSDK_EXPORTS
+const glm::vec3 & OVector3::glm() const
+{
+	return _glmInternal;
+}
+#endif
+
 OVector3 OVector3::cross(const OVector3 & in) const
 {
 	OVector3 res;
@@ -139,6 +146,13 @@ OMatrix4x4 & OMatrix4x4::operator*=(const glm::mat4x4 & in)
 {
 	_glmInternal *= in;
 	return *this;
+}
+#endif
+
+#ifdef OSIRISSDK_EXPORTS
+const glm::mat4x4 & OMatrix4x4::glm() const
+{
+	return _glmInternal;
 }
 #endif
 

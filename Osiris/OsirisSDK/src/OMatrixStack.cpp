@@ -153,8 +153,8 @@ void OMatrixStack::perspective(float fieldOfViewDeg, float aspectRatio, float zN
 	_currMtx *= glm::perspective(fieldOfViewDeg, aspectRatio, zNear, zFar);
 }
 
-void OMatrixStack::camera(const glm::vec3 &position, const glm::vec3 &direction, const glm::vec3 &up)
+void OMatrixStack::camera(const OVector3 &position, const OVector3 &direction, const OVector3 &up)
 {
-	_currMtx *= glm::lookAt(position, direction, up);
+	_currMtx *= glm::lookAt(position.glm(), direction.glm(), up.glm());
 }
 
