@@ -14,11 +14,12 @@ public:
 	OException(const char* file, int line, const char* what);
 	virtual ~OException();
 
-	const char* what() const;
+	const char* what();
 private:
 	std::string _file;
 	int _line;
 	std::string _what;
+	std::string _fullmsg;
 };
 
 #define OException(what) OException(__FILE__, __LINE__, what)

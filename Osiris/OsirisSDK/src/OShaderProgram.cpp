@@ -7,9 +7,7 @@ OShaderProgram::OShaderProgram(const char* name) :
 	_programName(name)
 {
 	_program = glCreateProgram();
-	_modelMtxGlRef = glGetUniformLocation(_program, "modelMtx");
-	_perspectiveMtxGlRef = glGetUniformLocation(_program, "perspectiveMtx");
-	_cameraMtxGlRef = glGetUniformLocation(_program, "cameraMtx");
+	if (_program == 0) throw OException("Failed to create shader program.");
 }
 
 OShaderProgram::~OShaderProgram()
@@ -80,4 +78,9 @@ void OShaderProgram::compile()
 		string errMsg = "Shader link error [" + _programName + "]: " + strInfoLog;
 		throw OException(errMsg.c_str());
 	}
+
+	/* get proper locations */
+	_modelMtxGlRef = glGetUniformLocation(_program, "modelMtx");
+	_perspectiveMtxGlRef = glGetUniformLocation(_program, "perspectiveMtx");
+	_cameraMtxGlRef = glGetUniformLocation(_program, "cameraMtx");
 }

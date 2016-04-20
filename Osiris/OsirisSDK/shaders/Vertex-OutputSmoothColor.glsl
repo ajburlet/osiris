@@ -11,6 +11,6 @@ uniform mat4 cameraMtx;
 
 void main()
 {
-	gl_Position = ((position * modelMtx) * worldMtx) * perspectiveMtx;
+	gl_Position = ((position * modelMtx) * cameraMtx) * perspectiveMtx;
 }
 

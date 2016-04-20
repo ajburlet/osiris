@@ -12,6 +12,7 @@ OVertexColorMesh::OVertexColorMesh() : OMesh()
 		_colorVertexProgram->addShader(OShaderObject::ShaderType_Vertex, "VertexSmoothColor", IDR_SHADER_VERTEX_SMOOTHCOLOR);
 		_colorVertexProgram->addShader(OShaderObject::ShaderType_Fragment, "FragmentStandardColor", IDR_SHADER_FRAGMENT_STANDARDCOLOR);
 #endif
+		_colorVertexProgram->compile();
 	}
 	setProgram(_colorVertexProgram);
 }

@@ -17,14 +17,13 @@ OException::~OException()
 {
 }
 
-const char* OException::what() const
+const char* OException::what()
 {
 	char strLineNbr[16];
-	string msg;
 
 	snprintf(strLineNbr, 16, "%d", _line);
 
-	msg = "[" + _file + ": " + strLineNbr + "] " + _what;
+	_fullmsg = string("[") + _file + ": " + strLineNbr + "] " + _what;
 
-	return msg.c_str();
+	return _fullmsg.c_str();
 }

@@ -33,14 +33,28 @@ void OShaderObject::setSourceFromResource(int resourceId)
 	const char *data = NULL;
 	DWORD size = 0;
 
-	HMODULE handle = ::GetModuleHandle(NULL);
+	HMODULE handle = ::LoadLibrary(OSIRIS_DLL_NAME);
 	HRSRC rc = ::FindResource(handle, MAKEINTRESOURCE(resourceId), MAKEINTRESOURCE(OPENGL_SHADER));
+	if (rc == NULL) {
+		LPTSTR lastErrorText = NULL;
+		DWORD lastError = ::GetLastError();
+		::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, 
+				0, lastError, 0, lastErrorText, MAX_PATH, 0);
+		char errStr[256];
+		snprintf(errStr, 256, "Failed to obtain shader as WIN32 resource [%d]: ERR#%d %ls", resourceId, 
+			lastError, lastErrorText);
+		::LocalFree(lastErrorText);
+
+		throw OException(errStr);
+	}
 	HGLOBAL rcData = ::LoadResource(handle, rc);
 	size = ::SizeofResource(handle, rc);
 	data = static_cast<const char*>(::LockResource(rcData));
 
 	_source.append(data, size);
-	delete[] data;
+
+	//delete[] data;
+	::FreeLibrary(handle);
 }
 #endif
 

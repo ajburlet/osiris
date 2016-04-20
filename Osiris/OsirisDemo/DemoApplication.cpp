@@ -47,6 +47,8 @@ void DemoApplication::init()
 	cube->addIndexData(6, 4, 2);
 	cube->addIndexData(6, 7, 4);
 
+	cube->init();
+
 	_cube = cube;
 
 	_mtx.rotateX(45.0f);
