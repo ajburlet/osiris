@@ -31,5 +31,5 @@ void OVertexColorMesh::setupAdditionalVertexArrays()
 	GLuint vertexColorOffset = (GLuint)vertexCount()*sizeof(float) * 3;
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, &vertexColorOffset);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)vertexColorOffset);
 }

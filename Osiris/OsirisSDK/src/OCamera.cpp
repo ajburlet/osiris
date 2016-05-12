@@ -55,7 +55,7 @@ float OCamera::fieldOfViewDegrees() const
 	return _fieldOfViewDeg;
 }
 
-float OCamera::aspectRation() const
+float OCamera::aspectRatio() const
 {
 	return _aspectRatio;
 }

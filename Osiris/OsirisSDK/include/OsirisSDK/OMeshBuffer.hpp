@@ -111,7 +111,7 @@ GLuint OMeshBuffer<BType>::generateGLBufferObject(GLenum bufferType)
 	glGenBuffers(1, &_glBufferObject);
 
 	glBindBuffer(bufferType, _glBufferObject);
-	glBufferData(bufferType, _itemCount*sizeof(BType) * 3, _buffer, GL_STATIC_DRAW);
+	glBufferData(bufferType, _itemCount*sizeof(BType), _buffer, GL_STATIC_DRAW);
 	glBindBuffer(bufferType, 0);
 
 	return _glBufferObject;

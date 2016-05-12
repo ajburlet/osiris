@@ -44,9 +44,9 @@ void OMatrixStack::translate(const float & dx, const float & dy, const float & d
 {
 	OMatrix4x4 ret(1.0f);
 
-	ret.setValue(3, 0, dx);
-	ret.setValue(3, 1, dy);
-	ret.setValue(3, 2, dz);
+	ret.setValue(0, 3, dx);
+	ret.setValue(1, 3, dy);
+	ret.setValue(2, 3, dz);
 
 	_currMtx *= ret;
 }
@@ -144,13 +144,13 @@ void OMatrixStack::scale(const OVector3 & factorVec)
 
 void OMatrixStack::scale(const float & uniformFactor)
 {
-	OVector3 vec(1.0f);
+	OVector3 vec(uniformFactor);
 	scale(vec);
 }
 
 void OMatrixStack::perspective(float fieldOfViewDeg, float aspectRatio, float zNear, float zFar)
 {
-	_currMtx *= glm::perspective(fieldOfViewDeg, aspectRatio, zNear, zFar);
+	_currMtx *= glm::perspective(fieldOfViewDeg*toRad, aspectRatio, zNear, zFar);
 }
 
 void OMatrixStack::camera(const OVector3 &position, const OVector3 &direction, const OVector3 &up)

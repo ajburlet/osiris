@@ -11,6 +11,7 @@ uniform mat4 cameraMtx;
 
 void main()
 {
-	gl_Position = ((position * modelMtx) * cameraMtx) * perspectiveMtx;
+	gl_Position = perspectiveMtx * (cameraMtx * (modelMtx*position));
+	smoothColor = color;
 }
 

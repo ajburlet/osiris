@@ -28,6 +28,20 @@ public:
 	void init();
 	void render(OCamera *cam, OMatrixStack *mtx);
 
+	enum CullFace {
+		CullFace_Undefined=-1,
+		CullFace_Front=GL_FRONT,
+		CullFace_Back=GL_BACK
+	};
+
+	enum CullFront {
+		CullFront_Undefined=-1,
+		CullFront_CW=GL_CW,
+		CullFront_CCW=GL_CCW
+	};
+
+	void setFaceCulling(bool enabled, CullFace face=CullFace_Undefined, CullFront front=CullFront_Undefined);
+
 protected:
 	virtual void setupAdditionalVertexArrays();
 	virtual void setupAdditionalShaderLocations();
@@ -44,5 +58,9 @@ private:
 	OMeshBuffer<GLuint> _indexBuffer;
 
 	OShaderProgram* _program;
+
+	bool _cullEnabled;
+	CullFace _cullFace;
+	CullFront _cullFront;
 };
 

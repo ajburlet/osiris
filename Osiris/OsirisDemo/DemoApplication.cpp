@@ -16,14 +16,14 @@ DemoApplication::~DemoApplication()
 void DemoApplication::init()
 {
 	OVertexColorMesh *cube = new OVertexColorMesh();
-	cube->addVertexData(-1.0f, -1.0f, -1.0f);
-	cube->addVertexData(-1.0f, -1.0f, 1.0f);
-	cube->addVertexData(-1.0f, 1.0f, -1.0f);
-	cube->addVertexData(-1.0f, 1.0f, 1.0f);
-	cube->addVertexData(1.0f, -1.0f, -1.0f);
-	cube->addVertexData(1.0f, -1.0f, 1.0f);
-	cube->addVertexData(1.0f, 1.0f, -1.0f);
-	cube->addVertexData(1.0f, 1.0f, 1.0f);
+	cube->addVertexData(-0.5f, -0.5f, -0.5f);
+	cube->addVertexData(-0.5f, -0.5f, 0.5f);
+	cube->addVertexData(-0.5f, 0.5f, -0.5f);
+	cube->addVertexData(-0.5f, 0.5f, 0.5f);
+	cube->addVertexData(0.5f, -0.5f, -0.5f);
+	cube->addVertexData(0.5f, -0.5f, 0.5f);
+	cube->addVertexData(0.5f, 0.5f, -0.5f);
+	cube->addVertexData(0.5f, 0.5f, 0.5f);
 
 	cube->addVertexColorData(1.0f, 0.0f, 0.0f, 1.0f);
 	cube->addVertexColorData(1.0f, 0.0f, 0.0f, 1.0f);
@@ -47,11 +47,26 @@ void DemoApplication::init()
 	cube->addIndexData(6, 4, 2);
 	cube->addIndexData(6, 7, 4);
 
+	/*
+	cube->addVertexData(-0.5f, -0.5f, 0.0f);
+	cube->addVertexData(0.5f, -0.5f, 0.0f);
+	cube->addVertexData(0.0f, 0.5f, 0.0f);
+	cube->addVertexColorData(1.0f, 0.0f, 0.0f, 1.0f);
+	cube->addVertexColorData(0.0f, 1.0f, 0.0f, 1.0f);
+	cube->addVertexColorData(0.0f, 0.0f, 1.0f, 1.0f);
+	cube->addIndexData(0, 1, 2);
+	*/
+
+	camera()->setPosition(OVector3(0.0f, 0.0f, 0.0f));
+	camera()->setDirection(OVector3(0.0f, 0.0f, 1.0f));
+
 	cube->init();
 
 	_cube = cube;
 
-	_mtx.rotateX(45.0f);
+	_mtx.translate(0.0f, 0.5f, 2.0f);
+	_mtx.rotateZ(45.0f);
+	_mtx.scale(0.5f);
 }
 
 void DemoApplication::update(int deltaTime_ms)

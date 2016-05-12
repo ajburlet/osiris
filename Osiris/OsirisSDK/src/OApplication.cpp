@@ -36,6 +36,12 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 	glutDisplayFunc(displayCallback);
 	glutKeyboardFunc(keyboardCallback);
 	glutReshapeFunc(resizeCallback);
+
+	/* z-buffer */
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glDepthRange(0.0f, 1.0f);
+	glEnable(GL_DEPTH_CLAMP);
 }
 
 OApplication::~OApplication()
