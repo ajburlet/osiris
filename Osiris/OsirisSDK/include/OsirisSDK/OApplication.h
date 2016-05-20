@@ -26,7 +26,7 @@ public:
 protected:
 	virtual void init() = 0;
 	virtual void clearScreen();
-	virtual void update(int deltaTime_ms) = 0;
+	virtual void update(int timeIndex_ms) = 0;
 	virtual void onKeyboardPress(unsigned char key, int mouse_x, int mouse_y);
 	void onWindowResize(int width, int height);
 

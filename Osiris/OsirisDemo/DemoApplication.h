@@ -11,10 +11,21 @@ public:
 
 	// Inherited via OApplication
 	virtual void init() override;
-	virtual void update(int deltaTime_ms) override;
+	virtual void update(int timeIndex_ms) override;
 
 private:
 	OMesh* _cube;
 	OMatrixStack _mtx;
+
+	float _movRadiusA;
+	float _movRadiusB;
+	float _thetaA;
+	float _thetaB;
+	float _periodA;
+	float _periodB;
+
+	int _last_timeIndex_ms;
+
+	bool _pauseFlag;
 };
 

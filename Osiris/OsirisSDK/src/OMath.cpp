@@ -70,6 +70,21 @@ OVector3 OVector3::cross(const OVector3 & a, const OVector3 & b)
 	return a.cross(b);
 }
 
+void OVector3::setX(float val)
+{
+	_glmInternal.x = val;
+}
+
+void OVector3::setY(float val)
+{
+	_glmInternal.y = val;
+}
+
+void OVector3::setZ(float val)
+{
+	_glmInternal.z = val;
+}
+
 float OVector3::x() const
 {
 	return _glmInternal.x;

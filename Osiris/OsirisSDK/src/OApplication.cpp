@@ -39,6 +39,7 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 
 	/* z-buffer */
 	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
 	glDepthRange(0.0f, 1.0f);
 	glEnable(GL_DEPTH_CLAMP);
@@ -63,10 +64,8 @@ void OApplication::start()
 void OApplication::clearScreen()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glClearDepth(1);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glClearDepth(1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void OApplication::onKeyboardPress(unsigned char key, int mouse_x, int mouse_y)

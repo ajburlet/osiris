@@ -26,6 +26,10 @@ public:
 	OVector3 cross(const OVector3& in) const;
 	static OVector3 cross(const OVector3& a, const OVector3& b);
 
+	void setX(float val);
+	void setY(float val);
+	void setZ(float val);
+
 	float x() const;
 	float y() const;
 	float z() const;

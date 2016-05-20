@@ -26,8 +26,8 @@ void OMatrixStack::push()
 
 void OMatrixStack::pop()
 {
-	_stack.pop();
 	_currMtx = _stack.top();
+	_stack.pop();
 }
 
 OMatrix4x4 OMatrixStack::top() const
