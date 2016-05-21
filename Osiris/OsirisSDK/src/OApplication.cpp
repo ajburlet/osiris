@@ -83,6 +83,8 @@ void OApplication::keyboardCallback(unsigned char key, int mouse_x, int mouse_y)
 
 void OApplication::resizeCallback(int width, int height)
 {
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+	_activeInstance->camera()->setAspectRatio((float)width / height);
 	_activeInstance->onWindowResize(width, height);
 }
 

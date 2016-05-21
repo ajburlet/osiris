@@ -7,7 +7,7 @@
 class OAPI OCamera
 {
 public:
-	OCamera(float fieldOfViewDeg=45.0f, float aspectRatio=4.0f/3, float zNear=0.0f, float zFar=5.0f, 
+	OCamera(float fieldOfViewDeg=45.0f, float aspectRatio=4.0f/3, float zNear=1.0f, float zFar=5.0f, 
 		const OVector3 &pos=OVector3(0, 0, -1), const OVector3 &dir=OVector3(0, 0, 1));
 	virtual ~OCamera();
 

@@ -53,6 +53,7 @@ void DemoApplication::init()
 
 	cube->setFaceCulling(true, OMesh::CullFace_Front, OMesh::CullFront_CW);
 
+	camera()->setCameraLimits(1.0f, 10.0f);
 	camera()->setPosition(OVector3(0.0f, 0.0f, -2.0f));
 	camera()->setDirection(OVector3(0.0f, 0.0f, 1.0f));
 
@@ -64,8 +65,8 @@ void DemoApplication::init()
 	_movRadiusB = 1.0f;
 	_thetaA = 0;
 	_thetaB = PI;
-	_periodA = 3.0f;
-	_periodB = 3.0f;
+	_periodA = 6.0f;
+	_periodB = 6.0f;
 
 	_pauseFlag = false;
 	_last_timeIndex_ms = 0;
@@ -103,4 +104,9 @@ void DemoApplication::update(int timeIndex_ms)
 	_mtx.pop();
 
 	_last_timeIndex_ms = timeIndex_ms;
+}
+
+void DemoApplication::onKeyboardPress(unsigned char key, int mouse_x, int mouse_y)
+{
+	if (key == ' ') _pauseFlag = !_pauseFlag;
 }

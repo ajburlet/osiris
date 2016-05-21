@@ -12,6 +12,7 @@ public:
 	// Inherited via OApplication
 	virtual void init() override;
 	virtual void update(int timeIndex_ms) override;
+	virtual void onKeyboardPress(unsigned char key, int mouse_x, int mouse_y) override;
 
 private:
 	OMesh* _cube;
