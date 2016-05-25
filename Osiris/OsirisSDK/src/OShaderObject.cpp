@@ -9,6 +9,12 @@
 
 using namespace std;
 
+/**
+ \brief Class constructor.
+ \param shaderName Shader name.
+ \param shaderType Shader type.
+ \param source Shader source code.
+*/
 OShaderObject::OShaderObject(const char* shaderName, ShaderType shaderType, const char* source) :
 	_shaderName(shaderName),
 	_shaderType(shaderType),
@@ -18,16 +24,27 @@ OShaderObject::OShaderObject(const char* shaderName, ShaderType shaderType, cons
 	
 }
 
+/**
+ \brief Class destructor.
+*/
 OShaderObject::~OShaderObject()
 {
 	if (_shader != 0) glDeleteShader(_shader);
 }
 
+/**
+ \brief Set shader source code.
+*/
 void OShaderObject::setSource(const char* source)
 {
 	_source = source;
 }
+
 #ifdef WIN32
+/**
+ \brief Set shader source code from DLL resource (WIN32 only).
+ \param resourceId Visual Studio resource file ID.
+*/
 void OShaderObject::setSourceFromResource(int resourceId)
 {
 	const char *data = NULL;
@@ -58,6 +75,9 @@ void OShaderObject::setSourceFromResource(int resourceId)
 }
 #endif
 
+/**
+ \brief Compiles the shader object code.
+*/
 GLuint OShaderObject::compile()
 {
 	const char *shaderSrc = _source.c_str();
@@ -86,6 +106,9 @@ GLuint OShaderObject::compile()
 	return _shader;
 }
 
+/**
+ \brief Returns the OpenGL shader object reference ID.
+*/
 GLuint OShaderObject::glReference() const
 {
 	return _shader;

@@ -9,6 +9,20 @@ using namespace std;
 
 OApplication* OApplication::_activeInstance = NULL;
 
+
+/**
+ \brief Class constructor.
+
+ The constructor creates the window and initializes OpenGL.
+
+ \param title Application window title.
+ \param argc Number of command line arguments
+ \param argv Command line arguments.
+ \param windowPos_x Window position on the X axis.
+ \param windowPos_y Window position on the Y axis.
+ \param windowWidth Window width.
+ \param windowHeight Window height.
+ */
 OApplication::OApplication(const char* title, int argc, char **argv, int windowPos_x, int windowPos_y, int windowWidth, int windowHeight)
 {
 	if (_activeInstance != NULL) throw OException("There is already an OApplication instance created.");
@@ -45,22 +59,35 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 	glEnable(GL_DEPTH_CLAMP);
 }
 
+/**
+ \brief Class destructor.
+*/
 OApplication::~OApplication()
 {
 	_activeInstance = NULL;
 }
 
+/**
+ \brief Returns the application camera object.
+ \return Pointer to the application camera object.
+*/
 OCamera * OApplication::camera()
 {
 	return &_cam;
 }
 
+/**
+ \brief Initializes the application and starts the main loop.
+*/
 void OApplication::start()
 {
 	init();
 	glutMainLoop();
 }
 
+/**
+ \brief Called in the begining of the render process for each loop to clear the previous screen.
+*/
 void OApplication::clearScreen()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -68,10 +95,24 @@ void OApplication::clearScreen()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+/**
+ \brief Virtual method to process key strokes.
+ \param key ASCII key code.
+ \param mouse_x Position in the X axis of the mouse pointer.
+ \param mouse_y Position in the Y axis of the mouse pointer.
+*/
 void OApplication::onKeyboardPress(unsigned char key, int mouse_x, int mouse_y)
 {
 }
 
+/**
+ \brief Virtual method called when the window is resized.
+
+ Camera and screen adjustments are already dealt by OApplication.
+
+ \param width New window width.
+ \param height New window height.
+*/
 void OApplication::onWindowResize(int width, int height)
 {
 }

@@ -6,6 +6,9 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
+/**
+ \brief Class the represents three-dimentional vectors.
+*/
 class OAPI OVector3
 {
 public:
@@ -40,6 +43,9 @@ private:
 	glm::vec3 _glmInternal;
 };
 
+/**
+ \brief Class that represents 4x4 matrices.
+*/
 class OAPI OMatrix4x4
 {
 public:

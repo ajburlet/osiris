@@ -11,6 +11,12 @@
 #include "OShaderProgram.h"
 #include "OCamera.h"
 
+/**
+ \brief Base class that represents a group of vertices that together make a geometrical shape.
+
+ Meshes are first defined by entering vertex data and indices. The mesh object can then be initialized
+ and then redered.
+*/
 class OAPI OMesh
 {
 public:
@@ -23,21 +29,30 @@ public:
 	int vertexCount() const;
 
 	void addVertexData(float vx, float vy, float vz);
-	void addIndexData(GLuint vx, GLuint vy, GLuint vz);
+	void addIndexData(GLuint vi, GLuint vj, GLuint vk);
 
 	void init();
 	void render(OCamera *cam, OMatrixStack *mtx);
 
+	/**
+	 \brief Sets which face will be rendered when face culling is available.
+	 \see setFaceCulling()
+	*/
 	enum CullFace {
-		CullFace_Undefined=-1,
-		CullFace_Front=GL_FRONT,
-		CullFace_Back=GL_BACK
+		CullFace_Undefined=-1,		/**< Undefined face. */
+		CullFace_Front=GL_FRONT,	/**< Front face. */
+		CullFace_Back=GL_BACK		/**< Back face. */
 	};
 
+	/**
+	 \brief In order to be able to ascertain which face is the front when dealing with
+	 face culling, we use the order in which the vertices are laid on each triangle.
+	 \see setFaceCulling()
+	*/
 	enum CullFront {
-		CullFront_Undefined=-1,
-		CullFront_CW=GL_CW,
-		CullFront_CCW=GL_CCW
+		CullFront_Undefined=-1,		/**< Undefined front face. */
+		CullFront_CW=GL_CW,		/**< Front face is defined by clockwise vertex order. */
+		CullFront_CCW=GL_CCW		/**< Front face is defined by counter-clockwise vertex order. */
 	};
 
 	void setFaceCulling(bool enabled, CullFace face=CullFace_Undefined, CullFront front=CullFront_Undefined);

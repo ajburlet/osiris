@@ -15,6 +15,9 @@
 #	pragma warning (disable : 4251) /* STL is restricted for class internal usage only */
 #endif
 
+/**
+ \brief Class that represents a shader program.
+*/
 class OAPI OShaderProgram
 {
 public:

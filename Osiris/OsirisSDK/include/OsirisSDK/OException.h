@@ -8,6 +8,9 @@
 #	pragma warning (disable : 4251) /* std::string is encapsulated inside the class */
 #endif
 
+/**
+ \brief Osiris exception class.
+*/
 class OAPI OException
 {
 public:
@@ -22,4 +25,11 @@ private:
 	std::string _fullmsg;
 };
 
+/**
+ \brief Simplified exception constructor macro.
+
+ Using this macro dispeses the need to enter source file name and line number.
+
+ \param what Exception message.
+*/
 #define OException(what) OException(__FILE__, __LINE__, what)

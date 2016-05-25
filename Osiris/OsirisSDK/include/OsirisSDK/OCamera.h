@@ -4,6 +4,9 @@
 #include "OMatrixStack.h"
 #include "OMath.h"
 
+/**
+ \brief Class that represents a camera on the scene.
+*/
 class OAPI OCamera
 {
 public:

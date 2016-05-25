@@ -7,6 +7,14 @@
 #include "defs.h"
 #include "OMath.h"
 
+/**
+ \brief Matrix stack class.
+
+ This class represents a stack of matrices, useful for handling coordinate system transformations on
+ multiple levels. There is a top matrix on the stack, where transformations can be applied. When the need
+ comes to preserve the top matrix, it can be pushed onto the stack, so it can be retrieved at a later time
+ by using the pop() method.
+*/
 class OAPI OMatrixStack
 {
 public:

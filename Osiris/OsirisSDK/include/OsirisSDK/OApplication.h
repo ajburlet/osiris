@@ -11,6 +11,12 @@
 #define OAPPLICATION_DEFAULT_WIDTH	640
 #define OAPPLICATION_DEFAULT_HEIGHT	480
 
+/**
+ \brief The Osiris Application base class. 
+
+ This is the class that represents an application based on the Osiris Framework. It handles basic 
+ interaction with OpenGL, creating the window and handling main loop.
+*/
 class OAPI OApplication
 {
 public:
