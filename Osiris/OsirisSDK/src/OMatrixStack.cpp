@@ -48,6 +48,40 @@ OMatrix4x4 OMatrixStack::top() const
 {
 	return _currMtx;
 }
+/**
+ \see multiply(const OMatrixStack&)
+*/
+OMatrixStack & OMatrixStack::operator*=(const OMatrixStack & in)
+{
+	multiply(in);
+	return *this;
+}
+/**
+ \see multiply(const OMatrix4x4&)
+*/
+OMatrixStack & OMatrixStack::operator*=(const OMatrix4x4 & in)
+{
+	multiply(in);
+	return *this;
+}
+
+/**
+ \brief Multiply the top matrix by another stack top matrix.
+ \param in Stack matrix that contains the top matrix that is going to be used in this operation.
+*/
+void OMatrixStack::multiply(const OMatrixStack & in)
+{
+	_currMtx *= in._currMtx;
+}
+
+/**
+ \brief Multiply the top matrix by another matrix.
+ \param in Right value matrix in this product.
+*/
+void OMatrixStack::multiply(const OMatrix4x4 & in)
+{
+	_currMtx *= in;
+}
 
 /**
  \brief Applies the translation transformation to a given direction.

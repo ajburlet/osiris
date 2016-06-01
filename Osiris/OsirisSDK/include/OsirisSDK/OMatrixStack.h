@@ -25,6 +25,12 @@ public:
 	void pop();
 	OMatrix4x4 top() const;
 
+	OMatrixStack& operator*=(const OMatrixStack& in);
+	OMatrixStack& operator*=(const OMatrix4x4& in);
+
+	void multiply(const OMatrixStack& in);
+	void multiply(const OMatrix4x4& in);
+
 	void translate(const OVector3 &dir);
 	void translate(const float& dx, const float& dy, const float& dz);
 
