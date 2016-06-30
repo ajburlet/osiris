@@ -24,7 +24,10 @@ public:
 	void push();
 	void pop();
 	OMatrix4x4 top() const;
+	bool isEmpty() const;
+	void clear();
 
+	OMatrixStack& operator=(const OMatrixStack& in);
 	OMatrixStack& operator*=(const OMatrixStack& in);
 	OMatrixStack& operator*=(const OMatrix4x4& in);
 

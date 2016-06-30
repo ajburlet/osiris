@@ -62,6 +62,7 @@ public:
 	OMatrix4x4 operator*(const glm::mat4x4& in);
 	OMatrix4x4& operator*=(const glm::mat4x4& in);
 #endif
+	bool operator==(const OMatrix4x4& in) const;
 
 #ifdef OSIRISSDK_EXPORTS
 	const glm::mat4x4 & glm() const;

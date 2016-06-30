@@ -230,6 +230,11 @@ OMatrix4x4 & OMatrix4x4::operator*=(const glm::mat4x4 & in)
 }
 #endif
 
+bool OMatrix4x4::operator==(const OMatrix4x4 & in) const
+{
+	return (_glmInternal == in._glmInternal);
+}
+
 #ifdef OSIRISSDK_EXPORTS
 const glm::mat4x4 & OMatrix4x4::glm() const
 {

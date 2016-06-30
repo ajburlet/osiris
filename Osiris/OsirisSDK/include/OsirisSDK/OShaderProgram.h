@@ -26,8 +26,7 @@ public:
 
 	GLuint glReference() const;
 
-	void setCamera(OCamera *camera);
-	void setModelTransformation(const OMatrixStack* modelMtx);
+	void setMatrixTransform(const OMatrix4x4& mtx);
 	
 	void addShader(OShaderObject* shader);
 #ifdef WIN32
@@ -41,8 +40,6 @@ private:
 
 	std::list<OShaderObject*> _shaderList;
 
-	GLuint _modelMtxGlRef;
-	GLuint _perspectiveMtxGlRef;
-	GLuint _cameraMtxGlRef;
+	GLuint _transformMtx;
 };
 

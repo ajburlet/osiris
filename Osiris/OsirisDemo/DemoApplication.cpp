@@ -78,6 +78,7 @@ void DemoApplication::update(int timeIndex_ms)
 	OVector3 posB(0.0f);
 	int deltaTime_ms = timeIndex_ms - _last_timeIndex_ms;
 
+	/* calculating new positions */
 	if (!_pauseFlag) {
 		_thetaA = _thetaA + 2 * PI * deltaTime_ms / (_periodA * 1000);
 		_thetaB = _thetaB + 2 * PI * deltaTime_ms / (_periodB * 1000);
@@ -86,23 +87,30 @@ void DemoApplication::update(int timeIndex_ms)
 		if (_thetaB > 2 * PI) _thetaB -= 2 * PI;
 	}
 
+	/* calculating displacement vectors */
 	posA.setX(_movRadiusA*cosf(_thetaA));
 	posA.setZ(_movRadiusA*sinf(_thetaA));
 	posB.setX(_movRadiusB*cosf(_thetaB));
 	posB.setZ(_movRadiusB*sinf(_thetaB));
 
+	/* Get initial matrix from camera related transforms */
+	_mtx = *(camera()->transform());
+
+	/* render first cube */
 	_mtx.push();
 	_mtx.translate(posA);
 	_mtx.scale(0.5f);
-	_cube->render(camera(), &_mtx);
+	_cube->render(&_mtx);
 	_mtx.pop();
 
+	/* render last cube */
 	_mtx.push();
 	_mtx.translate(posB);
 	_mtx.scale(0.5f);
-	_cube->render(camera(), &_mtx);
+	_cube->render(&_mtx);
 	_mtx.pop();
 
+	/* update last time index */
 	_last_timeIndex_ms = timeIndex_ms;
 }
 

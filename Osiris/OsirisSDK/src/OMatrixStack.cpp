@@ -37,8 +37,12 @@ void OMatrixStack::push()
 */
 void OMatrixStack::pop()
 {
-	_currMtx = _stack.top();
-	_stack.pop();
+	if (_stack.empty() == false) {
+		_currMtx = _stack.top();
+		_stack.pop();
+	} else {
+		_currMtx = OMatrix4x4(1);
+	}
 }
 
 /**
@@ -48,10 +52,35 @@ OMatrix4x4 OMatrixStack::top() const
 {
 	return _currMtx;
 }
+
 /**
+ \brief Returns true if the current stack is empty.
+*/
+bool OMatrixStack::isEmpty() const
+{
+	return (_currMtx == OMatrix4x4(1) && _stack.empty());
+}
+
+/**
+ \brief Clears the stack and resets top matrix to identity.
+*/
+void OMatrixStack::clear()
+{
+	while (!_stack.empty()) _stack.pop();
+	_currMtx = OMatrix4x4(1);
+}
+
+ OMatrixStack & OMatrixStack::operator=(const OMatrixStack & in)
+ {
+	_currMtx = in._currMtx;
+	_stack = in._stack;
+	return *this;
+ }
+
+ /**
  \see multiply(const OMatrixStack&)
 */
-OMatrixStack & OMatrixStack::operator*=(const OMatrixStack & in)
+ OMatrixStack & OMatrixStack::operator*=(const OMatrixStack & in)
 {
 	multiply(in);
 	return *this;

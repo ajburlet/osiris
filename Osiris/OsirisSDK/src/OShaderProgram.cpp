@@ -31,36 +31,13 @@ GLuint OShaderProgram::glReference() const
 }
 
 /**
- \brief Set camera that will be used by this shader program.
- \param camera Pointer to the camera object.
- \todo This will be eliminated on the next version. The camera transformations must be included 
- in the transformation matrix stack passed to each mesh during the rendering run.
+ \brief Set matrix for perspective, camera and world transforms.
+ \param mtx The matrix that summarizes all perspective, camera and world transforms to be used on
+ the vertex shader. 
 */
-void OShaderProgram::setCamera(OCamera * camera)
+void OShaderProgram::setMatrixTransform(const OMatrix4x4& mtx)
 {
-	const OMatrixStack *perspectiveTransf, *cameraTransf;
-
-	perspectiveTransf = camera->perspectiveTransform();
-	cameraTransf = camera->cameraTransform();
-
-	if (!perspectiveTransf || !cameraTransf) throw OException("Incomplete camera transformations.");
-
-	glUniformMatrix4fv(_perspectiveMtxGlRef, 1, GL_FALSE, perspectiveTransf->top().glArea());
-	glUniformMatrix4fv(_cameraMtxGlRef, 1, GL_FALSE, cameraTransf->top().glArea());
-}
-
-/**
- \brief Set model specific transformations (translations, rotations, scaling).
- \modelMtx Pointer to the matrix stack containing the transformations.
- \todo This will be eliminated on the next version. A single matrix will be passed 
- to the shader containing both camera/perspective and model transformations. There
- will be a single transformation set method.
-*/
-void OShaderProgram::setModelTransformation(const OMatrixStack * modelMtx)
-{
-	if (modelMtx != NULL) {
-		glUniformMatrix4fv(_modelMtxGlRef, 1, GL_FALSE, modelMtx->top().glArea());
-	}
+	glUniformMatrix4fv(_transformMtx, 1, GL_FALSE, mtx.glArea());
 }
 
 /**
@@ -116,7 +93,5 @@ void OShaderProgram::compile()
 	}
 
 	/* get proper locations */
-	_modelMtxGlRef = glGetUniformLocation(_program, "modelMtx");
-	_perspectiveMtxGlRef = glGetUniformLocation(_program, "perspectiveMtx");
-	_cameraMtxGlRef = glGetUniformLocation(_program, "cameraMtx");
+	_transformMtx = glGetUniformLocation(_program, "transformMtx");
 }

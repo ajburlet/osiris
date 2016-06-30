@@ -5,13 +5,11 @@ layout (location = 1) in vec4 color;
 
 smooth out vec4 smoothColor;
 
-uniform mat4 perspectiveMtx;
-uniform mat4 modelMtx;
-uniform mat4 cameraMtx;
+uniform mat4 transformMtx;
 
 void main()
 {
-	gl_Position = perspectiveMtx * (cameraMtx * (modelMtx*position));
+	gl_Position = transformMtx * position;
 	smoothColor = color;
 }
 

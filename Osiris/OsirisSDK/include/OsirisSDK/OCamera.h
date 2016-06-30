@@ -27,9 +27,8 @@ public:
 	OVector3 position() const;
 	OVector3 direction() const;
 
-	const OMatrixStack *perspectiveTransform();
-	const OMatrixStack *cameraTransform();
-
+	const OMatrixStack* transform();
+	
 private:
 	/* control change to avoid unnecessary matrix recalculation */
 	bool _perspectiveChanged; 
@@ -45,8 +44,7 @@ private:
 	OVector3 _position;
 	OVector3 _direction;
 
-	/* calculated matrices */
-	OMatrixStack _perspectiveTransform;
-	OMatrixStack _cameraTransform;
+	/* transform matrix: camera + perspective */
+	OMatrixStack _transform;
 };
 

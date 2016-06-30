@@ -22,8 +22,6 @@ OCamera::OCamera(float fieldOfViewDeg, float aspectRatio, float zNear, float zFa
 	_position(pos),
 	_direction(dir)
 {
-	_perspectiveTransform.push();
-	_cameraTransform.push();
 }
 
 /**
@@ -137,29 +135,29 @@ OVector3 OCamera::direction() const
 }
 
 /**
- \brief Calculates the current perspective transformation matrix.
- \return Perspective transformation matrix.
-*/
-const OMatrixStack * OCamera::perspectiveTransform()
+ \brief Calculates the perspective and camera transformations.
+ \return Matrix stack containing the transformation matrix.
+ */
+const OMatrixStack* OCamera::transform()
 {
+	bool popCameraTransform = true;
 	if (_perspectiveChanged) {
-		_perspectiveTransform.pop();
-		_perspectiveTransform.push();
-		_perspectiveTransform.perspective(_fieldOfViewDeg, _aspectRatio, _zNear, _zFar);
+		if (!_transform.isEmpty()) {
+			_transform.pop(); /* pop camera */
+			_transform.pop(); /* pop perspective */
+			_cameraChanged = true; /* force recalculate camera transform */
+		}
+		_transform.perspective(_fieldOfViewDeg, _aspectRatio, _zNear, _zFar);
+		
+		popCameraTransform = false; /* camera transform will still be created */
 	}
-	return &_perspectiveTransform;
+
+	if (_cameraChanged) {
+		if (popCameraTransform) _transform.pop();
+		_transform.push();
+		_transform.camera(_position, _direction);
+	}
+
+	return &_transform;
 }
 
-/**
- \brief Calculates the camera transformation matrix.
- \return Camera transformation matrix.
-*/
-const OMatrixStack * OCamera::cameraTransform()
-{
-	if (_cameraChanged) {
-		_cameraTransform.pop();
-		_cameraTransform.push();
-		_cameraTransform.camera(_position, _direction);
-	}
-	return &_cameraTransform;
-}

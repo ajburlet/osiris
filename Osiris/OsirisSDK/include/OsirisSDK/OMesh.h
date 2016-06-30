@@ -32,7 +32,7 @@ public:
 	void addIndexData(GLuint vi, GLuint vj, GLuint vk);
 
 	void init();
-	void render(OCamera *cam, OMatrixStack *mtx);
+	void render(OMatrixStack *mtx);
 
 	/**
 	 \brief Sets which face will be rendered when face culling is available.

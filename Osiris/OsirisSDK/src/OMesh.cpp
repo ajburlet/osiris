@@ -105,10 +105,9 @@ void OMesh::init()
 
 /**
  \brief Starts the rendering process for the object.
- \param cam Pointer to the camera object that will be used.
  \param mtx Pointer to the matrix stack that contains all the transformations.
 */
-void OMesh::render(OCamera *cam, OMatrixStack *mtx)
+void OMesh::render(OMatrixStack *mtx)
 {
 	/* check if there is a shader program defined */
 	if (_program == NULL) throw OException("Mesh defined without a shader program.");
@@ -121,8 +120,7 @@ void OMesh::render(OCamera *cam, OMatrixStack *mtx)
 
 	/* prepare program -- assign necessary transformations */
 	glUseProgram(_program->glReference());
-	_program->setCamera(cam);
-	_program->setModelTransformation(mtx);
+	_program->setMatrixTransform(mtx->top());
 	setupAdditionalShaderLocations();
 
 	/* face culling */
