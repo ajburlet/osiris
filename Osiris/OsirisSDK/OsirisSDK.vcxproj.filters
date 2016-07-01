@@ -57,6 +57,9 @@
     <ClInclude Include="include\OsirisSDK\OMeshBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\OsirisSDK\OMathPrimitive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OMatrixStack.cpp">

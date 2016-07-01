@@ -15,7 +15,7 @@ OVector3::OVector3()
  \brief Class copy constructor.
 */
 OVector3::OVector3(const OVector3 & in) :
-	_glmInternal(in._glmInternal)
+	OMathPrimitive<glm::vec3>(in)
 {
 }
 
@@ -26,9 +26,9 @@ OVector3::OVector3(const OVector3 & in) :
  
  \param val The value to be used by all of the three components.
 */
-OVector3::OVector3(float val) :
-	_glmInternal(val)
+OVector3::OVector3(float val)
 {
+	_glmInternal = glm::vec3(val);
 }
 
 /**
@@ -36,9 +36,9 @@ OVector3::OVector3(float val) :
 
  Creates a OVector3 taking in the values for each component. 
 */
-OVector3::OVector3(float vx, float vy, float vz) :
-	_glmInternal(vx, vy, vz)
+OVector3::OVector3(float vx, float vy, float vz)
 {
+	_glmInternal = glm::vec3(vx, vy, vz);
 }
 
 /**
@@ -47,35 +47,6 @@ OVector3::OVector3(float vx, float vy, float vz) :
 OVector3::~OVector3()
 {
 }
-
-OVector3 & OVector3::operator=(const OVector3 & in)
-{
-	_glmInternal = in._glmInternal;
-	return *this;
-}
-
-OVector3 OVector3::operator*(const OVector3 & in)
-{
-	OVector3 res;
-
-	res._glmInternal = this->_glmInternal * in._glmInternal;
-
-	return res;
-}
-
-OVector3 & OVector3::operator*=(const OVector3 & in)
-{
-	this->_glmInternal *= in._glmInternal;
-
-	return *this;
-}
-
-#ifdef OSIRISSDK_EXPORTS
-const glm::vec3 & OVector3::glm() const
-{
-	return _glmInternal;
-}
-#endif
 
 /**
  \brief Vector cross product.
@@ -151,14 +122,6 @@ float OVector3::z() const
 }
 
 /**
- \brief Returns a pointer to the memory area to be used by OpenGL.
-*/
-const GLfloat * OVector3::glArea() const
-{
-	return glm::value_ptr(_glmInternal);
-}
-
-/**
  \brief Class constructor.
 */
 OMatrix4x4::OMatrix4x4()
@@ -169,16 +132,16 @@ OMatrix4x4::OMatrix4x4()
  \brief Class constructor that creates a diagonal matrix with values defined by the input parameter.
  \param identValue Values of the matrix main diagonal elements.
 */
-OMatrix4x4::OMatrix4x4(float identValue) :
-	_glmInternal(identValue)
+OMatrix4x4::OMatrix4x4(float identValue)
 {
+	_glmInternal = glm::mat4x4(identValue);
 }
 
 /**
  \brief Class copy constructor.
 */
 OMatrix4x4::OMatrix4x4(const OMatrix4x4 & in) :
-	_glmInternal(in._glmInternal)
+	OMathPrimitive<glm::mat4x4>(in)
 {
 }
 
@@ -188,59 +151,6 @@ OMatrix4x4::OMatrix4x4(const OMatrix4x4 & in) :
 OMatrix4x4::~OMatrix4x4()
 {
 }
-
-OMatrix4x4 & OMatrix4x4::operator=(const OMatrix4x4 & in)
-{
-	_glmInternal = in._glmInternal;
-	return *this;
-}
-
-OMatrix4x4 & OMatrix4x4::operator=(float identValue)
-{
-	_glmInternal = glm::mat4x4(identValue);
-	return *this;
-}
-
-OMatrix4x4 OMatrix4x4::operator*(const OMatrix4x4 & in)
-{
-	OMatrix4x4 result;
-	result._glmInternal = _glmInternal * in._glmInternal;
-	return result;
-
-}
-
-OMatrix4x4 & OMatrix4x4::operator*=(const OMatrix4x4 & in)
-{
-	_glmInternal *= in._glmInternal;
-	return *this;
-}
-
-#ifdef OSIRISSDK_EXPORTS
-OMatrix4x4 OMatrix4x4::operator*(const glm::mat4x4 & in)
-{
-	OMatrix4x4 res;
-	res._glmInternal = _glmInternal * in;
-	return res;
-}
-
-OMatrix4x4 & OMatrix4x4::operator*=(const glm::mat4x4 & in)
-{
-	_glmInternal *= in;
-	return *this;
-}
-#endif
-
-bool OMatrix4x4::operator==(const OMatrix4x4 & in) const
-{
-	return (_glmInternal == in._glmInternal);
-}
-
-#ifdef OSIRISSDK_EXPORTS
-const glm::mat4x4 & OMatrix4x4::glm() const
-{
-	return _glmInternal;
-}
-#endif
 
 /**
  \brief Set the value of a specific matrix element.
@@ -278,12 +188,4 @@ float OMatrix4x4::value(int row, int col) const
 	case 3: return _glmInternal[col].w;
 	default: throw OException("Invalid row index for 4x4 matrix.");
 	}
-}
-
-/**
- \brief Returns a pointer to the memory area to be used by OpenGL.
-*/
-const GLfloat * OMatrix4x4::glArea() const
-{
-	return glm::value_ptr(_glmInternal);
 }
