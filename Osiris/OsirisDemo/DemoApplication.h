@@ -16,6 +16,7 @@ public:
 
 private:
 	OMesh* _cube;
+	OMesh* _torus;
 	OMatrixStack _mtx;
 
 	float _movRadiusA;

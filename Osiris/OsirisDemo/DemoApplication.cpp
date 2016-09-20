@@ -1,4 +1,5 @@
 #include <OsirisSDK/OVertexColorMesh.h>
+#include <OsirisSDK/OWavefrontObjectFile.h>
 
 #include "DemoApplication.h"
 
@@ -8,17 +9,20 @@ const float toRad = 2 * PI / 360.0f;
 
 DemoApplication::DemoApplication(int argc, char **argv) :
 	OApplication("DemoApplication", argc, argv),
-	_cube(NULL)
+	_cube(NULL),
+	_torus(NULL)
 {
 }
 
 DemoApplication::~DemoApplication()
 {
 	delete _cube;
+	delete _torus;
 }
 
 void DemoApplication::init()
 {
+	/* setting up the cube */
 	OVertexColorMesh *cube = new OVertexColorMesh();
 	cube->addVertexData(-0.5f, -0.5f, -0.5f);
 	cube->addVertexData(-0.5f, -0.5f, 0.5f);
@@ -53,8 +57,25 @@ void DemoApplication::init()
 
 	cube->setFaceCulling(true, OMesh::CullFace_Front, OMesh::CullFront_CW);
 
+
+	/* setting up Torus */
+	OVertexColorMesh* torus = new OVertexColorMesh();
+	OWavefrontObjectFile torusFile("Meshes/TestTorus.obj");
+	int objectCount=0;
+	const char **objectList = torusFile.objectList(&objectCount);
+	if (objectCount > 0) torusFile.loadMesh(objectList[0], torus);
+
+	for (int i = 0; i < torus->vertexCount(); i++) {
+		OVector3 v = torus->vertexData(i);
+		torus->addVertexColorData(fabs(v.x()), fabs(v.y()), fabs(v.z()), 1);
+	}
+	torus->init();
+	_torus = torus;
+
+
+	/* camera */
 	camera()->setCameraLimits(1.0f, 10.0f);
-	camera()->setPosition(OVector3(0.0f, 0.0f, -2.0f));
+	camera()->setPosition(OVector3(0.0f, 0.0f, -3.0f));
 	camera()->setDirection(OVector3(0.0f, 0.0f, 1.0f));
 
 	cube->init();
@@ -96,18 +117,19 @@ void DemoApplication::update(int timeIndex_ms)
 	/* Get initial matrix from camera related transforms */
 	_mtx = *(camera()->transform());
 
-	/* render first cube */
+	/* render cube */
 	_mtx.push();
 	_mtx.translate(posA);
 	_mtx.scale(0.5f);
 	_cube->render(&_mtx);
 	_mtx.pop();
 
-	/* render last cube */
+	/* render torus */
 	_mtx.push();
 	_mtx.translate(posB);
-	_mtx.scale(0.5f);
-	_cube->render(&_mtx);
+	_mtx.scale(0.25f);
+	_mtx.rotateX(45.0f);
+	_torus->render(&_mtx);
 	_mtx.pop();
 
 	/* update last time index */

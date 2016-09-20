@@ -1,8 +1,5 @@
 #pragma once
 
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-
 #include "GLdefs.h"
 #include "defs.h"
 
@@ -10,6 +7,7 @@
 #include "OMatrixStack.h"
 #include "OShaderProgram.h"
 #include "OCamera.h"
+#include "OMath.h"
 
 /**
  \brief Base class that represents a group of vertices that together make a geometrical shape.
@@ -27,9 +25,13 @@ public:
 	OShaderProgram* getProgram();
 
 	int vertexCount() const;
+	int faceCount() const;
 
 	void addVertexData(float vx, float vy, float vz);
 	void addIndexData(GLuint vi, GLuint vj, GLuint vk);
+
+	OVector3 vertexData(int idx) const;
+	OVector3 indexData(int idx) const;
 
 	void init();
 	void render(OMatrixStack *mtx);
@@ -64,10 +66,14 @@ protected:
 	OMeshBuffer<float>* vertexBuffer();
 	OMeshBuffer<GLuint>* indexBuffer();
 
+	const OMeshBuffer<float>* vertexBufferConst() const;
+	const OMeshBuffer<GLuint>* indexBufferConst() const;
+
 private:
 	GLuint _vaoObject;
 	
 	int _vertexCount;
+	int _faceCount;
 
 	OMeshBuffer<float> _vertexBuffer;
 	OMeshBuffer<GLuint> _indexBuffer;

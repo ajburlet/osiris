@@ -10,6 +10,7 @@
 OMesh::OMesh(OShaderProgram *program) :
 	_vaoObject(0),
 	_vertexCount(0),
+	_faceCount(0),
 	_program(program),
 	_cullEnabled(false),
 	_cullFace(CullFace_Undefined),
@@ -51,6 +52,14 @@ int OMesh::vertexCount() const
 }
 
 /**
+ \brief Returns the number of faces.
+ */
+int OMesh::faceCount() const
+{
+	return _faceCount;
+}
+
+/**
  \brief Add a vertex.
  \param vx Vertex X axis component.
  \param vy Vertex Y axis component.
@@ -71,6 +80,37 @@ void OMesh::addVertexData(float vx, float vy, float vz)
 void OMesh::addIndexData(GLuint vi, GLuint vj, GLuint vk)
 {
 	_indexBuffer.addData(vi, vj, vk);
+	_faceCount++;
+}
+
+/**
+ \brief Access vertex data.
+ \param idx Vertex index numbrt.
+ \return OVector3 class object containing vector coordinates.
+ */
+OVector3 OMesh::vertexData(int idx) const
+{
+	const float *vb;
+	if (idx >= vertexCount()) throw OException("Attempt to access invalid vertex item.");
+
+	vb = vertexBufferConst()->buffer();
+
+	return OVector3(vb[idx*3], vb[idx*3 + 1], vb[idx*3 + 2]);
+}
+
+/**
+ \brief Access index information.
+ \param idx Face index number.
+ \return OVector3 class object containing face vertex index data. 
+ */
+OVector3 OMesh::indexData(int idx) const
+{
+	const GLuint* ib;
+	if (idx >= faceCount()) throw OException("Attempt to access invalid face item.");
+
+	ib = indexBufferConst()->buffer();
+
+	return OVector3(ib[idx*3], ib[idx*3 + 1], ib[idx*3 + 2]);
 }
 
 /**
@@ -194,6 +234,24 @@ OMeshBuffer<float>* OMesh::vertexBuffer()
  \return Pointer to the mesh index buffer.
 */
 OMeshBuffer<GLuint>* OMesh::indexBuffer()
+{
+	return &_indexBuffer;
+}
+
+/**
+ \brief Read-only method to obtain the vertex buffer
+ \return Const pointer to the mesh vertex buffer.
+ */
+const OMeshBuffer<float>* OMesh::vertexBufferConst() const
+{
+	return &_vertexBuffer;
+}
+
+/**
+ \brief Read-only method to obtain the index buffer
+ \return Const pointer to the mesh index buffer.
+ */
+const OMeshBuffer<GLuint>* OMesh::indexBufferConst() const
 {
 	return &_indexBuffer;
 }
