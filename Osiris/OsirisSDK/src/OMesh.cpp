@@ -27,6 +27,7 @@ OMesh::~OMesh()
 
 /**
  \brief Sets a new shader program to be used to render the object.
+		glTexImage2D()
  \param program Pointer to the new shader program.
 */
 void OMesh::setProgram(OShaderProgram * program)
@@ -110,7 +111,7 @@ OVector3 OMesh::indexData(int idx) const
 
 	ib = indexBufferConst()->buffer();
 
-	return OVector3(ib[idx*3], ib[idx*3 + 1], ib[idx*3 + 2]);
+	return OVector3((float)ib[idx*3], (float)ib[idx*3 + 1], (float)ib[idx*3 + 2]);
 }
 
 /**
@@ -159,8 +160,8 @@ void OMesh::render(OMatrixStack *mtx)
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer.glReference()); 
 
 	/* prepare program -- assign necessary transformations */
-	glUseProgram(_program->glReference());
-	_program->setMatrixTransform(mtx->top());
+	_program->use();
+	glUniformMatrix4fv(_program->uniformLocation("transformMtx"), 1, GL_FALSE, mtx->top().glArea());
 	setupAdditionalShaderLocations();
 
 	/* face culling */

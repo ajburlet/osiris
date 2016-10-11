@@ -77,6 +77,22 @@ OCamera * OApplication::camera()
 }
 
 /**
+ \brief Returns the window width in pixels.
+ */
+int OApplication::windowWidth() const
+{
+	return glutGet(GLUT_WINDOW_WIDTH);
+}
+
+/**
+ \brief Returns the window height in pixels.
+ */
+int OApplication::windowHeight() const
+{
+	return glutGet(GLUT_WINDOW_HEIGHT);
+}
+
+/**
  \brief Initializes the application and starts the main loop.
 */
 void OApplication::start()

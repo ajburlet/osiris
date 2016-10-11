@@ -2,6 +2,7 @@
 
 #include <OsirisSDK/OApplication.h>
 #include <OsirisSDK/OMesh.h>
+#include <OsirisSDK/OText2D.h>
 
 class DemoApplication :	public OApplication
 {
@@ -17,6 +18,7 @@ public:
 private:
 	OMesh* _cube;
 	OMesh* _torus;
+	OText2D* _title;
 	OMatrixStack _mtx;
 
 	float _movRadiusA;

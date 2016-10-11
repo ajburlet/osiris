@@ -22,6 +22,10 @@ DemoApplication::~DemoApplication()
 
 void DemoApplication::init()
 {
+	/* text */
+	_title = new OText2D("cour.ttf", 9, 0, 0, OVector4(0.0f, 1.0f, 0.0f, 0.0f), 2.0f/windowWidth(), 2.0f/windowHeight());
+	_title->setContent("Osiris Framework");
+
 	/* setting up the cube */
 	OVertexColorMesh *cube = new OVertexColorMesh();
 	cube->addVertexData(-0.5f, -0.5f, -0.5f);
@@ -60,7 +64,7 @@ void DemoApplication::init()
 
 	/* setting up Torus */
 	OVertexColorMesh* torus = new OVertexColorMesh();
-	OWavefrontObjectFile torusFile("Meshes/TestTorus.obj");
+	OWavefrontObjectFile torusFile("Meshes/TestTorus.mesh.obj");
 	int objectCount=0;
 	const char **objectList = torusFile.objectList(&objectCount);
 	if (objectCount > 0) torusFile.loadMesh(objectList[0], torus);
@@ -131,6 +135,9 @@ void DemoApplication::update(int timeIndex_ms)
 	_mtx.rotateX(45.0f);
 	_torus->render(&_mtx);
 	_mtx.pop();
+
+	/* render text */
+	_title->render();
 
 	/* update last time index */
 	_last_timeIndex_ms = timeIndex_ms;

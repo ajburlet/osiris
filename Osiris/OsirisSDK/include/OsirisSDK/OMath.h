@@ -8,7 +8,7 @@
 #include <glm/mat4x4.hpp>
 
 /**
- \brief Class the represents three-dimentional vectors.
+ \brief Represents three-dimentional vectors.
 */
 class OAPI OVector3 : public OMathPrimitive<glm::vec3>
 {
@@ -32,7 +32,31 @@ public:
 };
 
 /**
- \brief Class that represents 4x4 matrices.
+ \brief Represents four-dimentional vectors.
+*/
+class OAPI OVector4 : public OMathPrimitive<glm::vec4>
+{
+public:
+	OVector4();
+	OVector4(const OVector4& in);
+	OVector4(float val);
+	OVector4(float vx, float vy, float vz, float vw);
+	OVector4(const OVector3& vec3, float vw=0.0f);
+	virtual ~OVector4();
+
+	void setX(float val);
+	void setY(float val);
+	void setZ(float val);
+	void setW(float val);
+
+	float x() const;
+	float y() const;
+	float z() const;
+	float w() const;
+};
+
+/**
+ \brief Represents 4x4 matrices.
 */
 class OAPI OMatrix4x4 : public OMathPrimitive<glm::mat4x4>
 {

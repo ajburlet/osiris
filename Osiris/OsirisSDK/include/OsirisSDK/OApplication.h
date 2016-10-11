@@ -27,6 +27,9 @@ public:
 
 	OCamera* camera();
 
+	int windowWidth() const;
+	int windowHeight() const;
+
 	void start();
 
 protected:

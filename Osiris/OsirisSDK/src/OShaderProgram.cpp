@@ -31,16 +31,6 @@ GLuint OShaderProgram::glReference() const
 }
 
 /**
- \brief Set matrix for perspective, camera and world transforms.
- \param mtx The matrix that summarizes all perspective, camera and world transforms to be used on
- the vertex shader. 
-*/
-void OShaderProgram::setMatrixTransform(const OMatrix4x4& mtx)
-{
-	glUniformMatrix4fv(_transformMtx, 1, GL_FALSE, mtx.glArea());
-}
-
-/**
  \brief Add a shader object to the program.
  \param shader Pointer to the shader object that will be added.
 */
@@ -63,6 +53,26 @@ void OShaderProgram::addShader(OShaderObject::ShaderType type, const char* name,
 	addShader(obj);
 }
 #endif
+
+/**
+ \brief Get the shader uniform parameter by name.
+ \param uniform_name Name of the uniform parameter.
+ \return The OpenGL reference to the uniform.
+ */
+GLuint OShaderProgram::uniformLocation(const char * uniform_name)
+{
+	return glGetUniformLocation(_program, (const GLchar*)uniform_name);
+}
+
+/**
+ \brief Get the shader attribute by name.
+ \param attrib_name Name of the shader attribute.
+ \return The OpenGL reference to the attribute.
+ */
+GLuint OShaderProgram::attribLocation(const char * attrib_name)
+{
+	return glGetAttribLocation(_program, (const GLchar*)attrib_name);
+}
 
 /**
  \brief Compiles shader objects and links the shader program.
@@ -91,7 +101,11 @@ void OShaderProgram::compile()
 		string errMsg = "Shader link error [" + _programName + "]: " + strInfoLog;
 		throw OException(errMsg.c_str());
 	}
-
-	/* get proper locations */
-	_transformMtx = glGetUniformLocation(_program, "transformMtx");
+}
+/**
+ \brief Tells OpenGL to use the program for the next rendering iteration.
+ */
+void OShaderProgram::use()
+{
+	glUseProgram(_program);
 }

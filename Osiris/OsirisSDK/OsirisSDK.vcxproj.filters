@@ -63,6 +63,9 @@
     <ClInclude Include="include\OsirisSDK\OWavefrontObjectFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\OsirisSDK\OText2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OMatrixStack.cpp">
@@ -95,6 +98,9 @@
     <ClCompile Include="src\OWavefrontObjectFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\OText2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OsirisSDK.rc">
@@ -106,6 +112,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\Fragment-StandardColor.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\Fragment-OText2D.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\Vertex-OText2D.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

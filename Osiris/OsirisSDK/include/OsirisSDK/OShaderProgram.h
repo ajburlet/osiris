@@ -32,14 +32,17 @@ public:
 #ifdef WIN32
 	void addShader(OShaderObject::ShaderType type, const char* name, int resourceId); 
 #endif
+
+	GLuint uniformLocation(const char* uniform_name);
+	GLuint attribLocation(const char* attrib_name);
+
 	void compile();
+	void use();
 
 private:
 	std::string _programName;
 	GLuint _program;
 
 	std::list<OShaderObject*> _shaderList;
-
-	GLuint _transformMtx;
 };
 

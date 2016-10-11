@@ -79,6 +79,7 @@ private:
 	OMeshBuffer<GLuint> _indexBuffer;
 
 	OShaderProgram* _program;
+	GLuint _transformMtxRef;
 
 	bool _cullEnabled;
 	CullFace _cullFace;

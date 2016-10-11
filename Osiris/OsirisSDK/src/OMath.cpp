@@ -122,6 +122,128 @@ float OVector3::z() const
 }
 
 /**
+ \brief Class constructor
+*/
+OVector4::OVector4()
+{
+}
+
+/**
+ \brief Class copy constructor.
+*/
+OVector4::OVector4(const OVector4 & in) :
+	OMathPrimitive<glm::vec4>(in)
+{
+}
+
+/**
+ \brief Class constructor.
+ 
+ Creates a OVector4 with all components with the same value.
+ 
+ \param val The value to be used by all of the three components.
+*/
+OVector4::OVector4(float val)
+{
+	_glmInternal = glm::vec4(val);
+}
+
+/**
+ \brief Class constructor.
+
+ Creates a OVector4 taking in the values for each component. 
+*/
+OVector4::OVector4(float vx, float vy, float vz, float vw)
+{
+	_glmInternal = glm::vec4(vx, vy, vz, vw);
+}
+
+/**
+ \brief Class constructor.
+ 
+ Creates a OVector4 from a OVector3 object, in which the X,Y and Z components
+ will receive the values from the three-dimensional vectors.
+ */
+OVector4::OVector4(const OVector3 & vec3, float vw)
+{
+	_glmInternal.x = vec3.x();
+	_glmInternal.y = vec3.y();
+	_glmInternal.z = vec3.z();
+	_glmInternal.w = vw;
+}
+
+/**
+ \brief Class destructor.
+*/
+OVector4::~OVector4()
+{
+}
+
+/**
+ \brief Set the value for the X axis component.
+*/
+void OVector4::setX(float val)
+{
+	_glmInternal.x = val;
+}
+
+/**
+ \brief Set the value for the Y axis component.
+*/
+void OVector4::setY(float val)
+{
+	_glmInternal.y = val;
+}
+
+/**
+ \brief Set the value for the Z axis component.
+*/
+void OVector4::setZ(float val)
+{
+	_glmInternal.z = val;
+}
+
+/**
+ \brief Set the value for the W axis component.
+*/
+void OVector4::setW(float val)
+{
+	_glmInternal.w = val;
+}
+
+/**
+ \brief Returns the value of the X axis component.
+*/
+float OVector4::x() const
+{
+	return _glmInternal.x;
+}
+
+/**
+ \brief Returns the value of the Y axis component.
+*/
+float OVector4::y() const
+{
+	return _glmInternal.y;
+}
+
+/**
+ \brief Returns the value of the Z axis component.
+*/
+float OVector4::z() const
+{
+	return _glmInternal.z;
+}
+
+/**
+ \brief Returns the value of the W axis component.
+*/
+float OVector4::w() const
+{
+	return _glmInternal.w;
+}
+
+/**
  \brief Class constructor.
 */
 OMatrix4x4::OMatrix4x4()

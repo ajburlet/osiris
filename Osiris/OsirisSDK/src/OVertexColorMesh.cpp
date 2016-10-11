@@ -14,6 +14,8 @@ OVertexColorMesh::OVertexColorMesh() : OMesh()
 #ifdef WIN32
 		_colorVertexProgram->addShader(OShaderObject::ShaderType_Vertex, "VertexSmoothColor", IDR_SHADER_VERTEX_SMOOTHCOLOR);
 		_colorVertexProgram->addShader(OShaderObject::ShaderType_Fragment, "FragmentStandardColor", IDR_SHADER_FRAGMENT_STANDARDCOLOR);
+#else
+#error Embedded shader still needs to be addressed for non-Windows platforms.
 #endif
 		_colorVertexProgram->compile();
 	}
