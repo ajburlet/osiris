@@ -19,6 +19,8 @@ private:
 	OMesh* _cube;
 	OMesh* _torus;
 	OText2D* _title;
+	OText2D* _fpsText;
+	OText2D* _cameraText;
 	OMatrixStack _mtx;
 
 	float _movRadiusA;

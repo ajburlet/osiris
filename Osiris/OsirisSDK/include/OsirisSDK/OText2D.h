@@ -43,6 +43,7 @@ public:
 	void render();
 
 private:
+	GLuint _arrayObject;
 	GLuint _arrayBuffer;
 	std::string _fontName;
 	unsigned int _fontSize;

@@ -40,6 +40,7 @@ OText2D::OText2D(const char *fontName, unsigned int fontSize, float x, float y, 
 	if (content != NULL) _content = content;
 	setFont(fontName, fontSize);
 	glGenBuffers(1, &_arrayBuffer);
+	glGenVertexArrays(1, &_arrayObject);
 }
 
 /**
@@ -49,6 +50,7 @@ OText2D::~OText2D()
 {
 	if (&_face != NULL) FT_Done_Face(_face);
 	glDeleteBuffers(1, &_arrayBuffer);
+	glDeleteVertexArrays(1, &_arrayObject);
 }
 
 /**
@@ -62,8 +64,12 @@ void OText2D::setFont(const char * fontName, unsigned int fontSize)
 {
 #ifdef WIN32
 	char *windir;
+	struct stat st;
+
 	_dupenv_s(&windir, NULL, "WINDIR");
-	if (windir != NULL && strchr(fontName, '/') != 0 && strchr(fontName, '\\') != 0) {
+
+	/* if the local file exists, or the fontName refers to a full path or no WINDIR variable is set */
+	if (stat(fontName, &st) == 0 || (strchr(fontName, '/') != 0 && strchr(fontName, '\\') != 0) || !windir) {
 		_fontName = fontName;
 	} else {
 		_fontName = string(windir) + "/fonts/" + fontName;
@@ -74,7 +80,9 @@ void OText2D::setFont(const char * fontName, unsigned int fontSize)
 
 	_fontSize = fontSize;
 	if (&_face != NULL) FT_Done_Face(_face);
-	if (FT_New_Face(_library, _fontName.c_str(), 0, &_face) != 0) throw OException("Unable to open font.");
+	if (FT_New_Face(_library, _fontName.c_str(), 0, &_face) != 0) {
+		throw OException("Unable to open font.");
+	}
 	if (FT_Set_Pixel_Sizes(_face, 0, _fontSize) != 0) throw OException("Unable to set font size.");
 }
 
@@ -199,8 +207,15 @@ void OText2D::render()
 {
 	FT_GlyphSlot g = _face->glyph;
 
+	/* enabling array object */
+	glBindVertexArray(_arrayObject);
+
 	/* we use the specific shader program */
 	_shaderProgram->use();
+
+	/* enable blending */
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	/* let us define the texture that will hold the glyph */
 	GLuint tex;
@@ -221,9 +236,12 @@ void OText2D::render()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	/* now we enable attribute array and prepare the vertex array buffer */
-	glEnableVertexAttribArray(_shaderCoordAttr);
 	glBindBuffer(GL_ARRAY_BUFFER, _arrayBuffer);
+	glEnableVertexAttribArray(_shaderCoordAttr);
 	glVertexAttribPointer(_shaderCoordAttr, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+	/* set font color */
+	glUniform4fv(_shaderColorUniform, 1, _fontColor.glArea());
 
 	/* now we iterate through every character and render */
 	float currX = _x;
@@ -233,19 +251,19 @@ void OText2D::render()
 		if (FT_Load_Char(_face, *p, FT_LOAD_RENDER) != 0) continue;
 
 		/* Let us upload the texture to be used on the surface of the box -- glyph */
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, g->bitmap.width, g->bitmap.rows, 0, GL_ALPHA, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, g->bitmap.width, g->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
 
 		/* now we estabilish the vertices that will delimeter the character box */
-		float x2 = currX + g->bitmap_left*_scale_x;
-		float y2 = currY + g->bitmap_top*_scale_y;
-		float w = g->bitmap.width*_scale_x;
-		float h = g->bitmap.rows*_scale_y;
+		float x2 = currX + g->bitmap_left * _scale_x;
+		float y2 = currY - g->bitmap_top * _scale_y;
+		float w = g->bitmap.width * _scale_x;
+		float h = g->bitmap.rows * _scale_y;
 
 		GLfloat boxVertices[4][4] = {
-			{x2,	y2,	0,	0},
-			{x2 + w,y2,	1,	0},
-			{x2,	y2 + h,	0,	1},
-			{x2 + w,y2 + h,	1,	1}
+			{ x2, -y2, 0, 0 },
+			{ x2 + w, -y2, 1, 0 },
+			{ x2, -y2 - h, 0, 1 },
+			{ x2 + w, -y2 - h, 1, 1 },
 		};
 
 		/* draw */
@@ -257,8 +275,11 @@ void OText2D::render()
 		currY += (g->advance.y >> 6) * _scale_y;
 	}
 
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(_shaderCoordAttr);
 	glDeleteTextures(1, &tex);
+
+	glBindVertexArray(0);
 }
 
 /**
@@ -277,8 +298,13 @@ void OText2D::_Init()
 #endif
 		_shaderProgram->compile();
 
-		_shaderCoordAttr = _shaderProgram->attribLocation("coord");
+		_shaderCoordAttr = _shaderProgram->attribLocation("position");
 		_shaderTexUniform = _shaderProgram->uniformLocation("tex");
 		_shaderColorUniform = _shaderProgram->uniformLocation("color");
+		
+		/*
+		if (_shaderCoordAttr == -1 || _shaderTexUniform == -1 || _shaderColorUniform == -1)
+			throw OException("Error accessing text shader parameters.");
+		*/
 	}
 }

@@ -18,13 +18,18 @@ DemoApplication::~DemoApplication()
 {
 	delete _cube;
 	delete _torus;
+	delete _title;
+	delete _fpsText;
+	delete _cameraText;
 }
 
 void DemoApplication::init()
 {
 	/* text */
-	_title = new OText2D("cour.ttf", 9, 0, 0, OVector4(0.0f, 1.0f, 0.0f, 0.0f), 2.0f/windowWidth(), 2.0f/windowHeight());
+	_title = new OText2D("cour.ttf", 12, -1.0f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f/windowWidth(), 2.0f/windowHeight());
 	_title->setContent("Osiris Framework");
+	_fpsText = new OText2D("cour.ttf", 12, 0.8f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f / windowWidth(), 2.0f / windowHeight());
+	_cameraText = new OText2D("cour.ttf", 12, -1.0f, 0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f / windowWidth(), 2.0f / windowHeight());
 
 	/* setting up the cube */
 	OVertexColorMesh *cube = new OVertexColorMesh();
@@ -61,6 +66,9 @@ void DemoApplication::init()
 
 	cube->setFaceCulling(true, OMesh::CullFace_Front, OMesh::CullFront_CW);
 
+	cube->init();
+	_cube = cube;
+
 
 	/* setting up Torus */
 	OVertexColorMesh* torus = new OVertexColorMesh();
@@ -82,10 +90,6 @@ void DemoApplication::init()
 	camera()->setPosition(OVector3(0.0f, 0.0f, -3.0f));
 	camera()->setDirection(OVector3(0.0f, 0.0f, 1.0f));
 
-	cube->init();
-
-	_cube = cube;
-
 	_movRadiusA = 1.0f;
 	_movRadiusB = 1.0f;
 	_thetaA = 0;
@@ -102,6 +106,16 @@ void DemoApplication::update(int timeIndex_ms)
 	OVector3 posA(0.0f);
 	OVector3 posB(0.0f);
 	int deltaTime_ms = timeIndex_ms - _last_timeIndex_ms;
+	char fpsBuff[32];
+	char cameraBuff[128];
+
+	/* calculate FPS and update the text object (to show on the screen) */
+	snprintf(fpsBuff, 32, "%.02f fps", 1 / ((float)deltaTime_ms / 1000));
+	_fpsText->setContent(fpsBuff);
+	snprintf(cameraBuff, 128, "Camera @ (%.02f, %.02f, %.02f), direction: (%.02f, %.02f, %.02f)",
+		camera()->position().x(), camera()->position().y(), camera()->position().z(),
+		camera()->direction().x(), camera()->direction().y(), camera()->direction().z());
+	_cameraText->setContent(cameraBuff);
 
 	/* calculating new positions */
 	if (!_pauseFlag) {
@@ -138,6 +152,8 @@ void DemoApplication::update(int timeIndex_ms)
 
 	/* render text */
 	_title->render();
+	_fpsText->render();
+	//_cameraText->render();
 
 	/* update last time index */
 	_last_timeIndex_ms = timeIndex_ms;
