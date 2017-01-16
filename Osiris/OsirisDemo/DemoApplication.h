@@ -18,6 +18,7 @@ public:
 private:
 	OMesh* _cube;
 	OMesh* _torus;
+	OFont *_fontCourier;
 	OText2D* _title;
 	OText2D* _fpsText;
 	OText2D* _cameraText;

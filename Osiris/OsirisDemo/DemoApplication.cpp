@@ -26,10 +26,11 @@ DemoApplication::~DemoApplication()
 void DemoApplication::init()
 {
 	/* text */
-	_title = new OText2D("cour.ttf", 12, -1.0f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f/windowWidth(), 2.0f/windowHeight());
+	_fontCourier = new OFont("cour.ttf");
+	_title = new OText2D(_fontCourier, 12, -1.0f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f/windowWidth(), 2.0f/windowHeight());
 	_title->setContent("Osiris Framework");
-	_fpsText = new OText2D("cour.ttf", 12, 0.8f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f / windowWidth(), 2.0f / windowHeight());
-	_cameraText = new OText2D("cour.ttf", 12, -1.0f, 0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f / windowWidth(), 2.0f / windowHeight());
+	_fpsText = new OText2D(_fontCourier, 12, 0.8f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f / windowWidth(), 2.0f / windowHeight());
+	_cameraText = new OText2D(_fontCourier, 12, -1.0f, 0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f / windowWidth(), 2.0f / windowHeight());
 
 	/* setting up the cube */
 	OVertexColorMesh *cube = new OVertexColorMesh();
@@ -153,7 +154,7 @@ void DemoApplication::update(int timeIndex_ms)
 	/* render text */
 	_title->render();
 	_fpsText->render();
-	//_cameraText->render();
+	_cameraText->render();
 
 	/* update last time index */
 	_last_timeIndex_ms = timeIndex_ms;

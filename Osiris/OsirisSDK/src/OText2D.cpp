@@ -10,7 +10,7 @@
 
 using namespace std;
 
-FT_Library OText2D::_library = NULL;
+bool OText2D::_initialized = false;
 OShaderProgram* OText2D::_shaderProgram = NULL;
 GLuint OText2D::_shaderCoordAttr;
 GLuint OText2D::_shaderTexUniform;
@@ -18,7 +18,7 @@ GLuint OText2D::_shaderColorUniform;
 
 /**
  \brief Class constructor.
- \param fontName Font file name.
+ \param font Object containing font definitions and cache.
  \param fontSize Font height in pixels.
  \param x Position of the beggining of the text box in the X axis.
  \param y Position of the beggining of the text box in the Y axis.
@@ -26,19 +26,19 @@ GLuint OText2D::_shaderColorUniform;
  \param scale_y Vertical size component.
  \param content Text conte
  */
-OText2D::OText2D(const char *fontName, unsigned int fontSize, float x, float y, const OVector4& color,
+OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVector4& color,
 		 float scale_x, float scale_y, const char* content) :
 	_x(x),
 	_y(y),
+	_font(font),
+	_fontSize(fontSize),
 	_fontColor(color),
 	_scale_x(scale_x),
-	_scale_y(scale_y),
-	_face(NULL)
+	_scale_y(scale_y)
 {
 	_Init();
 
 	if (content != NULL) _content = content;
-	setFont(fontName, fontSize);
 	glGenBuffers(1, &_arrayBuffer);
 	glGenVertexArrays(1, &_arrayObject);
 }
@@ -48,50 +48,25 @@ OText2D::OText2D(const char *fontName, unsigned int fontSize, float x, float y, 
  */
 OText2D::~OText2D()
 {
-	if (&_face != NULL) FT_Done_Face(_face);
 	glDeleteBuffers(1, &_arrayBuffer);
 	glDeleteVertexArrays(1, &_arrayObject);
 }
 
 /**
- \brief Set font file and size.
- \param fontName Name of the font file. In Windows, it will try to open from the 
-		 default font directory first (%WINDIR%/fonts), unless a full or
-		 relative path is specified.
- \param fontSize Size of the font.
+ \brief Sets font class and size.
  */
-void OText2D::setFont(const char * fontName, unsigned int fontSize)
+void OText2D::setFont(OFont * font, unsigned int fontSize)
 {
-#ifdef WIN32
-	char *windir;
-	struct stat st;
-
-	_dupenv_s(&windir, NULL, "WINDIR");
-
-	/* if the local file exists, or the fontName refers to a full path or no WINDIR variable is set */
-	if (stat(fontName, &st) == 0 || (strchr(fontName, '/') != 0 && strchr(fontName, '\\') != 0) || !windir) {
-		_fontName = fontName;
-	} else {
-		_fontName = string(windir) + "/fonts/" + fontName;
-	}
-#else
-	_fontName = fontName;
-#endif
-
+	_font = font;
 	_fontSize = fontSize;
-	if (&_face != NULL) FT_Done_Face(_face);
-	if (FT_New_Face(_library, _fontName.c_str(), 0, &_face) != 0) {
-		throw OException("Unable to open font.");
-	}
-	if (FT_Set_Pixel_Sizes(_face, 0, _fontSize) != 0) throw OException("Unable to set font size.");
 }
 
 /**
  \brief Returns the font file being used.
  */
-const char * OText2D::fontName() const
+OFont * OText2D::font() const
 {
-	return _fontName.c_str();
+	return _font;
 }
 
 /**
@@ -109,6 +84,7 @@ unsigned int OText2D::fontSize() const
  */
 void OText2D::setFontColor(const OVector4 & color)
 {
+	_fontColor = color;
 }
 
 /**
@@ -123,7 +99,7 @@ OVector4 OText2D::fontColor() const
 /**
  \brief Sets the position of the text box.
  \param x Position of the text box on the X axis in pixels.
- \para, y Position of the text box on the Y axis in pixels.
+ \param y Position of the text box on the Y axis in pixels.
  */
 void OText2D::setPosition(float x, float y)
 {
@@ -205,8 +181,6 @@ const char * OText2D::content() const
  */
 void OText2D::render()
 {
-	FT_GlyphSlot g = _face->glyph;
-
 	/* enabling array object */
 	glBindVertexArray(_arrayObject);
 
@@ -218,22 +192,7 @@ void OText2D::render()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	/* let us define the texture that will hold the glyph */
-	GLuint tex;
-	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(_shaderTexUniform, 0);
-
-	/* We require 1 byte alignment when uploading texture data */
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	/* Clamping to edges is important to prevent artifacts when scaling */
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	/* Linear filtering usually looks best for text */
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	/* now we enable attribute array and prepare the vertex array buffer */
 	glBindBuffer(GL_ARRAY_BUFFER, _arrayBuffer);
@@ -247,17 +206,19 @@ void OText2D::render()
 	float currX = _x;
 	float currY = _y;
 	for (const char *p = _content.c_str(); *p != '\0'; p++) {
-		/* Load the char from FreeType library, ignore on failure */
-		if (FT_Load_Char(_face, *p, FT_LOAD_RENDER) != 0) continue;
+		/* Get font data */
+		const OFont::CacheEntry *fEntry = _font->entry(*p, _fontSize);
+		if (fEntry == NULL) throw OException("Failed to load full font charset.");
 
-		/* Let us upload the texture to be used on the surface of the box -- glyph */
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, g->bitmap.width, g->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+		/* Activate the texture unit 0 and bind the font texture */ 
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, fEntry->texId);
 
 		/* now we estabilish the vertices that will delimeter the character box */
-		float x2 = currX + g->bitmap_left * _scale_x;
-		float y2 = currY - g->bitmap_top * _scale_y;
-		float w = g->bitmap.width * _scale_x;
-		float h = g->bitmap.rows * _scale_y;
+		float x2 = currX + fEntry->left * _scale_x;
+		float y2 = currY - fEntry->top * _scale_y;
+		float w = fEntry->width * _scale_x;
+		float h = fEntry->rows * _scale_y;
 
 		GLfloat boxVertices[4][4] = {
 			{ x2, -y2, 0, 0 },
@@ -271,14 +232,12 @@ void OText2D::render()
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		
 		/* move the cursor */
-		currX += (g->advance.x >> 6) * _scale_x;
-		currY += (g->advance.y >> 6) * _scale_y;
+		currX += (fEntry->advance_x >> 6) * _scale_x;
+		currY += (fEntry->advance_y >> 6) * _scale_y;
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(_shaderCoordAttr);
-	glDeleteTextures(1, &tex);
-
 	glBindVertexArray(0);
 }
 
@@ -287,8 +246,7 @@ void OText2D::render()
  */
 void OText2D::_Init()
 {
-	if (!_library) {
-		if (FT_Init_FreeType(&_library) != 0) throw OException("Failed to load FreeType library.");
+	if (!_initialized) {
 		_shaderProgram = new OShaderProgram("OText2DRenderer");
 #ifdef WIN32
 		_shaderProgram->addShader(OShaderObject::ShaderType_Vertex, "Vertex-OText2D", IDR_SHADER_VERTEX_OTEXT2D);
@@ -302,9 +260,7 @@ void OText2D::_Init()
 		_shaderTexUniform = _shaderProgram->uniformLocation("tex");
 		_shaderColorUniform = _shaderProgram->uniformLocation("color");
 		
-		/*
-		if (_shaderCoordAttr == -1 || _shaderTexUniform == -1 || _shaderColorUniform == -1)
-			throw OException("Error accessing text shader parameters.");
-		*/
+		//if (_shaderCoordAttr == -1 || _shaderTexUniform == -1 || _shaderColorUniform == -1)
+		//	throw OException("Error accessing text shader parameters.");
 	}
 }

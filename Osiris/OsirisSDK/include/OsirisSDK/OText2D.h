@@ -1,13 +1,12 @@
 #pragma once
 
 #include <string>
+#include <map>
 
 #include "OMath.h"
 #include "OShaderProgram.h"
+#include "OFont.h"
 #include "defs.h"
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 /**
  \brief Two-dimensional text handling class.
@@ -17,12 +16,12 @@
 class OAPI OText2D
 {
 public:
-	OText2D(const char *fontName, unsigned int fontSize, float x, float y, const OVector4& color = OVector4(1.0f),
+	OText2D(OFont *font, unsigned int fontSize, float x, float y, const OVector4& color = OVector4(1.0f),
 		float scale_x=1, float scale_y=1, const char* content=NULL);
 	virtual ~OText2D();
 
-	void setFont(const char *fontName, unsigned int fontSize);
-	const char* fontName() const;
+	void setFont(OFont* font, unsigned int fontSize);
+	OFont* font() const;
 	unsigned int fontSize() const;
 
 	void setFontColor(const OVector4& color);
@@ -45,7 +44,7 @@ public:
 private:
 	GLuint _arrayObject;
 	GLuint _arrayBuffer;
-	std::string _fontName;
+	OFont* _font;
 	unsigned int _fontSize;
 	OVector4 _fontColor;
 	float _x;
@@ -54,10 +53,8 @@ private:
 	float _scale_y;
 	std::string _content;
 
-	FT_Face _face;
-
 	/* static properties and methods */
-	static FT_Library _library;
+	static bool _initialized;
 	static OShaderProgram *_shaderProgram;
 	static GLuint _shaderCoordAttr;
 	static GLuint _shaderTexUniform;
