@@ -37,6 +37,7 @@ protected:
 	virtual void clearScreen();
 	virtual void update(int timeIndex_ms) = 0;
 	virtual void onKeyboardPress(unsigned char key, int mouse_x, int mouse_y);
+	virtual void onMouseClick(int button, int state, int x, int y);
 	void onWindowResize(int width, int height);
 
 private:
@@ -44,6 +45,7 @@ private:
 	OCamera _cam;
 
 	static void keyboardCallback(unsigned char key, int mouse_x, int mouse_y);
+	static void mouseCallback(int button, int state, int x, int y);
 	static void resizeCallback(int width, int height);
 	static void displayCallback();
 };

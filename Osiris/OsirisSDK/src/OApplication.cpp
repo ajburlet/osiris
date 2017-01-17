@@ -49,6 +49,7 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 	/* setup callbacks */
 	glutDisplayFunc(displayCallback);
 	glutKeyboardFunc(keyboardCallback);
+	glutMouseFunc(mouseCallback);
 	glutReshapeFunc(resizeCallback);
 
 	/* z-buffer */
@@ -114,10 +115,21 @@ void OApplication::clearScreen()
 /**
  \brief Virtual method to process key strokes.
  \param key ASCII key code.
- \param mouse_x Position in the X axis of the mouse pointer.
- \param mouse_y Position in the Y axis of the mouse pointer.
+ \param mouse_x Position in the X axis of the mouse pointer (in pixels).
+ \param mouse_y Position in the Y axis of the mouse pointer (in pixels).
 */
 void OApplication::onKeyboardPress(unsigned char key, int mouse_x, int mouse_y)
+{
+}
+
+/**
+ \brief Virtual method to process mouse button clicks.
+ \param button Mouse button that was clicked (GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON or GLUT_RIGHT_BUTTON).
+ \param state State of the button, GLUT_UP for release and GLUT_DOWN for press.
+ \param x Position in the X axis of the mouse pointer (in pixels).
+ \param y Position in the Y axis of the mouse pointer (in pixels).
+ */
+void OApplication::onMouseClick(int button, int state, int x, int y)
 {
 }
 
@@ -136,6 +148,11 @@ void OApplication::onWindowResize(int width, int height)
 void OApplication::keyboardCallback(unsigned char key, int mouse_x, int mouse_y)
 {
 	_activeInstance->onKeyboardPress(key, mouse_x, mouse_y);
+}
+
+void OApplication::mouseCallback(int button, int state, int x, int y)
+{
+	_activeInstance->onMouseClick(button, state, x, y);
 }
 
 void OApplication::resizeCallback(int width, int height)
