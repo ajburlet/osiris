@@ -158,6 +158,7 @@
     <ClInclude Include="include\OsirisSDK\GLdefs.h" />
     <ClInclude Include="include\OsirisSDK\OApplication.h" />
     <ClInclude Include="include\OsirisSDK\OCamera.h" />
+    <ClInclude Include="include\OsirisSDK\OEvent.h" />
     <ClInclude Include="include\OsirisSDK\OException.h" />
     <ClInclude Include="include\OsirisSDK\OFont.h" />
     <ClInclude Include="include\OsirisSDK\OMath.h" />
@@ -175,6 +176,7 @@
   <ItemGroup>
     <ClCompile Include="src\OApplication.cpp" />
     <ClCompile Include="src\OCamera.cpp" />
+    <ClCompile Include="src\OEvent.cpp" />
     <ClCompile Include="src\OException.cpp" />
     <ClCompile Include="src\OFont.cpp" />
     <ClCompile Include="src\OMath.cpp" />
