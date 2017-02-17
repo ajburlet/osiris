@@ -4,6 +4,7 @@
 #endif
 
 #include "OsirisSDK/OText2D.h"
+#include "OsirisSDK/OApplication.h"
 #include "OsirisSDK/OException.h"
 
 #include "resource.h"
@@ -22,23 +23,25 @@ GLuint OText2D::_shaderColorUniform;
  \param fontSize Font height in pixels.
  \param x Position of the beggining of the text box in the X axis.
  \param y Position of the beggining of the text box in the Y axis.
- \param scale_x Horizontal size component.
- \param scale_y Vertical size component.
  \param content Text conte
  */
 OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVector4& color,
-		 float scale_x, float scale_y, const char* content) :
+		 const char* content) :
 	_x(x),
 	_y(y),
 	_font(font),
 	_fontSize(fontSize),
-	_fontColor(color),
-	_scale_x(scale_x),
-	_scale_y(scale_y)
+	_fontColor(color)
 {
 	_Init();
 
 	if (content != NULL) _content = content;
+
+	_scale_x = 2.0f / OApplication::activeInstance()->windowWidth();
+	_scale_y = 2.0f / OApplication::activeInstance()->windowHeight();
+
+	OApplication::activeInstance()->addEventRecipient(OEvent::ResizeEvent, this);
+
 	glGenBuffers(1, &_arrayBuffer);
 	glGenVertexArrays(1, &_arrayObject);
 }
@@ -239,6 +242,12 @@ void OText2D::render()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(_shaderCoordAttr);
 	glBindVertexArray(0);
+}
+
+void OText2D::onScreenResize(const OResizeEvent * evt)
+{
+	_scale_x = 2.0f / evt->width();
+	_scale_y = 2.0f / evt->height();
 }
 
 /**

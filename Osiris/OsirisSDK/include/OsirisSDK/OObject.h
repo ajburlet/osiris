@@ -23,6 +23,6 @@ public:
 
 	virtual void onKeyboardPress(const OKeyboardPressEvent* evt);
 	virtual void onMouseClickEvent(const OMouseClickEvent* evt);
-	virtual void onResizeEvent(const OResizeEvent* evt);
+	virtual void onScreenResize(const OResizeEvent* evt);
 
 };

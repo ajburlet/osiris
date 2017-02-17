@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 
+#include "OObject.h"
 #include "OMath.h"
 #include "OShaderProgram.h"
 #include "OFont.h"
@@ -13,11 +14,10 @@
 
  This class enabled the rendering of text on the screen.
  */
-class OAPI OText2D
+class OAPI OText2D : public OObject
 {
 public:
-	OText2D(OFont *font, unsigned int fontSize, float x, float y, const OVector4& color = OVector4(1.0f),
-		float scale_x=1, float scale_y=1, const char* content=NULL);
+	OText2D(OFont *font, unsigned int fontSize, float x, float y, const OVector4& color = OVector4(1.0f), const char* content=NULL);
 	virtual ~OText2D();
 
 	void setFont(OFont* font, unsigned int fontSize);
@@ -41,6 +41,8 @@ public:
 	
 	void render();
 
+	/* inherited from OOBject */
+	void onScreenResize(const OResizeEvent* evt);
 private:
 	GLuint _arrayObject;
 	GLuint _arrayBuffer;

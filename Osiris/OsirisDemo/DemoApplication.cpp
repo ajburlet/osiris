@@ -30,10 +30,10 @@ void DemoApplication::init()
 
 	/* text */
 	_fontCourier = new OFont("cour.ttf");
-	_title = new OText2D(_fontCourier, 12, -1.0f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f/windowWidth(), 2.0f/windowHeight());
+	_title = new OText2D(_fontCourier, 12, -1.0f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	_title->setContent("Osiris Framework");
-	_fpsText = new OText2D(_fontCourier, 12, 0.8f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f / windowWidth(), 2.0f / windowHeight());
-	_cameraText = new OText2D(_fontCourier, 12, -1.0f, 0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f / windowWidth(), 2.0f / windowHeight());
+	_fpsText = new OText2D(_fontCourier, 12, 0.8f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_cameraText = new OText2D(_fontCourier, 12, -1.0f, 0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 
 	/* setting up the cube */
 	OVertexColorMesh *cube = new OVertexColorMesh();

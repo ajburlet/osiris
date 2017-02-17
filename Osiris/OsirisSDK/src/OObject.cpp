@@ -36,7 +36,7 @@ void OObject::processEvent(const OEvent * evt)
 	switch (evt->type()) {
 	case OEvent::KeyboardPressEvent:	onKeyboardPress((OKeyboardPressEvent*)evt);	break;
 	case OEvent::MouseClickEvent:		onMouseClickEvent((OMouseClickEvent*)evt);	break;
-	case OEvent::ResizeEvent:		onResizeEvent((OResizeEvent*)evt);		break;
+	case OEvent::ResizeEvent:		onScreenResize((OResizeEvent*)evt);		break;
 	}
 }
 
@@ -69,6 +69,6 @@ void OObject::onMouseClickEvent(const OMouseClickEvent * evt)
 
  \param evt Screen resize event object.
  */
-void OObject::onResizeEvent(const OResizeEvent * evt)
+void OObject::onScreenResize(const OResizeEvent * evt)
 {
 }
