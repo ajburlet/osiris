@@ -1,10 +1,14 @@
 #pragma once
 
 #include <string>
+#include <list>
+#include <queue>
 
 #include "defs.h"
 #include "OCamera.h"
 #include "OMath.h"
+#include "OObject.h"
+#include "OEvent.h"
 
 #define OAPPLICATION_DEFAULT_POSX	200
 #define OAPPLICATION_DEFAULT_POSY	200
@@ -30,19 +34,29 @@ public:
 	int windowWidth() const;
 	int windowHeight() const;
 
+	void addEventRecipient(OEvent::EventType eventType, OObject* recipient);
+	void removeEventRecipient(OEvent::EventType eventType, OObject* recipient);
+
 	void start();
+
+	void scheduleDelete(OObject* obj);
+
+	static OApplication* activeInstance();
 
 protected:
 	virtual void init() = 0;
 	virtual void clearScreen();
+	void queueEvent(OEvent* evt);
+	void processEvents();
+	void deleteObjects();
 	virtual void update(int timeIndex_ms) = 0;
-	virtual void onKeyboardPress(unsigned char key, int mouse_x, int mouse_y);
-	virtual void onMouseClick(int button, int state, int x, int y);
-	void onWindowResize(int width, int height);
 
 private:
 	static OApplication* _activeInstance;
 	OCamera _cam;
+	std::map<OObject*, int> _deleteList;
+	std::map<OEvent::EventType, std::list<OObject*> > _eventRecipients;
+	std::queue<OEvent*> _eventQueue;
 
 	static void keyboardCallback(unsigned char key, int mouse_x, int mouse_y);
 	static void mouseCallback(int button, int state, int x, int y);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "defs.h"
-#include <gl/freeglut.h>
+#include "GLdefs.h" 
 
 /**
  \brief Base event class.
@@ -29,6 +29,7 @@ private:
  */
 class OAPI OKeyboardPressEvent : public OEvent
 {
+public:
 	enum KeyCode {
 		OKey_Backspace=8,
 		OKey_Tab=9,

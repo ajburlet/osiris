@@ -25,6 +25,9 @@ DemoApplication::~DemoApplication()
 
 void DemoApplication::init()
 {
+	/* subscribe to keyboard event */
+	addEventRecipient(OEvent::KeyboardPressEvent, this);
+
 	/* text */
 	_fontCourier = new OFont("cour.ttf");
 	_title = new OText2D(_fontCourier, 12, -1.0f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f), 2.0f/windowWidth(), 2.0f/windowHeight());
@@ -160,7 +163,7 @@ void DemoApplication::update(int timeIndex_ms)
 	_last_timeIndex_ms = timeIndex_ms;
 }
 
-void DemoApplication::onKeyboardPress(unsigned char key, int mouse_x, int mouse_y)
+void DemoApplication::onKeyboardPress(const OKeyboardPressEvent *evt)
 {
-	if (key == ' ') _pauseFlag = !_pauseFlag;
+	if (evt->code() == OKeyboardPressEvent::OKey_Space) _pauseFlag = !_pauseFlag;
 }

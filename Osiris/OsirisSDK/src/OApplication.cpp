@@ -3,7 +3,6 @@
 #include "OsirisSDK/OApplication.h"
 
 #include <glload/gl_load.hpp>
-#include <gl/freeglut.h>
 
 using namespace std;
 
@@ -94,12 +93,46 @@ int OApplication::windowHeight() const
 }
 
 /**
+ \brief Adds an OObject class object as event recipient for given type.
+ \param eventType Event type.
+ \param recipient Object that will receive the events.
+ */
+void OApplication::addEventRecipient(OEvent::EventType eventType, OObject * recipient)
+{
+	_eventRecipients[eventType].push_back(recipient);
+}
+
+/**
+ \brief Removes an OObject class object as event recipient for given type.
+ \param eventType Event type.
+ \param recipient Object that will receive the events.
+ */
+void OApplication::removeEventRecipient(OEvent::EventType eventType, OObject * recipient)
+{
+	_eventRecipients[eventType].remove(recipient);
+}
+
+/**
  \brief Initializes the application and starts the main loop.
 */
 void OApplication::start()
 {
 	init();
 	glutMainLoop();
+}
+
+/**
+ \brief Schedule an object for deletion at the end of the current loop.
+ */
+void OApplication::scheduleDelete(OObject * obj)
+{
+	map<OObject*, int>::iterator it;
+	if ((it = _deleteList.find(obj)) != _deleteList.end()) _deleteList[obj] = 1;
+}
+
+OApplication * OApplication::activeInstance()
+{
+	return _activeInstance;
 }
 
 /**
@@ -113,59 +146,69 @@ void OApplication::clearScreen()
 }
 
 /**
- \brief Virtual method to process key strokes.
- \param key ASCII key code.
- \param mouse_x Position in the X axis of the mouse pointer (in pixels).
- \param mouse_y Position in the Y axis of the mouse pointer (in pixels).
-*/
-void OApplication::onKeyboardPress(unsigned char key, int mouse_x, int mouse_y)
-{
-}
-
-/**
- \brief Virtual method to process mouse button clicks.
- \param button Mouse button that was clicked (GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON or GLUT_RIGHT_BUTTON).
- \param state State of the button, GLUT_UP for release and GLUT_DOWN for press.
- \param x Position in the X axis of the mouse pointer (in pixels).
- \param y Position in the Y axis of the mouse pointer (in pixels).
+ \brief Queue event to be processed by the application and the subscribed OOBject class objects.
  */
-void OApplication::onMouseClick(int button, int state, int x, int y)
+void OApplication::queueEvent(OEvent * evt)
 {
+	_eventQueue.push(evt);
 }
 
 /**
- \brief Virtual method called when the window is resized.
-
- Camera and screen adjustments are already dealt by OApplication.
-
- \param width New window width.
- \param height New window height.
-*/
-void OApplication::onWindowResize(int width, int height)
+ \brief Process event queue.
+ */
+void OApplication::processEvents()
 {
+	while (_eventQueue.empty() == false) {
+		OEvent *cur = _eventQueue.front();
+		list<OObject*>::iterator it;
+		for (it = _eventRecipients[cur->type()].begin(); it != _eventRecipients[cur->type()].end(); it++) {
+			(*it)->processEvent(cur);
+		}
+		delete cur;
+		_eventQueue.pop();
+	}
+}
+
+/**
+ \brief Remove objects previously scheduled for deletion.
+ */
+void OApplication::deleteObjects()
+{
+	map<OObject*, int>::iterator it;
+	for (it = _deleteList.begin(); it != _deleteList.end(); it++) delete it->first;
+	_deleteList.clear();
 }
 
 void OApplication::keyboardCallback(unsigned char key, int mouse_x, int mouse_y)
 {
-	_activeInstance->onKeyboardPress(key, mouse_x, mouse_y);
+	OKeyboardPressEvent *evt = new OKeyboardPressEvent((OKeyboardPressEvent::KeyCode)key, mouse_x, mouse_y);
+	_activeInstance->queueEvent(evt);
 }
 
 void OApplication::mouseCallback(int button, int state, int x, int y)
 {
-	_activeInstance->onMouseClick(button, state, x, y);
+	OMouseClickEvent *evt = new OMouseClickEvent((OMouseClickEvent::MouseButton)button, 
+						     (OMouseClickEvent::MouseStatus)state, 
+						     x, y);
+	_activeInstance->queueEvent(evt);
 }
 
 void OApplication::resizeCallback(int width, int height)
 {
+	OResizeEvent *evt = new OResizeEvent(width, height);
+
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 	_activeInstance->camera()->setAspectRatio((float)width / height);
-	_activeInstance->onWindowResize(width, height);
+	_activeInstance->queueEvent(evt);
 }
 
 void OApplication::displayCallback()
 {
 	_activeInstance->clearScreen();
+	_activeInstance->processEvents();
 	_activeInstance->update(glutGet(GLUT_ELAPSED_TIME));
+	_activeInstance->deleteObjects();
+
 	glutSwapBuffers();
 	glutPostRedisplay();
 }

@@ -166,6 +166,7 @@
     <ClInclude Include="include\OsirisSDK\OMatrixStack.h" />
     <ClInclude Include="include\OsirisSDK\OMesh.h" />
     <ClInclude Include="include\OsirisSDK\OMeshBuffer.hpp" />
+    <ClInclude Include="include\OsirisSDK\OObject.h" />
     <ClInclude Include="include\OsirisSDK\OShaderObject.h" />
     <ClInclude Include="include\OsirisSDK\OShaderProgram.h" />
     <ClInclude Include="include\OsirisSDK\OText2D.h" />
@@ -182,6 +183,7 @@
     <ClCompile Include="src\OMath.cpp" />
     <ClCompile Include="src\OMatrixStack.cpp" />
     <ClCompile Include="src\OMesh.cpp" />
+    <ClCompile Include="src\OObject.cpp" />
     <ClCompile Include="src\OShaderObject.cpp" />
     <ClCompile Include="src\OShaderProgram.cpp" />
     <ClCompile Include="src\OText2D.cpp" />
