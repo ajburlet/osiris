@@ -57,6 +57,11 @@ public:
 	 */
 	void free(void *ptr);
 
+	/**
+	 \brief Print debug information on the stderr.
+	 */
+	void printDebugInfo();
+
 private:
 	size_t _blockSize;
 	size_t _segmentSize;
@@ -66,14 +71,22 @@ private:
 
 	/**
 	 \brief Allocates new segment and adds to the segment stack.
+	 \return Pointer to the newly allocated segment.
 	 */
-	void createNewSegment();
+	void* createNewSegment();
 
 	/**
 	 \brief Find contiguous region of memory.
 	 \param count Number of required contiguous blocks.
-	 \return The memory address or NULL if there's none available.
+	 \return Pointer to the contiguous memory segment or NULL if there's none available.
 	 */
 	void* findContiguousSegment(size_t count);
+
+	/**
+	 \brief Mark memory blocks as used and remove from the available memory pool.
+	 \param ptr Pointer to the start of the memory area
+	 \param count Number of blocks to be marked.
+	 */
+	void removeFromAvailablePool(void *ptr, size_t count);
 };
 

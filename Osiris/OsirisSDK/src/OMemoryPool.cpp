@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include <sstream>
 
@@ -53,10 +54,9 @@ void * OMemoryPool::alloc(size_t sz)
 	int neededBlocks = (int)ceil((float)sz / _blockSize);
 	void *seg = findContiguousSegment(neededBlocks);
 
-	if (!seg) {
-		createNewSegment();
-		seg = findContiguousSegment(neededBlocks);
-	}
+	if (!seg) seg = createNewSegment();
+	
+	removeFromAvailablePool(seg, neededBlocks);
 
 	return seg;
 }
@@ -75,45 +75,61 @@ void OMemoryPool::free(void * ptr)
 	_usedBlocks.erase(ptr);
 }
 
-void OMemoryPool::createNewSegment()
+void OMemoryPool::printDebugInfo()
+{
+	fprintf(stderr, "Available memory: %d bytes (%d blocks):\n", 
+		_availableBlocks.size()*_blockSize, 
+		_availableBlocks.size());
+	for (list<void*>::iterator it = _availableBlocks.begin(); it != _availableBlocks.end(); it++)
+		fprintf(stderr, "\t0x%x\n", *it);
+
+	fprintf(stderr, "Allocated chunks:\n");
+	for (map<void*, int>::iterator it = _usedBlocks.begin(); it != _usedBlocks.end(); it++)
+		fprintf(stderr, "\t0x%x - %d bytes (%d blocks)\n", it->first, it->second*_blockSize, it->second);
+}
+
+void* OMemoryPool::createNewSegment()
 {
 	void *newArea = malloc(_blockSize*_segmentSize);
 	_segmentStack.push(newArea);
-	for (size_t i = 0; i < _segmentSize; i++) _availableBlocks.push_back((char*)newArea + i);
+	for (size_t i = 0; i < _segmentSize; i++) _availableBlocks.push_back((char*)newArea + i*_blockSize);
+	return newArea;
 }
 
 void * OMemoryPool::findContiguousSegment(size_t count)
 {
-	list<void*>::iterator it;
-	list<void*>::iterator currSegIt = _availableBlocks.begin();
+	/* check if there is enough room */
+	if (count > _availableBlocks.size()) return NULL;
+
+	/* since there is, we now need to determine if we can find a contiguous segment of the needed length */
+	void *seg = NULL;
 	char *currSeg = (char*)_availableBlocks.front();
 	int currSegSize = 0;
-	for (it = _availableBlocks.begin(); it != _availableBlocks.end(); it++) {
+	for (list<void*>::iterator it = _availableBlocks.begin(); it != _availableBlocks.end(); it++) {
+		currSegSize++;
+
 		/* checking if this block is adjacent to the previous one */
-		if ((char*)(*it) - currSeg != currSegSize*_blockSize) {
-			currSegSize = 0;
+		if (currSegSize > 1 && (char*)(*it) - currSeg != (currSegSize-1)*_blockSize) {
+			currSegSize = 1;
 			currSeg = (char*)(*it);
-			currSegIt = it;
 			continue;
 		}
-		currSegSize++;
 
 		/* 
 		 * if we reached the requested segment,  we remove the blocks from the 
 		 * available list and create an used block entry 
 		 */
 		if (currSegSize == count) {
-			list<void*>::iterator it2 = currSegIt;
-			for (size_t i = 0; i < count; i++) {
-				_availableBlocks.remove(*it2);
-				it2++;
-			}
-			_usedBlocks[*currSegIt] = count;
+			seg = currSeg;
 			break;
 		}
 	}
 
-	if (currSegSize != count) currSeg = NULL;
+	return seg;
+}
 
-	return currSeg;
+void OMemoryPool::removeFromAvailablePool(void * ptr, size_t count)
+{
+	for (size_t i = 0; i < count; i++) _availableBlocks.remove((char*)ptr + i*_blockSize);
+	_usedBlocks[ptr] = count;
 }
