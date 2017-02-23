@@ -3,6 +3,8 @@
 #include "defs.h"
 #include "GLdefs.h" 
 
+#include "OMemoryPoolObject.hpp"
+
 /**
  \brief Base event class.
  */
@@ -25,9 +27,24 @@ private:
 };
 
 /**
+ \brief OEvent class with special memory management.
+
+ OEvent class that also derives from OMemoryPoolObject template class, which means that the 
+ the memory management will be done by an OMemoryPool class object. Since events can be frequently
+ created, and in order to avoid heap fragmentation, it is important to employ a special memory
+ mechanism that will not resort to malloc() and free() calls all the time.
+ */
+class OAPI OMemoryPoolEvent : public OEvent, public OMemoryPoolObject<2 * sizeof(OEvent), 32>
+{
+public:
+	OMemoryPoolEvent(OEvent::EventType type);
+	virtual ~OMemoryPoolEvent();
+};
+
+/**
  \brief Class for keyboard press events.
  */
-class OAPI OKeyboardPressEvent : public OEvent
+class OAPI OKeyboardPressEvent : public OMemoryPoolEvent
 {
 public:
 	enum KeyCode {
@@ -77,7 +94,7 @@ private:
 /**
  \brief Class for mouse click events.
  */
-class OAPI OMouseClickEvent : public OEvent
+class OAPI OMouseClickEvent : public OMemoryPoolEvent
 {
 public:
 	enum MouseButton {
@@ -109,7 +126,7 @@ private:
 /**
  \brief Class for window resize events.
  */
-class OAPI OResizeEvent : public OEvent
+class OAPI OResizeEvent : public OMemoryPoolEvent
 {
 public:
 	OResizeEvent(int width, int height);

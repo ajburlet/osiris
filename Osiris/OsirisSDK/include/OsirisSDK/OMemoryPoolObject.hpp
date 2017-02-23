@@ -29,18 +29,23 @@ public:
 	/**
 	 \brief Class constructor.
 	 */
-	OMemoryPool();
+	OMemoryPoolObject();
 
 	/**
 	 \brief Class destructor.
 	 */
-	virtual ~OMemoryPool();
+	virtual ~OMemoryPoolObject();
 
 	void* operator new(size_t sz);
 	void operator delete(void *ptr);
 
 	static OMemoryPool* memoryPool();
 };
+
+#ifdef OSIRISSDK_EXPORTS
+
+template<size_t blockSize, size_t segmentSize>
+OMemoryPool* OMemoryPoolObject<blockSize, segmentSize>::_memoryPool = NULL;
 
 template<size_t blockSize, size_t segmentSize>
 inline void OMemoryPoolObject<blockSize, segmentSize>::Init()
@@ -49,12 +54,12 @@ inline void OMemoryPoolObject<blockSize, segmentSize>::Init()
 }
 
 template<size_t blockSize, size_t segmentSize>
-inline OMemoryPoolObject<blockSize, segmentSize>::OMemoryPool()
+inline OMemoryPoolObject<blockSize, segmentSize>::OMemoryPoolObject()
 {
 }
 
 template<size_t blockSize, size_t segmentSize>
-inline OMemoryPoolObject<blockSize, segmentSize>::~OMemoryPool()
+inline OMemoryPoolObject<blockSize, segmentSize>::~OMemoryPoolObject()
 {
 }
 
@@ -76,3 +81,5 @@ inline OMemoryPool * OMemoryPoolObject<blockSize, segmentSize>::memoryPool()
 {
 	return _memoryPool;
 }
+
+#endif

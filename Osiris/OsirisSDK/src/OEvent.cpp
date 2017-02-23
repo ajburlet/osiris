@@ -37,7 +37,7 @@ OEvent::EventType OEvent::type() const
  \param mouse_y Mouse position on the window on the Y-axis.
  */
 OKeyboardPressEvent::OKeyboardPressEvent(KeyCode code, int mouse_x, int mouse_y) :
-	OEvent(OEvent::KeyboardPressEvent),
+	OMemoryPoolEvent(OEvent::KeyboardPressEvent),
 	_code(code),
 	_mouse_x(mouse_x),
 	_mouse_y(mouse_y)
@@ -87,7 +87,7 @@ int OKeyboardPressEvent::mouseY() const
  \param y Window Y-axis component in pixels.
  */
 OMouseClickEvent::OMouseClickEvent(OMouseClickEvent::MouseButton btn, OMouseClickEvent::MouseStatus status, int x, int y) :
-	OEvent(OEvent::MouseClickEvent),
+	OMemoryPoolEvent(OEvent::MouseClickEvent),
 	_btn(btn),
 	_status(status),
 	_x(x),
@@ -143,7 +143,7 @@ int OMouseClickEvent::y() const
  \param height Window height in pixels.
  */
 OResizeEvent::OResizeEvent(int width, int height) :
-	OEvent(OEvent::ResizeEvent),
+	OMemoryPoolEvent(OEvent::ResizeEvent),
 	_width(width),
 	_height(height)
 {
@@ -170,4 +170,18 @@ int OResizeEvent::width() const
 int OResizeEvent::height() const
 {
 	return _height;
+}
+
+/**
+ \brief Class constructor.
+ */
+OMemoryPoolEvent::OMemoryPoolEvent(OEvent::EventType type) : OEvent(type)
+{
+}
+
+/**
+ \brief Class destructor.
+ */
+OMemoryPoolEvent::~OMemoryPoolEvent()
+{
 }
