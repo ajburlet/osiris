@@ -5,11 +5,6 @@ using namespace std;
 
 FT_Library OFont::_library = NULL;
 
-/**
- \brief Class constructor.
- \param fontName File name of the font. If running under windows without providing a path, the
-		 constructor will look on the default font directory (%WINDIR%/fonts).
- */
 OFont::OFont(const char * fontName)
 {
 	_init();
@@ -36,18 +31,12 @@ OFont::OFont(const char * fontName)
 	_lastSize = 0;
 }
 
-/**
- \brief Class destructor.
- */
 OFont::~OFont()
 {
 	if (&_face != NULL) FT_Done_Face(_face);
 	cleanCache();
 }
 
-/**
- \brief Clean font cache: texture data and dimensions for each character and size.
- */
 void OFont::cleanCache()
 {
 	map<pair<char,char>, CacheEntry>::iterator it;
@@ -55,9 +44,6 @@ void OFont::cleanCache()
 	_cache.clear();
 }
 
-/**
- \brief Returns the font cache entry related to a given character and size.
- */
 const OFont::CacheEntry * OFont::entry(char character, int size)
 {
 	pair<char, char> key = std::make_pair(size, character);
@@ -102,9 +88,6 @@ const OFont::CacheEntry * OFont::entry(char character, int size)
 	return &_cache[key];
 }
 
-/**
- \brief Initialize the required font library (freetype).
- */
 void OFont::_init()
 {
 	if (!_library && FT_Init_FreeType(&_library) != 0) throw OException("Failed to load FreeType library.");

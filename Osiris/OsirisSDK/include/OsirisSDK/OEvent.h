@@ -17,9 +17,20 @@ public:
 		ResizeEvent
 	};
 
+	/**
+	 \brief Class constructor.
+	 \param type Event type.
+	 */
 	OEvent(EventType type);
+	
+	/**
+	 \brief Class destructor.
+	 */
 	virtual ~OEvent();
 
+	/**
+	 \brief Returns event type.
+	 */
 	EventType type() const;
 
 private:
@@ -37,7 +48,15 @@ private:
 class OAPI OMemoryPoolEvent : public OEvent, public OMemoryPoolObject<2 * sizeof(OEvent), 32>
 {
 public:
+	/**
+	 \brief Class constructor.
+	 \param type Event type.
+	 */
 	OMemoryPoolEvent(OEvent::EventType type);
+	
+	/**
+	 \brief Class destructor.
+	 */
 	virtual ~OMemoryPoolEvent();
 };
 
@@ -78,11 +97,32 @@ public:
 		OKey_u,     OKey_v, OKey_w, OKey_x, OKey_y, OKey_z
 	};
 
+	/**
+	 \brief Class constructor.
+	 \param code Key code.
+	 \param mouse_x Mouse position on the window on the X-axis.
+	 \param mouse_y Mouse position on the window on the Y-axis.
+	 */
 	OKeyboardPressEvent(KeyCode code, int mouse_x, int mouse_y);
+
+	/**
+	 \brief Class destructor.
+	 */
 	virtual ~OKeyboardPressEvent();
 
+	/**
+	 \brief Key code.
+	 */
 	KeyCode code() const;
+	
+	/**
+	 \brief Mouse position on the window on the X-axis.
+	 */
 	int mouseX() const;
+	
+	/**
+	 \brief Mouse position on the window on the Y-axis.
+	 */
 	int mouseY() const;
 
 private:
@@ -108,12 +148,38 @@ public:
 		Press=GLUT_DOWN
 	};
 
+	/**
+	 \brief Class constructor.
+	 \param btn Mouse button that generated the event.
+	 \param status Status of the mouse button: released or pressed.
+	 \param x Window X-axis component in pixels.
+	 \param y Window Y-axis component in pixels.
+	 */
 	OMouseClickEvent(MouseButton btn, MouseStatus status, int x, int y);
+	
+	/**
+	 \brief Class destructor.
+	 */
 	virtual ~OMouseClickEvent();
 
+	/**
+	 \brief Mouse button that generated the event.
+	 */
 	MouseButton button() const;
+	
+	/**
+	 \brief Mouse button status: pressed or released.
+	 */
 	MouseStatus status() const;
+	
+	/**
+	 \brief Window X-axis component in pixels.
+	 */
 	int x() const;
+	
+	/**
+	 \brief Window Y-axis component in pixels.
+	 */
 	int y() const;
 	
 private:
@@ -129,10 +195,27 @@ private:
 class OAPI OResizeEvent : public OMemoryPoolEvent
 {
 public:
+	
+	/**
+	 \brief Class constructor.
+	 \param width Window width in pixels.
+	 \param height Window height in pixels.
+	 */
 	OResizeEvent(int width, int height);
+	
+	/**
+	 \brief Class destructor.
+	 */
 	virtual ~OResizeEvent();
 
+	/**
+	 \brief Window width in pixels.
+	 */
 	int width() const;
+	
+	/**
+	 \brief Window height in pixels.
+	 */
 	int height() const;
 
 private:

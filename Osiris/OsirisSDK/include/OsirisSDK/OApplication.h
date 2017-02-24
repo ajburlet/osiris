@@ -24,31 +24,105 @@
 class OAPI OApplication
 {
 public:
+
+	/**
+	 \brief Class constructor.
+
+	 The constructor creates the window and initializes OpenGL.
+
+	 \param title Application window title.
+	 \param argc Number of command line arguments
+	 \param argv Command line arguments.
+	 \param windowPos_x Window position on the X axis.
+	 \param windowPos_y Window position on the Y axis.
+	 \param windowWidth Window width.
+	 \param windowHeight Window height.
+	 */
 	OApplication(const char* title, int argc, char **argv,
 		int windowPos_x=OAPPLICATION_DEFAULT_POSX, int windowPos_y=OAPPLICATION_DEFAULT_POSY,
 		int windowWidth=OAPPLICATION_DEFAULT_WIDTH, int windowHeight=OAPPLICATION_DEFAULT_HEIGHT);
+	
+	
+	/**
+	 \brief Class destructor.
+	*/
 	virtual ~OApplication();
 
+
+	/**
+	 \brief Returns the application camera object.
+	 \return Pointer to the application camera object.
+	*/
 	OCamera* camera();
 
+	/**
+	 \brief Returns the window width in pixels.
+	 */
 	int windowWidth() const;
+
+	/**
+	 \brief Returns the window height in pixels.
+	 */
 	int windowHeight() const;
 
+	/**
+	 \brief Adds an OObject class object as event recipient for given type.
+	 \param eventType Event type.
+	 \param recipient Object that will receive the events.
+	 */
 	void addEventRecipient(OEvent::EventType eventType, OObject* recipient);
+
+	/**
+	 \brief Removes an OObject class object as event recipient for given type.
+	 \param eventType Event type.
+	 \param recipient Object that will receive the events.
+	 */
 	void removeEventRecipient(OEvent::EventType eventType, OObject* recipient);
 
+	/**
+	 \brief Initializes the application and starts the main loop.
+	*/
 	void start();
 
+	/**
+	 \brief Schedule an object for deletion at the end of the current loop.
+	 */
 	void scheduleDelete(OObject* obj);
 
+	/**
+	 \brief Returns active OApplication instance.
+	 */
 	static OApplication* activeInstance();
 
 protected:
+	/**
+	 \brief Method called prior to entering the main loop to initialize the OApplication object.
+	 */
 	virtual void init() = 0;
+
+	/**
+	 \brief Called in the begining of the render process for each loop to clear the previous screen.
+	*/
 	virtual void clearScreen();
+
+	/**
+	 \brief Queue event to be processed by the application and the subscribed OOBject class objects.
+	 */
 	void queueEvent(OEvent* evt);
+
+	/**
+	 \brief Process event queue.
+	 */
 	void processEvents();
+
+	/**
+	 \brief Remove objects previously scheduled for deletion.
+	 */
 	void deleteObjects();
+
+	/**
+	 \brief Method called on each simulation iteration.
+	 */
 	virtual void update(int timeIndex_ms) = 0;
 
 private:

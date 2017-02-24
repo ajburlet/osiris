@@ -4,10 +4,6 @@
 
 OShaderProgram* OVertexColorMesh::_colorVertexProgram = NULL;
 
-/**
- \brief Class constructor.
-*/
-OVertexColorMesh::OVertexColorMesh() : OMesh()
 {
 	if (_colorVertexProgram == NULL) {
 		_colorVertexProgram = new OShaderProgram("ColorVertex");
@@ -22,23 +18,10 @@ OVertexColorMesh::OVertexColorMesh() : OMesh()
 	setProgram(_colorVertexProgram);
 }
 
-/**
- \brief Class destructor.
-*/
 OVertexColorMesh::~OVertexColorMesh()
 {
 }
 
-/**
- \brief Add color definition values for each vertex. 
- 
- The colors should be set after all vertex where defined.
-
- \param r Red component value.
- \param g Green component value.
- \param b Blue component value.
- \param alpha Alpha channel component value.
-*/
 void OVertexColorMesh::addVertexColorData(float r, float g, float b, float alpha)
 {
 	vertexBuffer()->addData(r, g, b, alpha);

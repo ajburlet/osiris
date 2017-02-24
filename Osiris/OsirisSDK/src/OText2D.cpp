@@ -17,14 +17,6 @@ GLuint OText2D::_shaderCoordAttr;
 GLuint OText2D::_shaderTexUniform;
 GLuint OText2D::_shaderColorUniform;
 
-/**
- \brief Class constructor.
- \param font Object containing font definitions and cache.
- \param fontSize Font height in pixels.
- \param x Position of the beggining of the text box in the X axis.
- \param y Position of the beggining of the text box in the Y axis.
- \param content Text conte
- */
 OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVector4& color,
 		 const char* content) :
 	_x(x),
@@ -46,142 +38,85 @@ OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVe
 	glGenVertexArrays(1, &_arrayObject);
 }
 
-/**
- \brief Class destructor.
- */
 OText2D::~OText2D()
 {
 	glDeleteBuffers(1, &_arrayBuffer);
 	glDeleteVertexArrays(1, &_arrayObject);
 }
 
-/**
- \brief Sets font class and size.
- */
 void OText2D::setFont(OFont * font, unsigned int fontSize)
 {
 	_font = font;
 	_fontSize = fontSize;
 }
 
-/**
- \brief Returns the font file being used.
- */
 OFont * OText2D::font() const
 {
 	return _font;
 }
 
-/**
- \brief Returns the font size.
- */
 unsigned int OText2D::fontSize() const
 {
 	return _fontSize;
 }
 
-/**
- \brief Set the font color using a OVector4 class object as input.
- \param color A four-dimensional vector containing the color components in 
-	      the form (r, g, b, alpha).
- */
 void OText2D::setFontColor(const OVector4 & color)
 {
 	_fontColor = color;
 }
 
-/**
- \brief Provides the font color in the form of a four-dimensional vector.
- \return An OVector4 class object in the form (r, g, b, alpha).
- */
 OVector4 OText2D::fontColor() const
 {
 	return _fontColor;
 }
 
-/**
- \brief Sets the position of the text box.
- \param x Position of the text box on the X axis in pixels.
- \param y Position of the text box on the Y axis in pixels.
- */
 void OText2D::setPosition(float x, float y)
 {
 	_x = x;
 	_y = y;
 }
 
-/**
- \brief Returns the position of the text box on the X axis in pixels.
- */
 float OText2D::x() const
 {
 	return _x;
 }
 
-/**
- \brief Returns the position of the text box on the Y axis in pixels.
- */
 float OText2D::y() const
 {
 	return _y;
 }
 
-/**
- \brief Sets the size of the text box.
- \param sx Horizontal scale of the text box.
- \param sx Vertical scale of the text box.
- */
 void OText2D::setScale(float sx, float sy)
 {
 	_scale_x = sx;
 	_scale_y = sy;
 }
 
-/**
- \brief Returns the horizontal size of the text box in pixels.
- */
 float OText2D::scaleX() const
 {
 	return _scale_x;
 }
 
-/**
- \brief Returns the vertical size of the text box in pixels.
- */
 float OText2D::scaleY() const
 {
 	return _scale_y;
 }
 
-/**
- \brief Sets the text content of the text box.
- \param content New content of the text box.
- */
 void OText2D::setContent(const char * content)
 {
 	_content = content;
 }
 
-/**
- \brief Adds text to the end of the text box content.
- \param content Content to be appended to the current string.
- */
 void OText2D::append(const char * content)
 {
 	_content += content;
 }
 
-/**
- \brief Returns the content of the text box.
- */
 const char * OText2D::content() const
 {
 	return _content.c_str();
 }
 
-/**
- \brief Renders the text string on the screen.
- */
 void OText2D::render()
 {
 	/* enabling array object */
@@ -215,7 +150,6 @@ void OText2D::render()
 
 		/* Activate the texture unit 0 and bind the font texture */ 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, fEntry->texId);
 
 		/* now we estabilish the vertices that will delimeter the character box */
 		float x2 = currX + fEntry->left * _scale_x;
@@ -250,9 +184,6 @@ void OText2D::onScreenResize(const OResizeEvent * evt)
 	_scale_y = 2.0f / evt->height();
 }
 
-/**
- \brief Initialize the freetype library for all class objects.
- */
 void OText2D::_Init()
 {
 	if (!_initialized) {

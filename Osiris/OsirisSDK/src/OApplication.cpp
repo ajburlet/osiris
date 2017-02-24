@@ -9,19 +9,6 @@ using namespace std;
 OApplication* OApplication::_activeInstance = NULL;
 
 
-/**
- \brief Class constructor.
-
- The constructor creates the window and initializes OpenGL.
-
- \param title Application window title.
- \param argc Number of command line arguments
- \param argv Command line arguments.
- \param windowPos_x Window position on the X axis.
- \param windowPos_y Window position on the Y axis.
- \param windowWidth Window width.
- \param windowHeight Window height.
- */
 OApplication::OApplication(const char* title, int argc, char **argv, int windowPos_x, int windowPos_y, int windowWidth, int windowHeight)
 {
 	if (_activeInstance != NULL) throw OException("There is already an OApplication instance created.");
@@ -59,71 +46,42 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 	glEnable(GL_DEPTH_CLAMP);
 }
 
-/**
- \brief Class destructor.
-*/
 OApplication::~OApplication()
 {
 	_activeInstance = NULL;
 }
 
-/**
- \brief Returns the application camera object.
- \return Pointer to the application camera object.
-*/
 OCamera * OApplication::camera()
 {
 	return &_cam;
 }
 
-/**
- \brief Returns the window width in pixels.
- */
 int OApplication::windowWidth() const
 {
 	return glutGet(GLUT_WINDOW_WIDTH);
 }
 
-/**
- \brief Returns the window height in pixels.
- */
 int OApplication::windowHeight() const
 {
 	return glutGet(GLUT_WINDOW_HEIGHT);
 }
 
-/**
- \brief Adds an OObject class object as event recipient for given type.
- \param eventType Event type.
- \param recipient Object that will receive the events.
- */
 void OApplication::addEventRecipient(OEvent::EventType eventType, OObject * recipient)
 {
 	_eventRecipients[eventType].push_back(recipient);
 }
 
-/**
- \brief Removes an OObject class object as event recipient for given type.
- \param eventType Event type.
- \param recipient Object that will receive the events.
- */
 void OApplication::removeEventRecipient(OEvent::EventType eventType, OObject * recipient)
 {
 	_eventRecipients[eventType].remove(recipient);
 }
 
-/**
- \brief Initializes the application and starts the main loop.
-*/
 void OApplication::start()
 {
 	init();
 	glutMainLoop();
 }
 
-/**
- \brief Schedule an object for deletion at the end of the current loop.
- */
 void OApplication::scheduleDelete(OObject * obj)
 {
 	map<OObject*, int>::iterator it;
@@ -135,9 +93,6 @@ OApplication * OApplication::activeInstance()
 	return _activeInstance;
 }
 
-/**
- \brief Called in the begining of the render process for each loop to clear the previous screen.
-*/
 void OApplication::clearScreen()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -145,17 +100,11 @@ void OApplication::clearScreen()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-/**
- \brief Queue event to be processed by the application and the subscribed OOBject class objects.
- */
 void OApplication::queueEvent(OEvent * evt)
 {
 	_eventQueue.push(evt);
 }
 
-/**
- \brief Process event queue.
- */
 void OApplication::processEvents()
 {
 	while (_eventQueue.empty() == false) {
@@ -169,9 +118,6 @@ void OApplication::processEvents()
 	}
 }
 
-/**
- \brief Remove objects previously scheduled for deletion.
- */
 void OApplication::deleteObjects()
 {
 	map<OObject*, int>::iterator it;

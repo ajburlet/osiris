@@ -13,10 +13,6 @@
 
 using namespace std;
 
-/**
- \brief Class constructor.
- \param filename Object file name.
- */
 OWavefrontObjectFile::OWavefrontObjectFile(const char *filename) :
 	_filename(filename),
 	_currLine(0),
@@ -37,19 +33,11 @@ OWavefrontObjectFile::OWavefrontObjectFile(const char *filename) :
 }
 
 
-/**
- \brief Class destructor.
- */
 OWavefrontObjectFile::~OWavefrontObjectFile()
 {
 	if (_fp != NULL) fclose(_fp);
 }
 
-/**
- \brief Provides the object list from the file.
- \param count Pointer to an integer where the object count will be written.
- \return Vector with object names that can be used to load meshes.
- */
 const char ** OWavefrontObjectFile::objectList(int * count)
 {
 	*count = _objVec.size();
@@ -57,11 +45,6 @@ const char ** OWavefrontObjectFile::objectList(int * count)
 	return &_objVec[0];
 }
 
-/**
- \brief Loads a given object into an OMesh class object, previously created.
- \param objName Object name.
- \param mesh OMesh class object in which the vertex data will be loaded.
- */
 void OWavefrontObjectFile::loadMesh(const char * objName, OMesh * mesh)
 {
 	const char *firstWord, *valueWord;
@@ -159,9 +142,6 @@ void OWavefrontObjectFile::loadObjectList()
 	for (it = _objMap.begin(); it != _objMap.end(); it++) _objVec.push_back(it->first.c_str());
 }
 
-/**
- \brief Reads the next line into the class internal buffer
- */
 int OWavefrontObjectFile::readNextLine()
 {
 	if (feof(_fp) || !fgets(_lineBuffer, OWAVEFRONTOBJECTFILE_LINEBUFFER, _fp)) {
@@ -174,10 +154,6 @@ int OWavefrontObjectFile::readNextLine()
 	return 0;
 }
 
-/**
- \brief Reads the next word on the line.
- \return Returns the next word. If the end of line has been reached or the buffer overflowed, returns NULL.
- */
 const char * OWavefrontObjectFile::readNextWord()
 {
 	char *p = _wordptr;
@@ -205,9 +181,6 @@ const char * OWavefrontObjectFile::readNextWord()
 	return _wordBuffer;
 }
 
-/**
- \brief Returns the current line of the file that is being processed.
- */
 unsigned int OWavefrontObjectFile::currLine()
 {
 	return _currLine;
