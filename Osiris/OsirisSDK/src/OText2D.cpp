@@ -150,6 +150,7 @@ void OText2D::render()
 
 		/* Activate the texture unit 0 and bind the font texture */ 
 		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, fEntry->texId);
 
 		/* now we estabilish the vertices that will delimeter the character box */
 		float x2 = currX + fEntry->left * _scale_x;

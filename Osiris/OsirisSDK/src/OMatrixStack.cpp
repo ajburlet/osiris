@@ -49,20 +49,20 @@ void OMatrixStack::clear()
 	_currMtx = OMatrix4x4(1);
 }
 
- OMatrixStack & OMatrixStack::operator=(const OMatrixStack & in)
+OMatrixStack & OMatrixStack::operator=(const OMatrixStack & in)
  {
 	_currMtx = in._currMtx;
 	_stack = in._stack;
 	return *this;
  }
 
- OMatrixStack & OMatrixStack::operator*=(const OMatrixStack & in)
+OMatrixStack & OMatrixStack::operator*=(const OMatrixStack & in)
 {
 	multiply(in);
 	return *this;
 }
 
- OMatrixStack & OMatrixStack::operator*=(const OMatrix4x4 & in)
+OMatrixStack & OMatrixStack::operator*=(const OMatrix4x4 & in)
 {
 	multiply(in);
 	return *this;
