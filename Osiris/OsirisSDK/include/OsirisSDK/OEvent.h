@@ -5,6 +5,14 @@
 
 #include "OMemoryPoolObject.hpp"
 
+#ifndef OEVENT_MP_BLOCKSIZE
+#define OEVENT_MP_BLOCKSIZE	16
+#endif
+
+#ifndef OEVENT_MP_SEGMENTSIZE
+#define OEVENT_MP_SEGMENTSIZE	32
+#endif
+
 /**
  \brief Base event class.
  */
@@ -45,7 +53,7 @@ private:
  created, and in order to avoid heap fragmentation, it is important to employ a special memory
  mechanism that will not resort to malloc() and free() calls all the time.
  */
-class OAPI OMemoryPoolEvent : public OEvent, public OMemoryPoolObject<2 * sizeof(OEvent), 32>
+class OAPI OMemoryPoolEvent : public OEvent, public OMemoryPoolObject<OEVENT_MP_BLOCKSIZE, OEVENT_MP_SEGMENTSIZE>
 {
 public:
 	/**

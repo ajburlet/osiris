@@ -4,6 +4,7 @@
 
 OShaderProgram* OVertexColorMesh::_colorVertexProgram = NULL;
 
+OVertexColorMesh::OVertexColorMesh()
 {
 	if (_colorVertexProgram == NULL) {
 		_colorVertexProgram = new OShaderProgram("ColorVertex");

@@ -81,11 +81,11 @@ void OMemoryPool::printDebugInfo()
 		_availableBlocks.size()*_blockSize, 
 		_availableBlocks.size());
 	for (list<void*>::iterator it = _availableBlocks.begin(); it != _availableBlocks.end(); it++)
-		fprintf(stderr, "\t0x%x\n", *it);
+		fprintf(stderr, "\t0x%x\n", (unsigned int)*it);
 
 	fprintf(stderr, "Allocated chunks:\n");
 	for (map<void*, int>::iterator it = _usedBlocks.begin(); it != _usedBlocks.end(); it++)
-		fprintf(stderr, "\t0x%x - %d bytes (%d blocks)\n", it->first, it->second*_blockSize, it->second);
+		fprintf(stderr, "\t0x%x - %d bytes (%d blocks)\n", (unsigned int)it->first, it->second*_blockSize, it->second);
 }
 
 void* OMemoryPool::createNewSegment()
