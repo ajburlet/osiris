@@ -31,7 +31,6 @@ public:
 
 	/**
 	 \brief Sets a new shader program to be used to render the object.
-			glTexImage2D()
 	 \param program Pointer to the new shader program.
 	*/
 	void setProgram(OShaderProgram *program);
