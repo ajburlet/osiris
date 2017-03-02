@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include <stdio.h>
 
 #include "OsirisSDK/OException.h"
 
@@ -6,12 +6,6 @@ using namespace std;
 
 #undef OException
 
-/**
- \brief Class constructor.
- \param file Source file name.
- \param line Source file line number.
- \param what Exception message.
-*/
 OException::OException(const char* file, int line, const char* what) :
 	_file(file),
 	_line(line),
@@ -19,17 +13,10 @@ OException::OException(const char* file, int line, const char* what) :
 {
 }
 
-/**
- \brief Class destructor.
-*/
 OException::~OException()
 {
 }
 
-/**
- \brief Returns the exception message.
- \return The exception message along with source file name and line number.
-*/
 const char* OException::what()
 {
 	char strLineNbr[16];

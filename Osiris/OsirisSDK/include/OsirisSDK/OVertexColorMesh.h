@@ -13,12 +13,30 @@
 class OAPI OVertexColorMesh : public OMesh
 {
 public:
+	/**
+	 \brief Class constructor.
+	*/
 	OVertexColorMesh();
+
+	/**
+	 \brief Class destructor.
+	*/
 	virtual ~OVertexColorMesh();
 
+	/**
+	 \brief Add color definition values for each vertex. 
+	 
+	 The colors should be set after all vertex where defined.
+
+	 \param r Red component value.
+	 \param g Green component value.
+	 \param b Blue component value.
+	 \param alpha Alpha channel component value.
+	*/
 	void addVertexColorData(float r, float g, float b, float alpha);
 
 protected:
+	/* Inherited from OMesh */
 	void setupAdditionalVertexArrays();
 
 private:

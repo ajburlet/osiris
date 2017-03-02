@@ -22,15 +22,41 @@ public:
 		ShaderType_Vertex=GL_VERTEX_SHADER,		/**< Vertex shader. */
 		ShaderType_Fragment=GL_FRAGMENT_SHADER		/**< Fragment shader. */
 	};
+
+	/**
+	 \brief Class constructor.
+	 \param shaderName Shader name.
+	 \param shaderType Shader type.
+	 \param source Shader source code.
+	*/
 	OShaderObject(const char* shaderName, ShaderType shaderType, const char* source="");
+	
+	/**
+	 \brief Class destructor.
+	*/
 	virtual ~OShaderObject();
 
+	/**
+	 \brief Set shader source code.
+	*/
 	void setSource(const char* source);
+
 #ifdef WIN32
+	/**
+	 \brief Set shader source code from DLL resource (WIN32 only).
+	 \param resourceId Visual Studio resource file ID.
+	*/
 	void setSourceFromResource(int resourceId);
 #endif
 
+	/**
+	 \brief Compiles the shader object code.
+	*/
 	GLuint compile();
+	
+	/**
+	 \brief Returns the OpenGL shader object reference ID.
+	*/
 	GLuint glReference() const;
 
 private:

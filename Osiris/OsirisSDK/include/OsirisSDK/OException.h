@@ -14,9 +14,23 @@
 class OAPI OException
 {
 public:
+	/**
+	 \brief Class constructor.
+	 \param file Source file name.
+	 \param line Source file line number.
+	 \param what Exception message.
+	*/
 	OException(const char* file, int line, const char* what);
+	
+	/**
+	 \brief Class destructor.
+	*/
 	virtual ~OException();
 
+	/**
+	 \brief Returns the exception message.
+	 \return The exception message along with source file name and line number.
+	*/
 	const char* what();
 private:
 	std::string _file;

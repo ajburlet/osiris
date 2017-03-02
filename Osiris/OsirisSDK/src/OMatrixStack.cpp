@@ -8,62 +8,81 @@ using namespace std;
 
 float toRad = 2 * PI / 360;
 
-/**
- \brief Class constructor.
-*/
 OMatrixStack::OMatrixStack() :
 	_currMtx(1.0f)
 {
 	push();
 }
 
-/**
- \brief Class destructor.
-*/
 OMatrixStack::~OMatrixStack()
 {
 }
 
-/**
- \brief Pushes the current matrix on the stack.
-*/
 void OMatrixStack::push()
 {
 	_stack.push(_currMtx);
 }
 
-/**
- \brief Discards the matrix on top of the stack, and brings up the next one.
-*/
 void OMatrixStack::pop()
 {
-	_currMtx = _stack.top();
-	_stack.pop();
+	if (_stack.empty() == false) {
+		_currMtx = _stack.top();
+		_stack.pop();
+	} else {
+		_currMtx = OMatrix4x4(1);
+	}
 }
 
-/**
- \brief Retrieves the current (top) matrix.
-*/
 OMatrix4x4 OMatrixStack::top() const
 {
 	return _currMtx;
 }
 
-/**
- \brief Applies the translation transformation to a given direction.
- \param dir Displacement direction vector.
-*/
+bool OMatrixStack::isEmpty() const
+{
+	return (_currMtx == OMatrix4x4(1) && _stack.empty());
+}
+
+void OMatrixStack::clear()
+{
+	while (!_stack.empty()) _stack.pop();
+	_currMtx = OMatrix4x4(1);
+}
+
+OMatrixStack & OMatrixStack::operator=(const OMatrixStack & in)
+ {
+	_currMtx = in._currMtx;
+	_stack = in._stack;
+	return *this;
+ }
+
+OMatrixStack & OMatrixStack::operator*=(const OMatrixStack & in)
+{
+	multiply(in);
+	return *this;
+}
+
+OMatrixStack & OMatrixStack::operator*=(const OMatrix4x4 & in)
+{
+	multiply(in);
+	return *this;
+}
+
+void OMatrixStack::multiply(const OMatrixStack & in)
+{
+	_currMtx *= in._currMtx;
+}
+
+void OMatrixStack::multiply(const OMatrix4x4 & in)
+{
+	_currMtx *= in;
+}
+
 void OMatrixStack::translate(const OVector3 & dir)
 {
 	translate(dir.x(), dir.y(), dir.z());
 }
 
-/**
- \brief Applies the translation transform to a given direction.
- \param dx Displacement direction on the X axis.
- \param dy Displacement direction on the Y axis.
- \param dz Displacement direction on the Z axis.
-*/
 void OMatrixStack::translate(const float & dx, const float & dy, const float & dz)
 {
 	OMatrix4x4 ret(1.0f);
@@ -75,23 +94,11 @@ void OMatrixStack::translate(const float & dx, const float & dy, const float & d
 	_currMtx *= ret;
 }
 
-/**
- \brief Applies the rotation transformation around a given axis.
- \param axis Rotation axis vector.
- \param angle Rotation angle in degrees.
-*/
 void OMatrixStack::rotate(const OVector3 & axis, const float & angle)
 {
 	rotate(axis.x(), axis.y(), axis.z(), angle);
 }
 
-/**
- \brief Applies the rotation transformation around a given axis.
- \param axisX Rotation axis vector component on the X axis.
- \param axisY Rotation axis vector component on the Y axis.
- \param axisZ Rotation axis vector component on the Z axis.
- \param angle Rotation angle in degrees.
-*/
 void OMatrixStack::rotate(const float & axisX, const float & axisY, const float & axisZ, const float & angle)
 {
 	float cosA = cosf(toRad*angle);
@@ -119,10 +126,6 @@ void OMatrixStack::rotate(const float & axisX, const float & axisY, const float 
 	_currMtx *= ret;
 }
 
-/**
- \brief Applies the rotation transformation around the X axis.
- \param angle Rotation angle in degrees.
-*/
 void OMatrixStack::rotateX(const float & angle)
 {
 	OMatrix4x4 ret(1.0f);
@@ -139,10 +142,6 @@ void OMatrixStack::rotateX(const float & angle)
 	_currMtx *= ret;
 }
 
-/**
- \brief Applies the rotation transformation around the Y axis.
- \param angle Rotation angle in degrees.
-*/
 void OMatrixStack::rotateY(const float & angle)
 {
 	OMatrix4x4 ret(1.0f);
@@ -159,10 +158,6 @@ void OMatrixStack::rotateY(const float & angle)
 	_currMtx *= ret;
 }
 
-/**
- \brief Applies the rotation transformation around the Z axis.
- \param angle Rotation angle in degrees.
-*/
 void OMatrixStack::rotateZ(const float & angle)
 {
 	OMatrix4x4 ret(1.0f);
@@ -179,11 +174,6 @@ void OMatrixStack::rotateZ(const float & angle)
 	_currMtx *= ret;
 }
 
-/**
- \brief Applies the scale transformation, which re-scales the coordinate system by given factors
- in each component axis.
- \param factorVec Scale factors for each axis component.
-*/
 void OMatrixStack::scale(const OVector3 & factorVec)
 {
 	OMatrix4x4 ret(1.0f);
@@ -195,35 +185,17 @@ void OMatrixStack::scale(const OVector3 & factorVec)
 	_currMtx *= ret;
 }
 
-/**
- \brief Applies the scale transformation by a uniform parameter for all space axes.
- \param uniformFactor Scale factor for all space axes.
-*/
 void OMatrixStack::scale(const float & uniformFactor)
 {
 	OVector3 vec(uniformFactor);
 	scale(vec);
 }
 
-/**
- \brief Applies the perspective projection transformation.
- \param fieldOfViewDeg Angle of the camera's field of view in degrees.
- \param aspectRatio The aspect ration of the screen (width/height).
- \param zNear Nearest camera depth.
- \param zFar Farthest camera depth.
-*/
 void OMatrixStack::perspective(float fieldOfViewDeg, float aspectRatio, float zNear, float zFar)
 {
 	_currMtx *= glm::perspective(fieldOfViewDeg*toRad, aspectRatio, zNear, zFar);
 }
 
-/**
- \brief Applies the camera transformation, moving the coordinate system to account for the 
- current camera position and looking direction.
- \param position Current camera position coordinates.
- \param direction Camera looking direction vector.
- \param up Vertical reference vector (direction when the camera is facing "up").
-*/
 void OMatrixStack::camera(const OVector3 &position, const OVector3 &direction, const OVector3 &up)
 {
 	_currMtx *= glm::lookAt(position.glm(), direction.glm(), up.glm());

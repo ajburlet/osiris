@@ -1,15 +1,25 @@
-# Osiris Graphics Framework
+# Osiris Framework
 
 ## What is this?
 
-I created this project to study OpenGL and try some game engine concepts I have in mind. For now, the current version 
-is able to do simple rendering (0.1).
+This is a simulation framework that uses OpenGL to render 3D graphics. 
 
-## Why Osiris?
+## How to use
 
-Usually I like to select the names of random characters of TV shows that I like as codenames for my personal projects. 
-In this case, besides being the nae of an egyptian god, Osiris was also the name of a Goa'uld System Lord on the Stargate 
-SG1 series.
+### Dependencies
+
+- Freeglut
+- Freetype
+- GLM
+- GLSDK
+
+All the dependencies are included as compressed files in the Osiris/ directory. Just unpack these files in the same directory.
+
+### Build
+
+There is a VS2015 solution file on the Osiris/ directory. This solution builds the dependencies (if they are unpacked), OsirisSDK (the framework itself as a DLL) and the OsirisDemo application.
+
+Building process for MacOS and Linux are unavailable at the moment.
 
 ## Documentation
 
