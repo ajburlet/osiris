@@ -68,6 +68,7 @@ private:
 	std::stack<void*> _segmentStack;
 	std::list<void*> _availableBlocks;
 	std::map<void*, int> _usedBlocks;
+	bool _availableBlocksOrdered;
 
 	/**
 	 \brief Allocates new segment and adds to the segment stack.
