@@ -57,7 +57,16 @@ public:
 	 \param evt Mouse click event object.
 	 */
 	virtual void onMouseClickEvent(const OMouseClickEvent* evt);
-	
+
+	/**
+	 \brief Mouse active and passive move event handler.
+	 
+	 This handler is only called if the object is set as an event recipient. By default does nothing.
+	 
+	 \param evt Mouse move event object.
+	 */
+	virtual void onMouseMoveEvent(const OMouseMoveEvent* evt);
+
 	/**
 	 \brief Screen resize event handler.
 

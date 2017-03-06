@@ -20,9 +20,11 @@ class OAPI OEvent
 {
 public:
 	enum EventType {
-		KeyboardPressEvent=1000, 
-		MouseClickEvent,
-		ResizeEvent
+		KeyboardPressEvent=1000,	/**< Keyboard press event. Issues an OKeyboardPressEvent class object. */ 
+		MouseClickEvent,		/**< Mouse click event. Issues an OMouseClickEvent. */
+		MouseActiveMoveEvent,		/**< Mouse movement event with button pressed. */
+		MousePassiveMoveEvent,		/**< Passive mouse movement event. */
+		ResizeEvent			/**< Screen resize event. */
 	};
 
 	/**
@@ -193,6 +195,42 @@ public:
 private:
 	MouseButton _btn;
 	MouseStatus _status;
+	int _x;
+	int _y;
+};
+
+class OAPI OMouseMoveEvent : public OMemoryPoolEvent
+{
+public:
+	enum MovementType {
+		ActiveMove=1,		/**< Mouse is moved over the screen with button pressed. */
+		PassiveMove=2		/**< Passive mouse movement over the screen. */
+	};
+
+	/**
+	 \brief Class constructor.
+	 \param type Active or passive movement.
+	 \param x Window X-axis component in pixels.
+	 \param y Window Y-axis component in pixels.
+	 */
+	OMouseMoveEvent(MovementType type, int x, int y);
+
+	/**
+	 \brief Class destructor.
+	 */
+	virtual ~OMouseMoveEvent();
+
+	/**
+	 \brief Window X-axis component in pixels.
+	 */
+	int x();
+	
+	/**
+	 \brief Window Y-axis component in pixels.
+	 */
+	int y();
+private:
+	MovementType _type;
 	int _x;
 	int _y;
 };

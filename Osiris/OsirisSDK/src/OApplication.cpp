@@ -36,6 +36,8 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 	glutDisplayFunc(displayCallback);
 	glutKeyboardFunc(keyboardCallback);
 	glutMouseFunc(mouseCallback);
+	glutMotionFunc(mouseActiveMoveCallback);
+	glutPassiveMotionFunc(mousePassiveMoveCallback);
 	glutReshapeFunc(resizeCallback);
 
 	/* z-buffer */
@@ -100,6 +102,13 @@ void OApplication::clearScreen()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+int OApplication::eventRecipientCount(OEvent::EventType type)
+{
+	map<OEvent::EventType, list<OObject*> >::iterator it = _eventRecipients.find(type);
+	if (it == _eventRecipients.end()) return 0;
+	return it->second.size();
+}
+
 void OApplication::queueEvent(OEvent * evt)
 {
 	_eventQueue.push(evt);
@@ -127,25 +136,47 @@ void OApplication::deleteObjects()
 
 void OApplication::keyboardCallback(unsigned char key, int mouse_x, int mouse_y)
 {
-	OKeyboardPressEvent *evt = new OKeyboardPressEvent((OKeyboardPressEvent::KeyCode)key, mouse_x, mouse_y);
-	_activeInstance->queueEvent(evt);
+	if (_activeInstance->eventRecipientCount(OEvent::KeyboardPressEvent)) {
+		OKeyboardPressEvent *evt = new OKeyboardPressEvent((OKeyboardPressEvent::KeyCode)key, mouse_x, mouse_y);
+		_activeInstance->queueEvent(evt);
+	}
 }
 
 void OApplication::mouseCallback(int button, int state, int x, int y)
 {
-	OMouseClickEvent *evt = new OMouseClickEvent((OMouseClickEvent::MouseButton)button, 
-						     (OMouseClickEvent::MouseStatus)state, 
-						     x, y);
-	_activeInstance->queueEvent(evt);
+	if (_activeInstance->eventRecipientCount(OEvent::MouseClickEvent) > 0) {
+		OMouseClickEvent *evt = new OMouseClickEvent((OMouseClickEvent::MouseButton)button,
+						   (OMouseClickEvent::MouseStatus)state,
+						   x, y);
+		_activeInstance->queueEvent(evt);
+	}
+}
+
+void OApplication::mouseActiveMoveCallback(int x, int y)
+{
+	if (_activeInstance->eventRecipientCount(OEvent::MouseActiveMoveEvent) > 0) {
+		OMouseMoveEvent *evt = new OMouseMoveEvent(OMouseMoveEvent::ActiveMove, x, y);
+		_activeInstance->queueEvent(evt);
+	}
+}
+
+void OApplication::mousePassiveMoveCallback(int x, int y)
+{
+	if (_activeInstance->eventRecipientCount(OEvent::MousePassiveMoveEvent) > 0) {
+		OMouseMoveEvent *evt = new OMouseMoveEvent(OMouseMoveEvent::PassiveMove, x, y);
+		_activeInstance->queueEvent(evt);
+	}
 }
 
 void OApplication::resizeCallback(int width, int height)
 {
-	OResizeEvent *evt = new OResizeEvent(width, height);
+	if (_activeInstance->eventRecipientCount(OEvent::ResizeEvent) > 0) {
+		OResizeEvent *evt = new OResizeEvent(width, height);
 
-	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-	_activeInstance->camera()->setAspectRatio((float)width / height);
-	_activeInstance->queueEvent(evt);
+		glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+		_activeInstance->camera()->setAspectRatio((float)width / height);
+		_activeInstance->queueEvent(evt);
+	}
 }
 
 void OApplication::displayCallback()

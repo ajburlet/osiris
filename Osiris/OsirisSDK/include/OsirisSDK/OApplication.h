@@ -106,6 +106,11 @@ protected:
 	virtual void clearScreen();
 
 	/**
+	 \brief Returns the number of event recipients for a given event type.
+	 */
+	int eventRecipientCount(OEvent::EventType type);
+
+	/**
 	 \brief Queue event to be processed by the application and the subscribed OOBject class objects.
 	 */
 	void queueEvent(OEvent* evt);
@@ -134,6 +139,8 @@ private:
 
 	static void keyboardCallback(unsigned char key, int mouse_x, int mouse_y);
 	static void mouseCallback(int button, int state, int x, int y);
+	static void mouseActiveMoveCallback(int x, int y);
+	static void mousePassiveMoveCallback(int x, int y);
 	static void resizeCallback(int width, int height);
 	static void displayCallback();
 };

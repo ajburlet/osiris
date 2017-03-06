@@ -27,6 +27,7 @@ OMemoryPoolEvent::OMemoryPoolEvent(OEvent::EventType type) : OEvent(type)
 OMemoryPoolEvent::~OMemoryPoolEvent()
 {
 }
+
 // ***********************************************************************
 // OKeyboardPressEvent
 // ***********************************************************************
@@ -95,7 +96,31 @@ int OMouseClickEvent::y() const
 }
 
 // ***********************************************************************
-// OMouseClickEvent
+// OMouseMoveEvent 
+// ***********************************************************************
+OMouseMoveEvent::OMouseMoveEvent(MovementType type, int x, int y) :
+	OMemoryPoolEvent((type == ActiveMove) ? OEvent::MouseActiveMoveEvent : OEvent::MousePassiveMoveEvent),
+	_x(x),
+	_y(y)
+{
+}
+
+OMouseMoveEvent::~OMouseMoveEvent()
+{
+}
+
+int OMouseMoveEvent::x()
+{
+	return _x;
+}
+
+int OMouseMoveEvent::y()
+{
+	return _y;
+}
+
+// ***********************************************************************
+// OResizeEvent
 // ***********************************************************************
 OResizeEvent::OResizeEvent(int width, int height) :
 	OMemoryPoolEvent(OEvent::ResizeEvent),
