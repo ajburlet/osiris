@@ -4,6 +4,21 @@
 #include "OsirisSDK/OMath.h"
 #include "OsirisSDK/OException.h"
 
+#define PI	3.1415f
+
+// ****************************************************************************
+// OMath functions 
+// ****************************************************************************
+float OMath::deg2rad(float deg)
+{
+	return 2 * PI * deg / 360.0f;
+}
+
+float OMath::rad2deg(float rad)
+{ 
+	return 360.0f * rad / (2 * PI); 
+}
+
 // ****************************************************************************
 // OVector3
 // ****************************************************************************
@@ -72,6 +87,52 @@ float OVector3::y() const
 float OVector3::z() const
 {
 	return _glmInternal.z;
+}
+
+void OVector3::setR(float val)
+{
+	_glmInternal.x = val;
+}
+
+void OVector3::setTheta(float val)
+{
+	_glmInternal.x = val;
+}
+
+void OVector3::setPhi(float val)
+{
+	_glmInternal.z = val;
+}
+
+float OVector3::r() const
+{
+	return _glmInternal.x;
+}
+
+float OVector3::theta() const
+{
+	return _glmInternal.y;
+}
+
+float OVector3::phi() const
+{
+	return _glmInternal.z;
+}
+
+OVector3 OVector3::toSpherical() const
+{
+	return OVector3(sqrtf(x()*x()+y()*y()+z()*z()), 
+			atanf(OMath::deg2rad(z()/x())), 
+			atanf(OMath::deg2rad(sqrtf(x()*x()+z()*z())/y()))
+			);
+}
+
+OVector3 OVector3::toCartesian() const
+{
+	return OVector3(r()*cosf(OMath::deg2rad(theta()))*sinf(OMath::deg2rad(phi())), 
+			r()*cosf(OMath::deg2rad(phi())),
+			r()*sinf(OMath::deg2rad(theta()))*sinf(OMath::deg2rad(phi()))
+			);
 }
 
 // ****************************************************************************
@@ -194,3 +255,4 @@ float OMatrix4x4::value(int row, int col) const
 	default: throw OException("Invalid row index for 4x4 matrix.");
 	}
 }
+

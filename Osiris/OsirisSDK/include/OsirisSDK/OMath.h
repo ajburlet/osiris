@@ -7,6 +7,16 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
+
+namespace OMath {
+	/**
+	 \brief Convert angle from degrees to radians.
+	 */
+	inline float deg2rad(float deg);
+
+	inline float rad2deg(float rad);
+}
+
 /**
  \brief Represents three-dimentional vectors.
 */
@@ -123,12 +133,12 @@ public:
 	/**
 	 \brief Returns a new vector converted to spherical coordinates.
 	 */
-	OVector3 ToSpherical() const;
+	OVector3 toSpherical() const;
 	
 	/**
 	 \brief Returns a new vector converted to cartesian coordinates.
 	 */
-	OVector3 ToCartesian() const;
+	OVector3 toCartesian() const;
 };
 
 /**
