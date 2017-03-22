@@ -36,7 +36,7 @@ public:
 	/**
 	 \brief Class constructor.
 
-	 Creates a OVector3 taking in the values for each component. 
+	 Creates a OVector3 taking in the values for each component (cartesian or spherical). 
 	*/
 	OVector3(float vx, float vy, float vz);
 	
@@ -61,34 +61,74 @@ public:
 	static OVector3 cross(const OVector3& a, const OVector3& b);
 
 	/**
-	 \brief Set the value for the X axis component.
+	 \brief Set the value for the cartesian X axis component.
 	*/
 	void setX(float val);
 	
 	/**
-	 \brief Set the value for the Y axis component.
+	 \brief Set the value for the cartesian Y axis component.
 	*/
 	void setY(float val);
 	
 	/**
-	 \brief Set the value for the Z axis component.
+	 \brief Set the value for the cartesian Z axis component.
 	*/
 	void setZ(float val);
 
 	/**
-	 \brief Returns the value of the X axis component.
+	 \brief Returns the value of the cartesian X axis component.
 	*/
 	float x() const;
 	
 	/**
-	 \brief Returns the value of the Y axis component.
+	 \brief Returns the value of the cartesian Y axis component.
 	*/
 	float y() const;
 	
 	/**
-	 \brief Returns the value of the Z axis component.
+	 \brief Returns the value of the cartesian Z axis component.
 	*/
 	float z() const;
+
+	/**
+	 \brief Set the value for the spherical radius component.
+	 */
+	void setR(float val);
+
+	/**
+	 \brief Set the value for the spherical azimuthal component (in degrees).
+	 */
+	void setTheta(float val);
+
+	/**
+	 \brief Set the value for the spherical polar component (in degrees).
+	 */
+	void setPhi(float val);
+
+	/**
+	 \brief Returns the value for the spherical radius component.
+	 */
+	float r() const;
+
+	/**
+	 \brief Returns the value for the spherical azimuthal component (in degrees).
+	 */
+	float theta() const;
+
+	/**
+	 \brief Returns the value for the spherical polar component (in degrees).
+	 */
+	float phi() const;
+
+	/**
+	 \brief Returns a new vector converted to spherical coordinates.
+	 */
+	OVector3 ToSpherical() const;
+	
+	/**
+	 \brief Returns a new vector converted to cartesian coordinates.
+	 */
+	OVector3 ToCartesian() const;
 };
 
 /**
