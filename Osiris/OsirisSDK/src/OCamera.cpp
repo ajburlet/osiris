@@ -94,7 +94,7 @@ const OMatrixStack* OCamera::transform()
 	if (_cameraChanged) {
 		if (popCameraTransform) _transform.pop();
 		_transform.push();
-		_transform.camera(_position, _direction);
+		_transform.camera(_position, _direction.toCartesian());
 	}
 
 	return &_transform;

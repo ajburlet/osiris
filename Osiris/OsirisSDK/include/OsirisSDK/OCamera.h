@@ -20,10 +20,10 @@ public:
 	 \param zNear Nearest camera depth.
 	 \param zFar Farthest camera depth.
 	 \param pos Camera position.
-	 \param dir Camera direction vector.
+	 \param dir Camera direction vector as a unit vector in spherical coordinates (r, theta, phi).
 	*/
-	OCamera(float fieldOfViewDeg=45.0f, float aspectRatio=4.0f/3, float zNear=1.0f, float zFar=5.0f, 
-		const OVector3 &pos=OVector3(0, 0, -1), const OVector3 &dir=OVector3(0, 0, 1));
+	OCamera(float fieldOfViewDeg = 45.0f, float aspectRatio = 4.0f / 3, float zNear = 1.0f, float zFar = 5.0f,
+		const OVector3 &pos = OVector3(0.0f , 0.0f, -1.0f), const OVector3 &dir = OVector3(1.0f, 90.0f, 90.0f));
 
 	/**
 	 \brief Class destructor.
