@@ -92,7 +92,7 @@ void DemoApplication::init()
 	/* camera */
 	camera()->setCameraLimits(1.0f, 10.0f);
 	camera()->setPosition(OVector3(0.0f, 0.0f, -3.0f));
-	camera()->setDirection(OVector3(0.0f, 0.0f, 1.0f));
+	camera()->setDirection(OVector3(1.0f, 90.0f, 90.0f));
 
 	_movRadiusA = 1.0f;
 	_movRadiusB = 1.0f;
@@ -116,9 +116,12 @@ void DemoApplication::update(int timeIndex_ms)
 	/* calculate FPS and update the text object (to show on the screen) */
 	snprintf(fpsBuff, 32, "%.02f fps", 1 / ((float)deltaTime_ms / 1000));
 	_fpsText->setContent(fpsBuff);
-	snprintf(cameraBuff, 128, "Camera @ (%.02f, %.02f, %.02f), direction: (%.02f, %.02f, %.02f)",
+
+	OVector3 camDirRad = camera()->direction().toCartesian();
+	snprintf(cameraBuff, 128, "Camera @ (%.02f, %.02f, %.02f), direction: (%.02f, %.02f, %.02f) / (%.02f, %.02f, %.02f)",
 		camera()->position().x(), camera()->position().y(), camera()->position().z(),
-		camera()->direction().x(), camera()->direction().y(), camera()->direction().z());
+		camera()->direction().x(), camera()->direction().y(), camera()->direction().z(),
+		camDirRad.x(), camDirRad.y(), camDirRad.z());
 	_cameraText->setContent(cameraBuff);
 
 	/* calculating new positions */
