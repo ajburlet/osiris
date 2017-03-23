@@ -40,6 +40,7 @@ public:
 	 */
 	virtual void processEvent(const OEvent* evt);
 
+protected:
 	/**
 	 \brief Keyboard press event handler.
 
@@ -56,7 +57,7 @@ public:
 
 	 \param evt Mouse click event object.
 	 */
-	virtual void onMouseClickEvent(const OMouseClickEvent* evt);
+	virtual void onMouseClick(const OMouseClickEvent* evt);
 
 	/**
 	 \brief Mouse active and passive move event handler.
@@ -65,7 +66,7 @@ public:
 	 
 	 \param evt Mouse move event object.
 	 */
-	virtual void onMouseMoveEvent(const OMouseMoveEvent* evt);
+	virtual void onMouseMove(const OMouseMoveEvent* evt);
 
 	/**
 	 \brief Screen resize event handler.

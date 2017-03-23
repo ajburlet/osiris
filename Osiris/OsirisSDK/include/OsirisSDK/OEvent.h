@@ -22,9 +22,9 @@ public:
 	enum EventType {
 		KeyboardPressEvent=1000,	/**< Keyboard press event. Issues an OKeyboardPressEvent class object. */ 
 		MouseClickEvent,		/**< Mouse click event. Issues an OMouseClickEvent. */
-		MouseActiveMoveEvent,		/**< Mouse movement event with button pressed. */
-		MousePassiveMoveEvent,		/**< Passive mouse movement event. */
-		ResizeEvent			/**< Screen resize event. */
+		MouseActiveMoveEvent,		/**< Mouse movement event with button pressed. Issues an OMouseMove class object. */
+		MousePassiveMoveEvent,		/**< Passive mouse movement event. Issues an OMouseMove class object. */
+		ResizeEvent			/**< Screen resize event. Issues an OResizeEvent class object. */
 	};
 
 	/**
@@ -148,6 +148,7 @@ class OAPI OMouseClickEvent : public OMemoryPoolEvent
 {
 public:
 	enum MouseButton {
+		NoButton=0x0,
 		RightButton=GLUT_RIGHT_BUTTON, 
 		MiddleButton=GLUT_MIDDLE_BUTTON, 
 		LeftButton=GLUT_LEFT_BUTTON
@@ -223,12 +224,12 @@ public:
 	/**
 	 \brief Window X-axis component in pixels.
 	 */
-	int x();
+	int x() const;
 	
 	/**
 	 \brief Window Y-axis component in pixels.
 	 */
-	int y();
+	int y() const;
 private:
 	MovementType _type;
 	int _x;

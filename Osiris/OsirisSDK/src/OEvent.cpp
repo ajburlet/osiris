@@ -28,6 +28,7 @@ OMemoryPoolEvent::~OMemoryPoolEvent()
 {
 }
 
+
 // ***********************************************************************
 // OKeyboardPressEvent
 // ***********************************************************************
@@ -109,12 +110,12 @@ OMouseMoveEvent::~OMouseMoveEvent()
 {
 }
 
-int OMouseMoveEvent::x()
+int OMouseMoveEvent::x() const
 {
 	return _x;
 }
 
-int OMouseMoveEvent::y()
+int OMouseMoveEvent::y() const
 {
 	return _y;
 }
