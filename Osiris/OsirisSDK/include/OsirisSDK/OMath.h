@@ -49,7 +49,12 @@ public:
 	 Creates a OVector3 taking in the values for each component (cartesian or spherical). 
 	*/
 	OVector3(float vx, float vy, float vz);
-	
+
+	/**
+	 \brief Copy constructor for the base template class.
+	 */
+	OVector3(const OMathPrimitive<glm::vec3> &in);
+
 	/**
 	 \brief Class destructor.
 	*/
@@ -181,7 +186,12 @@ public:
 	 will receive the values from the three-dimensional vectors.
 	 */
 	OVector4(const OVector3& vec3, float vw=0.0f);
-	
+
+	/**
+	 \brief Class copy constructor for the base template class.
+	 */
+	OVector4(const OMathPrimitive<glm::vec4> &in);
+
 	/**
 	 \brief Class destructor.
 	*/
@@ -250,6 +260,11 @@ public:
 	*/
 	OMatrix4x4(const OMatrix4x4& in);
 	
+	/**
+	 \brief Class copy constructor for the base template class
+	 */
+	OMatrix4x4(const OMathPrimitive<glm::mat4x4> &in);
+
 	/**
 	 \brief Class destructor.
 	*/

@@ -41,6 +41,11 @@ OVector3::OVector3(float vx, float vy, float vz)
 	_glmInternal = glm::vec3(vx, vy, vz);
 }
 
+OVector3::OVector3(const OMathPrimitive<glm::vec3>& in) :
+	OMathPrimitive<glm::vec3>(in)
+{
+}
+
 OVector3::~OVector3()
 {
 }
@@ -96,7 +101,7 @@ void OVector3::setR(float val)
 
 void OVector3::setTheta(float val)
 {
-	_glmInternal.x = val;
+	_glmInternal.y = val;
 }
 
 void OVector3::setPhi(float val)
@@ -165,6 +170,11 @@ OVector4::OVector4(const OVector3 & vec3, float vw)
 	_glmInternal.w = vw;
 }
 
+OVector4::OVector4(const OMathPrimitive<glm::vec4>& in) :
+	OMathPrimitive<glm::vec4>(in)
+{
+}
+
 OVector4::~OVector4()
 {
 }
@@ -222,6 +232,11 @@ OMatrix4x4::OMatrix4x4(float identValue)
 }
 
 OMatrix4x4::OMatrix4x4(const OMatrix4x4 & in) :
+	OMathPrimitive<glm::mat4x4>(in)
+{
+}
+
+OMatrix4x4::OMatrix4x4(const OMathPrimitive<glm::mat4x4>& in) :
 	OMathPrimitive<glm::mat4x4>(in)
 {
 }
