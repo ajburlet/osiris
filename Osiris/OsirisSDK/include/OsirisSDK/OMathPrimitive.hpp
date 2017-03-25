@@ -26,11 +26,11 @@ public:
 
 	OMathPrimitive<MType>& operator=(const OMathPrimitive<MType>& in);
 	OMathPrimitive<MType>& operator*=(const OMathPrimitive<MType>& in);
-	OMathPrimitive<MType> operator*(const OMathPrimitive<MType>& in);
-	OMathPrimitive<MType> operator+=(const OMathPrimitive<MType>& in);
-	OMathPrimitive<MType> operator+(const OMathPrimitive<MType>& in);
-	OMathPrimitive<MType> operator-=(const OMathPrimitive<MType>& in);
-	OMathPrimitive<MType> operator-(const OMathPrimitive<MType>& in);
+	OMathPrimitive<MType> operator*(const OMathPrimitive<MType>& in) const;
+	OMathPrimitive<MType>& operator+=(const OMathPrimitive<MType>& in);
+	OMathPrimitive<MType> operator+(const OMathPrimitive<MType>& in) const;
+	OMathPrimitive<MType>& operator-=(const OMathPrimitive<MType>& in);
+	OMathPrimitive<MType> operator-(const OMathPrimitive<MType>& in) const;
 	
 	bool operator==(const OMathPrimitive<MType>& in) const;
 	bool operator!=(const OMathPrimitive<MType>& in) const;
@@ -91,7 +91,7 @@ inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator*=(const OMathPrim
 }
 
 template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(const OMathPrimitive<MType>& in)
+inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(const OMathPrimitive<MType>& in) const
 {
 	OMathPrimitive<MType> res;
 	res._glmInternal = this->_glmInternal * in._glmInternal;
@@ -99,14 +99,14 @@ inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(const OMathPrimiti
 }
 
 template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator+=(const OMathPrimitive<MType>& in)
+inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator+=(const OMathPrimitive<MType>& in)
 {
 	_glmInternal += in._glmInternal;
 	return *this;
 }
 
 template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator+(const OMathPrimitive<MType>& in)
+inline OMathPrimitive<MType> OMathPrimitive<MType>::operator+(const OMathPrimitive<MType>& in) const
 {
 	OMathPrimitive<MType> res;
 	res._glmInternal = this->_glmInternal + in._glmInternal;
@@ -114,14 +114,14 @@ inline OMathPrimitive<MType> OMathPrimitive<MType>::operator+(const OMathPrimiti
 }
 
 template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator-=(const OMathPrimitive<MType>& in)
+inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator-=(const OMathPrimitive<MType>& in)
 {
 	_glmInternal -= in._glmInternal;
 	return *this;
 }
 
 template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator-(const OMathPrimitive<MType>& in)
+inline OMathPrimitive<MType> OMathPrimitive<MType>::operator-(const OMathPrimitive<MType>& in) const
 {
 	OMathPrimitive<MType> res;
 	res._glmInternal = this->_glmInternal - in._glmInternal;
