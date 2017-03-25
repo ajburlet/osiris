@@ -41,10 +41,21 @@ void OCamera::setPosition(const OVector3 & position)
 	_position = position;
 }
 
+void OCamera::changePosition(const OVector3 & displacement)
+{
+	_position += displacement;
+}
+
 void OCamera::setDirection(const OVector3 & direction)
 {
 	_cameraChanged = true;
 	_direction = direction;
+}
+
+void OCamera::changeDirection(float deltaTheta, float deltaPhi)
+{
+	_direction.setTheta(_direction.theta() + deltaTheta);
+	_direction.setPhi(_direction.phi() + deltaPhi);
 }
 
 float OCamera::fieldOfViewDegrees() const
@@ -94,7 +105,7 @@ const OMatrixStack* OCamera::transform()
 	if (_cameraChanged) {
 		if (popCameraTransform) _transform.pop();
 		_transform.push();
-		_transform.camera(_position, _direction.toCartesian());
+		_transform.camera(_position, _direction.toCartesian() + _position);
 	}
 
 	return &_transform;

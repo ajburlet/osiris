@@ -70,7 +70,14 @@ int OApplication::windowHeight() const
 
 void OApplication::addEventRecipient(OEvent::EventType eventType, OObject * recipient)
 {
-	_eventRecipients[eventType].push_back(recipient);
+	bool exists = false;
+	for (list<OObject*>::iterator it = _eventRecipients[eventType].begin(); it != _eventRecipients[eventType].end(); it++) {
+		if (*it == recipient) {
+			exists = true;
+			break;
+		}
+	}
+	if (!exists) _eventRecipients[eventType].push_back(recipient);
 }
 
 void OApplication::removeEventRecipient(OEvent::EventType eventType, OObject * recipient)

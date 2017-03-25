@@ -18,9 +18,9 @@ void OObject::processEvent(const OEvent * evt)
 {
 	switch (evt->type()) {
 	case OEvent::KeyboardPressEvent:	onKeyboardPress((OKeyboardPressEvent*)evt);	break;
-	case OEvent::MouseClickEvent:		onMouseClick((OMouseClickEvent*)evt);	break;
+	case OEvent::MouseClickEvent:		onMouseClick((OMouseClickEvent*)evt);		break;
 	case OEvent::MouseActiveMoveEvent:
-	case OEvent::MousePassiveMoveEvent:	onMouseMove((OMouseMoveEvent*)evt);	break;
+	case OEvent::MousePassiveMoveEvent:	onMouseMove((OMouseMoveEvent*)evt);		break;
 	case OEvent::ResizeEvent:		onScreenResize((OResizeEvent*)evt);		break;
 	}
 }

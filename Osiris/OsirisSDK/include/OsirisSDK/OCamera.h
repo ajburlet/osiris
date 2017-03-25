@@ -53,12 +53,25 @@ public:
 	 \param position Camera position coordinates.
 	*/
 	void setPosition(const OVector3 &position);
-	
+
+	/**
+	 \brief Change camera position using a displacement vector.
+	 \param displacement Displacement vector.
+	 */
+	void changePosition(const OVector3 &displacement);
+
 	/**
 	 \brief Set camera direction.
-	 \param direction Camera direction vector.
+	 \param direction Camera direction vector in spherical coordinates.
 	*/
 	void setDirection(const OVector3 &direction);
+
+	/**
+	 \brief Change camera direction by incrementing azimuthal and polar angles.
+	 \param deltaTheta Change in azimulthal angle in degrees.
+	 \param deltaPhi Change in polar angle in degrees.
+	 */
+	void changeDirection(float deltaTheta, float deltaPhi);
 
 	/**
 	 \brief Returns the camera field of view.
@@ -90,7 +103,7 @@ public:
 	
 	/**
 	 \brief Returns the camera looking direction.
-	 \return Camera direction vector.
+	 \return Camera direction vector in spherical coordinates.
 	*/
 	OVector3 direction() const;
 

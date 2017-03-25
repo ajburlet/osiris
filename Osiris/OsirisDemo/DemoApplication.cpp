@@ -10,7 +10,8 @@ const float toRad = 2 * PI / 360.0f;
 DemoApplication::DemoApplication(int argc, char **argv) :
 	OApplication("DemoApplication", argc, argv),
 	_cube(NULL),
-	_torus(NULL)
+	_torus(NULL),
+	_camCtrl(this)
 {
 }
 
@@ -25,6 +26,14 @@ DemoApplication::~DemoApplication()
 
 void DemoApplication::init()
 {
+	/* set camera movement keys */
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_a, OCameraController::MoveLeft);
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_s, OCameraController::MoveBack);
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_d, OCameraController::MoveRight);
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_w, OCameraController::MoveForward);
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_q, OCameraController::MoveUp);
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_e, OCameraController::MoveDown);
+	
 	/* subscribe to keyboard event */
 	addEventRecipient(OEvent::KeyboardPressEvent, this);
 
@@ -112,6 +121,9 @@ void DemoApplication::update(int timeIndex_ms)
 	int deltaTime_ms = timeIndex_ms - _last_timeIndex_ms;
 	char fpsBuff[32];
 	char cameraBuff[128];
+
+	/* update camera */
+	_camCtrl.update(timeIndex_ms);
 
 	/* calculate FPS and update the text object (to show on the screen) */
 	snprintf(fpsBuff, 32, "%.02f fps", 1 / ((float)deltaTime_ms / 1000));

@@ -4,6 +4,7 @@
 #include <OsirisSDK/OObject.h>
 #include <OsirisSDK/OMesh.h>
 #include <OsirisSDK/OText2D.h>
+#include <OsirisSDK/OCameraController.h>
 
 class DemoApplication :	public OApplication, public OObject
 {
@@ -25,6 +26,7 @@ private:
 	OText2D* _fpsText;
 	OText2D* _cameraText;
 	OMatrixStack _mtx;
+	OCameraController _camCtrl;
 
 	float _movRadiusA;
 	float _movRadiusB;
