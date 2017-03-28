@@ -269,7 +269,12 @@ public:
 	 \brief Class destructor.
 	*/
 	virtual ~OMatrix4x4();
-	
+
+	/**
+	 \brief Matrix product operator for four-dimentional vectors.
+	 */
+	OVector4 operator*(const OVector4& in) const;
+
 	/**
 	 \brief Set the value of a specific matrix element.
 	 \param row Row index number.

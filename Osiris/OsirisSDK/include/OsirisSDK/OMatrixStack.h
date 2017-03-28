@@ -54,29 +54,37 @@ public:
 	*/
 	void clear();
 
+	/**
+	 \brief Assignment operator.
+	 */
 	OMatrixStack& operator=(const OMatrixStack& in);
  
 	/**
-	 \see multiply(const OMatrixStack&)
+	 \see product(const OMatrixStack&)
 	*/
 	OMatrixStack& operator*=(const OMatrixStack& in);
 
 	/**
-	 \see multiply(const OMatrix4x4&)
+	 \see product(const OMatrix4x4&)
 	*/
 	OMatrixStack& operator*=(const OMatrix4x4& in);
+
+	/**
+	 \brief Product of the top matrix by a four-dimentional vector.
+	 */
+	OVector4 operator*(const OVector4& in);
 
 	/**
 	 \brief Multiply the top matrix by another stack top matrix.
 	 \param in Stack matrix that contains the top matrix that is going to be used in this operation.
 	*/
-	void multiply(const OMatrixStack& in);
+	void product(const OMatrixStack& in);
 
 	/**
 	 \brief Multiply the top matrix by another matrix.
 	 \param in Right value matrix in this product.
 	*/
-	void multiply(const OMatrix4x4& in);
+	void product(const OMatrix4x4& in);
 
 	/**
 	 \brief Applies the translation transformation to a given direction.

@@ -245,6 +245,14 @@ OMatrix4x4::~OMatrix4x4()
 {
 }
 
+OVector4 OMatrix4x4::operator*(const OVector4 & in) const
+{
+	glm::vec4 newVec = _glmInternal * in.glm();
+	OVector4 vec;
+	vec.setGlm(newVec);
+	return vec;
+}
+
 void OMatrix4x4::setValue(int row, int col, float value)
 {
 	if (col < 0 || col > 3) throw OException("Invalid column index for 4x4 matrix.");

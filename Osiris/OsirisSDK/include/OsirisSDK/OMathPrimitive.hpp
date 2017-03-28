@@ -43,6 +43,12 @@ public:
 	bool operator!=(const MType& in) const;
 
 	/**
+	 \brief Set internal GLM object. For internal library usage only.
+	 \param glm New internal GLM object.
+	 */
+	void setGlm(const MType& glm);
+
+	/**
 	 \brief Access to the internal GLM object.
 	 \return Internal GLM object.
 	 */
@@ -50,7 +56,7 @@ public:
 #endif
 
 	/**
-	 \brief Returns a pointer to the memory area to be used by OpenGL.
+	 \brief Returns a pointer to the memory area to be used by OpenGL. For internal library usage only.
 	*/
 	const GLfloat* glArea() const;
 
@@ -172,6 +178,12 @@ template<class MType>
 inline bool OMathPrimitive<MType>::operator!=(const MType & in) const
 {
 	return (_glmInternal != in);
+}
+
+template<class MType>
+inline void OMathPrimitive<MType>::setGlm(const MType & glm)
+{
+	_glmInternal = glm;
 }
 
 template<class MType>

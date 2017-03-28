@@ -58,22 +58,27 @@ OMatrixStack & OMatrixStack::operator=(const OMatrixStack & in)
 
 OMatrixStack & OMatrixStack::operator*=(const OMatrixStack & in)
 {
-	multiply(in);
+	product(in);
 	return *this;
 }
 
 OMatrixStack & OMatrixStack::operator*=(const OMatrix4x4 & in)
 {
-	multiply(in);
+	product(in);
 	return *this;
 }
 
-void OMatrixStack::multiply(const OMatrixStack & in)
+OVector4 OMatrixStack::operator*(const OVector4 & in)
+{
+	return top() * in;
+}
+
+void OMatrixStack::product(const OMatrixStack & in)
 {
 	_currMtx *= in._currMtx;
 }
 
-void OMatrixStack::multiply(const OMatrix4x4 & in)
+void OMatrixStack::product(const OMatrix4x4 & in)
 {
 	_currMtx *= in;
 }
