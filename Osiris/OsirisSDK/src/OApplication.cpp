@@ -35,6 +35,7 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 	/* setup callbacks */
 	glutDisplayFunc(displayCallback);
 	glutKeyboardFunc(keyboardCallback);
+	glutKeyboardUpFunc(keyboardUpCallback);
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(mouseActiveMoveCallback);
 	glutPassiveMotionFunc(mousePassiveMoveCallback);
@@ -144,7 +145,15 @@ void OApplication::deleteObjects()
 void OApplication::keyboardCallback(unsigned char key, int mouse_x, int mouse_y)
 {
 	if (_activeInstance->eventRecipientCount(OEvent::KeyboardPressEvent)) {
-		OKeyboardPressEvent *evt = new OKeyboardPressEvent((OKeyboardPressEvent::KeyCode)key, mouse_x, mouse_y);
+		OKeyboardPressEvent *evt = new OKeyboardPressEvent((OKeyboardPressEvent::KeyCode)key, mouse_x, mouse_y, true);
+		_activeInstance->queueEvent(evt);
+	}
+}
+
+void OApplication::keyboardUpCallback(unsigned char key, int mouse_x, int mouse_y)
+{
+	if (_activeInstance->eventRecipientCount(OEvent::KeyboardReleaseEvent)) {
+		OKeyboardPressEvent *evt = new OKeyboardPressEvent((OKeyboardPressEvent::KeyCode)key, mouse_x, mouse_y, false);
 		_activeInstance->queueEvent(evt);
 	}
 }

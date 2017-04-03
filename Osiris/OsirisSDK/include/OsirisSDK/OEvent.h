@@ -20,7 +20,8 @@ class OAPI OEvent
 {
 public:
 	enum EventType {
-		KeyboardPressEvent=1000,	/**< Keyboard press event. Issues an OKeyboardPressEvent class object. */ 
+		KeyboardPressEvent=1000,	/**< Keyboard press event. Issues an OKeyboardPressEvent class object. */
+		KeyboardReleaseEvent,		/**< Keyboard release event. Issues an OKeyboardPressEvent class object. */
 		MouseClickEvent,		/**< Mouse click event. Issues an OMouseClickEvent. */
 		MouseActiveMoveEvent,		/**< Mouse movement event with button pressed. Issues an OMouseMove class object. */
 		MousePassiveMoveEvent,		/**< Passive mouse movement event. Issues an OMouseMove class object. */
@@ -112,8 +113,9 @@ public:
 	 \param code Key code.
 	 \param mouse_x Mouse position on the window on the X-axis.
 	 \param mouse_y Mouse position on the window on the Y-axis.
+	 \param key_pressed Key status: true if pressed, false if released.
 	 */
-	OKeyboardPressEvent(KeyCode code, int mouse_x, int mouse_y);
+	OKeyboardPressEvent(KeyCode code, int mouse_x, int mouse_y, bool key_pressed);
 
 	/**
 	 \brief Class destructor.

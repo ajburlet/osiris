@@ -51,6 +51,15 @@ protected:
 	virtual void onKeyboardPress(const OKeyboardPressEvent* evt);
 	
 	/**
+	 \brief Mouse release event handler.
+
+	 This handler is only called if the object is set as an event recipient. By default does nothing.
+
+	 \param evt Mouse click event object.
+	 */
+	virtual void onKeyboardRelease(const OKeyboardPressEvent *evt);
+
+	/**
 	 \brief Mouse click event handler.
 
 	 This handler is only called if the object is set as an event recipient. By default does nothing.

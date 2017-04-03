@@ -138,6 +138,7 @@ private:
 	std::queue<OEvent*> _eventQueue;
 
 	static void keyboardCallback(unsigned char key, int mouse_x, int mouse_y);
+	static void keyboardUpCallback(unsigned char key, int mouse_x, int mouse_y);
 	static void mouseCallback(int button, int state, int x, int y);
 	static void mouseActiveMoveCallback(int x, int y);
 	static void mousePassiveMoveCallback(int x, int y);

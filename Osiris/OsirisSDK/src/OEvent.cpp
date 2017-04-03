@@ -32,8 +32,8 @@ OMemoryPoolEvent::~OMemoryPoolEvent()
 // ***********************************************************************
 // OKeyboardPressEvent
 // ***********************************************************************
-OKeyboardPressEvent::OKeyboardPressEvent(KeyCode code, int mouse_x, int mouse_y) :
-	OMemoryPoolEvent(OEvent::KeyboardPressEvent),
+OKeyboardPressEvent::OKeyboardPressEvent(KeyCode code, int mouse_x, int mouse_y, bool keyPressed) :
+	OMemoryPoolEvent((keyPressed) ? OEvent::KeyboardPressEvent : OEvent::KeyboardReleaseEvent),
 	_code(code),
 	_mouse_x(mouse_x),
 	_mouse_y(mouse_y)
