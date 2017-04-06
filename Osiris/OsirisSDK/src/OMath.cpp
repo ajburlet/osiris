@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "OsirisSDK/OMath.h"
 #include "OsirisSDK/OException.h"
@@ -53,15 +54,23 @@ OVector3::~OVector3()
 OVector3 OVector3::cross(const OVector3 & in) const
 {
 	OVector3 res;
-
-	res._glmInternal = glm::cross(this->_glmInternal, in._glmInternal);
-
+	res._glmInternal = glm::cross(_glmInternal, in._glmInternal);
 	return res;
 }
 
 OVector3 OVector3::cross(const OVector3 & a, const OVector3 & b)
 {
 	return a.cross(b);
+}
+
+float OVector3::dot(const OVector3 & in) const
+{
+	return glm::dot(_glmInternal, in._glmInternal);
+}
+
+float OVector3::dot(const OVector3 & a, const OVector3 & b)
+{
+	return a.dot(b);
 }
 
 void OVector3::setX(float val)
@@ -277,5 +286,50 @@ float OMatrix4x4::value(int row, int col) const
 	case 3: return _glmInternal[col].w;
 	default: throw OException("Invalid row index for 4x4 matrix.");
 	}
+}
+
+// ****************************************************************************
+// OQuaternion
+// ****************************************************************************
+OQuaternion::OQuaternion()
+{
+}
+
+OQuaternion::OQuaternion(const OQuaternion & in) :
+	OMathPrimitive<glm::quat>(in)
+{
+}
+
+OQuaternion::OQuaternion(float x, float y, float z, float w) 
+{
+	_glmInternal = glm::quat(x, y, z, w);
+}
+
+OQuaternion::OQuaternion(OVector3 rotationAxis, float angle)
+{
+	_glmInternal = glm::angleAxis(angle, rotationAxis.glm());
+}
+
+OQuaternion::OQuaternion(OVector3 eulerAngles)
+{
+	_glmInternal = glm::quat(eulerAngles.glm());
+}
+
+OQuaternion::~OQuaternion()
+{
+}
+
+OVector3 OQuaternion::operator*(const OVector3 & in) const
+{
+	OVector3 res;
+	res.setGlm(_glmInternal * in.glm());
+	return res;
+}
+
+OMatrix4x4 OQuaternion::toMatrix4() const
+{
+	OMatrix4x4 res;
+	res.setGlm(glm::toMat4(_glmInternal));
+	return res;
 }
 

@@ -6,6 +6,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 
 namespace OMath {
@@ -14,6 +15,9 @@ namespace OMath {
 	 */
 	inline float deg2rad(float deg);
 
+	/**
+	 \brief Convert angle from radians to degrees.
+	 */
 	inline float rad2deg(float rad);
 }
 
@@ -74,6 +78,20 @@ public:
 	 \return Resulting vector of the cross product.
 	*/
 	static OVector3 cross(const OVector3& a, const OVector3& b);
+
+	/**
+	 \brief Vector dot product.
+	 \param in Right value in the dot operation.
+	 \return Resulting vector of the dot product.
+	*/
+	float dot(const OVector3& in) const;
+
+	/**
+	 \brief Vector dot product.
+	 \param in Right value in the dot operation.
+	 \return Resulting value of the dot product.
+	*/
+	static float dot(const OVector3& a, const OVector3& b);
 
 	/**
 	 \brief Set the value for the cartesian X axis component.
@@ -292,3 +310,52 @@ public:
 	float value(int row, int col) const;
 };
 
+/**
+ \brief Represents quaternions.
+*/
+class OQuaternion : OMathPrimitive<glm::quat>
+{
+public:
+	/**
+	 \brief Class constructor.
+	 */
+	OQuaternion();
+
+	/**
+	 \brief Class copy constructor.
+	 */
+	OQuaternion(const OQuaternion& in);
+
+	/**
+	 \brief Class constructor, based on the quaternion components.
+	 */
+	OQuaternion(float x, float y, float z, float w);
+
+	/**
+	 \brief Class constructor for a 3D rotation quaternion.
+	 \param rotationAxis Rotation axis.
+	 \param angle The angle of rotation in degrees.
+	 */
+	OQuaternion(OVector3 rotationAxis, float angle);
+
+	/**
+	 \brief Class constructor based on the Euler angles for object orientation.
+	 \brief eulerAngles Euler orientation angles (pitch, roll and yaw).
+	 */
+	OQuaternion(OVector3 eulerAngles);
+
+	/**
+	 \brief Class destructor.
+	 */
+	virtual ~OQuaternion();
+
+	/**
+	 \brief Quaternion product operator overload for three-dimentional vectors.
+	 */
+	OVector3 operator*(const OVector3& in) const;
+
+	/**
+	 \brief Conversion to 4x4 rotation matrix.
+	 */
+	OMatrix4x4 toMatrix4() const;
+};
