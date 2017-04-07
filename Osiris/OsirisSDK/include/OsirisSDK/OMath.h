@@ -313,7 +313,7 @@ public:
 /**
  \brief Represents quaternions.
 */
-class OQuaternion : OMathPrimitive<glm::quat>
+class OAPI OQuaternion : OMathPrimitive<glm::quat>
 {
 public:
 	/**
