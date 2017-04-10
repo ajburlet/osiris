@@ -358,4 +358,9 @@ public:
 	 \brief Conversion to 4x4 rotation matrix.
 	 */
 	OMatrix4x4 toMatrix4() const;
+
+	/**
+	 \brief Conversion to a three-dimensional vector containing Euler angles.
+	 */
+	OVector3 toEulerAngles() const;
 };

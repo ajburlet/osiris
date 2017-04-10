@@ -333,3 +333,8 @@ OMatrix4x4 OQuaternion::toMatrix4() const
 	return res;
 }
 
+OVector3 OQuaternion::toEulerAngles() const
+{
+	return OVector3(glm::eulerAngles(_glmInternal);
+}
+
