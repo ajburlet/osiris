@@ -67,6 +67,16 @@ OVector3&& OState::orientation() const
 	return _orientation.toEulerAngles();
 }
 
+const OQuaternion * OState::orientationQuaternion()
+{
+	return &_orientation;
+}
+
+OMatrix4x4 && OState::orientationTransform() const
+{
+	return _orientation.toMatrix4();
+}
+
 const OStateConstraint * OState::minConstraint(int degree)
 {
 	if (degree > _minConstraint.size() - 1) return NULL;

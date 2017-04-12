@@ -88,6 +88,11 @@ OVector3 OCamera::direction() const
 	return _direction;
 }
 
+const OState * OCamera::state()
+{
+	return &_state;
+}
+
 const OMatrixStack* OCamera::transform()
 {
 	bool popCameraTransform = true;

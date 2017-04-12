@@ -99,6 +99,16 @@ public:
 	OVector3&& orientation() const;
 
 	/**
+	 \brief Retrieves a pointer to the quaternion used for orientation transform.
+	 */
+	const OQuaternion* orientationQuaternion();
+
+	/**
+	 \brief Provides a rotation transformation matrix given the orientation.
+	 */
+	OMatrix4x4&& orientationTransform() const;
+
+	/**
 	 \brief Return the minimum value constraint for a given motion state degree.
 	 \param degree The degree of the component (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.). 
 	 \returns Pointer to the constraint object, NULL if degree is non-existant.

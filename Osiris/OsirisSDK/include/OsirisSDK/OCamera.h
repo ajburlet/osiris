@@ -3,6 +3,7 @@
 #include "defs.h"
 #include "OMatrixStack.h"
 #include "OMath.h"
+#include "OState.h"
 
 /**
  \brief Class that represents a camera on the scene.
@@ -108,6 +109,11 @@ public:
 	OVector3 direction() const;
 
 	/**
+	 \brief Returns a pointer to the camera state object: motion and orientation.
+	 */
+	const OState* state();
+
+	/**
 	 \brief Calculates the perspective and camera transformations.
 	 \return Matrix stack containing the transformation matrix.
 	 */
@@ -127,6 +133,7 @@ private:
 	/* camera */
 	OVector3 _position;
 	OVector3 _direction;
+	OState _state;
 
 	/* transform matrix: camera + perspective */
 	OMatrixStack _transform;
