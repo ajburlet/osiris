@@ -1,3 +1,5 @@
+#include "OsirisSDK/OMatrixStack.h"
+
 #include "OsirisSDK/OCameraController.h"
 
 using namespace std;
@@ -15,7 +17,8 @@ OCameraController::OCameraController(OApplication * app,
 	_last_mouse_x(-1),
 	_last_mouse_y(-1),
 	_delta_mouse_x(0),
-	_delta_mouse_y(0)
+	_delta_mouse_y(0),
+	_cameraSpeed(0)
 {
 	updateApplication();
 }
@@ -27,14 +30,16 @@ OCameraController::~OCameraController()
 
 void OCameraController::setMoveEventKey(OKeyboardPressEvent::KeyCode key, CameraMoveDir camEvt)
 {
-	if (_keyBind.size() == 0) _app->addEventRecipient(OEvent::KeyboardPressEvent, this);
+	if (_keyBind.size() == 0) {
+		_app->addEventRecipient(OEvent::KeyboardPressEvent, this);
+		_app->addEventRecipient(OEvent::KeyboardReleaseEvent, this);
+	}
 	_keyBind[key] = camEvt;
 }
 
 void OCameraController::update(int timeIndex_ms)
 {
 	float delta_ts = (float)(timeIndex_ms - _lastTimeIndex_ms) / 1000.0f;
-	OVector3 camDispl = OVector3(0);
 
 	/* update camera orientation (direction vector) */
 	float deltaTheta = 0.0f, deltaPhi = 0.0f;
@@ -46,48 +51,8 @@ void OCameraController::update(int timeIndex_ms)
 	_delta_mouse_y = 0;
 
 	/* update camera position for each direction */
-	for (map<CameraMoveDir, bool>::iterator it = _pressedKeys.begin(); it != _pressedKeys.end(); it++) {
-		map<CameraMoveDir, float>::iterator itSpd = _directionSpeed.find(it->first);
-		if (itSpd == _directionSpeed.end()) {
-			pair<map<CameraMoveDir, float>::iterator, bool> insRet;
-			insRet = _directionSpeed.insert(make_pair(it->first, 0.0f));
-			itSpd = insRet.first;
-		}
-
-		/* update current speed */
-		if (it->second) {
-			itSpd->second += (float)delta_ts * _movementAcceleration;
-			if (itSpd->second > _movementMaxSpeed) itSpd->second = _movementMaxSpeed;
-		} else {
-			itSpd->second -= (float)delta_ts * _movementAcceleration;
-			if (itSpd->second < 0) itSpd->second = 0;
-		}
-
-		/* update camera position */
-		float compDispl = _directionSpeed[it->first] * delta_ts; /* component displacement */
-		switch (it->first) {
-		case MoveBack:
-			compDispl = -compDispl;
-		case MoveForward:
-			camDispl += OVector3(0, 0, compDispl);
-			break;
-
-		case MoveRight:
-			compDispl = -compDispl;
-		case MoveLeft:
-			camDispl += OVector3(compDispl, 0, 0);
-			break;
-
-		case MoveDown:
-			compDispl = -compDispl;
-		case MoveUp:
-			camDispl += OVector3(0, compDispl, 0);
-			break;
-		}
-
-		it->second = false;
-	}
-	_app->camera()->changePosition(camDispl);
+	updateCameraSpeed(delta_ts);
+	updateCameraPosition(delta_ts);
 	_lastTimeIndex_ms = timeIndex_ms;
 }
 
@@ -96,6 +61,13 @@ void OCameraController::onKeyboardPress(const OKeyboardPressEvent * evt)
 	map<OKeyboardPressEvent::KeyCode, CameraMoveDir>::iterator it;
 	if ((it = _keyBind.find(evt->code())) == _keyBind.end()) return;
 	_pressedKeys[it->second] = true;
+}
+
+void OCameraController::onKeyboardRelease(const OKeyboardPressEvent * evt)
+{
+	map<OKeyboardPressEvent::KeyCode, CameraMoveDir>::iterator it;
+	if ((it = _keyBind.find(evt->code())) == _keyBind.end()) return;
+	_pressedKeys[it->second] = false;
 }
 
 void OCameraController::onMouseMove(const OMouseMoveEvent * evt)
@@ -151,4 +123,74 @@ void OCameraController::updateApplication()
 		_app->removeEventRecipient(OEvent::MousePassiveMoveEvent, this);
 		break;
 	}
+}
+
+bool OCameraController::isMovementKeyPressed(CameraMoveDir dir)
+{
+	map<CameraMoveDir, bool>::iterator it = _pressedKeys.find(dir);
+	return (it != _pressedKeys.end()) ? it->second : false;
+}
+
+void OCameraController::updateCameraSpeed(float deltaTs_s)
+{
+	float deltaSpd = deltaTs_s*_movementAcceleration;
+	float newSpdComponent;
+
+	/* movement on Z-axis: back/forward */
+	newSpdComponent = 0.0f;
+	if (!isMovementKeyPressed(MoveBack) && !isMovementKeyPressed(MoveForward)) {
+		if (deltaSpd > abs(_cameraSpeed.z())) {
+			newSpdComponent = -_cameraSpeed.z();
+		} else if (_cameraSpeed.z() != 0.0f) {
+			/* signal is reverse to the current momentum -- tend to zero */
+			newSpdComponent = -abs(_cameraSpeed.z()) / _cameraSpeed.z()*deltaSpd; 
+		}
+	} else {
+		if (isMovementKeyPressed(MoveBack)) newSpdComponent += -deltaSpd;
+		if (isMovementKeyPressed(MoveForward)) newSpdComponent += deltaSpd;
+	}
+	_cameraSpeed.setZ(_cameraSpeed.z() + newSpdComponent);
+	
+	/* movement on X-axis: left/right */
+	newSpdComponent = 0.0f;
+	if (!isMovementKeyPressed(MoveLeft) && !isMovementKeyPressed(MoveRight)) {
+		if (deltaSpd > abs(_cameraSpeed.x())) {
+			newSpdComponent = -_cameraSpeed.x();
+		} else if (_cameraSpeed.x() != 0.0f) {
+			/* signal is reverse to the current momentum -- tend to zero */
+			newSpdComponent = -abs(_cameraSpeed.x()) / _cameraSpeed.x()*deltaSpd; 
+		}
+	} else {
+		if (isMovementKeyPressed(MoveLeft)) newSpdComponent += -deltaSpd;
+		if (isMovementKeyPressed(MoveRight)) newSpdComponent += deltaSpd;
+	}
+	_cameraSpeed.setX(_cameraSpeed.x() + newSpdComponent);
+	
+	/* movement on Y-axis: up/down */
+	newSpdComponent = 0.0f;
+	if (!isMovementKeyPressed(MoveDown) && !isMovementKeyPressed(MoveUp)) {
+		if (deltaSpd > abs(_cameraSpeed.y())) {
+			newSpdComponent = -_cameraSpeed.y();
+		} else if (_cameraSpeed.y() != 0.0f) {
+			/* signal is reverse to the current momentum -- tend to zero */
+			newSpdComponent = -abs(_cameraSpeed.y()) / _cameraSpeed.y()*deltaSpd; 
+		}
+	} else {
+		if (isMovementKeyPressed(MoveDown)) newSpdComponent += -deltaSpd;
+		if (isMovementKeyPressed(MoveUp)) newSpdComponent += deltaSpd;
+	}
+	_cameraSpeed.setY(_cameraSpeed.y() + newSpdComponent);
+}
+
+void OCameraController::updateCameraPosition(float deltaTs_s)
+{
+	OVector4 displacement = OVector4(_cameraSpeed.x(), _cameraSpeed.y(), _cameraSpeed.z(), 0.0f) * deltaTs_s;
+
+	/* the displacement vector is in the camera's relative perspective. We have to transform the vector */
+	OMatrixStack mtx;
+	mtx.rotateX(90.0f - _app->camera()->direction().phi());
+	mtx.rotateY(90.0f - _app->camera()->direction().theta());
+	displacement = mtx*displacement;
+
+	_app->camera()->changePosition(OVector3(displacement.x(), displacement.y(), displacement.z()));
 }

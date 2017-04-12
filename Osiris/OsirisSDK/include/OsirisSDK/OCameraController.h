@@ -5,6 +5,7 @@
 #include "OObject.h"
 #include "OEvent.h"
 #include "OCamera.h"
+#include "OMath.h"
 
 #include <map>
 
@@ -86,6 +87,7 @@ public:
 protected:
 	/* from OObject: */
 	virtual void onKeyboardPress(const OKeyboardPressEvent* evt);
+	virtual void onKeyboardRelease(const OKeyboardPressEvent *evt);
 	virtual void onMouseMove(const OMouseMoveEvent* evt);
 	virtual void onMouseClick(const OMouseClickEvent* evt);
 
@@ -103,15 +105,34 @@ private:
 	int _last_mouse_y;
 	int _delta_mouse_x;
 	int _delta_mouse_y;
+	OVector3 _cameraSpeed;
 	std::map<OKeyboardPressEvent::KeyCode, CameraMoveDir> _keyBind; /* KeyCode -> Movement direction */
 	std::map<CameraMoveDir, bool> _pressedKeys;			/* Movement direction -> pressed flag (bool) */
-	std::map<CameraMoveDir, float> _directionSpeed;			/* Movement direction -> camera displacemebt speed */
 
 	/**
 	 \brief Updates the application adding the object as a event listener the needed mouse
 	        and keyboard events.
 	 */
 	void updateApplication();
+
+	/**
+	 \brief Check if a key assigned to camera movement is pressed.
+	 \param dir Movement direction.
+	 */
+	bool isMovementKeyPressed(CameraMoveDir dir);
+
+	/**
+	 \brief Updates current camera speed.
+	 \param deltaTs_ms Time period since last update, in seconds.
+	 */
+	void updateCameraSpeed(float deltaTs_s);
+	
+	/**
+	 \brief Updates current camera position.
+	 \param deltaTs_ms Time period since last update, in seconds.
+	 */
+	void updateCameraPosition(float deltaTs_s);
 };
+
 
 
