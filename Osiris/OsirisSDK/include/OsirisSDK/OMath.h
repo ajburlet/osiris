@@ -363,4 +363,9 @@ public:
 	 \brief Conversion to a three-dimensional vector containing Euler angles.
 	 */
 	OVector3 toEulerAngles() const;
+
+	/**
+	 \brief Calculate the inverse quaternion.
+	 */
+	OQuaternion inverse() const;
 };

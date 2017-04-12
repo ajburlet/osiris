@@ -335,6 +335,15 @@ OMatrix4x4 OQuaternion::toMatrix4() const
 
 OVector3 OQuaternion::toEulerAngles() const
 {
-	return OVector3(glm::eulerAngles(_glmInternal);
+	OVector3 res;
+	res.setGlm(glm::eulerAngles(_glmInternal));
+	return res;
+}
+
+OQuaternion OQuaternion::inverse() const
+{
+	OQuaternion res;
+	res.setGlm(glm::inverse(_glmInternal));
+	return res;
 }
 
