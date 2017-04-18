@@ -69,7 +69,7 @@ public:
 	 \param in Right value in the cross operation.
 	 \return Resulting vector of the cross product.
 	*/
-	OVector3 cross(const OVector3& in) const;
+	OVector3&& cross(const OVector3& in) const;
 	
 	/**
 	 \brief Vector cross product.
@@ -77,7 +77,7 @@ public:
 	 \param b Right value of the operation.
 	 \return Resulting vector of the cross product.
 	*/
-	static OVector3 cross(const OVector3& a, const OVector3& b);
+	static OVector3&& cross(const OVector3& a, const OVector3& b);
 
 	/**
 	 \brief Vector dot product.
@@ -156,12 +156,12 @@ public:
 	/**
 	 \brief Returns a new vector converted to spherical coordinates.
 	 */
-	OVector3 toSpherical() const;
+	OVector3&& toSpherical() const;
 	
 	/**
 	 \brief Returns a new vector converted to cartesian coordinates.
 	 */
-	OVector3 toCartesian() const;
+	OVector3&& toCartesian() const;
 };
 
 /**
@@ -357,15 +357,15 @@ public:
 	/**
 	 \brief Conversion to 4x4 rotation matrix.
 	 */
-	OMatrix4x4 toMatrix4() const;
+	OMatrix4x4&& toMatrix4() const;
 
 	/**
 	 \brief Conversion to a three-dimensional vector containing Euler angles.
 	 */
-	OVector3 toEulerAngles() const;
+	OVector3&& toEulerAngles() const;
 
 	/**
 	 \brief Calculate the inverse quaternion.
 	 */
-	OQuaternion inverse() const;
+	OQuaternion&& inverse() const;
 };
