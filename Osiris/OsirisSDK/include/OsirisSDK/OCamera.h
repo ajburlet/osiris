@@ -21,11 +21,11 @@ public:
 	 \param zNear Nearest camera depth.
 	 \param zFar Farthest camera depth.
 	 \param pos Camera position.
-	 \param dir Camera direction vector containing Euler angles: rotations around axes x, y and z. The camera 
-		    always faces the positive z-axis direction from it's perspective.
+	 \param or Camera orientation vector containing Euler angles: rotations around axes x, y and z. The camera 
+		   always faces the positive z-axis direction from it's perspective.
 	*/
 	OCamera(float fieldOfViewDeg = 45.0f, float aspectRatio = 4.0f / 3, float zNear = 1.0f, float zFar = 5.0f,
-		const OVector3 &pos = OVector3(0.0f , 0.0f, -1.0f), const OVector3 &dir = OVector3(0.0f));
+		const OVector3 &pos = OVector3(0.0f , 0.0f, -1.0f), const OVector3 &or = OVector3(0.0f));
 
 	/**
 	 \brief Class destructor.
@@ -63,13 +63,13 @@ public:
 	void changePosition(const OVector3 &displacement);
 
 	/**
-	 \brief Set camera direction.
-	 \param direction New orientation vector given in Euler angles.
+	 \brief Set camera orientation.
+	 \param orientation New orientation vector given in Euler angles.
 	*/
-	void setOrientation(const OVector3 &direction);
+	void setOrientation(const OVector3 &orientation);
 
 	/**
-	 \brief Change camera direction by incrementing azimuthal and polar angles.
+	 \brief Change camera orientation by incrementing azimuthal and polar angles.
 	 \param rotation Rotation vector in terms of Euler angles.
 	 */
 	void changeOrientation(const OVector3& rotation);
@@ -104,9 +104,9 @@ public:
 	
 	/**
 	 \brief Retrieves the camera orientation from the state object.
-	 \return Camera direction vector in terms of Euler angles.
+	 \return Camera orientation vector in terms of Euler angles.
 	*/
-	const OVector3 direction() const;
+	const OVector3 orientation() const;
 
 	/**
 	 \brief Direct access to the camera state object.
@@ -122,7 +122,6 @@ public:
 private:
 	/* control change to avoid unnecessary matrix recalculation */
 	bool _perspectiveChanged; 
-	bool _cameraChanged;
 
 	/* perspective */
 	float _fieldOfViewDeg;

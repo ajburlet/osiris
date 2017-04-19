@@ -21,7 +21,7 @@
  \brief Camera control class.
 
  Objects from this class will receive input information from mouse and keyboard and move
- the camera and change it's direction.
+ the camera and change it's orientation.
  */
 class OAPI OCameraController : public OObject
 {
@@ -29,7 +29,7 @@ public:
 	/**
 	 \brief Mouse orientation mode.
 
-	 The camera direction can be changed by mouse movement, either enabled or passive.
+	 The camera orientation can be changed by mouse movement, either enabled or passive.
 	 */
 	enum MouseOrientationMode {
 		OrientationDisabled=0,		/**< Mouse orientation disabled. */
@@ -78,7 +78,7 @@ public:
 	void setMoveEventKey(OKeyboardPressEvent::KeyCode key, CameraMoveDir camEvt);
 
 	/**
-	 \brief Updates the camera position and direction for a given time index.
+	 \brief Updates the camera position and orientation for a given time index.
 	 \param timeIndex_ms Time index in miliseconds.
 	 */
 	void update(int timeIndex_ms);
