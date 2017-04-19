@@ -32,27 +32,31 @@ public:
 	/**
 	 \brief Enables/disables constraint and sets its value.
 	 \param axis Which axis must be changed (x, y and z).
-	 \param active Constraint is active or inactive.
+	 \param enabled Constraint is enabled or disabled.
 	 \param value Constraint value.
 	 */
-	void set(Axis axis, bool active, float value=0.0f);
+	void setValue(Axis axis, bool enabled, float value=0.0f);
 
 	/**
-	 \brief Returns whether the constraint for a given axis is active or inactive. 
+	 \brief Returns whether the constraint for a given axis is enabled or disabled. 
 	 */
-	bool active(Axis axis) const;
+	bool enabled(Axis axis) const;
 
 	/**
 	 \brief Returns constraint value.
 	 */
 	float value(Axis axis) const;
 
+	/**
+	 \brief Disable all axis constraints.
+	 */
+	void disableAll();
+
 private:
 	struct OStateConstraintVal{
-		bool active;
+		bool enabled;
 		float value;
 	} _components[3];
-
 };
 
 /**
@@ -62,9 +66,18 @@ class OAPI OState
 {
 public:
 	/**
+	 \brief Specifies the rotation referencial to be taken into account while working 
+		with the motion equation components.
+	 */
+	enum OrientationReferencial {
+		Scene=0x01,		/**< Scene referencial */
+		Object			/**< Object referencial */
+	};
+
+	/**
 	 \brief Class constructor.
 	 */
-	OState();
+	OState(OrientationReferencial ref=Scene);
 
 	/**
 	 \brief Class destructor.
@@ -72,17 +85,44 @@ public:
 	virtual ~OState();
 
 	/**
+	 \brief Sets the orientation referencial used on the motion equation components.
+	 */
+	void setOrientationReferencial(OrientationReferencial orRef);
+
+	/**
+	 \brief Provides the orientation referencial used on the motion equation components.
+	 */
+	OrientationReferencial orientationReferencial() const;
+
+	/**
 	 \brief Defines motion equation vector components.
 	 \param degree The degree of the component (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.). 
 	 \param component Component value. Time is given in milliseconds.
-	 \param objectOrientation Se to true if the vector is relative to the orientation.
+	 \param orRef The orientation referencial that this new values is defined in.
 	 */
-	void setMotionComponent(int degree, const OVector3& component, bool objectOrientation=false);
+	void setMotionComponent(int degree, const OVector3& component, OrientationReferencial orRef);
 
 	/**
-	 \brief Obtain motion state momentum for a given degree.
+	 \brief Adds to a motion equation vector component.
+	 \param degree The degree of the component (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.). 
+	 \param component Component value. Time is given in milliseconds.
+	 \param orRef The orientation referencial that this new values is defined in.
+	 */
+	void addMotionComponent(int degree, const OVector3& component, OrientationReferencial orRef);
+
+	/**
+	 \brief Obtain motion state components for a given degree in the specified orientation reference frame.
 	 \param degree Momentum degree (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.).
-	 \returns Pointer to vector component for a given degree. Time is given in milliseconds. Returns NULL if degree is invalid.
+	 \param orRef The orientation referencial that this new values is defined in.
+	 \returns Vector component for a given degree. Time is given in milliseconds.
+	 */
+	const OVector3 motionComponent(int degree, OrientationReferencial orRef) const;
+
+	/**
+	 \brief Obtain motion state component for a given degree in the current orientation reference frame.
+	 \param degree Momentum degree (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.).
+	 \returns Pointer to the vector component for a given degree. Time is given in milliseconds. NULL if 
+		  degree is non-existant.
 	 */
 	const OVector3* motionComponent(int degree) const;
 
@@ -93,34 +133,45 @@ public:
 	void setOrientation(const OVector3& or);
 
 	/**
+	 \brief Add to orientation in terms of Euler angles.
+	 \param or Vector containing Euler angles representing the additional rotation for each axis.
+	 */
+	void addOrientation(const OVector3& or);
+
+	/**
 	 \brief Returns a three-dimentional vector containing Euler angles.
 	 \returns Vector containing Euler angles representing rotation for each axis.
 	 */
-	OVector3&& orientation() const;
+	OVector3 orientation() const;
 
 	/**
 	 \brief Retrieves a pointer to the quaternion used for orientation transform.
 	 */
-	const OQuaternion* orientationQuaternion();
+	OQuaternion& orientationQuaternion();
 
 	/**
 	 \brief Provides a rotation transformation matrix given the orientation.
 	 */
-	OMatrix4x4&& orientationTransform() const;
+	OMatrix4x4 orientationTransform() const;
 
 	/**
 	 \brief Return the minimum value constraint for a given motion state degree.
 	 \param degree The degree of the component (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.). 
 	 \returns Pointer to the constraint object, NULL if degree is non-existant.
 	 */
-	const OStateConstraint* minConstraint(int degree);
+	OStateConstraint* minConstraint(int degree);
 	
 	/**
 	 ´\brief Return the maximum value constraint for a given motion state degree.
 	 \param degree The degree of the component (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.). 
 	 \returns Pointer to the constraint object, NULL if degree is non-existant.
 	 */
-	const OStateConstraint* maxConstraint(int degree);
+	OStateConstraint* maxConstraint(int degree);
+
+	/**
+	 \brief Disable all constraints on the motion state.
+	 */
+	void disableAllConstraints();
 
 	/**
 	 \brief Update state for a given time index.
@@ -133,6 +184,11 @@ private:
 	std::vector<OStateConstraint> _minConstraint;
 	std::vector<OStateConstraint> _maxConstraint;
 	OQuaternion _orientation;
+	OrientationReferencial _orientationRef;
+
 	int _lastTimeIndex_ms;
+
+	void checkDegree(int degree);
+	const OVector3 checkReferencial(const OVector3& in, OrientationReferencial orRef) const;
 };
 

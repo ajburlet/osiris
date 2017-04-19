@@ -7,8 +7,7 @@ OCamera::OCamera(float fieldOfViewDeg, float aspectRatio, float zNear, float zFa
 	_aspectRatio(aspectRatio),
 	_zNear(zNear),
 	_zFar(zFar),
-	_position(pos),
-	_direction(dir)
+	_state(OState::Object)
 {
 }
 
@@ -38,24 +37,25 @@ void OCamera::setCameraLimits(float zNear, float zFar)
 void OCamera::setPosition(const OVector3 & position)
 {
 	_cameraChanged = true;
-	_position = position;
+	_state.setMotionComponent(0, position, OState::Scene);
 }
 
 void OCamera::changePosition(const OVector3 & displacement)
 {
-	_position += displacement;
+	_cameraChanged = true;
+	_state.addMotionComponent(0, displacement, OState::Scene);
 }
 
-void OCamera::setDirection(const OVector3 & direction)
+void OCamera::setOrientation(const OVector3 & direction)
 {
 	_cameraChanged = true;
-	_direction = direction;
+	_state.setOrientation(direction);
 }
 
-void OCamera::changeDirection(float deltaTheta, float deltaPhi)
+void OCamera::changeOrientation(const OVector3& rotation)
 {
-	_direction.setTheta(_direction.theta() + deltaTheta);
-	_direction.setPhi(_direction.phi() + deltaPhi);
+	_cameraChanged = true;
+	_state.setOrientation(rotation);
 }
 
 float OCamera::fieldOfViewDegrees() const
@@ -78,17 +78,17 @@ float OCamera::farLimit() const
 	return _zFar;
 }
 
-OVector3 OCamera::position() const
+const OVector3 OCamera::position() const
 {
-	return _position;
+	return _state.motionComponent(0, OState::Scene);
 }
 
-OVector3 OCamera::direction() const
+const OVector3 OCamera::direction() const
 {
-	return _direction;
+	return _state.orientation();
 }
 
-const OState * OCamera::state()
+OState * OCamera::state()
 {
 	return &_state;
 }
@@ -110,7 +110,8 @@ const OMatrixStack* OCamera::transform()
 	if (_cameraChanged) {
 		if (popCameraTransform) _transform.pop();
 		_transform.push();
-		_transform.camera(_position, _direction.toCartesian() + _position);
+		_transform.camera(_state.motionComponent(0, OState::Scene), 
+				  _state.orientationQuaternion() * OVector3(0.0f, 0.0f, 1.0f) + _state.motionComponent(0, OState::Scene));
 	}
 
 	return &_transform;

@@ -29,11 +29,11 @@ public:
 	/**
 	 \brief Mouse orientation mode.
 
-	 The camera direction can be changed by mouse movement, either active or passive.
+	 The camera direction can be changed by mouse movement, either enabled or passive.
 	 */
 	enum MouseOrientationMode {
 		OrientationDisabled=0,		/**< Mouse orientation disabled. */
-		ActiveOrientation,		/**< Orientation by active mouse movement (button pressed). */
+		ActiveOrientation,		/**< Orientation by enabled mouse movement (button pressed). */
 		PassiveOrientation		/**< Orientation by mouse motion over the screen, without any buttons pressed. */
 	};
 
@@ -44,8 +44,8 @@ public:
 	 receive events.
 	 
 	 \param app The application object.
-	 \param orMode Camera orientation mode: active or passive mouse movement, or disabled.
-	 \param orMouseBtn In case of active mouse motion, which button triggers camera movement.
+	 \param orMode Camera orientation mode: enabled or passive mouse movement, or disabled.
+	 \param orMouseBtn In case of enabled mouse motion, which button triggers camera movement.
 	 \param movementAcceleration Camera movement acceleration in space units per sec^2.
 	 \param movementMaxSpeed Camera maximum speed in space units per sec.
 	 */
@@ -99,13 +99,11 @@ private:
 	float _movementAcceleration;
 	float _movementMaxSpeed;
 	
-	int _lastTimeIndex_ms;
 	bool _activeMoveMouseBtnPressed;
 	int _last_mouse_x;
 	int _last_mouse_y;
 	int _delta_mouse_x;
 	int _delta_mouse_y;
-	OVector3 _cameraSpeed;
 	std::map<OKeyboardPressEvent::KeyCode, CameraMoveDir> _keyBind; /* KeyCode -> Movement direction */
 	std::map<CameraMoveDir, bool> _pressedKeys;			/* Movement direction -> pressed flag (bool) */
 
@@ -120,18 +118,6 @@ private:
 	 \param dir Movement direction.
 	 */
 	bool isMovementKeyPressed(CameraMoveDir dir);
-
-	/**
-	 \brief Updates current camera speed.
-	 \param deltaTs_ms Time period since last update, in seconds.
-	 */
-	void updateCameraSpeed(float deltaTs_s);
-	
-	/**
-	 \brief Updates current camera position.
-	 \param deltaTs_ms Time period since last update, in seconds.
-	 */
-	void updateCameraPosition(float deltaTs_s);
 };
 
 

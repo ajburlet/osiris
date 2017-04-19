@@ -21,10 +21,11 @@ public:
 	 \param zNear Nearest camera depth.
 	 \param zFar Farthest camera depth.
 	 \param pos Camera position.
-	 \param dir Camera direction vector as a unit vector in spherical coordinates (r, theta, phi).
+	 \param dir Camera direction vector containing Euler angles: rotations around axes x, y and z. The camera 
+		    always faces the positive z-axis direction from it's perspective.
 	*/
 	OCamera(float fieldOfViewDeg = 45.0f, float aspectRatio = 4.0f / 3, float zNear = 1.0f, float zFar = 5.0f,
-		const OVector3 &pos = OVector3(0.0f , 0.0f, -1.0f), const OVector3 &dir = OVector3(1.0f, 90.0f, 90.0f));
+		const OVector3 &pos = OVector3(0.0f , 0.0f, -1.0f), const OVector3 &dir = OVector3(0.0f));
 
 	/**
 	 \brief Class destructor.
@@ -63,16 +64,15 @@ public:
 
 	/**
 	 \brief Set camera direction.
-	 \param direction Camera direction vector in spherical coordinates.
+	 \param direction New orientation vector given in Euler angles.
 	*/
-	void setDirection(const OVector3 &direction);
+	void setOrientation(const OVector3 &direction);
 
 	/**
 	 \brief Change camera direction by incrementing azimuthal and polar angles.
-	 \param deltaTheta Change in azimulthal angle in degrees.
-	 \param deltaPhi Change in polar angle in degrees.
+	 \param rotation Rotation vector in terms of Euler angles.
 	 */
-	void changeDirection(float deltaTheta, float deltaPhi);
+	void changeOrientation(const OVector3& rotation);
 
 	/**
 	 \brief Returns the camera field of view.
@@ -97,21 +97,21 @@ public:
 	float farLimit() const;
 	
 	/**
-	 \brief Returns the camera current position.
+	 \brief Retrieves the camera position from the state object. 
 	 \return Camera position coordinates.
 	*/
-	OVector3 position() const;
+	const OVector3 position() const;
 	
 	/**
-	 \brief Returns the camera looking direction.
-	 \return Camera direction vector in spherical coordinates.
+	 \brief Retrieves the camera orientation from the state object.
+	 \return Camera direction vector in terms of Euler angles.
 	*/
-	OVector3 direction() const;
+	const OVector3 direction() const;
 
 	/**
-	 \brief Returns a pointer to the camera state object: motion and orientation.
+	 \brief Direct access to the camera state object.
 	 */
-	const OState* state();
+	OState* state();
 
 	/**
 	 \brief Calculates the perspective and camera transformations.
@@ -130,9 +130,7 @@ private:
 	float _zNear;
 	float _zFar;
 
-	/* camera */
-	OVector3 _position;
-	OVector3 _direction;
+	/* camera state */
 	OState _state;
 
 	/* transform matrix: camera + perspective */

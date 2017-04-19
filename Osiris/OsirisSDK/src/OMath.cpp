@@ -51,14 +51,14 @@ OVector3::~OVector3()
 {
 }
 
-OVector3&& OVector3::cross(const OVector3 & in) const
+OVector3 OVector3::cross(const OVector3 & in) const
 {
 	OVector3 res;
 	res._glmInternal = glm::cross(_glmInternal, in._glmInternal);
-	return static_cast<OVector3&&>(res);
+	return res;
 }
 
-OVector3&& OVector3::cross(const OVector3 & a, const OVector3 & b)
+OVector3 OVector3::cross(const OVector3 & a, const OVector3 & b)
 {
 	return a.cross(b);
 }
@@ -133,7 +133,7 @@ float OVector3::phi() const
 	return _glmInternal.z;
 }
 
-OVector3&& OVector3::toSpherical() const
+OVector3 OVector3::toSpherical() const
 {
 	return OVector3(sqrtf(x()*x()+y()*y()+z()*z()), 
 			atanf(OMath::deg2rad(z()/x())), 
@@ -141,7 +141,7 @@ OVector3&& OVector3::toSpherical() const
 			);
 }
 
-OVector3&& OVector3::toCartesian() const
+OVector3 OVector3::toCartesian() const
 {
 	return OVector3(r()*cosf(OMath::deg2rad(theta()))*sinf(OMath::deg2rad(phi())), 
 			r()*cosf(OMath::deg2rad(phi())),
@@ -315,6 +315,11 @@ OQuaternion::OQuaternion(OVector3 eulerAngles)
 	_glmInternal = glm::quat(eulerAngles.glm());
 }
 
+OQuaternion::OQuaternion(const OMathPrimitive<glm::quat>& in) :
+	OMathPrimitive<glm::quat>(in)
+{
+}
+
 OQuaternion::~OQuaternion()
 {
 }
@@ -326,24 +331,24 @@ OVector3 OQuaternion::operator*(const OVector3 & in) const
 	return res;
 }
 
-OMatrix4x4&& OQuaternion::toMatrix4() const
+OMatrix4x4 OQuaternion::toMatrix4() const
 {
 	OMatrix4x4 res;
 	res.setGlm(glm::toMat4(_glmInternal));
-	return static_cast<OMatrix4x4&&>(res);
+	return res;
 }
 
-OVector3&& OQuaternion::toEulerAngles() const
+OVector3 OQuaternion::toEulerAngles() const
 {
 	OVector3 res;
 	res.setGlm(glm::eulerAngles(_glmInternal));
-	return static_cast<OVector3&&>(res);
+	return res;
 }
 
-OQuaternion&& OQuaternion::inverse() const
+OQuaternion OQuaternion::inverse() const
 {
 	OQuaternion res;
 	res.setGlm(glm::inverse(_glmInternal));
-	return static_cast<OQuaternion&&>(res);
+	return res;
 }
 
