@@ -21,31 +21,32 @@ public:
 	virtual ~OStateConstraint();
 	
 	/**
-	 \brief Axis enumeration for internal reference.
-	 */
-	enum Axis {
-		x=0,	/**< X axis reference */
-		y,	/**< Y axis reference */
-		z	/**< Z axis reference */
-	};
-
-	/**
 	 \brief Enables/disables constraint and sets its value.
 	 \param axis Which axis must be changed (x, y and z).
 	 \param enabled Constraint is enabled or disabled.
 	 \param value Constraint value.
 	 */
-	void setValue(Axis axis, bool enabled, float value=0.0f);
+	void setValue(OVector3::Axis axis, bool enabled, float value=0.0f);
 
 	/**
 	 \brief Returns whether the constraint for a given axis is enabled or disabled. 
 	 */
-	bool enabled(Axis axis) const;
+	bool enabled(OVector3::Axis axis) const;
 
 	/**
 	 \brief Returns constraint value.
 	 */
-	float value(Axis axis) const;
+	float value(OVector3::Axis axis) const;
+
+	/**
+	 \brief Turns on/off absolute value comparison.
+	 */
+	void setAbsoluteValue(bool flag);
+
+	/**
+	 \brief Returns if absolute value comparison is turned on.
+	 */
+	bool absoluteValue() const;
 
 	/**
 	 \brief Disable all axis constraints.
@@ -57,6 +58,8 @@ private:
 		bool enabled;
 		float value;
 	} _components[3];
+
+	bool _absoluteValue;
 };
 
 /**
@@ -116,7 +119,7 @@ public:
 	 \param orRef The orientation referencial that this new values is defined in.
 	 \returns Vector component for a given degree. Time is given in milliseconds.
 	 */
-	const OVector3 motionComponent(int degree, OrientationReferencial orRef) const;
+	OVector3 motionComponent(int degree, OrientationReferencial orRef) const;
 
 	/**
 	 \brief Obtain motion state component for a given degree in the current orientation reference frame.
@@ -124,7 +127,7 @@ public:
 	 \returns Pointer to the vector component for a given degree. Time is given in milliseconds. NULL if 
 		  degree is non-existant.
 	 */
-	const OVector3* motionComponent(int degree) const;
+	OVector3* motionComponent(int degree);
 
 	/**
 	 \brief Set orientation in terms of Euler angles.

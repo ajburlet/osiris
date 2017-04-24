@@ -59,6 +59,30 @@ public:
 	virtual ~OCameraController();
 
 	/**
+	 \brief Set camera maximum movement speed.
+	 \param maxSpeed Maximum speed in units of space per sec.
+	 */
+	void setMovementMaxSpeed(float maxSpeed);
+
+	/**
+	 \brief Returns camera maximum movement speed.
+	 \returns Maximum speed in units of space per sec.
+	 */
+	float movementMaxSpeed() const;
+
+	/**
+	 \brief Set camera movement acceleration value.
+	 \param acc Movement acceleration in units of space per sec^2.
+	 */
+	void setMovementAcceleration(float acc);
+
+	/**
+	 \brief Returns camera movement acceleration value.
+	 \returns Movement acceleration in units of space per sec^2.
+	 */
+	float movementAcceleration() const;
+
+	/**
 	 \brief Camera movement events.
 	 */
 	enum CameraMoveDir {

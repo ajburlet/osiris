@@ -10,20 +10,49 @@ OCameraController::OCameraController(OApplication * app,
 	_app(app),
 	_orMode(orMode),
 	_orMouseBtn(orMouseBtn),
-	_movementAcceleration(movementAcceleration),
-	_movementMaxSpeed(movementMaxSpeed),
 	_activeMoveMouseBtnPressed(false),
 	_last_mouse_x(-1),
 	_last_mouse_y(-1),
 	_delta_mouse_x(0),
 	_delta_mouse_y(0)
 {
-
+	_app->camera()->state()->setMotionComponent(2, OVector3(0.0f, 0.0f, 0.0f), OState::Scene);
+	setMovementMaxSpeed(movementMaxSpeed);
+	setMovementAcceleration(movementAcceleration);
 	updateApplication();
 }
 
 OCameraController::~OCameraController()
 {
+}
+
+void OCameraController::setMovementMaxSpeed(float maxSpeed)
+{
+	_movementMaxSpeed = maxSpeed / 1000.0f;
+
+	_app->camera()->state()->minConstraint(1)->setAbsoluteValue(true);
+	_app->camera()->state()->minConstraint(1)->setValue(OVector3::X, true, 0.0f);
+	_app->camera()->state()->minConstraint(1)->setValue(OVector3::Y, true, 0.0f);
+	_app->camera()->state()->minConstraint(1)->setValue(OVector3::Z, true, 0.0f);
+	_app->camera()->state()->maxConstraint(1)->setAbsoluteValue(true);
+	_app->camera()->state()->maxConstraint(1)->setValue(OVector3::X, true, _movementMaxSpeed);
+	_app->camera()->state()->maxConstraint(1)->setValue(OVector3::Y, true, _movementMaxSpeed);
+	_app->camera()->state()->maxConstraint(1)->setValue(OVector3::Z, true, _movementMaxSpeed);
+}
+
+float OCameraController::movementMaxSpeed() const
+{
+	return _movementMaxSpeed * 1000.0f;
+}
+
+void OCameraController::setMovementAcceleration(float acc)
+{
+	_movementAcceleration = acc / 1000.0f / 1000.0f;
+}
+
+float OCameraController::movementAcceleration() const
+{
+	return _movementAcceleration * 1000.0f * 1000.0f;
 }
 
 
@@ -42,7 +71,7 @@ void OCameraController::update(int timeIndex_ms)
 	float deltaTheta = 0.0f, deltaPhi = 0.0f;
 	if (_delta_mouse_x != 0) deltaTheta = 2 * atanf((float)_delta_mouse_x / 2 / _app->camera()->nearLimit());
 	if (_delta_mouse_y != 0) deltaPhi = 2 * atanf((float)_delta_mouse_y / 2 / _app->camera()->nearLimit());
-	if (deltaTheta != 0 || deltaPhi != 0) _app->camera()->changeOrientation(OVector3(deltaTheta, deltaPhi, 0.0f));
+	if (deltaTheta != 0 || deltaPhi != 0) _app->camera()->changeOrientation(OVector3(OMath::deg2rad(deltaPhi), 0.0f, OMath::deg2rad(deltaTheta)));
 
 	_delta_mouse_x = 0;
 	_delta_mouse_y = 0;
@@ -55,49 +84,25 @@ void OCameraController::onKeyboardPress(const OKeyboardPressEvent * evt)
 	map<OKeyboardPressEvent::KeyCode, CameraMoveDir>::iterator it;
 	if ((it = _keyBind.find(evt->code())) == _keyBind.end()) return;
 
+	if (isMovementKeyPressed(it->second)) return;
+
 	OState* camState = _app->camera()->state();
+	float dir = 1.0f;
 	switch (it->second) {
-	case MoveUp:
-		if (!isMovementKeyPressed(MoveDown)) {
-			camState->addMotionComponent(2, OVector3(0.0f, _movementAcceleration, 0.0f), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::y, false);
-			camState->maxConstraint(1)->setValue(OStateConstraint::y, true, _movementMaxSpeed);
-		}
-		break;
 	case MoveDown:
-		if (!isMovementKeyPressed(MoveUp)) {
-			camState->addMotionComponent(2, OVector3(0.0f, -_movementAcceleration, 0.0f), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::y, true, -_movementMaxSpeed);
-			camState->maxConstraint(1)->setValue(OStateConstraint::y, false);
-		}
-		break;
-	case MoveRight:
-		if (!isMovementKeyPressed(MoveLeft)) {
-			camState->addMotionComponent(2, OVector3(_movementAcceleration, 0.0f, 0.0f), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::x, false);
-			camState->maxConstraint(1)->setValue(OStateConstraint::x, true, _movementMaxSpeed);
-		}
+		dir = -1.0f;
+	case MoveUp:
+		camState->addMotionComponent(2, OVector3(0.0f, dir*_movementAcceleration, 0.0f), OState::Object);
 		break;
 	case MoveLeft:
-		if (!isMovementKeyPressed(MoveRight)) {
-			camState->addMotionComponent(2, OVector3(-_movementAcceleration, 0.0f, 0.0f), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::x, true, -_movementMaxSpeed);
-			camState->maxConstraint(1)->setValue(OStateConstraint::x, false);
-		}
-		break;
-	case MoveForward:
-		if (!isMovementKeyPressed(MoveBack)) {
-			camState->addMotionComponent(2, OVector3(0.0f, 0.0f, _movementAcceleration), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::z, false);
-			camState->maxConstraint(1)->setValue(OStateConstraint::z, true, _movementMaxSpeed);
-		}
+		dir = -1.0f;
+	case MoveRight:
+		camState->addMotionComponent(2, OVector3(dir*_movementAcceleration, 0.0f, 0.0f), OState::Object);
 		break;
 	case MoveBack:
-		if (!isMovementKeyPressed(MoveForward)) {
-			camState->addMotionComponent(2, OVector3(0.0f, 0.0f, -_movementAcceleration), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::z, true, -_movementMaxSpeed);
-			camState->maxConstraint(1)->setValue(OStateConstraint::z, false);
-		}
+		dir = -1.0f;
+	case MoveForward:
+		camState->addMotionComponent(2, OVector3(0.0f, 0.0f, dir*_movementAcceleration), OState::Object);
 		break;
 	}
 	_pressedKeys[it->second] = true;
@@ -108,49 +113,25 @@ void OCameraController::onKeyboardRelease(const OKeyboardPressEvent * evt)
 	map<OKeyboardPressEvent::KeyCode, CameraMoveDir>::iterator it;
 	if ((it = _keyBind.find(evt->code())) == _keyBind.end()) return;
 	
+	if (!isMovementKeyPressed(it->second)) return;
+
 	OState* camState = _app->camera()->state();
+	float accSign;
 	switch (it->second) {
-	case MoveUp:
-		if (!isMovementKeyPressed(MoveDown)) {
-			camState->addMotionComponent(2, OVector3(0.0f, _movementAcceleration, 0.0f), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::y, false);
-			camState->maxConstraint(1)->setValue(OStateConstraint::y, true, _movementMaxSpeed);
-		}
-		break;
 	case MoveDown:
-		if (!isMovementKeyPressed(MoveUp)) {
-			camState->addMotionComponent(2, OVector3(0.0f, -_movementAcceleration, 0.0f), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::y, true, -_movementMaxSpeed);
-			camState->maxConstraint(1)->setValue(OStateConstraint::y, false);
-		}
-		break;
-	case MoveRight:
-		if (!isMovementKeyPressed(MoveLeft)) {
-			camState->addMotionComponent(2, OVector3(_movementAcceleration, 0.0f, 0.0f), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::x, false);
-			camState->maxConstraint(1)->setValue(OStateConstraint::x, true, _movementMaxSpeed);
-		}
+	case MoveUp:
+		accSign = OMath::reverseSign(camState->motionComponent(1)->y());
+		camState->motionComponent(2)->setY(accSign*_movementAcceleration);
 		break;
 	case MoveLeft:
-		if (!isMovementKeyPressed(MoveRight)) {
-			camState->addMotionComponent(2, OVector3(-_movementAcceleration, 0.0f, 0.0f), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::x, true, -_movementMaxSpeed);
-			camState->maxConstraint(1)->setValue(OStateConstraint::x, false);
-		}
-		break;
-	case MoveForward:
-		if (!isMovementKeyPressed(MoveBack)) {
-			camState->addMotionComponent(2, OVector3(0.0f, 0.0f, _movementAcceleration), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::z, false);
-			camState->maxConstraint(1)->setValue(OStateConstraint::z, true, _movementMaxSpeed);
-		}
+	case MoveRight:
+		accSign = OMath::reverseSign(camState->motionComponent(1)->x());
+		camState->motionComponent(2)->setX(accSign*_movementAcceleration);
 		break;
 	case MoveBack:
-		if (!isMovementKeyPressed(MoveForward)) {
-			camState->addMotionComponent(2, OVector3(0.0f, 0.0f, -_movementAcceleration), OState::Object);
-			camState->minConstraint(1)->setValue(OStateConstraint::z, true, -_movementMaxSpeed);
-			camState->maxConstraint(1)->setValue(OStateConstraint::z, false);
-		}
+	case MoveForward:
+		accSign = OMath::reverseSign(camState->motionComponent(1)->z());
+		camState->motionComponent(2)->setZ(accSign*_movementAcceleration);
 		break;
 	}
 	_pressedKeys[it->second] = false;
