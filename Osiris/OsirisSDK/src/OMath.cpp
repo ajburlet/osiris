@@ -56,6 +56,16 @@ OVector3::~OVector3()
 {
 }
 
+float & OVector3::operator[](Axis axis)
+{
+	switch (axis) {
+	case X:	return _glmInternal.x;
+	case Y:	return _glmInternal.y;
+	case Z:	return _glmInternal.z;
+	default: throw OException("Invalid access to OVector3 component.");
+	}
+}
+
 OVector3 OVector3::cross(const OVector3 & in) const
 {
 	OVector3 res;
@@ -191,6 +201,17 @@ OVector4::OVector4(const OMathPrimitive<glm::vec4>& in) :
 
 OVector4::~OVector4()
 {
+}
+
+float & OVector4::operator[](Axis axis)
+{
+	switch (axis) {
+	case X: return _glmInternal.x;
+	case Y: return _glmInternal.y;
+	case Z: return _glmInternal.z;
+	case W: return _glmInternal.w;
+	default: throw OException("Invalid access to OVector3 component.");
+	}
 }
 
 void OVector4::setX(float val)

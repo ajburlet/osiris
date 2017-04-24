@@ -32,7 +32,6 @@ namespace OMath {
 class OAPI OVector3 : public OMathPrimitive<glm::vec3>
 {
 public:
-	
 	/**
 	 \brief Class constructor
 	*/
@@ -68,6 +67,22 @@ public:
 	 \brief Class destructor.
 	*/
 	virtual ~OVector3();
+
+	enum Axis {
+		X=0,
+		Y,
+		Z,
+		R=0,
+		Theta,
+		Phi,
+		G=1,
+		B
+	};
+
+	/**
+	 \brief Access operator for the vector components.
+	 */
+	float& operator[](Axis axis);
 
 	/**
 	 \brief Vector cross product.
@@ -175,40 +190,40 @@ public:
 class OAPI OVector4 : public OMathPrimitive<glm::vec4>
 {
 public:
-	
+
 	/**
 	 \brief Class constructor
 	*/
 	OVector4();
-	
+
 	/**
 	 \brief Class copy constructor.
 	*/
 	OVector4(const OVector4& in);
-	
-	/**
-	 \brief Class constructor.
-	 
-	 Creates a OVector4 with all components with the same value.
-	 
-	 \param val The value to be used by all of the three components.
-	*/
-	OVector4(float val);
-	
+
 	/**
 	 \brief Class constructor.
 
-	 Creates a OVector4 taking in the values for each component. 
+	 Creates a OVector4 with all components with the same value.
+
+	 \param val The value to be used by all of the three components.
 	*/
-	OVector4(float vx, float vy, float vz, float vw);
-	
+	OVector4(float val);
+
 	/**
 	 \brief Class constructor.
-	 
+
+	 Creates a OVector4 taking in the values for each component.
+	*/
+	OVector4(float vx, float vy, float vz, float vw);
+
+	/**
+	 \brief Class constructor.
+
 	 Creates a OVector4 from a OVector3 object, in which the X,Y and Z components
 	 will receive the values from the three-dimensional vectors.
 	 */
-	OVector4(const OVector3& vec3, float vw=0.0f);
+	OVector4(const OVector3& vec3, float vw = 0.0f);
 
 	/**
 	 \brief Class copy constructor for the base template class.
@@ -219,6 +234,15 @@ public:
 	 \brief Class destructor.
 	*/
 	virtual ~OVector4();
+
+	enum Axis{
+		X = 0,
+		Y,
+		Z,
+		W
+	};
+
+	float& operator[](Axis axis);
 
 	/**
 	 \brief Set the value for the X axis component.
