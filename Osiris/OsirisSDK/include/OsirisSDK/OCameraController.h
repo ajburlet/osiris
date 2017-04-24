@@ -142,6 +142,15 @@ private:
 	 \param dir Movement direction.
 	 */
 	bool isMovementKeyPressed(CameraMoveDir dir);
+
+	/**
+	 \brief Internal helper function to allow translation between motion direction keys and
+		OVector3 axis notation.
+	 \param dir Motion direction used in key binding.
+	 \param sign Fills with 1 if it goes along the positive axis direction, and -1 if negative. 
+		     If NULL is provided to the function, this will be ignored.
+	 */
+	static OVector3::Axis directionToAxis(CameraMoveDir dir, float *sign=NULL);
 };
 
 
