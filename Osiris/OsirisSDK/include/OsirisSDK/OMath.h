@@ -19,6 +19,11 @@ namespace OMath {
 	 \brief Convert angle from radians to degrees.
 	 */
 	inline float rad2deg(float rad);
+
+	/**
+	 \brief Reverse sign of a float.
+	 */
+	float reverseSign(float in);
 }
 
 /**
