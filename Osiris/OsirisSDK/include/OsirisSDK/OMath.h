@@ -13,12 +13,12 @@ namespace OMath {
 	/**
 	 \brief Convert angle from degrees to radians.
 	 */
-	inline float deg2rad(float deg);
+	float deg2rad(float deg);
 
 	/**
 	 \brief Convert angle from radians to degrees.
 	 */
-	inline float rad2deg(float rad);
+	float rad2deg(float rad);
 
 	/**
 	 \brief Reverse sign of a float.

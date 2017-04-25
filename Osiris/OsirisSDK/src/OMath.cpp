@@ -333,12 +333,12 @@ OQuaternion::OQuaternion(float x, float y, float z, float w)
 
 OQuaternion::OQuaternion(OVector3 rotationAxis, float angle)
 {
-	_glmInternal = glm::angleAxis(angle, rotationAxis.glm());
+	_glmInternal = glm::angleAxis(OMath::deg2rad(angle), rotationAxis.glm());
 }
 
 OQuaternion::OQuaternion(OVector3 eulerAngles)
 {
-	_glmInternal = glm::quat(eulerAngles.glm());
+	_glmInternal = glm::quat(eulerAngles.glm() * 2.0f * PI / 360.0f);
 }
 
 OQuaternion::OQuaternion(const OMathPrimitive<glm::quat>& in) :
@@ -368,6 +368,7 @@ OVector3 OQuaternion::toEulerAngles() const
 {
 	OVector3 res;
 	res.setGlm(glm::eulerAngles(_glmInternal));
+	res *= 360 / (2 * PI);
 	return res;
 }
 
