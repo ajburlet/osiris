@@ -100,13 +100,13 @@ public:
 	 \brief Retrieves the camera position from the state object. 
 	 \return Camera position coordinates.
 	*/
-	const OVector3 position() const;
+	OVector3& position();
 	
 	/**
 	 \brief Retrieves the camera orientation from the state object.
 	 \return Camera orientation vector in terms of Euler angles.
 	*/
-	const OVector3 orientation() const;
+	OVector3 orientation() const;
 
 	/**
 	 \brief Direct access to the camera state object.

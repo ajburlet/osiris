@@ -99,7 +99,8 @@ public:
 
 	/**
 	 \brief Defines motion equation vector components.
-	 \param degree The degree of the component (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.). 
+	 \param degree The degree of the component (i.e. 1 = velocity, 2 = acceleration, etc.): the n-th derivative
+		       of the motion state equation.
 	 \param component Component value. Time is given in milliseconds.
 	 \param orRef The orientation referencial that this new values is defined in.
 	 */
@@ -107,7 +108,8 @@ public:
 
 	/**
 	 \brief Adds to a motion equation vector component.
-	 \param degree The degree of the component (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.). 
+	 \param degree The degree of the component (i.e. 1 = velocity, 2 = acceleration, etc.): the n-th derivative
+		       of the motion state equation.
 	 \param component Component value. Time is given in milliseconds.
 	 \param orRef The orientation referencial that this new values is defined in.
 	 */
@@ -115,7 +117,8 @@ public:
 
 	/**
 	 \brief Obtain motion state components for a given degree in the specified orientation reference frame.
-	 \param degree Momentum degree (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.).
+	 \param degree The degree of the component (i.e. 1 = velocity, 2 = acceleration, etc.): the n-th derivative
+		       of the motion state equation.
 	 \param orRef The orientation referencial that this new values is defined in.
 	 \returns Vector component for a given degree. Time is given in milliseconds.
 	 */
@@ -123,11 +126,16 @@ public:
 
 	/**
 	 \brief Obtain motion state component for a given degree in the current orientation reference frame.
-	 \param degree Momentum degree (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.).
-	 \returns Pointer to the vector component for a given degree. Time is given in milliseconds. NULL if 
-		  degree is non-existant.
+	 \param degree The degree of the component (i.e. 1 = velocity, 2 = acceleration, etc.): the n-th derivative
+		       of the motion state equation.
+	 \returns Pointer to the vector component for a given degree. Time is given in milliseconds.
 	 */
-	OVector3* motionComponent(int degree);
+	OVector3& motionComponent(int degree);
+
+	/**
+	 \brief Returns a pointer to the vector containing position coordinates.
+	 */
+	OVector3& position();
 
 	/**
 	 \brief Set orientation in terms of Euler angles.
@@ -186,6 +194,7 @@ private:
 	std::vector<OVector3> _components;
 	std::vector<OStateConstraint> _minConstraint;
 	std::vector<OStateConstraint> _maxConstraint;
+	OVector3 _position;
 	OQuaternion _orientation;
 	OrientationReferencial _orientationRef;
 

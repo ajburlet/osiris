@@ -62,7 +62,9 @@ void OCameraController::update(int timeIndex_ms)
 	float deltaTheta = 0.0f, deltaPhi = 0.0f;
 	if (_delta_mouse_x != 0) deltaTheta = 2 * atanf((float)_delta_mouse_x / 2 / _app->camera()->nearLimit());
 	if (_delta_mouse_y != 0) deltaPhi = 2 * atanf((float)_delta_mouse_y / 2 / _app->camera()->nearLimit());
-	if (deltaTheta != 0 || deltaPhi != 0) _app->camera()->changeOrientation(OVector3(OMath::deg2rad(deltaPhi), 0.0f, OMath::deg2rad(deltaTheta)));
+	if (deltaTheta != 0 || deltaPhi != 0) {
+		_app->camera()->changeOrientation(OVector3(deltaPhi, 0.0f, deltaTheta));
+	}
 
 	_delta_mouse_x = 0;
 	_delta_mouse_y = 0;
@@ -81,7 +83,7 @@ void OCameraController::onKeyboardPress(const OKeyboardPressEvent * evt)
 
 	float dir;
 	OVector3::Axis axis = directionToAxis(it->second, &dir);
-	(*camState->motionComponent(2))[axis] = dir*_movementAcceleration;
+	camState->motionComponent(2)[axis] = dir*_movementAcceleration;
 	if (dir > 0) {
 		camState->minConstraint(1)->setValue(axis, false);
 		camState->maxConstraint(1)->setValue(axis, true, _movementMaxSpeed);
@@ -102,8 +104,8 @@ void OCameraController::onKeyboardRelease(const OKeyboardPressEvent * evt)
 
 	OState* camState = _app->camera()->state();
 	OVector3::Axis axis = directionToAxis(it->second);
-	float accSign = OMath::reverseSign((*camState->motionComponent(1))[axis]);
-	(*camState->motionComponent(2))[axis] = accSign*_movementAcceleration;
+	float accSign = OMath::reverseSign(camState->motionComponent(1)[axis]);
+	camState->motionComponent(2)[axis] = accSign*_movementAcceleration;
 	if (accSign > 0) {
 		camState->minConstraint(1)->setValue(axis, false);
 		camState->maxConstraint(1)->setValue(axis, true, 0.0f);

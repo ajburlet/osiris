@@ -50,7 +50,7 @@ void OCamera::setOrientation(const OVector3 & orientation)
 
 void OCamera::changeOrientation(const OVector3& rotation)
 {
-	_state.setOrientation(rotation);
+	_state.addOrientation(rotation);
 }
 
 float OCamera::fieldOfViewDegrees() const
@@ -73,12 +73,12 @@ float OCamera::farLimit() const
 	return _zFar;
 }
 
-const OVector3 OCamera::position() const
+OVector3& OCamera::position()
 {
-	return _state.motionComponent(0, OState::Scene);
+	return _state.position();
 }
 
-const OVector3 OCamera::orientation() const
+OVector3 OCamera::orientation() const
 {
 	return _state.orientation();
 }
@@ -104,8 +104,8 @@ const OMatrixStack* OCamera::transform()
 
 	if (popCameraTransform) _transform.pop();
 	_transform.push();
-	_transform.camera(_state.motionComponent(0, OState::Scene), 
-			  _state.orientationQuaternion() * OVector3(0.0f, 0.0f, 1.0f) + _state.motionComponent(0, OState::Scene));
+	_transform.camera(_state.position(),
+			  _state.orientationQuaternion() * OVector3(0.0f, 0.0f, 1.0f) + _state.position());
 
 	return &_transform;
 }

@@ -2,6 +2,7 @@
 #include <cstring>
 
 #include "OsirisSDK/OState.h"
+#include "OsirisSDK/OException.h"
 
 using namespace std;
 
@@ -76,25 +77,50 @@ OState::OrientationReferencial OState::orientationReferencial() const
 
 void OState::setMotionComponent(int degree, const OVector3& component, OrientationReferencial orRef)
 {
-	checkDegree(degree);
-	_components[degree] = checkReferencial(component, orRef);
+	if (degree == 0) {
+		if (orRef == Object) throw OException("Cannot set object position in it's frame of reference.");
+		_position = component;
+	} else {
+		checkDegree(degree-1);
+		_components[degree-1] = checkReferencial(component, orRef);
+	}
 }
 
 void OState::addMotionComponent(int degree, const OVector3 & component, OrientationReferencial orRef)
 {
-	checkDegree(degree);
-	_components[degree] += checkReferencial(component, orRef);
+	if (degree == 0) {
+		if (orRef == Object) throw OException("Cannot set object position in it's frame of reference.");
+		_position += component;
+	} else {
+		checkDegree(degree-1);
+		_components[degree-1] += checkReferencial(component, orRef);
+	}
 }
 
 OVector3 OState::motionComponent(int degree, OrientationReferencial orRef) const
 {
-	return checkReferencial(_components[degree], orRef);
+	if (degree == 0) {
+		if (orRef == Object) throw OException("Cannot retrieve object position in it's frame of reference.");
+		return _position;
+	} else {
+		if ((size_t)degree > _minConstraint.size()) throw OException("Invalid degree on motion component access.");
+		return checkReferencial(_components[degree-1], orRef);
+	}
 }
 
-OVector3 * OState::motionComponent(int degree)
+OVector3& OState::motionComponent(int degree)
 {
-	if ((size_t)degree > _minConstraint.size() - 1) return NULL;
-	return &_components[degree];
+	if (degree == 0) {
+		return _position;
+	} else {
+		if ((size_t)degree > _minConstraint.size()) throw OException("Invalid degree on motion component access.");
+		return _components[degree-1];
+	}
+}
+
+OVector3& OState::position()
+{
+	return _position;
 }
 
 void OState::setOrientation(const OVector3& or)
@@ -125,13 +151,13 @@ OMatrix4x4 OState::orientationTransform() const
 OStateConstraint * OState::minConstraint(int degree)
 {
 	if ((size_t)degree > _minConstraint.size() - 1) return NULL;
-	return &_minConstraint[degree];
+	return &_minConstraint[degree-1];
 }
 
 OStateConstraint * OState::maxConstraint(int degree)
 {
 	if ((size_t)degree > _maxConstraint.size() - 1) return NULL;
-	return &_maxConstraint[degree];
+	return &_maxConstraint[degree-1];
 }
 
 void OState::disableAllConstraints()
@@ -142,20 +168,16 @@ void OState::disableAllConstraints()
 
 void OState::update(int timeIndex_ms)
 {
+	float deltaT_ms = (float)(timeIndex_ms - _lastTimeIndex_ms);
+	
+	/* updating motion components */
 	if (_lastTimeIndex_ms != 0) {
 		/* iterate over all the components of the motion equation */
-		float deltaT_ms = (float)(timeIndex_ms - _lastTimeIndex_ms);
 		for (int i = _components.size() - 2; i >= 0; i--) {
 			/* iterate over the degrees of freedom */
 			for (int df = 0; df < 3; df++) {
 				OVector3::Axis axis = (OVector3::Axis)df;
-				float newValue;
-				/*switch (df) {
-				case 0:	newValue = _components[i].x() + _components[i + 1].x() * deltaT_ms;	break;
-				case 1:	newValue = _components[i].y() + _components[i + 1].y() * deltaT_ms;	break;
-				case 2:	newValue = _components[i].z() + _components[i + 1].z() * deltaT_ms;	break;
-				}*/
-				newValue = _components[i][axis] + _components[i + 1][axis] * deltaT_ms;
+				float newValue = _components[i][axis] + _components[i + 1][axis] * deltaT_ms;
 
 				if (_minConstraint[i].enabled(axis)) {
 					if ((!_minConstraint[i].absoluteValue() && newValue < _minConstraint[i].value(axis)) ||
@@ -169,15 +191,19 @@ void OState::update(int timeIndex_ms)
 				}
 
 				_components[i][axis] = newValue;
-
-				/*switch (df) {
-				case 0:	_components[i].setX(newValue);	break;
-				case 1:	_components[i].setY(newValue);	break;
-				case 2:	_components[i].setZ(newValue);	break;
-				}*/
 			}
 		}
 	}
+
+	/* update position */
+	if (_components.size() > 0) {
+		if (_orientationRef == Object) {
+			_position += _orientation.inverse() * _components[0] * deltaT_ms;
+		} else {
+			_position += _components[0] * deltaT_ms;
+		}
+	}
+
 	_lastTimeIndex_ms = timeIndex_ms;
 }
 
