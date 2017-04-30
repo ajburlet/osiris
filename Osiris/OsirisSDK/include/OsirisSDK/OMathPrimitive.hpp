@@ -33,7 +33,7 @@ public:
 	OMathPrimitive<MType> operator-(const OMathPrimitive<MType>& in) const;
 	
 	OMathPrimitive<MType>& operator*=(float x);
-	OMathPrimitive<MType> operator*(float x) const;
+	virtual OMathPrimitive<MType> operator*(float x) const;
 	
 	bool operator==(const OMathPrimitive<MType>& in) const;
 	bool operator!=(const OMathPrimitive<MType>& in) const;

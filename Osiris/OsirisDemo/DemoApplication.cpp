@@ -129,7 +129,7 @@ void DemoApplication::update(int timeIndex_ms)
 	snprintf(fpsBuff, 32, "%.02f fps", 1 / ((float)deltaTime_ms / 1000));
 	_fpsText->setContent(fpsBuff);
 
-	snprintf(cameraBuff, 128, "Camera @ (%.02f, %.02f, %.02f), orientation: (%.02f, %.02f, %.02f)",
+	snprintf(cameraBuff, 128, "Camera @ (%.02f, %.02f, %.02f), orientation: Euler(%.02f, %.02f, %.02f)",
 		camera()->position().x(), camera()->position().y(), camera()->position().z(),
 		camera()->orientation().x(), camera()->orientation().y(), camera()->orientation().z()
 	);
