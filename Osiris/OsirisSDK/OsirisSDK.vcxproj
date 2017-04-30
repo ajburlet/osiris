@@ -159,6 +159,7 @@
     <ClInclude Include="include\OsirisSDK\OApplication.h" />
     <ClInclude Include="include\OsirisSDK\OCamera.h" />
     <ClInclude Include="include\OsirisSDK\OCameraController.h" />
+    <ClInclude Include="include\OsirisSDK\ODoubleBuffer.hpp" />
     <ClInclude Include="include\OsirisSDK\OEvent.h" />
     <ClInclude Include="include\OsirisSDK\OException.h" />
     <ClInclude Include="include\OsirisSDK\OFont.h" />
