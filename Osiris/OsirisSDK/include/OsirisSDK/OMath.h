@@ -322,6 +322,8 @@ public:
 	 */
 	OVector4 operator*(const OVector4& in) const;
 
+	OMatrix4x4 operator*(const OMatrix4x4& in) const { return OMathPrimitive<glm::mat4x4>::operator*(in);  }
+
 	/**
 	 \brief Set the value of a specific matrix element.
 	 \param row Row index number.
@@ -387,6 +389,8 @@ public:
 	 \brief Quaternion product operator overload for three-dimentional vectors.
 	 */
 	OVector3 operator*(const OVector3& in) const;
+
+	OQuaternion operator*(const OQuaternion& in) const { return OMathPrimitive<glm::quat>::operator*(in);  }
 
 	/**
 	 \brief Conversion to 4x4 rotation matrix.
