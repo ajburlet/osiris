@@ -62,8 +62,14 @@ void OCameraController::update(int timeIndex_ms)
 	float deltaTheta = 0.0f, deltaPhi = 0.0f;
 	if (_delta_mouse_x != 0) deltaTheta = 2 * atanf((float)_delta_mouse_x / 2 / _app->camera()->nearLimit());
 	if (_delta_mouse_y != 0) deltaPhi = 2 * atanf((float)_delta_mouse_y / 2 / _app->camera()->nearLimit());
-	if (deltaTheta != 0 || deltaPhi != 0) {
+	/*if (deltaTheta != 0 || deltaPhi != 0) {
 		_app->camera()->changeOrientation(OVector3(deltaPhi, 0.0f, deltaTheta));
+	}*/
+	if (deltaTheta != 0) {
+		_app->camera()->changeOrientation(OVector3(0.0f, deltaTheta, 0.0f));
+	}
+	if (deltaPhi != 0) {
+		_app->camera()->changeOrientation(OVector3(deltaPhi, 0.0f, 0.0f));
 	}
 
 	_delta_mouse_x = 0;

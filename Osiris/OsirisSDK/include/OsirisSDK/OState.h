@@ -201,6 +201,6 @@ private:
 	int _lastTimeIndex_ms;
 
 	void checkDegree(int degree);
-	const OVector3 checkReferencial(const OVector3& in, OrientationReferencial orRef) const;
+	OVector3 checkReferencial(const OVector3& in, OrientationReferencial orRef) const;
 };
 

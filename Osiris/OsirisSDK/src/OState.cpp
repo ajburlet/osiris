@@ -130,7 +130,7 @@ void OState::setOrientation(const OVector3& or)
 
 void OState::addOrientation(const OVector3 & or)
 {
-	_orientation *= OQuaternion(or);
+	_orientation = OQuaternion(or) * _orientation;
 }
 
 OVector3 OState::orientation() const
@@ -219,7 +219,7 @@ void OState::checkDegree(int degree)
 
 }
 
-const OVector3 OState::checkReferencial(const OVector3 &in, OrientationReferencial orRef) const 
+OVector3 OState::checkReferencial(const OVector3 &in, OrientationReferencial orRef) const 
 {
 	if (orRef != _orientationRef) {
 		switch (orRef) {
