@@ -175,6 +175,7 @@
     <ClInclude Include="include\OsirisSDK\OShaderProgram.h" />
     <ClInclude Include="include\OsirisSDK\OState.h" />
     <ClInclude Include="include\OsirisSDK\OText2D.h" />
+    <ClInclude Include="include\OsirisSDK\OTimeIndex.h" />
     <ClInclude Include="include\OsirisSDK\OVertexColorMesh.h" />
     <ClInclude Include="include\OsirisSDK\OWavefrontObjectFile.h" />
     <ClInclude Include="resource.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="src\OShaderProgram.cpp" />
     <ClCompile Include="src\OState.cpp" />
     <ClCompile Include="src\OText2D.cpp" />
+    <ClCompile Include="src\OTimeIndex.cpp" />
     <ClCompile Include="src\OVertexColorMesh.cpp" />
     <ClCompile Include="src\OWavefrontObjectFile.cpp" />
   </ItemGroup>
