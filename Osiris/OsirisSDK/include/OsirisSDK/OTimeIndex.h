@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef WIN32
+#include "windows.h"
+#endif
+
 #include "defs.h"
 
 /**
@@ -21,7 +25,7 @@ public:
 	 @brief Class constructor.
 	 @param timeIndex_ms Time index in microseconds.
 	 */
-	OTimeIndex(int timeIndex_ms);
+	OTimeIndex(long long timeIndex_us);
 
 	/**
 	 @brief Class destructor.
@@ -123,6 +127,13 @@ public:
 	inline bool operator>=(int in) const;
 
 	/**
+	 @brief Set time index component values.
+	 @param sec Time in seconds.
+	 @param usec Additional time in microseconds. 
+	 */
+	void setValue(int sec, int uSec);
+
+	/**
 	 @brief Returns the time index as an integer in seconds.
 	 */
 	int sec() const;
@@ -137,9 +148,25 @@ public:
 	 */
 	int toInt() const;
 
+	/**
+	 @brief Class initialization method.
+	 */
+	static void init();
+
+	/**
+	 @brief Returns current time index.
+	 */
+	static OTimeIndex current();
+
 private:
 	unsigned int _sec;
 	unsigned int _usec;
 
-	void setTimeFromInteger(int timeIndex);
+#ifdef WIN32
+	static LARGE_INTEGER _wFrequency;
+	static LARGE_INTEGER _wStartingStamp;
+#else
+	OTimeIndex _uStartingStamp;
+#endif
+	void setTimeFromInteger(long long timeIndex);
 };

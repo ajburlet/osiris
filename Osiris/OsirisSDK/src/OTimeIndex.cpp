@@ -1,5 +1,16 @@
 #include "OsirisSDK/OTimeIndex.h"
 
+#ifndef WIN32
+#include <sys/time.h>
+#endif
+
+#ifdef WIN32
+LARGE_INTEGER OTimeIndex::_wFrequency;
+LARGE_INTEGER OTimeIndex::_wStartingStamp;
+#else
+OTimeIndex OTimeIndex::_uStartingStamp;
+#endif
+
 OTimeIndex::OTimeIndex()
 {
 }
@@ -11,9 +22,9 @@ OTimeIndex::OTimeIndex(int sec, int usec) :
 }
 
 
-OTimeIndex::OTimeIndex(int timeIndex_ms)
+OTimeIndex::OTimeIndex(long long timeIndex_us)
 {
-	setTimeFromInteger(timeIndex_ms);
+	setTimeFromInteger(timeIndex_us);
 }
 
 OTimeIndex::~OTimeIndex()
@@ -130,6 +141,12 @@ inline bool OTimeIndex::operator>=(int in) const
 	return operator>=(OTimeIndex(in));
 }
 
+void OTimeIndex::setValue(int sec, int uSec)
+{
+	_sec = sec;
+	_usec = uSec;
+}
+
 int OTimeIndex::sec() const
 {
 	return _sec;
@@ -145,8 +162,36 @@ int OTimeIndex::toInt() const
 	return _sec*1000000 + _usec;
 }
 
-void OTimeIndex::setTimeFromInteger(int timeIndex)
+void OTimeIndex::init()
 {
-	_sec = timeIndex / 1000000;
-	_usec = timeIndex % 1000000;
+#ifdef WIN32
+	QueryPerformanceFrequency(&_wFrequency);
+	QueryPerformanceCounter(&_wStartingStamp);
+#else
+	struct timeval tv;
+	gettimeofday(&tv);
+	_uStartingStamp.setValue(tv.tv_sec, tv.tv_usec);
+#endif
+}
+
+OTimeIndex OTimeIndex::current()
+{
+#ifdef WIN32
+	LARGE_INTEGER currStamp;
+	QueryPerformanceCounter(&currStamp);
+	long long diff = (long long)(currStamp.QuadPart - _wStartingStamp.QuadPart) * 1000000 / _wFrequency.QuadPart;
+	return OTimeIndex(diff);
+#else
+	OTimeStamp currStamp;
+	struct timeval tv;
+	gettimeofday(&tv);
+	currStamp.setValue(tv.tv_sec, tv.tv_usec);
+	return currStamp - _uStartingStamp;
+#endif
+}
+
+void OTimeIndex::setTimeFromInteger(long long timeIndex)
+{
+	_sec = (int)(timeIndex / 1000000);
+	_usec = (int)(timeIndex % 1000000);
 }
