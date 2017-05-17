@@ -111,22 +111,22 @@ void DemoApplication::init()
 	_periodB = 6.0f;
 
 	_pauseFlag = false;
-	_last_timeIndex_ms = 0;
+	_last_timeIndex = OTimeIndex::current();
 }
 
-void DemoApplication::update(int timeIndex_ms)
+void DemoApplication::update(const OTimeIndex& timeIndex)
 {
 	OVector3 posA(0.0f);
 	OVector3 posB(0.0f);
-	int deltaTime_ms = timeIndex_ms - _last_timeIndex_ms;
+	int deltaTime_us = (timeIndex - _last_timeIndex).toInt();
 	char fpsBuff[32];
 	char cameraBuff[128];
 
 	/* update camera */
-	_camCtrl.update(timeIndex_ms);
+	_camCtrl.update(timeIndex);
 
 	/* calculate FPS and update the text object (to show on the screen) */
-	snprintf(fpsBuff, 32, "%.02f fps", 1 / ((float)deltaTime_ms / 1000));
+	snprintf(fpsBuff, 32, "%.02f fps", 1 / ((float)deltaTime_us / 1000000));
 	_fpsText->setContent(fpsBuff);
 
 	snprintf(cameraBuff, 128, "Camera @ (%.02f, %.02f, %.02f), orientation: Euler(%.02f, %.02f, %.02f)",
@@ -137,8 +137,8 @@ void DemoApplication::update(int timeIndex_ms)
 
 	/* calculating new positions */
 	if (!_pauseFlag) {
-		_thetaA = _thetaA + 2 * PI * deltaTime_ms / (_periodA * 1000);
-		_thetaB = _thetaB + 2 * PI * deltaTime_ms / (_periodB * 1000);
+		_thetaA = _thetaA + 2 * PI * deltaTime_us / (_periodA * 1000000);
+		_thetaB = _thetaB + 2 * PI * deltaTime_us / (_periodB * 1000000);
 
 		if (_thetaA > 2 * PI) _thetaA -= 2 * PI;
 		if (_thetaB > 2 * PI) _thetaB -= 2 * PI;
@@ -174,7 +174,7 @@ void DemoApplication::update(int timeIndex_ms)
 	_cameraText->render();
 
 	/* update last time index */
-	_last_timeIndex_ms = timeIndex_ms;
+	_last_timeIndex = timeIndex;
 }
 
 void DemoApplication::onKeyboardPress(const OKeyboardPressEvent *evt)

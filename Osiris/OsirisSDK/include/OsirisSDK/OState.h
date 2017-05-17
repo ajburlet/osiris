@@ -4,6 +4,7 @@
 
 #include "defs.h"
 #include "OMath.h"
+#include "OTimeIndex.h"
 
 /**
  \brief Stores motion component minimum or maximum constraints.
@@ -101,7 +102,7 @@ public:
 	 \brief Defines motion equation vector components.
 	 \param degree The degree of the component (i.e. 1 = velocity, 2 = acceleration, etc.): the n-th derivative
 		       of the motion state equation.
-	 \param component Component value. Time is given in milliseconds.
+	 \param component Component value. Time is given in microseconds.
 	 \param orRef The orientation referencial that this new values is defined in.
 	 */
 	void setMotionComponent(int degree, const OVector3& component, OrientationReferencial orRef);
@@ -110,7 +111,7 @@ public:
 	 \brief Adds to a motion equation vector component.
 	 \param degree The degree of the component (i.e. 1 = velocity, 2 = acceleration, etc.): the n-th derivative
 		       of the motion state equation.
-	 \param component Component value. Time is given in milliseconds.
+	 \param component Component value. Time is given in microseconds.
 	 \param orRef The orientation referencial that this new values is defined in.
 	 */
 	void addMotionComponent(int degree, const OVector3& component, OrientationReferencial orRef);
@@ -120,7 +121,7 @@ public:
 	 \param degree The degree of the component (i.e. 1 = velocity, 2 = acceleration, etc.): the n-th derivative
 		       of the motion state equation.
 	 \param orRef The orientation referencial that this new values is defined in.
-	 \returns Vector component for a given degree. Time is given in milliseconds.
+	 \returns Vector component for a given degree. Time is given in microseconds.
 	 */
 	OVector3 motionComponent(int degree, OrientationReferencial orRef) const;
 
@@ -128,7 +129,7 @@ public:
 	 \brief Obtain motion state component for a given degree in the current orientation reference frame.
 	 \param degree The degree of the component (i.e. 1 = velocity, 2 = acceleration, etc.): the n-th derivative
 		       of the motion state equation.
-	 \returns Pointer to the vector component for a given degree. Time is given in milliseconds.
+	 \returns Pointer to the vector component for a given degree. Time is given in microseconds.
 	 */
 	OVector3& motionComponent(int degree);
 
@@ -186,9 +187,9 @@ public:
 
 	/**
 	 \brief Update state for a given time index.
-	 \param timeIndex_ms Time index in milliseconds.
+	 \param timeIndex Time index.
 	 */
-	void update(int timeIndex_ms);
+	void update(const OTimeIndex& timeIndex);
 
 private:
 	std::vector<OVector3> _components;
@@ -198,7 +199,7 @@ private:
 	OQuaternion _orientation;
 	OrientationReferencial _orientationRef;
 
-	int _lastTimeIndex_ms;
+	OTimeIndex _lastTimeIndex;
 
 	void checkDegree(int degree);
 	OVector3 checkReferencial(const OVector3& in, OrientationReferencial orRef) const;

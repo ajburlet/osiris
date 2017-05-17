@@ -6,6 +6,7 @@
 #include "OEvent.h"
 #include "OCamera.h"
 #include "OMath.h"
+#include "OTimeIndex.h"
 
 #include <map>
 
@@ -103,9 +104,9 @@ public:
 
 	/**
 	 \brief Updates the camera position and orientation for a given time index.
-	 \param timeIndex_ms Time index in miliseconds.
+	 \param timeIndex Time index.
 	 */
-	void update(int timeIndex_ms);
+	void update(const OTimeIndex& timeIndex);
 
 
 protected:

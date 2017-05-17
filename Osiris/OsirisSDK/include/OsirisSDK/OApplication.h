@@ -9,6 +9,7 @@
 #include "OMath.h"
 #include "OObject.h"
 #include "OEvent.h"
+#include "OTimeIndex.h"
 
 #define OAPPLICATION_DEFAULT_POSX	200
 #define OAPPLICATION_DEFAULT_POSY	200
@@ -128,7 +129,7 @@ protected:
 	/**
 	 \brief Method called on each simulation iteration.
 	 */
-	virtual void update(int timeIndex_ms) = 0;
+	virtual void update(const OTimeIndex& timeIndex) = 0;
 
 private:
 	static OApplication* _activeInstance;

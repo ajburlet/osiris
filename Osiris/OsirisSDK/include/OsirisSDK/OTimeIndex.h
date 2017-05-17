@@ -12,6 +12,9 @@
 class OAPI OTimeIndex
 {
 public:
+	/**
+	 @brief Class constructor.
+	 */
 	OTimeIndex();
 
 	/**
@@ -125,6 +128,28 @@ public:
 	 @param in Time index in microseconds.
 	 */
 	inline bool operator>=(int in) const;
+
+	/**
+	 @brief Equals comparison operator.
+	 */
+	inline bool operator==(const OTimeIndex& in) const;
+
+	/**
+	 @brief Equal comparison operator.
+	 @brief in Time index in microseconds.
+	 */
+	inline bool operator==(int in) const;
+
+	/**
+	 @brief Not equal comparison operator.
+	 */
+	inline bool operator!=(const OTimeIndex& in) const;
+
+	/**
+	 @brief Not equal comparison operator.
+	 @brief in Time index in microseconds.
+	 */
+	inline bool operator!=(int in) const;
 
 	/**
 	 @brief Set time index component values.

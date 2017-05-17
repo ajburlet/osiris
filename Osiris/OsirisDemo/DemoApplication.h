@@ -14,7 +14,7 @@ public:
 
 	// Inherited via OApplication
 	virtual void init() override;
-	virtual void update(int timeIndex_ms) override;
+	virtual void update(const OTimeIndex& timeIndex) override;
 	
 	void onKeyboardPress(const OKeyboardPressEvent *evt);
 
@@ -35,7 +35,7 @@ private:
 	float _periodA;
 	float _periodB;
 
-	int _last_timeIndex_ms;
+	OTimeIndex _last_timeIndex;
 
 	bool _pauseFlag;
 };

@@ -28,22 +28,22 @@ OCameraController::~OCameraController()
 
 void OCameraController::setMovementMaxSpeed(float maxSpeed)
 {
-	_movementMaxSpeed = maxSpeed / 1000.0f;
+	_movementMaxSpeed = maxSpeed / 1000000.0f;
 }
 
 float OCameraController::movementMaxSpeed() const
 {
-	return _movementMaxSpeed * 1000.0f;
+	return _movementMaxSpeed * 1000000.0f;
 }
 
 void OCameraController::setMovementAcceleration(float acc)
 {
-	_movementAcceleration = acc / 1000.0f / 1000.0f;
+	_movementAcceleration = acc / 1000000.0f / 1000000.0f;
 }
 
 float OCameraController::movementAcceleration() const
 {
-	return _movementAcceleration * 1000.0f * 1000.0f;
+	return _movementAcceleration * 1000000.0f * 1000000.0f;
 }
 
 
@@ -56,26 +56,23 @@ void OCameraController::setMoveEventKey(OKeyboardPressEvent::KeyCode key, Camera
 	_keyBind[key] = camEvt;
 }
 
-void OCameraController::update(int timeIndex_ms)
+void OCameraController::update(const OTimeIndex& timeIndex)
 {
 	/* update camera orientation (orientation vector) */
-	float deltaTheta = 0.0f, deltaPhi = 0.0f;
-	if (_delta_mouse_x != 0) deltaTheta = 2 * atanf((float)_delta_mouse_x / 2 / _app->camera()->nearLimit());
-	if (_delta_mouse_y != 0) deltaPhi = 2 * atanf((float)_delta_mouse_y / 2 / _app->camera()->nearLimit());
-	/*if (deltaTheta != 0 || deltaPhi != 0) {
-		_app->camera()->changeOrientation(OVector3(deltaPhi, 0.0f, deltaTheta));
-	}*/
-	if (deltaTheta != 0) {
+	float deltaTheta, deltaPhi;
+	if (_delta_mouse_x != 0) {
+		deltaTheta = 2 * atanf((float)_delta_mouse_x / 2 / _app->camera()->nearLimit());
 		_app->camera()->changeOrientation(OVector3(0.0f, deltaTheta, 0.0f));
 	}
-	if (deltaPhi != 0) {
+	if (_delta_mouse_y != 0) {
+		deltaPhi = 2 * atanf((float)_delta_mouse_y / 2 / _app->camera()->nearLimit());
 		_app->camera()->changeOrientation(OVector3(deltaPhi, 0.0f, 0.0f));
 	}
 
 	_delta_mouse_x = 0;
 	_delta_mouse_y = 0;
 
-	_app->camera()->state()->update(timeIndex_ms);
+	_app->camera()->state()->update(timeIndex);
 }
 
 void OCameraController::onKeyboardPress(const OKeyboardPressEvent * evt)

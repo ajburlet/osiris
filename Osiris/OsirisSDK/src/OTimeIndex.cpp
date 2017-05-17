@@ -11,6 +11,7 @@ LARGE_INTEGER OTimeIndex::_wStartingStamp;
 OTimeIndex OTimeIndex::_uStartingStamp;
 #endif
 
+
 OTimeIndex::OTimeIndex()
 {
 }
@@ -141,6 +142,26 @@ inline bool OTimeIndex::operator>=(int in) const
 	return operator>=(OTimeIndex(in));
 }
 
+inline bool OTimeIndex::operator==(const OTimeIndex & in) const
+{
+	return (_sec == in._sec && _usec == in._usec);
+}
+
+inline bool OTimeIndex::operator==(int in) const
+{
+	return (_sec * 1000000 + _usec == in);
+}
+
+inline bool OTimeIndex::operator!=(const OTimeIndex & in) const
+{
+	return (_sec != in._sec || _usec != in._usec);
+}
+
+inline bool OTimeIndex::operator!=(int in) const
+{
+	return !operator==(in);
+}
+
 void OTimeIndex::setValue(int sec, int uSec)
 {
 	_sec = sec;
@@ -179,8 +200,8 @@ OTimeIndex OTimeIndex::current()
 #ifdef WIN32
 	LARGE_INTEGER currStamp;
 	QueryPerformanceCounter(&currStamp);
-	long long diff = (long long)(currStamp.QuadPart - _wStartingStamp.QuadPart) * 1000000 / _wFrequency.QuadPart;
-	return OTimeIndex(diff);
+	long long diff = (currStamp.QuadPart - _wStartingStamp.QuadPart) * 1000000 / _wFrequency.QuadPart;
+	return OTimeIndex((long long)diff);
 #else
 	OTimeStamp currStamp;
 	struct timeval tv;

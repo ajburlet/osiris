@@ -47,6 +47,9 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 	glDepthFunc(GL_LEQUAL);
 	glDepthRange(0.0f, 1.0f);
 	glEnable(GL_DEPTH_CLAMP);
+
+	/* initializing simulation time frame */
+	OTimeIndex::init();
 }
 
 OApplication::~OApplication()
@@ -199,7 +202,7 @@ void OApplication::displayCallback()
 {
 	_activeInstance->clearScreen();
 	_activeInstance->processEvents();
-	_activeInstance->update(glutGet(GLUT_ELAPSED_TIME));
+	_activeInstance->update(OTimeIndex::current());
 	_activeInstance->deleteObjects();
 
 	glutSwapBuffers();

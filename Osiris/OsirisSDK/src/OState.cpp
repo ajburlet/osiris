@@ -57,7 +57,8 @@ void OStateConstraint::disableAll()
 // OState
 // ****************************************************************************
 OState::OState(OrientationReferencial ref) :
-	_orientationRef(ref)
+	_orientationRef(ref),
+	_lastTimeIndex(0)
 {
 }
 
@@ -166,18 +167,18 @@ void OState::disableAllConstraints()
 	for (size_t i = 0; i < _maxConstraint.size(); i++) _maxConstraint[i].disableAll();
 }
 
-void OState::update(int timeIndex_ms)
+void OState::update(const OTimeIndex& timeIndex)
 {
-	float deltaT_ms = (float)(timeIndex_ms - _lastTimeIndex_ms);
+	float deltaT_us = (float)(timeIndex - _lastTimeIndex).toInt();
 	
 	/* updating motion components */
-	if (_lastTimeIndex_ms != 0) {
+	if (_lastTimeIndex != 0) {
 		/* iterate over all the components of the motion equation */
 		for (int i = _components.size() - 2; i >= 0; i--) {
 			/* iterate over the degrees of freedom */
 			for (int df = 0; df < 3; df++) {
 				OVector3::Axis axis = (OVector3::Axis)df;
-				float newValue = _components[i][axis] + _components[i + 1][axis] * deltaT_ms;
+				float newValue = _components[i][axis] + _components[i + 1][axis] * deltaT_us;
 
 				if (_minConstraint[i].enabled(axis)) {
 					if ((!_minConstraint[i].absoluteValue() && newValue < _minConstraint[i].value(axis)) ||
@@ -198,13 +199,13 @@ void OState::update(int timeIndex_ms)
 	/* update position */
 	if (_components.size() > 0) {
 		if (_orientationRef == Object) {
-			_position += _orientation.inverse() * _components[0] * deltaT_ms;
+			_position += _orientation.inverse() * _components[0] * deltaT_us;
 		} else {
-			_position += _components[0] * deltaT_ms;
+			_position += _components[0] * deltaT_us;
 		}
 	}
 
-	_lastTimeIndex_ms = timeIndex_ms;
+	_lastTimeIndex = timeIndex;
 }
 
 void OState::checkDegree(int degree)
