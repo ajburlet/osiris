@@ -77,8 +77,8 @@ inline OTimeIndex & OTimeIndex::operator+=(const OTimeIndex & in)
 	_sec += in._sec;
 	_usec += in._usec;
 	if (_usec > 1000000) {
-		_sec %= 1000000;
-		_usec %= 1000000;
+		_sec++;
+		_usec -= 1000000;
 	}
 	return *this;
 }
