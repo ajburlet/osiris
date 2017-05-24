@@ -15,6 +15,7 @@ public:
 	// Inherited via OApplication
 	virtual void init() override;
 	virtual void update(const OTimeIndex& timeIndex) override;
+	virtual void render() override;
 	
 	void onKeyboardPress(const OKeyboardPressEvent *evt);
 
@@ -25,7 +26,6 @@ private:
 	OText2D* _title;
 	OText2D* _fpsText;
 	OText2D* _cameraText;
-	OMatrixStack _mtx;
 	OCameraController _camCtrl;
 
 	float _movRadiusA;

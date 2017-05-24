@@ -10,11 +10,31 @@
 #include "OObject.h"
 #include "OEvent.h"
 #include "OTimeIndex.h"
+#include "OStats.hpp"
 
+#ifndef OAPPLICATION_DEFAULT_POSX
 #define OAPPLICATION_DEFAULT_POSX	200
+#endif
+
+#ifndef OAPPLICATION_DEFAULT_POSY
 #define OAPPLICATION_DEFAULT_POSY	200
+#endif
+
+#ifndef OAPPLICATION_DEFAULT_WIDTH
 #define OAPPLICATION_DEFAULT_WIDTH	640
+#endif
+
+#ifndef OAPPLICATION_DEFAULT_HEIGHT
 #define OAPPLICATION_DEFAULT_HEIGHT	480
+#endif
+
+#ifndef OAPPLICATION_DEFAULT_TARGETFPS
+#define OAPPLICATION_DEFAULT_TARGETFPS	40
+#endif
+
+#ifndef OAPPLICATION_DEFAULT_SIMULATIONSTEP
+#define OAPPLICATION_DEFAULT_SIMULATIONSTEP	20000
+#endif
 
 /**
  \brief The Osiris Application base class. 
@@ -38,10 +58,13 @@ public:
 	 \param windowPos_y Window position on the Y axis.
 	 \param windowWidth Window width.
 	 \param windowHeight Window height.
+	 \param targetFPS Target FPS.
+	 \param simulationStep_us Simulation step in microseconds.
 	 */
 	OApplication(const char* title, int argc, char **argv,
 		int windowPos_x=OAPPLICATION_DEFAULT_POSX, int windowPos_y=OAPPLICATION_DEFAULT_POSY,
-		int windowWidth=OAPPLICATION_DEFAULT_WIDTH, int windowHeight=OAPPLICATION_DEFAULT_HEIGHT);
+		int windowWidth=OAPPLICATION_DEFAULT_WIDTH, int windowHeight=OAPPLICATION_DEFAULT_HEIGHT,
+		int targetFPS=OAPPLICATION_DEFAULT_TARGETFPS, int simulationStep_us=OAPPLICATION_DEFAULT_SIMULATIONSTEP);
 	
 	
 	/**
@@ -91,6 +114,16 @@ public:
 	void scheduleDelete(OObject* obj);
 
 	/**
+	 \brief Frames-per-second statistics.
+	 */
+	const OStats<float>& fpsStats() const;
+
+	/**
+	 \brief Simulation idle time statistics (in case target FPS is set).
+	 */
+	const OStats<int>& idleTimeStats() const;
+
+	/**
 	 \brief Returns active OApplication instance.
 	 */
 	static OApplication* activeInstance();
@@ -131,12 +164,28 @@ protected:
 	 */
 	virtual void update(const OTimeIndex& timeIndex) = 0;
 
+	/**
+	 \brief Renderization method.
+	 */
+	virtual void render() = 0;
+
 private:
 	static OApplication* _activeInstance;
 	OCamera _cam;
 	std::map<OObject*, int> _deleteList;
 	std::map<OEvent::EventType, std::list<OObject*> > _eventRecipients;
 	std::queue<OEvent*> _eventQueue;
+	int _targetFPS;
+	int _simulationStep_us;
+	OStats<float> _fpsStats;
+	OStats<int> _idleTimeStats;
+	OTimeIndex _simulationTimeIndex;
+	OTimeIndex _lastRenderTimeIndex;
+
+	/**
+	 Single loop interaction handling.
+	 */
+	void loopInteraction();
 
 	static void keyboardCallback(unsigned char key, int mouse_x, int mouse_y);
 	static void keyboardUpCallback(unsigned char key, int mouse_x, int mouse_y);

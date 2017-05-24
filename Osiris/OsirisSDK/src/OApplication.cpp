@@ -4,12 +4,20 @@
 
 #include <glload/gl_load.hpp>
 
+#ifndef OAPPLICATION_DEFAULT_STATSSAMPLE
+#define OAPPLICATION_DEFAULT_STATSSAMPLE	100
+#endif
+
 using namespace std;
 
 OApplication* OApplication::_activeInstance = NULL;
 
-
-OApplication::OApplication(const char* title, int argc, char **argv, int windowPos_x, int windowPos_y, int windowWidth, int windowHeight)
+OApplication::OApplication(const char* title, int argc, char **argv, int windowPos_x, int windowPos_y, 
+			   int windowWidth, int windowHeight, int targetFPS, int simulationStep_us) :
+	_targetFPS(targetFPS),
+	_simulationStep_us(simulationStep_us),
+	_fpsStats(OAPPLICATION_DEFAULT_STATSSAMPLE),
+	_idleTimeStats(OAPPLICATION_DEFAULT_STATSSAMPLE)
 {
 	if (_activeInstance != NULL) throw OException("There is already an OApplication instance created.");
 	_activeInstance = this;
@@ -50,6 +58,8 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 
 	/* initializing simulation time frame */
 	OTimeIndex::init();
+	_simulationTimeIndex = OTimeIndex::current();
+	_lastRenderTimeIndex = 0;
 }
 
 OApplication::~OApplication()
@@ -101,6 +111,16 @@ void OApplication::scheduleDelete(OObject * obj)
 	if ((it = _deleteList.find(obj)) != _deleteList.end()) _deleteList[obj] = 1;
 }
 
+const OStats<float>& OApplication::fpsStats() const
+{
+	return _fpsStats;
+}
+
+const OStats<int>& OApplication::idleTimeStats() const
+{
+	return _idleTimeStats;
+}
+
 OApplication * OApplication::activeInstance()
 {
 	return _activeInstance;
@@ -143,6 +163,32 @@ void OApplication::deleteObjects()
 	map<OObject*, int>::iterator it;
 	for (it = _deleteList.begin(); it != _deleteList.end(); it++) delete it->first;
 	_deleteList.clear();
+}
+
+void OApplication::loopInteraction()
+{
+	OTimeIndex currTime = OTimeIndex::current();
+
+	/* getting started on the iteration */
+	clearScreen();
+	processEvents();
+
+	/* running the simulation */
+	while ((currTime - _simulationTimeIndex).toInt() > _simulationStep_us) {
+		_simulationTimeIndex += _simulationStep_us;
+		update(_simulationTimeIndex);
+	}
+
+	/* rendering */
+	currTime = OTimeIndex::current();
+	_fpsStats.add(1.0f/((float)(currTime - _lastRenderTimeIndex).toInt()/1000000));
+	_lastRenderTimeIndex = currTime;
+	render();
+	
+	deleteObjects();
+
+	glutSwapBuffers();
+	glutPostRedisplay();
 }
 
 void OApplication::keyboardCallback(unsigned char key, int mouse_x, int mouse_y)
@@ -200,11 +246,5 @@ void OApplication::resizeCallback(int width, int height)
 
 void OApplication::displayCallback()
 {
-	_activeInstance->clearScreen();
-	_activeInstance->processEvents();
-	_activeInstance->update(OTimeIndex::current());
-	_activeInstance->deleteObjects();
-
-	glutSwapBuffers();
-	glutPostRedisplay();
+	_activeInstance->loopInteraction();
 }

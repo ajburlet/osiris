@@ -116,8 +116,6 @@ void DemoApplication::init()
 
 void DemoApplication::update(const OTimeIndex& timeIndex)
 {
-	OVector3 posA(0.0f);
-	OVector3 posB(0.0f);
 	int deltaTime_us = (timeIndex - _last_timeIndex).toInt();
 	char fpsBuff[32];
 	char cameraBuff[128];
@@ -126,7 +124,7 @@ void DemoApplication::update(const OTimeIndex& timeIndex)
 	_camCtrl.update(timeIndex);
 
 	/* calculate FPS and update the text object (to show on the screen) */
-	snprintf(fpsBuff, 32, "%.02f fps", 1 / ((float)deltaTime_us / 1000000));
+	snprintf(fpsBuff, 32, "%.02f fps", fpsStats().average());
 	_fpsText->setContent(fpsBuff);
 
 	snprintf(cameraBuff, 128, "Camera @ (%.02f, %.02f, %.02f), orientation: Euler(%.02f, %.02f, %.02f)",
@@ -143,6 +141,16 @@ void DemoApplication::update(const OTimeIndex& timeIndex)
 		if (_thetaA > 2 * PI) _thetaA -= 2 * PI;
 		if (_thetaB > 2 * PI) _thetaB -= 2 * PI;
 	}
+	
+	/* update last time index */
+	_last_timeIndex = timeIndex;
+}
+
+void DemoApplication::render()
+{
+	OVector3 posA(0.0f);
+	OVector3 posB(0.0f);
+	OMatrixStack mtx;
 
 	/* calculating displacement vectors */
 	posA.setX(_movRadiusA*cosf(_thetaA));
@@ -151,30 +159,27 @@ void DemoApplication::update(const OTimeIndex& timeIndex)
 	posB.setZ(_movRadiusB*sinf(_thetaB));
 
 	/* Get initial matrix from camera related transforms */
-	_mtx = *(camera()->transform());
+	mtx = *(camera()->transform());
 
 	/* render cube */
-	_mtx.push();
-	_mtx.translate(posA);
-	_mtx.scale(0.5f);
-	_cube->render(&_mtx);
-	_mtx.pop();
+	mtx.push();
+	mtx.translate(posA);
+	mtx.scale(0.5f);
+	_cube->render(&mtx);
+	mtx.pop();
 
 	/* render torus */
-	_mtx.push();
-	_mtx.translate(posB);
-	_mtx.scale(0.25f);
-	_mtx.rotateX(45.0f);
-	_torus->render(&_mtx);
-	_mtx.pop();
+	mtx.push();
+	mtx.translate(posB);
+	mtx.scale(0.25f);
+	mtx.rotateX(45.0f);
+	_torus->render(&mtx);
+	mtx.pop();
 
 	/* render text */
 	_title->render();
 	_fpsText->render();
 	_cameraText->render();
-
-	/* update last time index */
-	_last_timeIndex = timeIndex;
 }
 
 void DemoApplication::onKeyboardPress(const OKeyboardPressEvent *evt)
