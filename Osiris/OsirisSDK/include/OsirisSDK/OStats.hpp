@@ -11,7 +11,7 @@
 /**
  @brief Template class to handle statistical data.
  */
-template <class VType> class OAPI OStats
+template <class VType> class OStats
 {
 public:
 	/**
@@ -24,6 +24,16 @@ public:
 	 @brief Class destructor.
 	 */
 	virtual ~OStats();
+
+	/**
+	 @brief Set sample size.
+	 */
+	void setSampleSize(int size);
+
+	/**
+	 @brief Returns sample size.
+	 */
+	int sampleSize() const;
 
 	/**
 	 @brief Add new entry to the ensamble.
@@ -57,7 +67,6 @@ private:
 	VType _sumsq;
 };
 
-
 template<class VType>
 inline OStats<VType>::OStats(int sampleSize) :
 	_sampleSize(sampleSize),
@@ -72,10 +81,23 @@ inline OStats<VType>::~OStats()
 }
 
 template<class VType>
+inline void OStats<VType>::setSampleSize(int size)
+{
+	while (_samples.size() > size) _samples.pop_front();
+	_sampleSize = size;
+}
+
+template<class VType>
+inline int OStats<VType>::sampleSize() const
+{
+	return _sampleSize;
+}
+
+template<class VType>
 inline void OStats<VType>::add(VType val)
 {
-	sum += val;
-	sumsq += val*val;
+	_sum += val;
+	_sumsq += val*val;
 	if (_samples.size() == _sampleSize) {
 		_sum -= _samples.front();
 		_sumsq -= _samples.front()*_samples.front();
