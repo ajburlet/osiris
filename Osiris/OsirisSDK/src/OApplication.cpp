@@ -213,7 +213,7 @@ void OApplication::loopIteration()
 	OTimeIndex currTimeR = OTimeIndex::current();
 	_simulationPerformanceStats.add((currTimeR - currTime).toInt() / (float)stepCount / _simulationStep_us);
 
-	/* rendering */
+	/* limit rendering frequency */
 	if (_targetFPS > 0) {
 		int renderInterval_us = (currTimeR - _lastRenderTimeIndex).toInt();
 		int frameInterval_us = 1000000 / _targetFPS;
@@ -224,6 +224,8 @@ void OApplication::loopIteration()
 	} else {
 		_idleTimeStats.add(0);
 	}
+
+	/* calculate FPS and render */
 	currTimeR = OTimeIndex::current();
 	_fpsStats.add(1000000.0f / (currTimeR - _lastRenderTimeIndex).toInt());
 	_lastRenderTimeIndex = currTimeR;
