@@ -1,3 +1,6 @@
+#include <chrono>
+#include <thread>
+
 #include "OsirisSDK/GLdefs.h"
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OApplication.h"
@@ -82,6 +85,26 @@ int OApplication::windowHeight() const
 	return glutGet(GLUT_WINDOW_HEIGHT);
 }
 
+int OApplication::targetFPS() const
+{
+	return _targetFPS;
+}
+
+int OApplication::simulationStep() const
+{
+	return _simulationStep_us;
+}
+
+void OApplication::setTargetFPS(int targetFPS)
+{
+	_targetFPS = targetFPS;
+}
+
+void OApplication::setSimulationStep(int simulationStep)
+{
+	_simulationStep_us = simulationStep;
+}
+
 void OApplication::addEventRecipient(OEvent::EventType eventType, OObject * recipient)
 {
 	bool exists = false;
@@ -119,6 +142,11 @@ const OStats<float>& OApplication::fpsStats() const
 const OStats<int>& OApplication::idleTimeStats() const
 {
 	return _idleTimeStats;
+}
+
+const OStats<float>& OApplication::performanceStats() const
+{
+	return _simulationPerformanceStats;
 }
 
 OApplication * OApplication::activeInstance()
@@ -165,7 +193,7 @@ void OApplication::deleteObjects()
 	_deleteList.clear();
 }
 
-void OApplication::loopInteraction()
+void OApplication::loopIteration()
 {
 	OTimeIndex currTime = OTimeIndex::current();
 
@@ -174,17 +202,34 @@ void OApplication::loopInteraction()
 	processEvents();
 
 	/* running the simulation */
+	int stepCount = 0;
 	while ((currTime - _simulationTimeIndex).toInt() > _simulationStep_us) {
 		_simulationTimeIndex += _simulationStep_us;
 		update(_simulationTimeIndex);
+		stepCount++;
 	}
 
+	/* calculate mean performance indicator */
+	OTimeIndex currTimeR = OTimeIndex::current();
+	_simulationPerformanceStats.add((currTimeR - currTime).toInt() / (float)stepCount / _simulationStep_us);
+
 	/* rendering */
-	currTime = OTimeIndex::current();
-	_fpsStats.add(1.0f/((float)(currTime - _lastRenderTimeIndex).toInt()/1000000));
-	_lastRenderTimeIndex = currTime;
+	if (_targetFPS > 0) {
+		int renderInterval_us = (currTimeR - _lastRenderTimeIndex).toInt();
+		int frameInterval_us = 1000000 / _targetFPS;
+		if (renderInterval_us < frameInterval_us && _lastRenderTimeIndex > 0) {
+			this_thread::sleep_for(chrono::microseconds(frameInterval_us - renderInterval_us));
+			_idleTimeStats.add(frameInterval_us - renderInterval_us);
+		}
+	} else {
+		_idleTimeStats.add(0);
+	}
+	currTimeR = OTimeIndex::current();
+	_fpsStats.add(1000000.0f / (currTimeR - _lastRenderTimeIndex).toInt());
+	_lastRenderTimeIndex = currTimeR;
 	render();
 	
+	/* delete objects at the end of the iteration */
 	deleteObjects();
 
 	glutSwapBuffers();
@@ -246,5 +291,5 @@ void OApplication::resizeCallback(int width, int height)
 
 void OApplication::displayCallback()
 {
-	_activeInstance->loopInteraction();
+	_activeInstance->loopIteration();
 }

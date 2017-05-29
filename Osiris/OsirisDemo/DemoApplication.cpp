@@ -41,7 +41,9 @@ void DemoApplication::init()
 	_fontCourier = new OFont("cour.ttf");
 	_title = new OText2D(_fontCourier, 12, -1.0f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	_title->setContent("Osiris Framework");
-	_fpsText = new OText2D(_fontCourier, 12, 0.8f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_fpsText = new OText2D(_fontCourier, 12, 0.55f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_perfText = new OText2D(_fontCourier, 12, 0.55f, -0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_idleText = new OText2D(_fontCourier, 12, 0.55f, -0.85f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	_cameraText = new OText2D(_fontCourier, 12, -1.0f, 0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 
 	/* setting up the cube */
@@ -97,7 +99,6 @@ void DemoApplication::init()
 	torus->init();
 	_torus = torus;
 
-
 	/* camera */
 	camera()->setCameraLimits(1.0f, 10.0f);
 	camera()->setPosition(OVector3(0.0f, 0.0f, -3.0f));
@@ -117,21 +118,27 @@ void DemoApplication::init()
 void DemoApplication::update(const OTimeIndex& timeIndex)
 {
 	int deltaTime_us = (timeIndex - _last_timeIndex).toInt();
-	char fpsBuff[32];
-	char cameraBuff[128];
+	char buff[128];
 
 	/* update camera */
 	_camCtrl.update(timeIndex);
 
-	/* calculate FPS and update the text object (to show on the screen) */
-	snprintf(fpsBuff, 32, "%.02f fps", fpsStats().average());
-	_fpsText->setContent(fpsBuff);
+	/* calculate FPS average and update the text object (to show on the screen) */
+	if (targetFPS() == 0) snprintf(buff, 32, "%.02f fps", fpsStats().average());
+	else snprintf(buff, 32, "%.02f/%d fps", fpsStats().average(), targetFPS());
+	_fpsText->setContent(buff);
+	
+	/* simulation stats and idle time */
+	snprintf(buff, 32, "Perf coef: %.02f", performanceStats().average());
+	_perfText->setContent(buff);
+	snprintf(buff, 32, "Idle time: %.02f", idleTimeStats().average());
+	_idleText->setContent(buff);
 
-	snprintf(cameraBuff, 128, "Camera @ (%.02f, %.02f, %.02f), orientation: Euler(%.02f, %.02f, %.02f)",
+	snprintf(buff, 128, "Camera @ (%.02f, %.02f, %.02f), orientation: Euler(%.02f, %.02f, %.02f)",
 		camera()->position().x(), camera()->position().y(), camera()->position().z(),
 		camera()->orientation().x(), camera()->orientation().y(), camera()->orientation().z()
 	);
-	_cameraText->setContent(cameraBuff);
+	_cameraText->setContent(buff);
 
 	/* calculating new positions */
 	if (!_pauseFlag) {
@@ -179,10 +186,21 @@ void DemoApplication::render()
 	/* render text */
 	_title->render();
 	_fpsText->render();
+	_perfText->render();
+	_idleText->render();
 	_cameraText->render();
 }
 
 void DemoApplication::onKeyboardPress(const OKeyboardPressEvent *evt)
 {
-	if (evt->code() == OKeyboardPressEvent::OKey_Space) _pauseFlag = !_pauseFlag;
+	switch (evt->code()) {
+	case OKeyboardPressEvent::OKey_Space: 
+		_pauseFlag = !_pauseFlag;
+		break;
+
+	case OKeyboardPressEvent::OKey_l:
+	case OKeyboardPressEvent::OKey_L:
+		if (targetFPS() == 0) setTargetFPS(30);
+		else setTargetFPS(0);
+	}
 }

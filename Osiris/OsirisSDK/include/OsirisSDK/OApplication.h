@@ -90,6 +90,33 @@ public:
 	int windowHeight() const;
 
 	/**
+	 \brief Returns the target frames-per-second.
+	 \param The desired FPS. If zero, the screen rendering will not be limited.
+	 */
+	int targetFPS() const;
+
+	/**
+	 \brief Returns the simulation step in microseconds.
+	 */
+	int simulationStep() const;
+
+	/**
+	 \brief Sets the target frames-per-second.
+	 */
+	void setTargetFPS(int targetFPS);
+
+	/**
+	 \brief Sets the simulation step.
+
+	 This parameter must be set with caution. It shouldn't be neither too large (the simulation
+	 will be sloppy) or too short (it should be at least the time it takes to process the simulation
+	 iteration).
+
+	 \param simulationStep The desired simulation step in microseconds.
+	 */
+	void setSimulationStep(int simulationStep);
+
+	/**
 	 \brief Adds an OObject class object as event recipient for given type.
 	 \param eventType Event type.
 	 \param recipient Object that will receive the events.
@@ -122,6 +149,17 @@ public:
 	 \brief Simulation idle time statistics (in case target FPS is set).
 	 */
 	const OStats<int>& idleTimeStats() const;
+
+	/**
+	 \brief Performance coefficient statistics.
+
+	 The performance coefficient is the reason between the time it takes to process a
+	 simulation iteration and the time step. The closest it is to zero the better. If it
+	 is greater than 1, the simulation will face problems catching up to real time, which
+	 means that either the simulation step is too short, or that the iteration processing is
+	 taking too long and must be optimized.
+	 */
+	const OStats<float>& performanceStats() const;
 
 	/**
 	 \brief Returns active OApplication instance.
@@ -179,13 +217,14 @@ private:
 	int _simulationStep_us;
 	OStats<float> _fpsStats;
 	OStats<int> _idleTimeStats;
+	OStats<float> _simulationPerformanceStats;
 	OTimeIndex _simulationTimeIndex;
 	OTimeIndex _lastRenderTimeIndex;
 
 	/**
-	 Single loop interaction handling.
+	 Single loop iteration handling.
 	 */
-	void loopInteraction();
+	void loopIteration();
 
 	static void keyboardCallback(unsigned char key, int mouse_x, int mouse_y);
 	static void keyboardUpCallback(unsigned char key, int mouse_x, int mouse_y);

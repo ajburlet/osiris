@@ -25,6 +25,8 @@ private:
 	OFont *_fontCourier;
 	OText2D* _title;
 	OText2D* _fpsText;
+	OText2D* _perfText;
+	OText2D* _idleText;
 	OText2D* _cameraText;
 	OCameraController _camCtrl;
 
