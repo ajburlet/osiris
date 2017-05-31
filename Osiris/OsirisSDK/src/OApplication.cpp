@@ -219,8 +219,8 @@ void OApplication::loopIteration()
 		int frameInterval_us = 1000000 / _targetFPS;
 		if (renderInterval_us < frameInterval_us && _lastRenderTimeIndex > 0) {
 			this_thread::sleep_for(chrono::microseconds(frameInterval_us - renderInterval_us));
-			_idleTimeStats.add(frameInterval_us - renderInterval_us);
 		}
+		_idleTimeStats.add(frameInterval_us - renderInterval_us);
 	} else {
 		_idleTimeStats.add(0);
 	}
