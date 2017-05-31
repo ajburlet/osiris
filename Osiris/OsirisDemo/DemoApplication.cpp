@@ -129,14 +129,15 @@ void DemoApplication::update(const OTimeIndex& timeIndex)
 	_fpsText->setContent(buff);
 	
 	/* simulation stats and idle time */
-	snprintf(buff, 32, "Perf coef: %.02f", performanceStats().average());
+	snprintf(buff, 32, "Perf coef: %.04f", performanceStats().average());
 	_perfText->setContent(buff);
 	snprintf(buff, 32, "Idle time: %.02f", idleTimeStats().average());
 	_idleText->setContent(buff);
 
+	OVector3 orientation = camera()->state()->orientation();
 	snprintf(buff, 128, "Camera @ (%.02f, %.02f, %.02f), orientation: Euler(%.02f, %.02f, %.02f)",
 		camera()->position().x(), camera()->position().y(), camera()->position().z(),
-		camera()->orientation().x(), camera()->orientation().y(), camera()->orientation().z()
+		orientation.x(), orientation.y(), orientation.z()
 	);
 	_cameraText->setContent(buff);
 
@@ -202,5 +203,21 @@ void DemoApplication::onKeyboardPress(const OKeyboardPressEvent *evt)
 	case OKeyboardPressEvent::OKey_L:
 		if (targetFPS() == 0) setTargetFPS(30);
 		else setTargetFPS(0);
+
+	case OKeyboardPressEvent::OKey_m:
+		camera()->state()->addOrientation(OVector3(0.0f, 45.0f, 0.0f));
+		break;
+
+	case OKeyboardPressEvent::OKey_M:
+		camera()->state()->addOrientation(OVector3(0.0f, -45.0f, 0.0f));
+		break;
+
+	case OKeyboardPressEvent::OKey_n:
+		camera()->state()->addOrientation(OVector3(45.0f, 0.0f, 0.0f));
+		break;
+
+	case OKeyboardPressEvent::OKey_N:
+		camera()->state()->addOrientation(OVector3(-45.0f, 0.0f, 0.0f));
+
 	}
 }

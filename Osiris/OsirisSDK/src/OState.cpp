@@ -131,7 +131,7 @@ void OState::setOrientation(const OVector3& or)
 
 void OState::addOrientation(const OVector3 & or)
 {
-	_orientation = OQuaternion(or) * _orientation;
+	_orientation = _orientation * OQuaternion(or);
 }
 
 OVector3 OState::orientation() const
