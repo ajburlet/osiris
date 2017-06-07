@@ -48,11 +48,6 @@ void OCamera::setOrientation(const OVector3 & orientation)
 	_state.setOrientation(orientation);
 }
 
-void OCamera::changeOrientation(const OVector3& rotation)
-{
-	_state.addOrientation(rotation);
-}
-
 float OCamera::fieldOfViewDegrees() const
 {
 	return _fieldOfViewDeg;
@@ -78,11 +73,6 @@ OVector3& OCamera::position()
 	return _state.position();
 }
 
-OVector3 OCamera::orientation() const
-{
-	return _state.orientation();
-}
-
 OState * OCamera::state()
 {
 	return &_state;
@@ -104,9 +94,8 @@ const OMatrixStack* OCamera::transform()
 
 	if (popCameraTransform) _transform.pop();
 	_transform.push();
-	_transform.camera(_state.position(),
-			  _state.orientationQuaternion() * OVector3(0.0f, 0.0f, 1.0f) + _state.position());
-
+	_transform *= state()->orientation().inverse().toMatrix4();
+	_transform.translate(state()->position());
 	return &_transform;
 }
 

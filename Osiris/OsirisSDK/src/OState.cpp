@@ -129,24 +129,9 @@ void OState::setOrientation(const OVector3& or)
 	_orientation = OQuaternion(or);
 }
 
-void OState::addOrientation(const OVector3 & or)
-{
-	_orientation = _orientation * OQuaternion(or);
-}
-
-OVector3 OState::orientation() const
-{
-	return _orientation.toEulerAngles();
-}
-
-OQuaternion& OState::orientationQuaternion()
+OQuaternion& OState::orientation()
 {
 	return _orientation;
-}
-
-OMatrix4x4 OState::orientationTransform() const
-{
-	return _orientation.toMatrix4();
 }
 
 OStateConstraint * OState::minConstraint(int degree)

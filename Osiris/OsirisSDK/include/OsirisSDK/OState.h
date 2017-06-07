@@ -145,26 +145,9 @@ public:
 	void setOrientation(const OVector3& or);
 
 	/**
-	 \brief Add to orientation in terms of Euler angles.
-	 \param or Vector containing Euler angles representing the additional rotation for each axis.
+	 \brief Retrieves the reference to the quaternion used for orientation transform.
 	 */
-	void addOrientation(const OVector3& or);
-
-	/**
-	 \brief Returns a three-dimentional vector containing Euler angles.
-	 \returns Vector containing Euler angles representing rotation for each axis.
-	 */
-	OVector3 orientation() const;
-
-	/**
-	 \brief Retrieves a pointer to the quaternion used for orientation transform.
-	 */
-	OQuaternion& orientationQuaternion();
-
-	/**
-	 \brief Provides a rotation transformation matrix given the orientation.
-	 */
-	OMatrix4x4 orientationTransform() const;
+	OQuaternion& orientation();
 
 	/**
 	 \brief Return the minimum value constraint for a given motion state degree.

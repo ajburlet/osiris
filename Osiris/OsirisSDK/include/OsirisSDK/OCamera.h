@@ -69,12 +69,6 @@ public:
 	void setOrientation(const OVector3 &orientation);
 
 	/**
-	 \brief Change camera orientation by incrementing azimuthal and polar angles.
-	 \param rotation Rotation vector in terms of Euler angles.
-	 */
-	void changeOrientation(const OVector3& rotation);
-
-	/**
 	 \brief Returns the camera field of view.
 	 \return Field of view in degrees.
 	*/

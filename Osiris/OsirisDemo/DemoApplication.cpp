@@ -134,9 +134,11 @@ void DemoApplication::update(const OTimeIndex& timeIndex)
 	snprintf(buff, 32, "Idle time: %.02f", idleTimeStats().average());
 	_idleText->setContent(buff);
 
-	OVector3 orientation = camera()->state()->orientation();
-	snprintf(buff, 128, "Camera @ (%.02f, %.02f, %.02f), orientation: Euler(%.02f, %.02f, %.02f)",
+	OVector3 camSpeed = camera()->state()->motionComponent(1, OState::Scene) * 1e6;
+	OVector3 orientation = camera()->state()->orientation().toEulerAngles();
+	snprintf(buff, 128, "Camera @ (%.02f, %.02f, %.02f), spd: (%.02f, %.02f, %.02f)/sec, or: Euler(%.02f, %.02f, %.02f)",
 		camera()->position().x(), camera()->position().y(), camera()->position().z(),
+		camSpeed.x(), camSpeed.y(), camSpeed.z(),
 		orientation.x(), orientation.y(), orientation.z()
 	);
 	_cameraText->setContent(buff);
@@ -198,26 +200,5 @@ void DemoApplication::onKeyboardPress(const OKeyboardPressEvent *evt)
 	case OKeyboardPressEvent::OKey_Space: 
 		_pauseFlag = !_pauseFlag;
 		break;
-
-	case OKeyboardPressEvent::OKey_l:
-	case OKeyboardPressEvent::OKey_L:
-		if (targetFPS() == 0) setTargetFPS(30);
-		else setTargetFPS(0);
-
-	case OKeyboardPressEvent::OKey_m:
-		camera()->state()->addOrientation(OVector3(0.0f, 45.0f, 0.0f));
-		break;
-
-	case OKeyboardPressEvent::OKey_M:
-		camera()->state()->addOrientation(OVector3(0.0f, -45.0f, 0.0f));
-		break;
-
-	case OKeyboardPressEvent::OKey_n:
-		camera()->state()->addOrientation(OVector3(45.0f, 0.0f, 0.0f));
-		break;
-
-	case OKeyboardPressEvent::OKey_N:
-		camera()->state()->addOrientation(OVector3(-45.0f, 0.0f, 0.0f));
-
 	}
 }

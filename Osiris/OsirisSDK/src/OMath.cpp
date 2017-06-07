@@ -379,3 +379,9 @@ OQuaternion OQuaternion::inverse() const
 	return res;
 }
 
+void OQuaternion::rotate(const OVector3 & rotationAxis, float rotationAngle)
+{
+	OQuaternion rot(rotationAxis, rotationAngle);
+	*this *= rot;
+}
+

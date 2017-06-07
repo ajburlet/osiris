@@ -1,7 +1,6 @@
 #pragma once
 
 #include "defs.h"
-#include "GLdefs.h"
 #include "OMathPrimitive.hpp"
 
 #include <glm/vec3.hpp>
@@ -406,4 +405,11 @@ public:
 	 \brief Calculate the inverse quaternion.
 	 */
 	OQuaternion inverse() const;
+
+	/*
+	 \brief Rotate the quaternion around an axis.
+	 \param rotationAxis Rotation axis.
+	 \param rotationAngle The angle of rotation in degrees.
+	 */
+	void rotate(const OVector3& rotationAxis, float rotationAngle);
 };

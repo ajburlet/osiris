@@ -57,16 +57,17 @@ void OCameraController::setMoveEventKey(OKeyboardPressEvent::KeyCode key, Camera
 
 void OCameraController::update(const OTimeIndex& timeIndex)
 {
+	OQuaternion& orientation = _app->camera()->state()->orientation();
 	/* update camera orientation (orientation vector) */
 	if (_delta_mouse_x != 0) {
 		float deltaX =  _app->windowWidth() * (float)_delta_mouse_x / 2;
 		float deltaTheta = 2 * atanf(deltaX / 2 / _app->camera()->nearLimit());
-		_app->camera()->changeOrientation(OVector3(0.0f, deltaTheta, 0.0f));
+		orientation = OQuaternion(OVector3(0.0f, 1.0f, 0.0f), deltaTheta) * orientation;
 	}
 	if (_delta_mouse_y != 0) {
 		float deltaY = _app->windowHeight() * (float)_delta_mouse_y / 2;
 		float deltaPhi = 2 * atanf(deltaY / 2 / _app->camera()->nearLimit());
-		_app->camera()->changeOrientation(OVector3(deltaPhi, 0.0f, 0.0f));
+		orientation *= OQuaternion(OVector3(1.0f, 0.0f, 0.0f), deltaPhi);
 	}
 
 	_delta_mouse_x = 0;
