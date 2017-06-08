@@ -184,7 +184,7 @@ void OState::update(const OTimeIndex& timeIndex)
 	/* update position */
 	if (_components.size() > 0) {
 		if (_orientationRef == Object) {
-			_position += _orientation.inverse() * _components[0] * deltaT_us;
+			_position += _orientation * _components[0] * deltaT_us;
 		} else {
 			_position += _components[0] * deltaT_us;
 		}

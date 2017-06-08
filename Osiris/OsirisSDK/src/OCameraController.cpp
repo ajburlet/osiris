@@ -192,8 +192,8 @@ OVector3::Axis OCameraController::directionToAxis(CameraMoveDir dir, float * sig
 	case MoveRight:		axis = OVector3::X;	break;
 	case MoveDown:		signVal = -1.0f;
 	case MoveUp:		axis = OVector3::Y;	break;
-	case MoveBack:		signVal = -1.0f;
-	case MoveForward:	axis = OVector3::Z;	break;
+	case MoveForward:	signVal = -1.0f;
+	case MoveBack:		axis = OVector3::Z;	break;
 	}
 	if (sign) *sign = signVal;
 	return axis;
