@@ -406,7 +406,7 @@ public:
 	 */
 	OQuaternion inverse() const;
 
-	/*
+	/**
 	 \brief Rotate the quaternion around an axis.
 	 \param rotationAxis Rotation axis.
 	 \param rotationAngle The angle of rotation in degrees.
