@@ -28,6 +28,7 @@ private:
 	OText2D* _perfText;
 	OText2D* _idleText;
 	OText2D* _cameraText;
+	OText2D* _renderText;
 	OCameraController _camCtrl;
 
 	float _movRadiusA;

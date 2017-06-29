@@ -44,6 +44,7 @@ void DemoApplication::init()
 	_fpsText = new OText2D(_fontCourier, 12, 0.55f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	_perfText = new OText2D(_fontCourier, 12, 0.55f, -0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	_idleText = new OText2D(_fontCourier, 12, 0.55f, -0.85f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_renderText = new OText2D(_fontCourier, 12, 0.55f, -0.80f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	_cameraText = new OText2D(_fontCourier, 12, -1.0f, 0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 
 	/* setting up the cube */
@@ -133,6 +134,8 @@ void DemoApplication::update(const OTimeIndex& timeIndex)
 	_perfText->setContent(buff);
 	snprintf(buff, 32, "Idle time: %.02f", idleTimeStats().average());
 	_idleText->setContent(buff);
+	snprintf(buff, 32, "Render time: %.02f", renderTimeStats().average());
+	_renderText->setContent(buff);
 
 	OVector3 camSpeed = camera()->state()->motionComponent(1, OState::Scene) * 1e6;
 	OVector3 orientation = camera()->state()->orientation().toEulerAngles();
@@ -192,6 +195,7 @@ void DemoApplication::render()
 	_perfText->render();
 	_idleText->render();
 	_cameraText->render();
+	_renderText->render();
 }
 
 void DemoApplication::onKeyboardPress(const OKeyboardPressEvent *evt)
@@ -199,6 +203,10 @@ void DemoApplication::onKeyboardPress(const OKeyboardPressEvent *evt)
 	switch (evt->code()) {
 	case OKeyboardPressEvent::OKey_Space: 
 		_pauseFlag = !_pauseFlag;
+		break;
+	case OKeyboardPressEvent::OKey_L:
+	case OKeyboardPressEvent::OKey_l:
+		setTargetFPS((targetFPS() == 0) ? 40 : 0);
 		break;
 	}
 }

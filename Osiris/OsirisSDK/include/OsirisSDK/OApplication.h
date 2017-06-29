@@ -146,9 +146,14 @@ public:
 	const OStats<float>& fpsStats() const;
 
 	/**
-	 \brief Simulation idle time statistics (in case target FPS is set).
+	 \brief Simulation idle time statistics (in case target FPS is set) in microseconds.
 	 */
 	const OStats<int>& idleTimeStats() const;
+
+	/**
+	 \brief Renderization time statistics in microseconds.
+	 */
+	const OStats<int>& renderTimeStats() const;
 
 	/**
 	 \brief Performance coefficient statistics.
@@ -217,6 +222,7 @@ private:
 	int _simulationStep_us;
 	OStats<float> _fpsStats;
 	OStats<int> _idleTimeStats;
+	OStats<int> _renderTimeStats;
 	OStats<float> _simulationPerformanceStats;
 	OTimeIndex _simulationTimeIndex;
 	OTimeIndex _lastRenderTimeIndex;

@@ -4,6 +4,7 @@
 #include "OsirisSDK/GLdefs.h"
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OApplication.h"
+#include "OsirisSDK/OChronometer.h"
 
 #include <glload/gl_load.hpp>
 
@@ -20,7 +21,8 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 	_targetFPS(targetFPS),
 	_simulationStep_us(simulationStep_us),
 	_fpsStats(OAPPLICATION_DEFAULT_STATSSAMPLE),
-	_idleTimeStats(OAPPLICATION_DEFAULT_STATSSAMPLE)
+	_idleTimeStats(OAPPLICATION_DEFAULT_STATSSAMPLE),
+	_renderTimeStats(OAPPLICATION_DEFAULT_STATSSAMPLE)
 {
 	if (_activeInstance != NULL) throw OException("There is already an OApplication instance created.");
 	_activeInstance = this;
@@ -144,6 +146,11 @@ const OStats<int>& OApplication::idleTimeStats() const
 	return _idleTimeStats;
 }
 
+const OStats<int>& OApplication::renderTimeStats() const
+{
+	return _renderTimeStats;
+}
+
 const OStats<float>& OApplication::performanceStats() const
 {
 	return _simulationPerformanceStats;
@@ -195,27 +202,27 @@ void OApplication::deleteObjects()
 
 void OApplication::loopIteration()
 {
-	OTimeIndex currTime = OTimeIndex::current();
+	OChronometer cron;
 
 	/* getting started on the iteration */
 	clearScreen();
 	processEvents();
 
 	/* running the simulation */
+	cron.partial();
 	int stepCount = 0;
-	while ((currTime - _simulationTimeIndex).toInt() > _simulationStep_us) {
+	while ((cron.lastPartialTime() - _simulationTimeIndex).toInt() > _simulationStep_us) {
 		_simulationTimeIndex += _simulationStep_us;
 		update(_simulationTimeIndex);
 		stepCount++;
 	}
 
 	/* calculate mean performance indicator */
-	OTimeIndex currTimeR = OTimeIndex::current();
-	_simulationPerformanceStats.add((currTimeR - currTime).toInt() / (float)stepCount / _simulationStep_us);
+	_simulationPerformanceStats.add(cron.partial() / (float)stepCount / _simulationStep_us);
 
 	/* limit rendering frequency */
 	if (_targetFPS > 0) {
-		int renderInterval_us = (currTimeR - _lastRenderTimeIndex).toInt();
+		int renderInterval_us = (cron.lastPartialTime() - _lastRenderTimeIndex).toInt();
 		int frameInterval_us = 1000000 / _targetFPS;
 		if (renderInterval_us < frameInterval_us && _lastRenderTimeIndex > 0) {
 			this_thread::sleep_for(chrono::microseconds(frameInterval_us - renderInterval_us));
@@ -226,16 +233,18 @@ void OApplication::loopIteration()
 	}
 
 	/* calculate FPS and render */
-	currTimeR = OTimeIndex::current();
-	_fpsStats.add(1000000.0f / (currTimeR - _lastRenderTimeIndex).toInt());
-	_lastRenderTimeIndex = currTimeR;
-	render();
-	
-	/* delete objects at the end of the iteration */
-	deleteObjects();
+	cron.partial();
+	_fpsStats.add(1000000.0f / (cron.lastPartialTime() - _lastRenderTimeIndex).toInt());
+	_lastRenderTimeIndex = cron.lastPartialTime();
 
+	render();
 	glutSwapBuffers();
 	glutPostRedisplay();
+	
+	_renderTimeStats.add(cron.partial());
+
+	/* delete objects at the end of the iteration */
+	deleteObjects();
 }
 
 void OApplication::keyboardCallback(unsigned char key, int mouse_x, int mouse_y)
