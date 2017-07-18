@@ -69,6 +69,7 @@ void OCameraController::update(const OTimeIndex& timeIndex)
 		float deltaPhi = 2 * atanf(deltaY / 2 / _app->camera()->nearLimit());
 		orientation *= OQuaternion(OVector3(1.0f, 0.0f, 0.0f), deltaPhi);
 	}
+	orientation = orientation.normalize();
 
 	_delta_mouse_x = 0;
 	_delta_mouse_y = 0;

@@ -218,9 +218,10 @@ void OApplication::loopIteration()
 	}
 
 	/* calculate mean performance indicator */
-	_simulationPerformanceStats.add(cron.partial() / (float)stepCount / _simulationStep_us);
+	_simulationPerformanceStats.add((float)cron.partial() / stepCount / _simulationStep_us);
 
 	/* limit rendering frequency */
+	cron.partial();
 	if (_targetFPS > 0) {
 		int renderInterval_us = (cron.lastPartialTime() - _lastRenderTimeIndex).toInt();
 		int frameInterval_us = 1000000 / _targetFPS;

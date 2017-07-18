@@ -103,7 +103,7 @@ void DemoApplication::init()
 	/* camera */
 	camera()->setCameraLimits(1.0f, 10.0f);
 	camera()->setPosition(OVector3(0.0f, 0.0f, 3.0f));
-	camera()->setOrientation(OVector3(0.0f));
+	camera()->setOrientation(OVector3(0.0f, 0.0f, 0.0f));
 
 	_movRadiusA = 1.0f;
 	_movRadiusB = 1.0f;

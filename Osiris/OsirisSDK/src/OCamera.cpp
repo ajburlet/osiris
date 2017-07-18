@@ -94,9 +94,7 @@ const OMatrixStack* OCamera::transform()
 
 	if (popCameraTransform) _transform.pop();
 	_transform.push();
-	_transform *= (state()->orientation().inverse() *OQuaternion(OVector3(0.0f, 1.0f, 0.0f), 180.0f)).toMatrix4();
-	_transform.translate(state()->position());
-	//_transform.camera(state()->position(), state()->orientation()*OVector3(0.0f, 0.0f, 1.0f));
+	_transform.camera(state()->position(), state()->position() + state()->orientation()*OVector3(0.0f, 0.0f, -1.0f));
 	return &_transform;
 }
 
