@@ -18,11 +18,24 @@ public:
 	 \brief Copy constructor.
 	 */
 	OMathPrimitive(const OMathPrimitive<MType>& in);
+
+#ifdef OSIRISSDK_EXPORTS
+	/**
+	 \brief Class constructor from GLM object (for internal usage only).
+	 \param in GLM object.
+	 */
+	OMathPrimitive(const MType& in);
+#endif
 	
 	/**
 	 \brief Class destructor.
 	 */
 	virtual ~OMathPrimitive();
+
+	/**
+	 \brief Creates a normalized object out of the current one.
+	*/
+	OMathPrimitive<MType> normalize();
 
 	OMathPrimitive<MType>& operator=(const OMathPrimitive<MType>& in);
 	OMathPrimitive<MType>& operator*=(const OMathPrimitive<MType>& in);
@@ -80,9 +93,23 @@ inline OMathPrimitive<MType>::OMathPrimitive(const OMathPrimitive<MType>& in) :
 {
 }
 
+#ifdef OSIRISSDK_EXPORTS
+template<class MType>
+inline OMathPrimitive<MType>::OMathPrimitive(const MType & in) : 
+	_glmInternal(in)
+{
+}
+#endif
+
 template<class MType>
 inline OMathPrimitive<MType>::~OMathPrimitive()
 {
+}
+
+template<class MType>
+inline OMathPrimitive<MType> OMathPrimitive<MType>::normalize()
+{
+	return OMathPrimitive<MType>(glm::normalize(_glmInternal));
 }
 
 template<class MType>
