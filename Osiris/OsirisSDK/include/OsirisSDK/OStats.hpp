@@ -1,6 +1,6 @@
 #pragma once
 
-#include <list>
+#include <queue>
 #include <cmath>
 #include "defs.h"
 
@@ -50,19 +50,9 @@ public:
 	 */
 	float stdev() const;
 
-	/**
-	 @brief Minimum value.
-	 */
-	VType minimum() const;
-
-	/**
-	 @brief Maximum value. 
-	 */
-	VType maximum() const;
-
 private:
 	int _sampleSize;
-	std::list<VType> _samples;
+	std::queue<VType> _samples;
 	VType _sum;
 	VType _sumsq;
 };
@@ -83,7 +73,7 @@ inline OStats<VType>::~OStats()
 template<class VType>
 inline void OStats<VType>::setSampleSize(int size)
 {
-	while (_samples.size() > size) _samples.pop_front();
+	while (_samples.size() > size) _samples.pop();
 	_sampleSize = size;
 }
 
@@ -101,9 +91,9 @@ inline void OStats<VType>::add(VType val)
 	if (_samples.size() == _sampleSize) {
 		_sum -= _samples.front();
 		_sumsq -= _samples.front()*_samples.front();
-		_samples.pop_front();
+		_samples.pop();
 	}
-	_samples.push_back(val);
+	_samples.push(val);
 }
 
 template<class VType>
@@ -116,28 +106,4 @@ template<class VType>
 inline float OStats<VType>::stdev() const
 {
 	return sqrt(abs(_sum*_sum - _sumsq))/_samples.size();
-}
-
-template<class VType>
-inline VType OStats<VType>::minimum() const
-{
-	bool first=true;
-	VType min;
-	for (std::list<VType>::iterator it = _samples.begin(); it != _samples.end(); it++) {
-		if (first || *it < min) min = *it;
-		first = false;
-	}
-	return min;
-}
-
-template<class VType>
-inline VType OStats<VType>::maximum() const
-{
-	bool first=true;
-	VType max;
-	for (std::list<VType>::iterator it = _samples.begin(); it != _samples.end(); it++) {
-		if (first || *it > max) max = *it;
-		first = false;
-	}
-	return max;
 }
