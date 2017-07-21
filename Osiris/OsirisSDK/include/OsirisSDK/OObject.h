@@ -40,6 +40,7 @@ public:
 	 */
 	virtual void processEvent(const OEvent* evt);
 
+protected:
 	/**
 	 \brief Keyboard press event handler.
 
@@ -50,14 +51,32 @@ public:
 	virtual void onKeyboardPress(const OKeyboardPressEvent* evt);
 	
 	/**
+	 \brief Mouse release event handler.
+
+	 This handler is only called if the object is set as an event recipient. By default does nothing.
+
+	 \param evt Mouse click event object.
+	 */
+	virtual void onKeyboardRelease(const OKeyboardPressEvent *evt);
+
+	/**
 	 \brief Mouse click event handler.
 
 	 This handler is only called if the object is set as an event recipient. By default does nothing.
 
 	 \param evt Mouse click event object.
 	 */
-	virtual void onMouseClickEvent(const OMouseClickEvent* evt);
-	
+	virtual void onMouseClick(const OMouseClickEvent* evt);
+
+	/**
+	 \brief Mouse active and passive move event handler.
+	 
+	 This handler is only called if the object is set as an event recipient. By default does nothing.
+	 
+	 \param evt Mouse move event object.
+	 */
+	virtual void onMouseMove(const OMouseMoveEvent* evt);
+
 	/**
 	 \brief Screen resize event handler.
 

@@ -1,11 +1,29 @@
 #pragma once
 
 #include "defs.h"
-#include "GLdefs.h"
 #include "OMathPrimitive.hpp"
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+
+namespace OMath {
+	/**
+	 \brief Convert angle from degrees to radians.
+	 */
+	float deg2rad(float deg);
+
+	/**
+	 \brief Convert angle from radians to degrees.
+	 */
+	float rad2deg(float rad);
+
+	/**
+	 \brief Reverse sign of a float.
+	 */
+	float reverseSign(float in);
+}
 
 /**
  \brief Represents three-dimentional vectors.
@@ -13,7 +31,6 @@
 class OAPI OVector3 : public OMathPrimitive<glm::vec3>
 {
 public:
-	
 	/**
 	 \brief Class constructor
 	*/
@@ -36,14 +53,35 @@ public:
 	/**
 	 \brief Class constructor.
 
-	 Creates a OVector3 taking in the values for each component. 
+	 Creates a OVector3 taking in the values for each component (cartesian or spherical). 
 	*/
 	OVector3(float vx, float vy, float vz);
-	
+
+	/**
+	 \brief Copy constructor for the base template class.
+	 */
+	OVector3(const OMathPrimitive<glm::vec3> &in);
+
 	/**
 	 \brief Class destructor.
 	*/
 	virtual ~OVector3();
+
+	enum Axis {
+		X=0,
+		Y,
+		Z,
+		R=0,
+		Theta,
+		Phi,
+		G=1,
+		B
+	};
+
+	/**
+	 \brief Access operator for the vector components.
+	 */
+	float& operator[](Axis axis);
 
 	/**
 	 \brief Vector cross product.
@@ -61,34 +99,88 @@ public:
 	static OVector3 cross(const OVector3& a, const OVector3& b);
 
 	/**
-	 \brief Set the value for the X axis component.
+	 \brief Vector dot product.
+	 \param in Right value in the dot operation.
+	 \return Resulting vector of the dot product.
+	*/
+	float dot(const OVector3& in) const;
+
+	/**
+	 \brief Vector dot product.
+	 \param in Right value in the dot operation.
+	 \return Resulting value of the dot product.
+	*/
+	static float dot(const OVector3& a, const OVector3& b);
+
+	/**
+	 \brief Set the value for the cartesian X axis component.
 	*/
 	void setX(float val);
 	
 	/**
-	 \brief Set the value for the Y axis component.
+	 \brief Set the value for the cartesian Y axis component.
 	*/
 	void setY(float val);
 	
 	/**
-	 \brief Set the value for the Z axis component.
+	 \brief Set the value for the cartesian Z axis component.
 	*/
 	void setZ(float val);
 
 	/**
-	 \brief Returns the value of the X axis component.
+	 \brief Returns the value of the cartesian X axis component.
 	*/
 	float x() const;
 	
 	/**
-	 \brief Returns the value of the Y axis component.
+	 \brief Returns the value of the cartesian Y axis component.
 	*/
 	float y() const;
 	
 	/**
-	 \brief Returns the value of the Z axis component.
+	 \brief Returns the value of the cartesian Z axis component.
 	*/
 	float z() const;
+
+	/**
+	 \brief Set the value for the spherical radius component.
+	 */
+	void setR(float val);
+
+	/**
+	 \brief Set the value for the spherical azimuthal component (in degrees).
+	 */
+	void setTheta(float val);
+
+	/**
+	 \brief Set the value for the spherical polar component (in degrees).
+	 */
+	void setPhi(float val);
+
+	/**
+	 \brief Returns the value for the spherical radius component.
+	 */
+	float r() const;
+
+	/**
+	 \brief Returns the value for the spherical azimuthal component (in degrees).
+	 */
+	float theta() const;
+
+	/**
+	 \brief Returns the value for the spherical polar component (in degrees).
+	 */
+	float phi() const;
+
+	/**
+	 \brief Returns a new vector converted to spherical coordinates.
+	 */
+	OVector3 toSpherical() const;
+	
+	/**
+	 \brief Returns a new vector converted to cartesian coordinates.
+	 */
+	OVector3 toCartesian() const;
 };
 
 /**
@@ -97,45 +189,59 @@ public:
 class OAPI OVector4 : public OMathPrimitive<glm::vec4>
 {
 public:
-	
+
 	/**
 	 \brief Class constructor
 	*/
 	OVector4();
-	
+
 	/**
 	 \brief Class copy constructor.
 	*/
 	OVector4(const OVector4& in);
-	
-	/**
-	 \brief Class constructor.
-	 
-	 Creates a OVector4 with all components with the same value.
-	 
-	 \param val The value to be used by all of the three components.
-	*/
-	OVector4(float val);
-	
+
 	/**
 	 \brief Class constructor.
 
-	 Creates a OVector4 taking in the values for each component. 
+	 Creates a OVector4 with all components with the same value.
+
+	 \param val The value to be used by all of the three components.
 	*/
-	OVector4(float vx, float vy, float vz, float vw);
-	
+	OVector4(float val);
+
 	/**
 	 \brief Class constructor.
-	 
+
+	 Creates a OVector4 taking in the values for each component.
+	*/
+	OVector4(float vx, float vy, float vz, float vw);
+
+	/**
+	 \brief Class constructor.
+
 	 Creates a OVector4 from a OVector3 object, in which the X,Y and Z components
 	 will receive the values from the three-dimensional vectors.
 	 */
-	OVector4(const OVector3& vec3, float vw=0.0f);
-	
+	OVector4(const OVector3& vec3, float vw = 0.0f);
+
+	/**
+	 \brief Class copy constructor for the base template class.
+	 */
+	OVector4(const OMathPrimitive<glm::vec4> &in);
+
 	/**
 	 \brief Class destructor.
 	*/
 	virtual ~OVector4();
+
+	enum Axis{
+		X = 0,
+		Y,
+		Z,
+		W
+	};
+
+	float& operator[](Axis axis);
 
 	/**
 	 \brief Set the value for the X axis component.
@@ -201,10 +307,22 @@ public:
 	OMatrix4x4(const OMatrix4x4& in);
 	
 	/**
+	 \brief Class copy constructor for the base template class
+	 */
+	OMatrix4x4(const OMathPrimitive<glm::mat4x4> &in);
+
+	/**
 	 \brief Class destructor.
 	*/
 	virtual ~OMatrix4x4();
-	
+
+	/**
+	 \brief Matrix product operator for four-dimentional vectors.
+	 */
+	OVector4 operator*(const OVector4& in) const;
+
+	OMatrix4x4 operator*(const OMatrix4x4& in) const { return OMathPrimitive<glm::mat4x4>::operator*(in);  }
+
 	/**
 	 \brief Set the value of a specific matrix element.
 	 \param row Row index number.
@@ -222,3 +340,76 @@ public:
 	float value(int row, int col) const;
 };
 
+/**
+ \brief Represents quaternions.
+*/
+class OAPI OQuaternion : public OMathPrimitive<glm::quat>
+{
+public:
+	/**
+	 \brief Class constructor.
+	 */
+	OQuaternion();
+
+	/**
+	 \brief Class copy constructor.
+	 */
+	OQuaternion(const OQuaternion& in);
+
+	/**
+	 \brief Class constructor, based on the quaternion components.
+	 */
+	OQuaternion(float x, float y, float z, float w);
+
+	/**
+	 \brief Class constructor for a 3D rotation quaternion.
+	 \param rotationAxis Rotation axis.
+	 \param angle The angle of rotation in degrees.
+	 */
+	OQuaternion(OVector3 rotationAxis, float angle);
+
+	/**
+	 \brief Class constructor based on the Euler angles for object orientation.
+	 \brief eulerAngles Euler orientation angles (pitch, roll and yaw).
+	 */
+	OQuaternion(OVector3 eulerAngles);
+
+	/**
+	 \brief Copy constructor for the base template class.
+	 */
+	OQuaternion(const OMathPrimitive<glm::quat> &in);
+	
+	/**
+	 \brief Class destructor.
+	 */
+	virtual ~OQuaternion();
+
+	/**
+	 \brief Quaternion product operator overload for three-dimentional vectors.
+	 */
+	OVector3 operator*(const OVector3& in) const;
+
+	OQuaternion operator*(const OQuaternion& in) const { return OMathPrimitive<glm::quat>::operator*(in);  }
+
+	/**
+	 \brief Conversion to 4x4 rotation matrix.
+	 */
+	OMatrix4x4 toMatrix4() const;
+
+	/**
+	 \brief Conversion to a three-dimensional vector containing Euler angles.
+	 */
+	OVector3 toEulerAngles() const;
+
+	/**
+	 \brief Calculate the inverse quaternion.
+	 */
+	OQuaternion inverse() const;
+
+	/**
+	 \brief Rotate the quaternion around an axis.
+	 \param rotationAxis Rotation axis.
+	 \param rotationAngle The angle of rotation in degrees.
+	 */
+	void rotate(const OVector3& rotationAxis, float rotationAngle);
+};

@@ -18,15 +18,35 @@ public:
 	 \brief Copy constructor.
 	 */
 	OMathPrimitive(const OMathPrimitive<MType>& in);
+
+#ifdef OSIRISSDK_EXPORTS
+	/**
+	 \brief Class constructor from GLM object (for internal usage only).
+	 \param in GLM object.
+	 */
+	OMathPrimitive(const MType& in);
+#endif
 	
 	/**
 	 \brief Class destructor.
 	 */
 	virtual ~OMathPrimitive();
 
+	/**
+	 \brief Creates a normalized object out of the current one.
+	*/
+	OMathPrimitive<MType> normalize();
+
 	OMathPrimitive<MType>& operator=(const OMathPrimitive<MType>& in);
 	OMathPrimitive<MType>& operator*=(const OMathPrimitive<MType>& in);
-	OMathPrimitive<MType> operator*(const OMathPrimitive<MType>& in);
+	OMathPrimitive<MType> operator*(const OMathPrimitive<MType>& in) const;
+	OMathPrimitive<MType>& operator+=(const OMathPrimitive<MType>& in);
+	OMathPrimitive<MType> operator+(const OMathPrimitive<MType>& in) const;
+	OMathPrimitive<MType>& operator-=(const OMathPrimitive<MType>& in);
+	OMathPrimitive<MType> operator-(const OMathPrimitive<MType>& in) const;
+	
+	OMathPrimitive<MType>& operator*=(float x);
+	virtual OMathPrimitive<MType> operator*(float x) const;
 	
 	bool operator==(const OMathPrimitive<MType>& in) const;
 	bool operator!=(const OMathPrimitive<MType>& in) const;
@@ -39,6 +59,12 @@ public:
 	bool operator!=(const MType& in) const;
 
 	/**
+	 \brief Set internal GLM object. For internal library usage only.
+	 \param glm New internal GLM object.
+	 */
+	void setGlm(const MType& glm);
+
+	/**
 	 \brief Access to the internal GLM object.
 	 \return Internal GLM object.
 	 */
@@ -46,7 +72,7 @@ public:
 #endif
 
 	/**
-	 \brief Returns a pointer to the memory area to be used by OpenGL.
+	 \brief Returns a pointer to the memory area to be used by OpenGL. For internal library usage only.
 	*/
 	const GLfloat* glArea() const;
 
@@ -67,9 +93,23 @@ inline OMathPrimitive<MType>::OMathPrimitive(const OMathPrimitive<MType>& in) :
 {
 }
 
+#ifdef OSIRISSDK_EXPORTS
+template<class MType>
+inline OMathPrimitive<MType>::OMathPrimitive(const MType & in) : 
+	_glmInternal(in)
+{
+}
+#endif
+
 template<class MType>
 inline OMathPrimitive<MType>::~OMathPrimitive()
 {
+}
+
+template<class MType>
+inline OMathPrimitive<MType> OMathPrimitive<MType>::normalize()
+{
+	return OMathPrimitive<MType>(glm::normalize(_glmInternal));
 }
 
 template<class MType>
@@ -87,10 +127,55 @@ inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator*=(const OMathPrim
 }
 
 template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(const OMathPrimitive<MType>& in)
+inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(const OMathPrimitive<MType>& in) const
 {
 	OMathPrimitive<MType> res;
 	res._glmInternal = this->_glmInternal * in._glmInternal;
+	return res;
+}
+
+template<class MType>
+inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator+=(const OMathPrimitive<MType>& in)
+{
+	_glmInternal += in._glmInternal;
+	return *this;
+}
+
+template<class MType>
+inline OMathPrimitive<MType> OMathPrimitive<MType>::operator+(const OMathPrimitive<MType>& in) const
+{
+	OMathPrimitive<MType> res;
+	res._glmInternal = this->_glmInternal + in._glmInternal;
+	return res;
+}
+
+template<class MType>
+inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator-=(const OMathPrimitive<MType>& in)
+{
+	_glmInternal -= in._glmInternal;
+	return *this;
+}
+
+template<class MType>
+inline OMathPrimitive<MType> OMathPrimitive<MType>::operator-(const OMathPrimitive<MType>& in) const
+{
+	OMathPrimitive<MType> res;
+	res._glmInternal = this->_glmInternal - in._glmInternal;
+	return res;
+}
+
+template<class MType>
+inline OMathPrimitive<MType>& OMathPrimitive<MType>::operator*=(float x)
+{
+	_glmInternal *= x;
+	return *this;
+}
+
+template<class MType>
+inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(float x) const
+{
+	OMathPrimitive<MType> res;
+	res._glmInternal = _glmInternal * x;
 	return res;
 }
 
@@ -138,6 +223,12 @@ template<class MType>
 inline bool OMathPrimitive<MType>::operator!=(const MType & in) const
 {
 	return (_glmInternal != in);
+}
+
+template<class MType>
+inline void OMathPrimitive<MType>::setGlm(const MType & glm)
+{
+	_glmInternal = glm;
 }
 
 template<class MType>

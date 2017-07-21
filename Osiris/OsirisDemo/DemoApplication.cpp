@@ -10,7 +10,8 @@ const float toRad = 2 * PI / 360.0f;
 DemoApplication::DemoApplication(int argc, char **argv) :
 	OApplication("DemoApplication", argc, argv),
 	_cube(NULL),
-	_torus(NULL)
+	_torus(NULL),
+	_camCtrl(this)
 {
 }
 
@@ -25,6 +26,14 @@ DemoApplication::~DemoApplication()
 
 void DemoApplication::init()
 {
+	/* set camera movement keys */
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_a, OCameraController::MoveLeft);
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_s, OCameraController::MoveBack);
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_d, OCameraController::MoveRight);
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_w, OCameraController::MoveForward);
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_q, OCameraController::MoveUp);
+	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_e, OCameraController::MoveDown);
+	
 	/* subscribe to keyboard event */
 	addEventRecipient(OEvent::KeyboardPressEvent, this);
 
@@ -32,7 +41,10 @@ void DemoApplication::init()
 	_fontCourier = new OFont("cour.ttf");
 	_title = new OText2D(_fontCourier, 12, -1.0f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	_title->setContent("Osiris Framework");
-	_fpsText = new OText2D(_fontCourier, 12, 0.8f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_fpsText = new OText2D(_fontCourier, 12, 0.55f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_perfText = new OText2D(_fontCourier, 12, 0.55f, -0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_idleText = new OText2D(_fontCourier, 12, 0.55f, -0.85f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_renderText = new OText2D(_fontCourier, 12, 0.55f, -0.80f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	_cameraText = new OText2D(_fontCourier, 12, -1.0f, 0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 
 	/* setting up the cube */
@@ -88,11 +100,10 @@ void DemoApplication::init()
 	torus->init();
 	_torus = torus;
 
-
 	/* camera */
 	camera()->setCameraLimits(1.0f, 10.0f);
-	camera()->setPosition(OVector3(0.0f, 0.0f, -3.0f));
-	camera()->setDirection(OVector3(0.0f, 0.0f, 1.0f));
+	camera()->setPosition(OVector3(0.0f, 0.0f, 3.0f));
+	camera()->setOrientation(OVector3(0.0f, 0.0f, 0.0f));
 
 	_movRadiusA = 1.0f;
 	_movRadiusB = 1.0f;
@@ -102,33 +113,57 @@ void DemoApplication::init()
 	_periodB = 6.0f;
 
 	_pauseFlag = false;
-	_last_timeIndex_ms = 0;
+	_last_timeIndex = OTimeIndex::current();
 }
 
-void DemoApplication::update(int timeIndex_ms)
+void DemoApplication::update(const OTimeIndex& timeIndex)
 {
-	OVector3 posA(0.0f);
-	OVector3 posB(0.0f);
-	int deltaTime_ms = timeIndex_ms - _last_timeIndex_ms;
-	char fpsBuff[32];
-	char cameraBuff[128];
+	int deltaTime_us = (timeIndex - _last_timeIndex).toInt();
+	char buff[128];
 
-	/* calculate FPS and update the text object (to show on the screen) */
-	snprintf(fpsBuff, 32, "%.02f fps", 1 / ((float)deltaTime_ms / 1000));
-	_fpsText->setContent(fpsBuff);
-	snprintf(cameraBuff, 128, "Camera @ (%.02f, %.02f, %.02f), direction: (%.02f, %.02f, %.02f)",
+	/* update camera */
+	_camCtrl.update(timeIndex);
+
+	/* calculate FPS average and update the text object (to show on the screen) */
+	if (targetFPS() == 0) snprintf(buff, 32, "%.02f fps", fpsStats().average());
+	else snprintf(buff, 32, "%.02f/%d fps", fpsStats().average(), targetFPS());
+	_fpsText->setContent(buff);
+	
+	/* simulation stats and idle time */
+	snprintf(buff, 32, "Perf coef: %.04f", performanceStats().average());
+	_perfText->setContent(buff);
+	snprintf(buff, 32, "Idle time: %.02f", idleTimeStats().average());
+	_idleText->setContent(buff);
+	snprintf(buff, 32, "Render time: %.02f", renderTimeStats().average());
+	_renderText->setContent(buff);
+
+	OVector3 camSpeed = camera()->state()->motionComponent(1, OState::Scene) * 1e6;
+	OVector3 orientation = camera()->state()->orientation().toEulerAngles();
+	snprintf(buff, 128, "Camera @ (%.02f, %.02f, %.02f), spd: (%.02f, %.02f, %.02f)/sec, or: Euler(%.02f, %.02f, %.02f)",
 		camera()->position().x(), camera()->position().y(), camera()->position().z(),
-		camera()->direction().x(), camera()->direction().y(), camera()->direction().z());
-	_cameraText->setContent(cameraBuff);
+		camSpeed.x(), camSpeed.y(), camSpeed.z(),
+		orientation.x(), orientation.y(), orientation.z()
+	);
+	_cameraText->setContent(buff);
 
 	/* calculating new positions */
 	if (!_pauseFlag) {
-		_thetaA = _thetaA + 2 * PI * deltaTime_ms / (_periodA * 1000);
-		_thetaB = _thetaB + 2 * PI * deltaTime_ms / (_periodB * 1000);
+		_thetaA = _thetaA + 2 * PI * deltaTime_us / (_periodA * 1000000);
+		_thetaB = _thetaB + 2 * PI * deltaTime_us / (_periodB * 1000000);
 
 		if (_thetaA > 2 * PI) _thetaA -= 2 * PI;
 		if (_thetaB > 2 * PI) _thetaB -= 2 * PI;
 	}
+	
+	/* update last time index */
+	_last_timeIndex = timeIndex;
+}
+
+void DemoApplication::render()
+{
+	OVector3 posA(0.0f);
+	OVector3 posB(0.0f);
+	OMatrixStack mtx;
 
 	/* calculating displacement vectors */
 	posA.setX(_movRadiusA*cosf(_thetaA));
@@ -137,33 +172,41 @@ void DemoApplication::update(int timeIndex_ms)
 	posB.setZ(_movRadiusB*sinf(_thetaB));
 
 	/* Get initial matrix from camera related transforms */
-	_mtx = *(camera()->transform());
+	mtx = *(camera()->transform());
 
 	/* render cube */
-	_mtx.push();
-	_mtx.translate(posA);
-	_mtx.scale(0.5f);
-	_cube->render(&_mtx);
-	_mtx.pop();
+	mtx.push();
+	mtx.translate(posA);
+	mtx.scale(0.5f);
+	_cube->render(&mtx);
+	mtx.pop();
 
 	/* render torus */
-	_mtx.push();
-	_mtx.translate(posB);
-	_mtx.scale(0.25f);
-	_mtx.rotateX(45.0f);
-	_torus->render(&_mtx);
-	_mtx.pop();
+	mtx.push();
+	mtx.translate(posB);
+	mtx.scale(0.25f);
+	mtx.rotateX(45.0f);
+	_torus->render(&mtx);
+	mtx.pop();
 
 	/* render text */
 	_title->render();
 	_fpsText->render();
+	_perfText->render();
+	_idleText->render();
 	_cameraText->render();
-
-	/* update last time index */
-	_last_timeIndex_ms = timeIndex_ms;
+	_renderText->render();
 }
 
 void DemoApplication::onKeyboardPress(const OKeyboardPressEvent *evt)
 {
-	if (evt->code() == OKeyboardPressEvent::OKey_Space) _pauseFlag = !_pauseFlag;
+	switch (evt->code()) {
+	case OKeyboardPressEvent::OKey_Space: 
+		_pauseFlag = !_pauseFlag;
+		break;
+	case OKeyboardPressEvent::OKey_L:
+	case OKeyboardPressEvent::OKey_l:
+		setTargetFPS((targetFPS() == 0) ? 40 : 0);
+		break;
+	}
 }

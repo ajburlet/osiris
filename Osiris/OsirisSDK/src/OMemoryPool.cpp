@@ -10,7 +10,8 @@ using namespace std;
 
 OMemoryPool::OMemoryPool(size_t blockSize, size_t segmentCount) :
 	_blockSize(blockSize),
-	_segmentSize(segmentCount)
+	_segmentSize(segmentCount),
+	_availableBlocksOrdered(true)
 {
 }
 
@@ -52,9 +53,17 @@ void * OMemoryPool::alloc(size_t sz)
 	}
 
 	int neededBlocks = (int)ceil((float)sz / _blockSize);
-	void *seg = findContiguousSegment(neededBlocks);
-
-	if (!seg) seg = createNewSegment();
+	
+	void *seg;
+	if (neededBlocks > 1) {
+		/* more than one block needed, find a contiguous segment. */
+		seg = findContiguousSegment(neededBlocks);
+		if (!seg) seg = createNewSegment();
+	} else {
+		/* only one block needed, so just get the first available block (faster) */
+		if (_availableBlocks.size() == 0) seg = createNewSegment();
+		else seg = _availableBlocks.front();
+	}
 	
 	removeFromAvailablePool(seg, neededBlocks);
 
@@ -71,7 +80,7 @@ void OMemoryPool::free(void * ptr)
 	}
 
 	for (int i = 0; i < it->second; i++) _availableBlocks.push_back((char*)ptr + i * _blockSize);
-	_availableBlocks.sort();
+	_availableBlocksOrdered = false;
 	_usedBlocks.erase(ptr);
 }
 
@@ -100,6 +109,12 @@ void * OMemoryPool::findContiguousSegment(size_t count)
 {
 	/* check if there is enough room */
 	if (count > _availableBlocks.size()) return NULL;
+
+	/* to find contiguous segments, the available blocks must be ordered */
+	if (!_availableBlocksOrdered) {
+		_availableBlocks.sort();
+		_availableBlocksOrdered = true;
+	}
 
 	/* since there is, we now need to determine if we can find a contiguous segment of the needed length */
 	void *seg = NULL;

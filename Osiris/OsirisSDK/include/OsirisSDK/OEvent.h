@@ -20,9 +20,12 @@ class OAPI OEvent
 {
 public:
 	enum EventType {
-		KeyboardPressEvent=1000, 
-		MouseClickEvent,
-		ResizeEvent
+		KeyboardPressEvent=1000,	/**< Keyboard press event. Issues an OKeyboardPressEvent class object. */
+		KeyboardReleaseEvent,		/**< Keyboard release event. Issues an OKeyboardPressEvent class object. */
+		MouseClickEvent,		/**< Mouse click event. Issues an OMouseClickEvent. */
+		MouseActiveMoveEvent,		/**< Mouse movement event with button pressed. Issues an OMouseMove class object. */
+		MousePassiveMoveEvent,		/**< Passive mouse movement event. Issues an OMouseMove class object. */
+		ResizeEvent			/**< Screen resize event. Issues an OResizeEvent class object. */
 	};
 
 	/**
@@ -110,8 +113,9 @@ public:
 	 \param code Key code.
 	 \param mouse_x Mouse position on the window on the X-axis.
 	 \param mouse_y Mouse position on the window on the Y-axis.
+	 \param key_pressed Key status: true if pressed, false if released.
 	 */
-	OKeyboardPressEvent(KeyCode code, int mouse_x, int mouse_y);
+	OKeyboardPressEvent(KeyCode code, int mouse_x, int mouse_y, bool key_pressed);
 
 	/**
 	 \brief Class destructor.
@@ -146,6 +150,7 @@ class OAPI OMouseClickEvent : public OMemoryPoolEvent
 {
 public:
 	enum MouseButton {
+		NoButton=0x0,
 		RightButton=GLUT_RIGHT_BUTTON, 
 		MiddleButton=GLUT_MIDDLE_BUTTON, 
 		LeftButton=GLUT_LEFT_BUTTON
@@ -193,6 +198,42 @@ public:
 private:
 	MouseButton _btn;
 	MouseStatus _status;
+	int _x;
+	int _y;
+};
+
+class OAPI OMouseMoveEvent : public OMemoryPoolEvent
+{
+public:
+	enum MovementType {
+		ActiveMove=1,		/**< Mouse is moved over the screen with button pressed. */
+		PassiveMove=2		/**< Passive mouse movement over the screen. */
+	};
+
+	/**
+	 \brief Class constructor.
+	 \param type Active or passive movement.
+	 \param x Window X-axis component in pixels.
+	 \param y Window Y-axis component in pixels.
+	 */
+	OMouseMoveEvent(MovementType type, int x, int y);
+
+	/**
+	 \brief Class destructor.
+	 */
+	virtual ~OMouseMoveEvent();
+
+	/**
+	 \brief Window X-axis component in pixels.
+	 */
+	int x() const;
+	
+	/**
+	 \brief Window Y-axis component in pixels.
+	 */
+	int y() const;
+private:
+	MovementType _type;
 	int _x;
 	int _y;
 };

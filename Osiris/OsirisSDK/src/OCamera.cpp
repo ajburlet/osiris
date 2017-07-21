@@ -2,13 +2,11 @@
 
 OCamera::OCamera(float fieldOfViewDeg, float aspectRatio, float zNear, float zFar, const OVector3 & pos, const OVector3 & dir) :
 	_perspectiveChanged(true),
-	_cameraChanged(true),
 	_fieldOfViewDeg(fieldOfViewDeg),
 	_aspectRatio(aspectRatio),
 	_zNear(zNear),
 	_zFar(zFar),
-	_position(pos),
-	_direction(dir)
+	_state(OState::Object)
 {
 }
 
@@ -37,14 +35,17 @@ void OCamera::setCameraLimits(float zNear, float zFar)
 
 void OCamera::setPosition(const OVector3 & position)
 {
-	_cameraChanged = true;
-	_position = position;
+	_state.setMotionComponent(0, position, OState::Scene);
 }
 
-void OCamera::setDirection(const OVector3 & direction)
+void OCamera::changePosition(const OVector3 & displacement)
 {
-	_cameraChanged = true;
-	_direction = direction;
+	_state.addMotionComponent(0, displacement, OState::Scene);
+}
+
+void OCamera::setOrientation(const OVector3 & orientation)
+{
+	_state.setOrientation(orientation);
 }
 
 float OCamera::fieldOfViewDegrees() const
@@ -67,36 +68,33 @@ float OCamera::farLimit() const
 	return _zFar;
 }
 
-OVector3 OCamera::position() const
+OVector3& OCamera::position()
 {
-	return _position;
+	return _state.position();
 }
 
-OVector3 OCamera::direction() const
+OState * OCamera::state()
 {
-	return _direction;
+	return &_state;
 }
 
 const OMatrixStack* OCamera::transform()
 {
+	/* perspective transformation */
 	bool popCameraTransform = true;
 	if (_perspectiveChanged) {
 		if (!_transform.isEmpty()) {
 			_transform.pop(); /* pop camera */
 			_transform.pop(); /* pop perspective */
-			_cameraChanged = true; /* force recalculate camera transform */
 		}
 		_transform.perspective(_fieldOfViewDeg, _aspectRatio, _zNear, _zFar);
 		
 		popCameraTransform = false; /* camera transform will still be created */
 	}
 
-	if (_cameraChanged) {
-		if (popCameraTransform) _transform.pop();
-		_transform.push();
-		_transform.camera(_position, _direction);
-	}
-
+	if (popCameraTransform) _transform.pop();
+	_transform.push();
+	_transform.camera(state()->position(), state()->position() + state()->orientation()*OVector3(0.0f, 0.0f, -1.0f));
 	return &_transform;
 }
 

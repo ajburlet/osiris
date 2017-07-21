@@ -4,6 +4,7 @@
 #include <OsirisSDK/OObject.h>
 #include <OsirisSDK/OMesh.h>
 #include <OsirisSDK/OText2D.h>
+#include <OsirisSDK/OCameraController.h>
 
 class DemoApplication :	public OApplication, public OObject
 {
@@ -13,7 +14,8 @@ public:
 
 	// Inherited via OApplication
 	virtual void init() override;
-	virtual void update(int timeIndex_ms) override;
+	virtual void update(const OTimeIndex& timeIndex) override;
+	virtual void render() override;
 	
 	void onKeyboardPress(const OKeyboardPressEvent *evt);
 
@@ -23,8 +25,11 @@ private:
 	OFont *_fontCourier;
 	OText2D* _title;
 	OText2D* _fpsText;
+	OText2D* _perfText;
+	OText2D* _idleText;
 	OText2D* _cameraText;
-	OMatrixStack _mtx;
+	OText2D* _renderText;
+	OCameraController _camCtrl;
 
 	float _movRadiusA;
 	float _movRadiusB;
@@ -33,7 +38,7 @@ private:
 	float _periodA;
 	float _periodB;
 
-	int _last_timeIndex_ms;
+	OTimeIndex _last_timeIndex;
 
 	bool _pauseFlag;
 };
