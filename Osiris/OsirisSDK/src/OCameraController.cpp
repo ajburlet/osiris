@@ -45,6 +45,16 @@ float OCameraController::movementAcceleration() const
 	return _movementAcceleration * 1000000.0f * 1000000.0f;
 }
 
+void OCameraController::setMouseSensitivity(float sens)
+{
+	_mouseSensitivity = sens;
+}
+
+float OCameraController::mouseSensitivity() const
+{
+	return _mouseSensitivity;
+}
+
 
 void OCameraController::setMoveEventKey(OKeyboardPressEvent::KeyCode key, CameraMoveDir camEvt)
 {
@@ -58,16 +68,13 @@ void OCameraController::setMoveEventKey(OKeyboardPressEvent::KeyCode key, Camera
 void OCameraController::update(const OTimeIndex& timeIndex)
 {
 	OQuaternion& orientation = _app->camera()->state()->orientation();
+	float normFactor = _mouseSensitivity * 180.0f / _app->windowWidth();
 	/* update camera orientation (orientation vector) */
 	if (_delta_mouse_x != 0) {
-		float deltaX =  _app->windowWidth() * (float)_delta_mouse_x / 2;
-		float deltaTheta = 2 * atanf(deltaX / 2 / _app->camera()->nearLimit());
-		orientation = OQuaternion(OVector3(0.0f, 1.0f, 0.0f), deltaTheta) * orientation;
+		orientation = OQuaternion(OVector3(0.0f, 1.0f, 0.0f), (float)_delta_mouse_x * normFactor) * orientation;
 	}
 	if (_delta_mouse_y != 0) {
-		float deltaY = _app->windowHeight() * (float)_delta_mouse_y / 2;
-		float deltaPhi = 2 * atanf(deltaY / 2 / _app->camera()->nearLimit());
-		orientation *= OQuaternion(OVector3(1.0f, 0.0f, 0.0f), deltaPhi);
+		orientation *= OQuaternion(OVector3(1.0f, 0.0f, 0.0f), _delta_mouse_y * normFactor);
 	}
 	orientation = orientation.normalize();
 

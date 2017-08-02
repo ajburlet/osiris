@@ -84,6 +84,17 @@ public:
 	float movementAcceleration() const;
 
 	/**
+	 \brief Set mouse sensitivity factor.
+	 \param sens Mouse sensitivity factor, default to 1.0. 
+	 */
+	void setMouseSensitivity(float sens);
+
+	/**
+	 \brief Returns the mouse sensitivity factor.
+	 */
+	float mouseSensitivity() const;
+
+	/**
 	 \brief Camera movement events.
 	 */
 	enum CameraMoveDir {
@@ -123,6 +134,7 @@ private:
 	OMouseClickEvent::MouseButton _orMouseBtn;
 	float _movementAcceleration;
 	float _movementMaxSpeed;
+	float _mouseSensitivity;
 	
 	bool _activeMoveMouseBtnPressed;
 	int _last_mouse_x;
