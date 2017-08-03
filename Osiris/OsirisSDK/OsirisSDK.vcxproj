@@ -157,10 +157,12 @@
     <ClInclude Include="include\OsirisSDK\defs.h" />
     <ClInclude Include="include\OsirisSDK\GLdefs.h" />
     <ClInclude Include="include\OsirisSDK\OApplication.h" />
+    <ClInclude Include="include\OsirisSDK\OBehavior.hpp" />
     <ClInclude Include="include\OsirisSDK\OCamera.h" />
     <ClInclude Include="include\OsirisSDK\OCameraController.h" />
     <ClInclude Include="include\OsirisSDK\OChronometer.h" />
     <ClInclude Include="include\OsirisSDK\ODoubleBuffer.hpp" />
+    <ClInclude Include="include\OsirisSDK\OEntity.hpp" />
     <ClInclude Include="include\OsirisSDK\OEvent.h" />
     <ClInclude Include="include\OsirisSDK\OException.h" />
     <ClInclude Include="include\OsirisSDK\OFont.h" />
