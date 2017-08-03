@@ -33,7 +33,7 @@ public:
 	 @param state Entity state.
 	 @param evt Event class object.
 	 */
-	virtual void processEvent(ODoubleBuffer<attrT>* attribute, ODoubleBuffer<stateT>* state, const OEvent* event) {
+	virtual void processEvent(attrT** attribute, ODoubleBuffer<stateT>* state, const OEvent* event) {
 		switch (event->type()) {
 		case OEvent::KeyboardPressEvent:	onKeyboardPress(attribute, state, (OKeyboardPressEvent*)event);		break;
 		case OEvent::KeyboardReleaseEvent:	onKeyboardRelease(attribute, state, (OKeyboardPressEvent*)event);	break;
@@ -51,12 +51,12 @@ public:
 	 object. If you choose to override this method, keep in mind to either do these operations yourself or to 
 	 call the OBehavior::update() when appropriate.
 
-	 @param attribute Entity attributes. 
+	 @param attribute Pointer to entity attributes. 
 	 @param state Entity state.
 	 @param meshPtr Pointer to entity mesh.
 	 @param timeIndex Time index.
 	 */
-	virtual void update(ODoubleBuffer<attrT>* attribute, ODoubleBuffer<stateT>* state, OMesh** meshPtr, const OTimeIndex& timeIndex)
+	virtual void update(attrT** attribute, ODoubleBuffer<stateT>* state, OMesh** meshPtr, const OTimeIndex& timeIndex)
 	{
 		state->next()->update(timeIndex);
 	}
@@ -71,7 +71,7 @@ protected:
 	 @param state Entity state.
 	 @param evt Keyboard event object.
 	 */
-	virtual void onKeyboardPress(ODoubleBuffer<attrT>* attribute, ODoubleBuffer<stateT>* state, const OKeyboardPressEvent* evt) { }
+	virtual void onKeyboardPress(attrT** attribute, ODoubleBuffer<stateT>* state, const OKeyboardPressEvent* evt) { }
 	
 	/**
 	 @brief Mouse release event handler.
@@ -82,7 +82,7 @@ protected:
 	 @param state Entity state.
 	 @param evt Mouse click event object.
 	 */
-	virtual void onKeyboardRelease(ODoubleBuffer<attrT>* attribute, ODoubleBuffer<stateT>* state, const OKeyboardPressEvent* evt) { }
+	virtual void onKeyboardRelease(attrT** attribute, ODoubleBuffer<stateT>* state, const OKeyboardPressEvent* evt) { }
 
 	/**
 	 @brief Mouse click event handler.
@@ -93,7 +93,7 @@ protected:
 	 @param state Entity state.
 	 @param evt Mouse click event object.
 	 */
-	virtual void onMouseClick(ODoubleBuffer<attrT>* attribute, ODoubleBuffer<stateT>* state, const OMouseClickEvent* evt) { }
+	virtual void onMouseClick(attrT** attribute, ODoubleBuffer<stateT>* state, const OMouseClickEvent* evt) { }
 
 	/**
 	 @brief Mouse active and passive move event handler.
@@ -104,7 +104,7 @@ protected:
 	 @param state Entity state.
 	 @param evt Mouse move event object.
 	 */
-	virtual void onMouseMove(ODoubleBuffer<attrT>* attribute, ODoubleBuffer<stateT>* state, const OMouseMoveEvent* evt) { }
+	virtual void onMouseMove(attrT** attribute, ODoubleBuffer<stateT>* state, const OMouseMoveEvent* evt) { }
 
 	/**
 	 @brief Screen resize event handler.
@@ -115,5 +115,5 @@ protected:
 	 @param state Entity state.
 	 @param evt Screen resize event object.
 	 */
-	virtual void onScreenResize(ODoubleBuffer<attrT>* attribute, ODoubleBuffer<stateT>* state, const OResizeEvent* evt) { }
+	virtual void onScreenResize(attrT** attribute, ODoubleBuffer<stateT>* state, const OResizeEvent* evt) { }
 };
