@@ -56,6 +56,11 @@ public:
 		if (_behavior != NULL) _behavior->update(&attributes, &state, &mesh, timeIndex);
 	}
 
+	void swapState()
+	{
+		_state->swap();
+	}
+
 	void render(OMatrixStack* stack)
 	{
 		if (isHidden()) return;

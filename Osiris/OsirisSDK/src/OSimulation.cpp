@@ -22,17 +22,25 @@ OCollection<ORenderObject>* OSimulation::renderObjects()
 
 void OSimulation::update(const OTimeIndex & timeIndex)
 {
+	/* first we update each entity status */
 	for (OCollection<OBaseEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
 		it.object()->update(timeIndex);
+	}
+	/* then we swap the states */
+	for (OCollection<OBaseEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
+		it.object()->swapState();
 	}
 }
 
 void OSimulation::render()
 {
+	OMatrixStack mtxTransform(*camera()->transform());
+	/* render entities */
 	for (OCollection<OBaseEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
-		it.object()->render(camera()->transform());
+		it.object()->render(&mtxTransform);
 	}
+	/* render other objects */
 	for (OCollection<ORenderObject>::Iterator it = renderObjects()->begin(); it != renderObjects()->end(); it++) {
-		it.object()->render(camera()->transform());
+		it.object()->render(&mtxTransform);
 	}
 }

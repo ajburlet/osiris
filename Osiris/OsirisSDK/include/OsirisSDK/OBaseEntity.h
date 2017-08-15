@@ -31,6 +31,11 @@ public:
 	virtual void update(const OTimeIndex& timeIndex) = 0;
 
 	/**
+	 @brief Swap entity state.
+	 */
+	virtual void swapState() = 0;
+
+	/**
 	 @brief Enables entity processing for each update call.
 	 */
 	void enable();

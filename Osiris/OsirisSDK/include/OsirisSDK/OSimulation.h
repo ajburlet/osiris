@@ -9,7 +9,8 @@
 /**
  @brief An OApplication implementation, designed to ease entity handling and renderization.
 
- This class controls simulation entities and other objects that can be rendered. 
+ This class is an implementation of OApplication that simplifies the general application API, controlling simulation 
+ entities and other objects that can be rendered. 
  */
 class OAPI OSimulation : public OApplication
 {

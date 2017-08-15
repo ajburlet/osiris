@@ -200,8 +200,8 @@ public:
 		T* object() const { return _it->second;  }
 
 	private:
-		std::map<ID, T*>::iterator _it;
-		Iterator(std::map<ID, T*>::iterator it) : _it(it) { };
+		typename std::map<ID, T*>::iterator _it;
+		Iterator(typename std::map<ID, T*>::iterator& it) : _it(it) { };
 		friend OCollection;
 	};
 
