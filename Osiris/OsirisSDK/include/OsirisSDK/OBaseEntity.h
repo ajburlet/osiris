@@ -1,12 +1,14 @@
 #pragma once
 
+#include "defs.h"
 #include "OObject.h"
 #include "OTimeIndex.h"
+#include "ORenderObject.h"
 
 /**
  @brief Base entity definition. 
  */
-class OAPI OBaseEntity : public OObject {
+class OAPI OBaseEntity : public OObject, public ORenderObject {
 public:
 	/**
 	 @brief Class constructor.

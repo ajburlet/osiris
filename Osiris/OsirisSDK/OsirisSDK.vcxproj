@@ -162,6 +162,7 @@
     <ClInclude Include="include\OsirisSDK\OCamera.h" />
     <ClInclude Include="include\OsirisSDK\OCameraController.h" />
     <ClInclude Include="include\OsirisSDK\OChronometer.h" />
+    <ClInclude Include="include\OsirisSDK\OCollection.hpp" />
     <ClInclude Include="include\OsirisSDK\ODoubleBuffer.hpp" />
     <ClInclude Include="include\OsirisSDK\OEntity.hpp" />
     <ClInclude Include="include\OsirisSDK\OEvent.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="include\OsirisSDK\ORenderObject.h" />
     <ClInclude Include="include\OsirisSDK\OShaderObject.h" />
     <ClInclude Include="include\OsirisSDK\OShaderProgram.h" />
+    <ClInclude Include="include\OsirisSDK\OSimulation.h" />
     <ClInclude Include="include\OsirisSDK\OState.h" />
     <ClInclude Include="include\OsirisSDK\OStats.hpp" />
     <ClInclude Include="include\OsirisSDK\OText2D.h" />
@@ -203,6 +205,7 @@
     <ClCompile Include="src\ORenderObject.cpp" />
     <ClCompile Include="src\OShaderObject.cpp" />
     <ClCompile Include="src\OShaderProgram.cpp" />
+    <ClCompile Include="src\OSimulation.cpp" />
     <ClCompile Include="src\OState.cpp" />
     <ClCompile Include="src\OText2D.cpp" />
     <ClCompile Include="src\OTimeIndex.cpp" />

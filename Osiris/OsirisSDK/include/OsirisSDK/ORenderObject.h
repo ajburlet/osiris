@@ -35,7 +35,11 @@ public:
 	 */
 	bool isHidden() const;
 
-	virtual void render(OMatrixStack& stack) = 0;
+	/**
+	 @brief Renderization call.
+	 @param stack Matrix stack containing transformations to be applied to the object.
+	 */
+	virtual void render(OMatrixStack* stack) = 0;
 
 private:
 	bool _hidden;

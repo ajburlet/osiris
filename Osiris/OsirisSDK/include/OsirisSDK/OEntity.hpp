@@ -1,7 +1,6 @@
 #pragma once
 
 #include "OBaseEntity.h"
-#include "ORenderObject.h"
 #include "OBehavior.hpp"
 #include "ODoubleBuffer.hpp"
 #include "OState.h"
@@ -18,7 +17,7 @@
  @tparam attrT Class containing the attributes data structure.
  @tparam stateT State class, by default uses the OState. 
  */
-template <class attrT, class stateT=OState> class OAPI OEntity : public OBaseEntity, public ORenderObject {
+template <class attrT, class stateT=OState> class OAPI OEntity : public OBaseEntity {
 public:
 	/**
 	 @brief Class constructor.
@@ -57,14 +56,14 @@ public:
 		if (_behavior != NULL) _behavior->update(&attributes, &state, &mesh, timeIndex);
 	}
 
-	void render(OMatrixStack& stack)
+	void render(OMatrixStack* stack)
 	{
 		if (isHidden()) return;
-		stack.push();
-		stack.translate(_state->curr()->position());
-		stack *= _state->curr()->orientation();
-		_mesh->render(&stack);
-		stack.pop();
+		stack->push();
+		stack->translate(_state->curr()->position());
+		*stack *= _state->curr()->orientation();
+		_mesh->render(stack);
+		stack->pop();
 	}
 
 	/**
