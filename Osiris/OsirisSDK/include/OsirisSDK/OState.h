@@ -150,6 +150,11 @@ public:
 	OQuaternion& orientation();
 
 	/**
+	 @brief Retrieves the reference to three-dimensional vector that represents the object scale.
+	 */
+	OVector3& scale();
+
+	/**
 	 \brief Return the minimum value constraint for a given motion state degree.
 	 \param degree The degree of the component (i.e. 0 = position, 1 = velocity, 2 = acceleration, etc.). 
 	 \returns Pointer to the constraint object, NULL if degree is non-existant.
@@ -180,6 +185,7 @@ private:
 	std::vector<OStateConstraint> _maxConstraint;
 	OVector3 _position;
 	OQuaternion _orientation;
+	OVector3 _scale;
 	OrientationReferencial _orientationRef;
 
 	OTimeIndex _lastTimeIndex;

@@ -58,7 +58,10 @@ void OStateConstraint::disableAll()
 // ****************************************************************************
 OState::OState(OrientationReferencial ref) :
 	_orientationRef(ref),
-	_lastTimeIndex(0)
+	_lastTimeIndex(0),
+	_position(0.0f),
+	_orientation(OVector3(0.0f)),
+	_scale(1.0f)
 {
 }
 
@@ -132,6 +135,11 @@ void OState::setOrientation(const OVector3& or)
 OQuaternion& OState::orientation()
 {
 	return _orientation;
+}
+
+OVector3& OState::scale()
+{
+	return _scale;
 }
 
 OStateConstraint * OState::minConstraint(int degree)

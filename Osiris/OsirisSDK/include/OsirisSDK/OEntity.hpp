@@ -67,6 +67,7 @@ public:
 		stack->push();
 		stack->translate(_state->curr()->position());
 		*stack *= _state->curr()->orientation();
+		stack->scale(_state->curr()->scale());
 		_mesh->render(stack);
 		stack->pop();
 	}
