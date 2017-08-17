@@ -117,8 +117,10 @@ const char * OText2D::content() const
 	return _content.c_str();
 }
 
-void OText2D::render()
+void OText2D::render(OMatrixStack* mtx)
 {
+	if (isHidden()) return;
+
 	/* enabling array object */
 	glBindVertexArray(_arrayObject);
 
