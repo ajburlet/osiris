@@ -65,6 +65,18 @@ public:
 	OVector4 fontColor() const;
 
 	/**
+	 @brief Set line spacing.
+	 @param Spacing in pixels.
+	 */
+	void setLineSpacing(int spacing);
+
+	/**
+	 @brief Returns line spacing.
+	 @return Spacing in pixels.
+	 */
+	int lineSpacing() const;
+
+	/**
 	 \brief Sets the position of the text box.
 	 \param x Position of the text box on the X axis in pixels.
 	 \param y Position of the text box on the Y axis in pixels.
@@ -129,6 +141,7 @@ private:
 	OFont* _font;
 	unsigned int _fontSize;
 	OVector4 _fontColor;
+	int _lineSpacing;
 	float _x;
 	float _y;
 	float _scale_x;

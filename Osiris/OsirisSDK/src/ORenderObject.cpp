@@ -1,7 +1,8 @@
 #include "OsirisSDK/ORenderObject.h"
 
 
-ORenderObject::ORenderObject()
+ORenderObject::ORenderObject() :
+	_hidden(false)
 {
 }
 

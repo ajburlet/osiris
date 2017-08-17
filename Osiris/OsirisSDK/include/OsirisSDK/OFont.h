@@ -51,6 +51,11 @@ public:
 	 */
 	const CacheEntry* entry(char character, int size);
 
+	/**
+	 @brief Default line spacing (baseline-to-baseline distance).
+	 @return Line spacing in pixels.
+	 */
+	int lineSpacing() const;
 
 private:
 	std::string _fontName;

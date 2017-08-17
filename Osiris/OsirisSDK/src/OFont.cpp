@@ -88,6 +88,11 @@ const OFont::CacheEntry * OFont::entry(char character, int size)
 	return &_cache[key];
 }
 
+int OFont::lineSpacing() const
+{
+	return _face->size->metrics.height / 64;
+}
+
 void OFont::_init()
 {
 	if (!_library && FT_Init_FreeType(&_library) != 0) throw OException("Failed to load FreeType library.");

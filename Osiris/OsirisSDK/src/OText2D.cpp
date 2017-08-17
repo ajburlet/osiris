@@ -23,7 +23,8 @@ OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVe
 	_y(y),
 	_font(font),
 	_fontSize(fontSize),
-	_fontColor(color)
+	_fontColor(color),
+	_lineSpacing(0)
 {
 	_Init();
 
@@ -68,6 +69,16 @@ void OText2D::setFontColor(const OVector4 & color)
 OVector4 OText2D::fontColor() const
 {
 	return _fontColor;
+}
+
+void OText2D::setLineSpacing(int spacing)
+{
+	_lineSpacing = spacing;
+}
+
+int OText2D::lineSpacing() const
+{
+	return _lineSpacing;
 }
 
 void OText2D::setPosition(float x, float y)
@@ -146,6 +157,13 @@ void OText2D::render(OMatrixStack* mtx)
 	float currX = _x;
 	float currY = _y;
 	for (const char *p = _content.c_str(); *p != '\0'; p++) {
+		/* if char is new line */
+		if (*p == '\n') {
+			currX = _x;
+			currY = _y + _font->lineSpacing() * _scale_y + _lineSpacing;
+			continue;
+		}
+
 		/* Get font data */
 		const OFont::CacheEntry *fEntry = _font->entry(*p, _fontSize);
 		if (fEntry == NULL) throw OException("Failed to load full font charset.");
