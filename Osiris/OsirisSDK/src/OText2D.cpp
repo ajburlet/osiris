@@ -160,7 +160,7 @@ void OText2D::render(OMatrixStack* mtx)
 		/* if char is new line */
 		if (*p == '\n') {
 			currX = _x;
-			currY = _y + _font->lineSpacing() * _scale_y + _lineSpacing;
+			currY += (_font->lineSpacing() + _lineSpacing) * _scale_y;
 			continue;
 		}
 

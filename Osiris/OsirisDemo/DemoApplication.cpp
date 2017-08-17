@@ -20,7 +20,7 @@ DemoApplication::~DemoApplication()
 	delete _cube;
 	delete _torus;
 	delete _title;
-	delete _fpsText;
+	delete _infoText;
 	delete _cameraText;
 }
 
@@ -40,11 +40,8 @@ void DemoApplication::init()
 	/* text */
 	_fontCourier = new OFont("cour.ttf");
 	_title = new OText2D(_fontCourier, 12, -1.0f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
-	_title->setContent("Osiris Framework");
-	_fpsText = new OText2D(_fontCourier, 12, 0.55f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
-	_perfText = new OText2D(_fontCourier, 12, 0.55f, -0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
-	_idleText = new OText2D(_fontCourier, 12, 0.55f, -0.85f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
-	_renderText = new OText2D(_fontCourier, 12, 0.55f, -0.80f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_title->setContent("Osiris Framework\nDemo Application");
+	_infoText = new OText2D(_fontCourier, 12, 0.55f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	_cameraText = new OText2D(_fontCourier, 12, -1.0f, 0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 
 	/* setting up the cube */
@@ -119,23 +116,23 @@ void DemoApplication::init()
 void DemoApplication::update(const OTimeIndex& timeIndex)
 {
 	int deltaTime_us = (timeIndex - _last_timeIndex).toInt();
-	char buff[128];
+	char buff[256];
 
 	/* update camera */
 	_camCtrl.update(timeIndex);
 
 	/* calculate FPS average and update the text object (to show on the screen) */
 	if (targetFPS() == 0) snprintf(buff, 32, "%.02f fps", fpsStats().average());
-	else snprintf(buff, 32, "%.02f/%d fps", fpsStats().average(), targetFPS());
-	_fpsText->setContent(buff);
+	else snprintf(buff, 256, "%.02f/%d fps", fpsStats().average(), targetFPS());
 	
 	/* simulation stats and idle time */
-	snprintf(buff, 32, "Perf coef: %.04f", performanceStats().average());
-	_perfText->setContent(buff);
-	snprintf(buff, 32, "Idle time: %.02f", idleTimeStats().average());
-	_idleText->setContent(buff);
-	snprintf(buff, 32, "Render time: %.02f", renderTimeStats().average());
-	_renderText->setContent(buff);
+	snprintf(buff, 256,
+		 "%s\n"
+		 "Perf coef: %.04f\n"
+		 "Idle time: %.02f us\n"
+		 "Render time: %.02f us", 
+		 buff, performanceStats().average(), idleTimeStats().average(), renderTimeStats().average());
+	_infoText->setContent(buff);
 
 	OVector3 camSpeed = camera()->state()->motionComponent(1, OState::Scene) * 1e6;
 	OVector3 orientation = camera()->state()->orientation().toEulerAngles();
@@ -191,11 +188,8 @@ void DemoApplication::render()
 
 	/* render text */
 	_title->render();
-	_fpsText->render();
-	_perfText->render();
-	_idleText->render();
+	_infoText->render();
 	_cameraText->render();
-	_renderText->render();
 }
 
 void DemoApplication::onKeyboardPress(const OKeyboardPressEvent *evt)
