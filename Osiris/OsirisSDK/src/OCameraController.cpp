@@ -18,6 +18,7 @@ OCameraController::OCameraController(OApplication * app,
 	_app->camera()->state()->setMotionComponent(2, OVector3(0.0f, 0.0f, 0.0f), OState::Scene);
 	setMovementMaxSpeed(movementMaxSpeed);
 	setMovementAcceleration(movementAcceleration);
+	setMouseSensitivity(1.0f);
 	updateApplication();
 }
 
