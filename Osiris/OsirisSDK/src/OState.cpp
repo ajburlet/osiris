@@ -69,6 +69,21 @@ OState::~OState()
 {
 }
 
+OState & OState::operator=(const OState & in)
+{
+	if (_components.size() != in._components.size()) _components.resize(in._components.size());
+	for (int i = 0; i < (int)_components.size(); i++) _components[i] = in._components[i];
+	if (_minConstraint.size() != in._minConstraint.size()) _minConstraint.resize(in._minConstraint.size());
+	for (int i = 0; i < (int)_minConstraint.size(); i++) _minConstraint[i] = in._minConstraint[i];
+	if (_maxConstraint.size() != in._maxConstraint.size()) _maxConstraint.resize(in._maxConstraint.size());
+	for (int i = 0; i < (int)_maxConstraint.size(); i++) _maxConstraint[i] = in._maxConstraint[i];
+	_position = in._position;
+	_orientation = in._orientation;
+	_scale = in._scale;
+	_orientationRef = in._orientationRef;
+	return *this;
+}
+
 void OState::setOrientationReferencial(OrientationReferencial orRef)
 {
 	_orientationRef = orRef;

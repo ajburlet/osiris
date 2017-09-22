@@ -89,6 +89,11 @@ public:
 	virtual ~OState();
 
 	/**
+	 \brief Assignment operator.
+	 */
+	OState& operator=(const OState& in);
+
+	/**
 	 \brief Sets the orientation referencial used on the motion equation components.
 	 */
 	void setOrientationReferencial(OrientationReferencial orRef);

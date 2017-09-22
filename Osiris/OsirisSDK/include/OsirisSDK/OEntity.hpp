@@ -17,7 +17,7 @@
  @tparam attrT Class containing the attributes data structure.
  @tparam stateT State class, by default uses the OState. 
  */
-template <class attrT, class stateT=OState> class OAPI OEntity : public OBaseEntity {
+template <class attrT, class stateT=OState> class OEntity : public OBaseEntity {
 public:
 	/**
 	 @brief Class constructor.
@@ -47,27 +47,32 @@ public:
 	void processEvent(const OEvent* evt) 
 	{
 		if (isDisabled()) return;
-		if (_behavior != NULL) _behavior->processEvent(&attributes, &state, evt);  
+		if (_behavior != NULL) _behavior->processEvent(&_attributes, &_state, evt);  
 	}
 
 	void update(const OTimeIndex& timeIndex) 
 	{
 		if (isDisabled()) return;
-		if (_behavior != NULL) _behavior->update(&attributes, &state, &mesh, timeIndex);
+		if (_behavior != NULL) _behavior->update(&_attributes, &_state, &_mesh, timeIndex);
 	}
 
+	void equalizeState()
+	{
+		_state.equalize();
+	}
+	
 	void swapState()
 	{
-		_state->swap();
+		_state.swap();
 	}
 
 	void render(OMatrixStack* stack)
 	{
 		if (isHidden()) return;
 		stack->push();
-		stack->translate(_state->curr()->position());
-		*stack *= _state->curr()->orientation();
-		stack->scale(_state->curr()->scale());
+		stack->translate(_state.curr()->position());
+		*stack *= _state.curr()->orientation();
+		stack->scale(_state.curr()->scale());
 		_mesh->render(stack);
 		stack->pop();
 	}
@@ -80,7 +85,7 @@ public:
 	/**
 	 @brief Returns pointer to the behavior object.
 	 */
-	OBehavior* behavior() { return _behavior; }
+	OBehavior<attrT, stateT>* behavior() { return _behavior; }
 
 	/**
 	 @brief Returns pointer to entity state double buffer object.

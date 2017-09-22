@@ -22,11 +22,15 @@ OCollection<ORenderObject>* OSimulation::renderObjects()
 
 void OSimulation::update(const OTimeIndex & timeIndex)
 {
-	/* first we update each entity status */
+	/* first we equalize states... */
+	for (OCollection<OBaseEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
+		it.object()->equalizeState();
+	}
+	/* ...then we update each entity state... */
 	for (OCollection<OBaseEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
 		it.object()->update(timeIndex);
 	}
-	/* then we swap the states */
+	/* ...and finally we swap the states */
 	for (OCollection<OBaseEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
 		it.object()->swapState();
 	}

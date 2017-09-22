@@ -37,6 +37,11 @@ public:
 	*/
 	OMathPrimitive<MType> normalize();
 
+	/**
+	 \brief Size of the object.
+	 */
+	float magnitude() const;
+
 	OMathPrimitive<MType>& operator=(const OMathPrimitive<MType>& in);
 	OMathPrimitive<MType>& operator*=(const OMathPrimitive<MType>& in);
 	OMathPrimitive<MType> operator*(const OMathPrimitive<MType>& in) const;
@@ -110,6 +115,12 @@ template<class MType>
 inline OMathPrimitive<MType> OMathPrimitive<MType>::normalize()
 {
 	return OMathPrimitive<MType>(glm::normalize(_glmInternal));
+}
+
+template<class MType>
+inline float OMathPrimitive<MType>::magnitude() const
+{
+	return glm::length(_glmInternal);
 }
 
 template<class MType>

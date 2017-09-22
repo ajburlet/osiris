@@ -21,7 +21,7 @@ class OMesh;
   @tparam attrT Class containing the attribute data structure.
   @tparam stateT State class, by default uses the OState. 
  */
-template <class attrT, class stateT=OState> class OAPI OBehavior {
+template <class attrT, class stateT=OState> class OBehavior {
 public:
 	/**
 	 @brief Main event handler.
@@ -35,12 +35,12 @@ public:
 	 */
 	virtual void processEvent(attrT** attribute, ODoubleBuffer<stateT>* state, const OEvent* event) {
 		switch (event->type()) {
-		case OEvent::KeyboardPressEvent:	onKeyboardPress(attribute, state, (OKeyboardPressEvent*)event);		break;
-		case OEvent::KeyboardReleaseEvent:	onKeyboardRelease(attribute, state, (OKeyboardPressEvent*)event);	break;
-		case OEvent::MouseClickEvent:		onMouseClick(attribute, state, (OKeyboardPressEvent*)event);		break;
+		case OEvent::KeyboardPressEvent:	onKeyboardPress(attribute, state, (const OKeyboardPressEvent*)event);	break;
+		case OEvent::KeyboardReleaseEvent:	onKeyboardRelease(attribute, state, (const OKeyboardPressEvent*)event);	break;
+		case OEvent::MouseClickEvent:		onMouseClick(attribute, state, (const OMouseClickEvent*)event);		break;
 		case OEvent::MouseActiveMoveEvent:
-		case OEvent::MousePassiveMoveEvent:	onMouseMove(attribute, state, (OKeyboardPressEvent*)event);		break;
-		case OEvent::ResizeEvent:		onResizeEvent(attribute, state, (OResizeEvent*)event);			break;
+		case OEvent::MousePassiveMoveEvent:	onMouseMove(attribute, state, (const OMouseMoveEvent*)event);		break;
+		case OEvent::ResizeEvent:		onScreenResize(attribute, state, (const OResizeEvent*)event);		break;
 		}
 	}
 

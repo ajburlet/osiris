@@ -31,6 +31,10 @@ public:
 	virtual void update(const OTimeIndex& timeIndex) = 0;
 
 	/**
+	 @brief Equalize state buffers.
+	 */
+	virtual void equalizeState() = 0;
+	/**
 	 @brief Swap entity state.
 	 */
 	virtual void swapState() = 0;

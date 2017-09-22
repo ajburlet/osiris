@@ -68,6 +68,11 @@ public:
 	 \see product(const OMatrix4x4&)
 	*/
 	OMatrixStack& operator*=(const OMatrix4x4& in);
+	
+	/**
+	 \see product(const OQuaternion&)
+	*/
+	OMatrixStack& operator*=(const OQuaternion& in);
 
 	/**
 	 \brief Product of the top matrix by a four-dimentional vector.
@@ -85,6 +90,12 @@ public:
 	 \param in Right value matrix in this product.
 	*/
 	void product(const OMatrix4x4& in);
+
+	/**
+	 \brief Multiply the top matrix by a quaternion representing a rotation.
+	 \param in Right value in this matrix product.
+	 */
+	void product(const OQuaternion& in);
 
 	/**
 	 \brief Applies the translation transformation to a given direction.

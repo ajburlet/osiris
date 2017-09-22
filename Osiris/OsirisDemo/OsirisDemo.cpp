@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <OsirisSDK/OException.h>
 
-#include "DemoApplication.h"
+#include "DemoSimulation.h"
 
 int main(int argc, char** argv)
 {
 	try {
-		DemoApplication app(argc, argv);
+		DemoSimulation app(argc, argv);
 		app.start();
 	}
 	catch (OException &e) {
