@@ -51,6 +51,7 @@ void EnvironmentBehavior::update(EnvironmentAttributes ** attribute, ODoubleBuff
 {
 	for (int i = 0; i < (*attribute)->pieceCount(); i++) {
 		OEntity<void>* piece = (*attribute)->piece(i);
+		/*
 		if (piece->state()->curr()->position().x() <= (*attribute)->min().x() || 
 		    piece->state()->curr()->position().x() >= (*attribute)->max().x()) {
 			piece->state()->next()->motionComponent(1).setX(piece->state()->curr()->motionComponent(1).x());
@@ -59,5 +60,14 @@ void EnvironmentBehavior::update(EnvironmentAttributes ** attribute, ODoubleBuff
 		    piece->state()->curr()->position().z() >= (*attribute)->max().z()) {
 			piece->state()->next()->motionComponent(1).setZ(piece->state()->curr()->motionComponent(1).z());
 		}
+		*/
+		if (piece->state()->curr()->position().x() <= (*attribute)->min().x())
+			piece->state()->next()->motionComponent(1).setX(fabs(piece->state()->curr()->motionComponent(1).x()));
+		if (piece->state()->curr()->position().x() >= (*attribute)->max().x()) 
+			piece->state()->next()->motionComponent(1).setX(-fabs(piece->state()->curr()->motionComponent(1).x()));
+		if (piece->state()->curr()->position().z() <= (*attribute)->min().z())
+			piece->state()->next()->motionComponent(1).setZ(fabs(piece->state()->curr()->motionComponent(1).z()));
+		if (piece->state()->curr()->position().z() >= (*attribute)->max().z()) 
+			piece->state()->next()->motionComponent(1).setZ(-fabs(piece->state()->curr()->motionComponent(1).z()));
 	}
 }

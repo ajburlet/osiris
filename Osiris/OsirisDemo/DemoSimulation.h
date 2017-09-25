@@ -23,6 +23,8 @@ private:
 	OFont* _fontCourier;
 	OText2D* _title;
 	OText2D* _infoText;
+	OText2D* _motionText;
 	OText2D* _cameraText;
+	OEntity<void>* _movingPiece;
 };
 
