@@ -35,6 +35,15 @@ public:
 	*/
 	void addVertexColorData(float r, float g, float b, float alpha);
 
+	/**
+	 \brief Add color definition values for each vertex. 
+	 
+	 The colors should be set after all vertex where defined.
+
+	 \param colorVec Four-dimentional vector containing color information in the (r, g, b, alpha) format.
+	 */
+	void addVertexColorData(const OVector4 colorVec);
+
 protected:
 	/* Inherited from OMesh */
 	void setupAdditionalVertexArrays();
