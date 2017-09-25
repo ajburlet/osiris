@@ -6,7 +6,7 @@
 #include "ORenderObject.h"
 
 /**
- @brief Base entity definition. 
+ @brief Base entity definition.
  */
 class OAPI OBaseEntity : public OObject, public ORenderObject {
 public:
@@ -35,9 +35,9 @@ public:
 	 */
 	virtual void equalizeState() = 0;
 	/**
-	 @brief Swap entity state.
+	 @brief Executes final update call on entity state and swaps it.
 	 */
-	virtual void swapState() = 0;
+	virtual void swapState(const OTimeIndex& timeIndex) = 0;
 
 	/**
 	 @brief Enables entity processing for each update call.

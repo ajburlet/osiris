@@ -32,7 +32,7 @@ void OSimulation::update(const OTimeIndex & timeIndex)
 	}
 	/* ...and finally we swap the states */
 	for (OCollection<OBaseEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
-		it.object()->swapState();
+		it.object()->swapState(timeIndex);
 	}
 }
 

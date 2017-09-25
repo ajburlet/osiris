@@ -15,7 +15,7 @@
  the attributes, state or behavior classes.
 
  @tparam attrT Class containing the attributes data structure.
- @tparam stateT State class, by default uses the OState. 
+ @tparam stateT State class, necessarily ones that fits the OState interface. By default uses OState. 
  */
 template <class attrT, class stateT=OState> class OEntity : public OBaseEntity {
 public:
@@ -61,8 +61,9 @@ public:
 		_state.equalize();
 	}
 	
-	void swapState()
+	void swapState(const OTimeIndex& timeIndex)
 	{
+		_state.next()->update(timeIndex);
 		_state.swap();
 	}
 

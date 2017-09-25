@@ -27,7 +27,7 @@ public:
 	/**
 	 @brief Add a new item to the collection.
 	 @param item Item to be added into the collection.
-	 @return The assigned collection ID.
+	 @return The assigned collection ID. If item is already present in the collection, returns 0.
 	 */
 	ID add(T* item) 
 	{
@@ -35,7 +35,7 @@ public:
 		if (_ptrMap.find(item) != _ptrMap.end()) return 0;
 
 		/* finding next valid ID */
-		ID newID = _lastID + 1;
+		ID newID = ++_lastID;
 		std::map<ID, T*>::iterator it;
 		for (it = _idMap.find(newID); it != _idMap.end(); it++) {
 			newID++;
@@ -52,7 +52,7 @@ public:
 	/**
 	 @brief Add a new item to the collection.
 	 @param item Item to be added into the collection.
-	 @return The assigned collection ID.
+	 @return The assigned collection ID. If ID is already assigned, then returns 0.
 	 */
 	ID add(T* item, ID id) 
 	{
