@@ -24,7 +24,7 @@ OFont::OFont(const char * fontName)
 #else
 	_fontName = fontName;
 #endif
-
+	
 	if (FT_New_Face(_library, _fontName.c_str(), 0, &_face) != 0) {
 		throw OException("Unable to open font.");
 	}
@@ -40,7 +40,10 @@ OFont::~OFont()
 void OFont::cleanCache()
 {
 	map<pair<char,char>, CacheEntry>::iterator it;
-	for (it = _cache.begin(); it != _cache.end(); it++) glDeleteTextures(1, (const GLuint*)&it->second.texId);
+	for (it = _cache.begin(); it != _cache.end(); it++) {
+		glDeleteTextures(1, (const GLuint*)&it->second.texId);
+		glDeleteBuffers(1, (const GLuint*)&it->second.arrBufId);
+	}
 	_cache.clear();
 }
 
@@ -81,6 +84,24 @@ const OFont::CacheEntry * OFont::entry(char character, int size)
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ent.width, ent.rows, 0, GL_RED, GL_UNSIGNED_BYTE, _face->glyph->bitmap.buffer);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		/* Now we estabilish the vertices that will delimeter the character box */
+		glGenBuffers(1, &ent.arrBufId);
+		glBindBuffer(GL_ARRAY_BUFFER, ent.arrBufId);
+		float x2 = (float)ent.left;
+		float y2 = (float)- ent.top;
+		float w = (float)ent.width;
+		float h = (float)ent.rows;
+
+		GLfloat boxVertices[4][4] = {
+			{ x2, -y2, 0, 0 },
+			{ x2 + w, -y2, 1, 0 },
+			{ x2, -y2 - h, 0, 1 },
+			{ x2 + w, -y2 - h, 1, 1 },
+		};
+		
+		glBufferData(GL_ARRAY_BUFFER, 4*4*sizeof(GLfloat), boxVertices, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
 		_cache[key] = ent;
 	}

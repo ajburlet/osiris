@@ -137,7 +137,6 @@ public:
 
 private:
 	GLuint _arrayObject;
-	GLuint _arrayBuffer;
 	OFont* _font;
 	unsigned int _fontSize;
 	OVector4 _fontColor;
@@ -154,6 +153,8 @@ private:
 	static GLuint _shaderCoordAttr;
 	static GLuint _shaderTexUniform;
 	static GLuint _shaderColorUniform;
+	static GLuint _shaderPosition;
+	static GLuint _shaderScale;
 
 	/**
 	 \brief Initialize the freetype library for all class objects.

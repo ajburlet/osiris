@@ -35,9 +35,20 @@ public:
 	 \brief Clean font cache: texture data and dimensions for each character and size.
 	 */
 	void cleanCache();
-	
+
+	/**
+	 \brief Font cache entry structure.
+	 */
 	struct CacheEntry {
+		/**
+		 \brief OpenGL texture ID.
+		 */
 		GLuint texId;
+
+		/**
+		 \brief OpenGL array buffer ID.
+		 */
+		GLuint arrBufId;
 		int top;
 		int left;
 		int width;

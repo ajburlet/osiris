@@ -100,11 +100,11 @@ void DemoSimulation::init()
 
 	/* creating text */
 	_fontCourier = new OFont("cour.ttf");
-	_title = new OText2D(_fontCourier, 12, -1.0f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_title = new OText2D(_fontCourier, 12, -1.0f, 0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	_title->setContent("Osiris Framework\nDemo Application");
-	_infoText = new OText2D(_fontCourier, 12, 0.45f, -0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
-	_motionText = new OText2D(_fontCourier, 12, -1.0f, -0.50f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
-	_cameraText = new OText2D(_fontCourier, 12, -1.0f, 0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_infoText = new OText2D(_fontCourier, 12, 0.45f, 0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_motionText = new OText2D(_fontCourier, 12, -1.0f, 0.50f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_cameraText = new OText2D(_fontCourier, 12, -1.0f, -0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
 	renderObjects()->add(_title);
 	renderObjects()->add(_infoText);
 	renderObjects()->add(_motionText);
