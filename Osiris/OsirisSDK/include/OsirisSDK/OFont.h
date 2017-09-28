@@ -49,11 +49,15 @@ public:
 		 \brief OpenGL array buffer ID.
 		 */
 		GLuint arrBufId;
-		int top;
-		int left;
-		int width;
-		int rows;
+		
+		/**
+		 \brief Font horizontal advance space to the next character.
+		 */
 		int advance_x;
+		
+		/**
+		 \brief Font vertical advance space to the next character.
+		 */
 		int advance_y;
 	};
 

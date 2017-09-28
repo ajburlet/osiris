@@ -60,10 +60,6 @@ const OFont::CacheEntry * OFont::entry(char character, int size)
 
 		if (FT_Load_Char(_face, character, FT_LOAD_RENDER) != 0) return NULL;
 
-		ent.left = _face->glyph->bitmap_left;
-		ent.top = _face->glyph->bitmap_top;
-		ent.width = _face->glyph->bitmap.width;
-		ent.rows = _face->glyph->bitmap.rows;
 		ent.advance_x = _face->glyph->advance.x;
 		ent.advance_y = _face->glyph->advance.y;
 	
@@ -82,16 +78,16 @@ const OFont::CacheEntry * OFont::entry(char character, int size)
 
 		/* We require 1 byte alignment when uploading texture data */
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ent.width, ent.rows, 0, GL_RED, GL_UNSIGNED_BYTE, _face->glyph->bitmap.buffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, _face->glyph->bitmap.width, _face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, _face->glyph->bitmap.buffer);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		/* Now we estabilish the vertices that will delimeter the character box */
 		glGenBuffers(1, &ent.arrBufId);
 		glBindBuffer(GL_ARRAY_BUFFER, ent.arrBufId);
-		float x2 = (float)ent.left;
-		float y2 = (float)- ent.top;
-		float w = (float)ent.width;
-		float h = (float)ent.rows;
+		float x2 = (float)_face->glyph->bitmap_left;
+		float y2 = (float)-_face->glyph->bitmap_top;
+		float w = (float)_face->glyph->bitmap.width;
+		float h = (float)_face->glyph->bitmap.rows;
 
 		GLfloat boxVertices[4][4] = {
 			{ x2, -y2, 0, 0 },
