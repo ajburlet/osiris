@@ -218,7 +218,7 @@ void OApplication::loopIteration()
 	}
 
 	/* calculate mean performance indicator */
-	_simulationPerformanceStats.add((float)cron.partial() / stepCount / _simulationStep_us);
+	if (stepCount > 0) _simulationPerformanceStats.add((float)cron.partial() / stepCount / _simulationStep_us);
 
 	/* limit rendering frequency */
 	cron.partial();

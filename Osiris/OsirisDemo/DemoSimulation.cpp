@@ -19,6 +19,7 @@ void DemoSimulation::init()
 	/* setting initial position & orientation */
 	camera()->setPosition(OVector3(3.0f, 1.5f, 7.0f));
 	camera()->setOrientation(OVector3(-30.0f, 30.0f, 0.0f));
+	camera()->setCameraLimits(1.0f, 100.0f);
 
 	/* set camera movement keys */
 	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_a, OCameraController::MoveLeft);
@@ -154,5 +155,11 @@ void DemoSimulation::update(const OTimeIndex & idx)
 
 void DemoSimulation::onKeyboardPress(const OKeyboardPressEvent * evt)
 {
+	switch (evt->code()) {
+	case OKeyboardPressEvent::OKey_Space:
+		if (targetFPS() == 0) setTargetFPS(40);
+		else setTargetFPS(0);
+		break;
+	}
 }
 
