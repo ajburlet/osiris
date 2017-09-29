@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <utility>
 #include <map>
 
 #include <ft2build.h>
@@ -76,10 +75,13 @@ private:
 	std::string _fontName;
 	FT_Face _face;
 	int _lastSize;
+	CacheEntry* _currCacheArray;
 
-	std::map<std::pair<char,char>, CacheEntry> _cache; /* key will be (size, character) */
+	std::map<int, CacheEntry*> _cache; /* font size as key */
 
 	static FT_Library _library;
+
+	CacheEntry* loadGlyphs(int size);
 
 	/**
 	 \brief Initialize the required font library (freetype).
