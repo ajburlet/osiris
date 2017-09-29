@@ -15,7 +15,7 @@ public:
 	// Inherited via OSimulation
 	virtual void init() override;
 
-	void update(const OTimeIndex& idx) override;
+	void update(const OTimeIndex& idx, int step_us) override;
 
 	void onKeyboardPress(const OKeyboardPressEvent *evt);
 private:

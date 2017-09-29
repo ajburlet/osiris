@@ -27,17 +27,21 @@ public:
 	 this must be handled by the behavior object.
 
 	 @param timeIndex Time index.
+	 @param step_us Simulation step in microseconds.
 	 */
-	virtual void update(const OTimeIndex& timeIndex) = 0;
+	virtual void update(const OTimeIndex& timeIndex, int step_us) = 0;
 
 	/**
 	 @brief Equalize state buffers.
 	 */
 	virtual void equalizeState() = 0;
+	
 	/**
 	 @brief Executes final update call on entity state and swaps it.
+	 @param timeIndex Time index.
+	 @param step_us Simulation step in microseconds.
 	 */
-	virtual void swapState(const OTimeIndex& timeIndex) = 0;
+	virtual void swapState(const OTimeIndex& timeIndex, int step_us) = 0;
 
 	/**
 	 @brief Enables entity processing for each update call.

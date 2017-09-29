@@ -213,7 +213,7 @@ void OApplication::loopIteration()
 	int stepCount = 0;
 	while ((cron.lastPartialTime() - _simulationTimeIndex).toInt() > _simulationStep_us) {
 		_simulationTimeIndex += _simulationStep_us;
-		update(_simulationTimeIndex);
+		update(_simulationTimeIndex, _simulationStep_us);
 		stepCount++;
 	}
 

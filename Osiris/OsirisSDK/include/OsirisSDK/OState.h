@@ -181,8 +181,9 @@ public:
 	/**
 	 \brief Update state for a given time index.
 	 \param timeIndex Time index.
+	 \param step_us Simulation step in microseconds.
 	 */
-	void update(const OTimeIndex& timeIndex);
+	void update(const OTimeIndex& timeIndex, int step_us);
 
 private:
 	std::vector<OVector3> _components;
@@ -192,8 +193,6 @@ private:
 	OQuaternion _orientation;
 	OVector3 _scale;
 	OrientationReferencial _orientationRef;
-
-	OTimeIndex _lastTimeIndex;
 
 	void checkDegree(int degree);
 	OVector3 checkReferencial(const OVector3& in, OrientationReferencial orRef) const;

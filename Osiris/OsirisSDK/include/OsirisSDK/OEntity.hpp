@@ -50,10 +50,10 @@ public:
 		if (_behavior != NULL) _behavior->processEvent(&_attributes, &_state, evt);  
 	}
 
-	void update(const OTimeIndex& timeIndex) 
+	void update(const OTimeIndex& timeIndex, int step_us) 
 	{
 		if (isDisabled()) return;
-		if (_behavior != NULL) _behavior->update(&_attributes, &_state, &_mesh, timeIndex);
+		if (_behavior != NULL) _behavior->update(&_attributes, &_state, &_mesh, timeIndex, step_us);
 	}
 
 	void equalizeState()
@@ -61,9 +61,9 @@ public:
 		_state.equalize();
 	}
 	
-	void swapState(const OTimeIndex& timeIndex)
+	void swapState(const OTimeIndex& timeIndex, int step_us)
 	{
-		_state.next()->update(timeIndex);
+		_state.next()->update(timeIndex, step_us);
 		_state.swap();
 	}
 

@@ -29,6 +29,7 @@ public:
 	virtual void update(EnvironmentAttributes** attribute,
 		ODoubleBuffer<OState>* state,
 		OMesh** meshPtr,
-		const OTimeIndex& timeIndex);
+		const OTimeIndex& timeIndex,
+		int step_us);
 };
 

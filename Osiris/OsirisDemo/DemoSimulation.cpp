@@ -112,15 +112,15 @@ void DemoSimulation::init()
 	renderObjects()->add(_cameraText);
 }
 
-void DemoSimulation::update(const OTimeIndex & idx)
+void DemoSimulation::update(const OTimeIndex & idx, int step_us)
 {
 	char buff[256];
 	
 	/* update simulation */
-	OSimulation::update(idx);
+	OSimulation::update(idx, step_us);
 
 	/* update camera */
-	_camCtrl.update(idx);
+	_camCtrl.update(idx, step_us);
 
 	/* calculate FPS average and update the text object (to show on the screen) */
 	if (targetFPS() == 0) snprintf(buff, 32, "%.02f fps", fpsStats().average());
@@ -138,7 +138,7 @@ void DemoSimulation::update(const OTimeIndex & idx)
 	/* motion info */
 	OVector3 movPos = _movingPiece->state()->curr()->position();
 	OVector3 movSpd = _movingPiece->state()->curr()->motionComponent(1) * 1e6;
-	snprintf(buff, 256, "Moving piece\nPosition: (%.02f, %.02f, %.02f)\nVelocity:(%.02f, %.02f, %.02f)",
+	snprintf(buff, 256, "Moving piece\nPos: (%.02f, %.02f, %.02f)\nSpd: (%.02f, %.02f, %.02f)",
 		movPos.x(), movPos.y(), movPos.z(), movSpd.x(), movSpd.y(), movSpd.z());
 	_motionText->setContent(buff);
 

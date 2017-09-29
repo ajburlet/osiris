@@ -20,7 +20,7 @@ OCollection<ORenderObject>* OSimulation::renderObjects()
 	return &_renderObjects;
 }
 
-void OSimulation::update(const OTimeIndex & timeIndex)
+void OSimulation::update(const OTimeIndex & timeIndex, int step_us)
 {
 	/* first we equalize states... */
 	for (OCollection<OBaseEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
@@ -28,11 +28,11 @@ void OSimulation::update(const OTimeIndex & timeIndex)
 	}
 	/* ...then we update each entity state... */
 	for (OCollection<OBaseEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
-		it.object()->update(timeIndex);
+		it.object()->update(timeIndex, step_us);
 	}
 	/* ...and finally we swap the states */
 	for (OCollection<OBaseEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
-		it.object()->swapState(timeIndex);
+		it.object()->swapState(timeIndex, step_us);
 	}
 }
 

@@ -49,7 +49,7 @@ public:
 	OCollection<ORenderObject>* renderObjects();
 
 protected:
-	virtual void update(const OTimeIndex & timeIndex) override;
+	virtual void update(const OTimeIndex & timeIndex, int step_us) override;
 	virtual void render() override;
 
 private:

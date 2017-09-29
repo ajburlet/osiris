@@ -153,13 +153,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DemoApplication.cpp" />
     <ClCompile Include="DemoSimulation.cpp" />
     <ClCompile Include="Environment.cpp" />
     <ClCompile Include="OsirisDemo.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DemoApplication.h" />
     <ClInclude Include="DemoSimulation.h" />
     <ClInclude Include="Environment.h" />
   </ItemGroup>

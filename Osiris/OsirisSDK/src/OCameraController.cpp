@@ -66,7 +66,7 @@ void OCameraController::setMoveEventKey(OKeyboardPressEvent::KeyCode key, Camera
 	_keyBind[key] = camEvt;
 }
 
-void OCameraController::update(const OTimeIndex& timeIndex)
+void OCameraController::update(const OTimeIndex& timeIndex, int step_us)
 {
 	OQuaternion& orientation = _app->camera()->state()->orientation();
 	float normFactor = _mouseSensitivity * 180.0f / _app->windowWidth();
@@ -82,7 +82,7 @@ void OCameraController::update(const OTimeIndex& timeIndex)
 	_delta_mouse_x = 0;
 	_delta_mouse_y = 0;
 
-	_app->camera()->state()->update(timeIndex);
+	_app->camera()->state()->update(timeIndex, step_us);
 }
 
 void OCameraController::onKeyboardPress(const OKeyboardPressEvent * evt)

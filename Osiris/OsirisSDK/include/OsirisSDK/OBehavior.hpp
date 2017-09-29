@@ -55,10 +55,11 @@ public:
 	 @param state Entity state.
 	 @param meshPtr Pointer to entity mesh.
 	 @param timeIndex Time index.
+	 @param step_us Simulation step in microseconds.
 	 */
-	virtual void update(attrT** attribute, ODoubleBuffer<stateT>* state, OMesh** meshPtr, const OTimeIndex& timeIndex)
+	virtual void update(attrT** attribute, ODoubleBuffer<stateT>* state, OMesh** meshPtr, const OTimeIndex& timeIndex, int step_us)
 	{
-		state->next()->update(timeIndex);
+		state->next()->update(timeIndex, step_us);
 	}
 
 protected:

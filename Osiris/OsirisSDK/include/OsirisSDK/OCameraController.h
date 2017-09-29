@@ -116,8 +116,9 @@ public:
 	/**
 	 \brief Updates the camera position and orientation for a given time index.
 	 \param timeIndex Time index.
+	 \param step_us Simulation step in microseconds.
 	 */
-	void update(const OTimeIndex& timeIndex);
+	void update(const OTimeIndex& timeIndex, int step_us);
 
 
 protected:
