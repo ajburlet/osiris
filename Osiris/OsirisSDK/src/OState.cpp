@@ -7,45 +7,55 @@
 using namespace std;
 
 // ****************************************************************************
-// OStateConstraint
+// OState::Constraint
 // ****************************************************************************
-OStateConstraint::OStateConstraint() :
+OState::Constraint::Constraint() :
 	_absoluteValue(false)
 {
-	memset(&_components, 0, 3 * sizeof(OStateConstraintVal));
+	memset(&_components, 0, 3 * sizeof(OState::Constraint::ConstraintVal));
 }
 
-OStateConstraint::~OStateConstraint()
+OState::Constraint::~Constraint()
 {
 }
 
-void OStateConstraint::setValue(OVector3::Axis axis, bool active, float value)
+void OState::Constraint::setValue(OVector3::Axis axis, bool active, float value)
 {
 	_components[axis].enabled = active;
 	_components[axis].value = value;
 }
 
-bool OStateConstraint::enabled(OVector3::Axis axis) const
+bool OState::Constraint::enabled(OVector3::Axis axis) const
 {
 	return _components[axis].enabled;
 }
 
-float OStateConstraint::value(OVector3::Axis axis) const
+float OState::Constraint::value(OVector3::Axis axis) const
 {
 	return _components[axis].value;
 }
 
-void OStateConstraint::setAbsoluteValue(bool flag)
+void OState::Constraint::setAbsoluteValue(bool flag)
 {
 	_absoluteValue = flag;
 }
 
-bool OStateConstraint::absoluteValue() const
+bool OState::Constraint::absoluteValue() const
 {
 	return _absoluteValue;
 }
 
-void OStateConstraint::disableAll()
+void OState::Constraint::setForce(bool flag)
+{
+	_force = flag;
+}
+
+bool OState::Constraint::force() const
+{
+	return _force;
+}
+
+void OState::Constraint::disableAll()
 {
 	setValue(OVector3::X, false);
 	setValue(OVector3::Y, false);
@@ -156,13 +166,13 @@ OVector3& OState::scale()
 	return _scale;
 }
 
-OStateConstraint * OState::minConstraint(int degree)
+OState::Constraint * OState::minConstraint(int degree)
 {
 	if ((size_t)degree > _minConstraint.size() - 1) return NULL;
 	return &_minConstraint[degree-1];
 }
 
-OStateConstraint * OState::maxConstraint(int degree)
+OState::Constraint * OState::maxConstraint(int degree)
 {
 	if ((size_t)degree > _maxConstraint.size() - 1) return NULL;
 	return &_maxConstraint[degree-1];
@@ -201,9 +211,9 @@ void OState::update(const OTimeIndex& timeIndex, int step_us)
 	/* update position */
 	if (_components.size() > 0) {
 		if (_orientationRef == Object) {
-			_position += _orientation * _components[0] * step_us;
+			_position += _orientation * _components[0] * (float)step_us;
 		} else {
-			_position += _components[0] * step_us;
+			_position += _components[0] * (float)step_us;
 		}
 	}
 }
