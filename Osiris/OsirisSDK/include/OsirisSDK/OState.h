@@ -21,7 +21,7 @@ public:
 	 always is, so that subsequent OState::update() calls wont exceed it.
 
 	 If the force flag is disabled and the current component value is exceeding the constraint, then
-	 the OState engine will ignore the constraint.
+	 the OState engine will ignore the constraint. By default the force flag is enabled.
 
 	 Also there is the absolute flag. It assures that only absolute values of the components will be 
 	 used for comparison purposes.
@@ -216,8 +216,24 @@ private:
 	OVector3 _scale;
 	OrientationReferencial _orientationRef;
 
-	void validateConstraints(float value);
+	/**
+	 @brief Validates if a component value for a given degree exceeds one of the constraints.
+	 @param axis Axis index.
+	 @param compIdx Component degree index.
+	 @param value Component value.
+	 @returns Returns 0 if value exceeds neither the minimum nor maximum constraints, -1 if it exceeds minimum,
+	          and +1 if exceeds maximum.
+	 */
+	int validateConstraints(OVector3::Axis axis, int compIdx, float value);
+
+	/**
+	 @brief Makes sure that all arrays are ready to handle a given degree level.
+	 */
 	void checkDegree(int degree);
+
+	/**
+	 @nrief Checks if the vector is in the given referencial, and transforms it if not.
+	 */
 	OVector3 checkReferencial(const OVector3& in, OrientationReferencial orRef) const;
 };
 

@@ -10,7 +10,8 @@ using namespace std;
 // OState::Constraint
 // ****************************************************************************
 OState::Constraint::Constraint() :
-	_absoluteValue(false)
+	_absoluteValue(false),
+	_force(true)
 {
 	memset(&_components, 0, 3 * sizeof(OState::Constraint::ConstraintVal));
 }
@@ -193,15 +194,13 @@ void OState::update(const OTimeIndex& timeIndex, int step_us)
 			OVector3::Axis axis = (OVector3::Axis)df;
 			float newValue = _components[i][axis] + _components[i + 1][axis] * step_us;
 
-			if (_minConstraint[i].enabled(axis)) {
-				if ((!_minConstraint[i].absoluteValue() && newValue < _minConstraint[i].value(axis)) ||
-					(_minConstraint[i].absoluteValue() && abs(newValue) < _minConstraint[i].value(axis)))
-					newValue = _minConstraint[i].value(axis);
-			}
-			if (_maxConstraint[i].enabled(axis)) {
-				if ((!_maxConstraint[i].absoluteValue() && newValue > _maxConstraint[i].value(axis)) ||
-					(_maxConstraint[i].absoluteValue() && abs(newValue) > _maxConstraint[i].value(axis)))
-					newValue = _maxConstraint[i].value(axis);
+			int prevConstraintStatus = validateConstraints(axis, i, _components[i][axis]);
+			int nextConstraintStatus = validateConstraints(axis, i, newValue);
+			
+			if (nextConstraintStatus < 0 && (_minConstraint[i].force() || prevConstraintStatus >= 0)) {
+				newValue = _minConstraint[i].value(axis);
+			} else if (nextConstraintStatus > 0 && (_maxConstraint[i].force() || prevConstraintStatus <= 0)) {
+				newValue = _maxConstraint[i].value(axis);
 			}
 
 			_components[i][axis] = newValue;
@@ -216,6 +215,22 @@ void OState::update(const OTimeIndex& timeIndex, int step_us)
 			_position += _components[0] * (float)step_us;
 		}
 	}
+}
+
+
+int OState::validateConstraints(OVector3::Axis axis, int compIdx, float value)
+{
+	if (_minConstraint[compIdx].enabled(axis)) {
+		if ((!_minConstraint[compIdx].absoluteValue() && value < _minConstraint[compIdx].value(axis)) ||
+			(_minConstraint[compIdx].absoluteValue() && abs(value) < _minConstraint[compIdx].value(axis)))
+			return -1;
+	}
+	if (_maxConstraint[compIdx].enabled(axis)) {
+		if ((!_maxConstraint[compIdx].absoluteValue() && value > _maxConstraint[compIdx].value(axis)) ||
+			(_maxConstraint[compIdx].absoluteValue() && abs(value) > _maxConstraint[compIdx].value(axis)))
+			return 1;
+	}
+	return 0;
 }
 
 void OState::checkDegree(int degree)

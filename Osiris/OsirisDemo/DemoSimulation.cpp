@@ -160,6 +160,14 @@ void DemoSimulation::onKeyboardPress(const OKeyboardPressEvent * evt)
 		if (targetFPS() == 0) setTargetFPS(40);
 		else setTargetFPS(0);
 		break;
+		
+	case OKeyboardPressEvent::OKey_o:
+		camera()->setPosition(OVector3(3.0f, 1.5f, 7.0f));
+		camera()->state()->setMotionComponent(1, OVector3(0.0f, 0.0f, 0.0f), OState::Scene);
+		camera()->state()->setMotionComponent(2, OVector3(0.0f, 0.0f, 0.0f), OState::Scene);
+		camera()->setOrientation(OVector3(-30.0f, 30.0f, 0.0f));
+		camera()->setCameraLimits(1.0f, 100.0f);
+		break;
 	}
 }
 
