@@ -111,6 +111,7 @@ void OCameraController::onKeyboardPress(const OKeyboardPressEvent * evt)
 	camState->motionComponent(2)[axis] = dir*_movementAcceleration;
 	camState->minConstraint(1)->setValue(axis, false);
 	_pressedKeys[it->second] = true;
+	_pressedKeys[inverseDir(it->second)] = false;
 }
 
 void OCameraController::onKeyboardRelease(const OKeyboardPressEvent * evt)
