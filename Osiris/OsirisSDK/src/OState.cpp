@@ -187,20 +187,32 @@ void OState::disableAllConstraints()
 
 void OState::update(const OTimeIndex& timeIndex, int step_us)
 {
+#define SIGN(in) in/abs(in)
 	/* iterate over all the components of the motion equation */
 	for (int i = _components.size() - 2; i >= 0; i--) {
 		/* iterate over the degrees of freedom */
 		for (int df = 0; df < 3; df++) {
 			OVector3::Axis axis = (OVector3::Axis)df;
-			float newValue = _components[i][axis] + _components[i + 1][axis] * step_us;
+			float oldValue = _components[i][axis];
+			float newValue = oldValue + _components[i + 1][axis] * step_us;
 
-			int prevConstraintStatus = validateConstraints(axis, i, _components[i][axis]);
+			int prevConstraintStatus = validateConstraints(axis, i, oldValue);
 			int nextConstraintStatus = validateConstraints(axis, i, newValue);
-			
-			if (nextConstraintStatus < 0 && (_minConstraint[i].force() || prevConstraintStatus >= 0)) {
-				newValue = _minConstraint[i].value(axis);
-			} else if (nextConstraintStatus > 0 && (_maxConstraint[i].force() || prevConstraintStatus <= 0)) {
-				newValue = _maxConstraint[i].value(axis);
+		
+			/* !!! we are not checking if the constraints are enabled !!! */
+			if (_minConstraint[i].enabled(axis)) {
+				if (_minConstraint[i].absoluteValue() && _minConstraint[i].value(axis) == 0.0f &&  
+				    (oldValue == 0.0f || SIGN(oldValue) != SIGN(newValue)) ) {
+					newValue = 0.0f;
+				} else if (nextConstraintStatus < 0 && (_minConstraint[i].force() || prevConstraintStatus >= 0)) {
+					newValue = _minConstraint[i].value(axis);
+				}
+			}
+			if (_maxConstraint[i].enabled(axis)) {
+				if (nextConstraintStatus > 0 && (_maxConstraint[i].force() || prevConstraintStatus <= 0)) {
+					newValue = (_minConstraint[i].absoluteValue()) ? SIGN(oldValue)*_maxConstraint[i].value(axis) : 
+						_maxConstraint[i].value(axis);
+				}
 			}
 
 			_components[i][axis] = newValue;

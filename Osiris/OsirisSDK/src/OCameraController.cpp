@@ -1,5 +1,6 @@
 #include "OsirisSDK/OMatrixStack.h"
 #include "OsirisSDK/OCameraController.h"
+#include "OsirisSDK/OException.h"
 
 using namespace std;
 
@@ -16,6 +17,14 @@ OCameraController::OCameraController(OApplication * app,
 	_delta_mouse_y(0)
 {
 	_app->camera()->state()->setMotionComponent(2, OVector3(0.0f, 0.0f, 0.0f), OState::Scene);
+	for (int axis = (int)OVector3::X; axis <= (int)OVector3::Z; axis++) {
+		_app->camera()->state()->minConstraint(1)->setValue((OVector3::Axis)axis, true, 0.0f);
+		_app->camera()->state()->minConstraint(1)->setForce(true);
+		_app->camera()->state()->minConstraint(1)->setForce(false);
+		_app->camera()->state()->minConstraint(1)->setAbsoluteValue(true);
+		_app->camera()->state()->maxConstraint(1)->setAbsoluteValue(true);
+	}
+
 	setMovementMaxSpeed(movementMaxSpeed);
 	setMovementAcceleration(movementAcceleration);
 	setMouseSensitivity(1.0f);
@@ -29,6 +38,9 @@ OCameraController::~OCameraController()
 void OCameraController::setMovementMaxSpeed(float maxSpeed)
 {
 	_movementMaxSpeed = maxSpeed / 1000000.0f;
+	for (int axis = (int)OVector3::X; axis <= (int)OVector3::Z; axis++) {
+		_app->camera()->state()->maxConstraint(1)->setValue((OVector3::Axis)axis, true, _movementMaxSpeed);
+	}
 }
 
 float OCameraController::movementMaxSpeed() const
@@ -97,14 +109,7 @@ void OCameraController::onKeyboardPress(const OKeyboardPressEvent * evt)
 	float dir;
 	OVector3::Axis axis = directionToAxis(it->second, &dir);
 	camState->motionComponent(2)[axis] = dir*_movementAcceleration;
-	if (dir > 0) {
-		camState->minConstraint(1)->setValue(axis, false);
-		camState->maxConstraint(1)->setValue(axis, true, _movementMaxSpeed);
-	} else {
-		camState->minConstraint(1)->setValue(axis, true, -_movementMaxSpeed);
-		camState->maxConstraint(1)->setValue(axis, false);
-	}
-
+	camState->minConstraint(1)->setValue(axis, false);
 	_pressedKeys[it->second] = true;
 }
 
@@ -119,14 +124,7 @@ void OCameraController::onKeyboardRelease(const OKeyboardPressEvent * evt)
 	OVector3::Axis axis = directionToAxis(it->second);
 	float accSign = OMath::reverseSign(camState->motionComponent(1)[axis]);
 	camState->motionComponent(2)[axis] = accSign*_movementAcceleration;
-	if (accSign > 0) {
-		camState->minConstraint(1)->setValue(axis, false);
-		camState->maxConstraint(1)->setValue(axis, true, 0.0f);
-	} else {
-		camState->minConstraint(1)->setValue(axis, true, 0.0f);
-		camState->maxConstraint(1)->setValue(axis, false);
-
-	}
+	camState->minConstraint(1)->setValue(axis, true, 0.0f);
 	_pressedKeys[it->second] = false;
 }
 
@@ -189,6 +187,19 @@ bool OCameraController::isMovementKeyPressed(CameraMoveDir dir)
 {
 	map<CameraMoveDir, bool>::iterator it = _pressedKeys.find(dir);
 	return (it != _pressedKeys.end()) ? it->second : false;
+}
+
+OCameraController::CameraMoveDir OCameraController::inverseDir(CameraMoveDir dir)
+{
+	switch (dir) {
+	case MoveUp:		return MoveDown;
+	case MoveDown:		return MoveUp;
+	case MoveRight:		return MoveLeft;
+	case MoveLeft:		return MoveRight;
+	case MoveForward:	return MoveBack;
+	case MoveBack:		return MoveForward;
+	}
+	throw OException("Invalid camera movement direction.");
 }
 
 OVector3::Axis OCameraController::directionToAxis(CameraMoveDir dir, float * sign)

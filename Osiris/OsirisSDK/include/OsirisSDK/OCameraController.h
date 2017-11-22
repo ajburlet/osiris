@@ -157,6 +157,8 @@ private:
 	 */
 	bool isMovementKeyPressed(CameraMoveDir dir);
 
+	static CameraMoveDir inverseDir(CameraMoveDir dir);
+
 	/**
 	 \brief Internal helper function to allow translation between motion direction keys and
 		OVector3 axis notation.
