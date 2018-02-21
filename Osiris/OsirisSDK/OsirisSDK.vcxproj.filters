@@ -120,7 +120,7 @@
     <ClInclude Include="include\OsirisSDK\OSpatialGrid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\OsirisSDK\OAttributeList.h">
+    <ClInclude Include="include\OsirisSDK\OParameterList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -194,7 +194,7 @@
     <ClCompile Include="src\OSpatialGrid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\OAttributeList.cpp">
+    <ClCompile Include="src\OParameterList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
