@@ -1,4 +1,4 @@
-#include "OsirisSDK/OBaseEntity.h"
+#include "OsirisSDK/OEntity.h"
 #include "OsirisSDK/OCollection.hpp"
 #include "OsirisSDK/OMath.h"
 
@@ -20,11 +20,11 @@ OSpatialGrid::OSpatialGrid(int xCells, int yCells, int zCells) :
 
 OSpatialGrid::~OSpatialGrid()
 {
-	for (map<OBaseEntity*, Node*>::iterator it = _nodeMap.begin(); it != _nodeMap.end(); it++) 
+	for (map<OEntity*, Node*>::iterator it = _nodeMap.begin(); it != _nodeMap.end(); it++) 
 		delete it->second;
 }
 
-OCollection<OBaseEntity>* OSpatialGrid::entities()
+OCollection<OEntity>* OSpatialGrid::entities()
 {
 	return &_entities;
 }
@@ -34,7 +34,7 @@ void OSpatialGrid::process()
 	OVector3 min, max;
 
 	/*
-	for (map<OBaseEntity*, Node*>::iterator it = _nodeMap.begin(); it != _nodeMap.end(); it++) {
+	for (map<OEntity*, Node*>::iterator it = _nodeMap.begin(); it != _nodeMap.end(); it++) {
 		if (it == _nodeMap.begin()) {
 		}
 	}
@@ -45,7 +45,7 @@ void OSpatialGrid::process()
 // ****************************************************************************
 // OSpatialGrid::Node
 // ****************************************************************************
-OSpatialGrid::Node::Node(OBaseEntity * entity, Node * next) : 
+OSpatialGrid::Node::Node(OEntity * entity, Node * next) : 
 	_ent(entity), 
 	_next(next)
 {
@@ -65,7 +65,7 @@ void OSpatialGrid::Node::setNext(Node * next)
 	_next = next;
 }
 
-OBaseEntity * OSpatialGrid::Node::entity()
+OEntity * OSpatialGrid::Node::entity()
 {
 	return _ent;
 }

@@ -2,9 +2,10 @@
 
 #include "defs.h"
 #include "OApplication.h"
-#include "OBaseEntity.h"
-#include "ORenderObject.h"
 #include "OCollection.hpp"
+
+class OEntity;
+class ORenderObject;
 
 /**
  @brief An OApplication implementation, designed to ease entity handling and renderization.
@@ -41,7 +42,7 @@ public:
 	/**
 	 @brief Provides the entities as an object collection.
 	 */
-	OCollection<OBaseEntity>* entities();
+	OCollection<OEntity>* entities();
 	
 	/**
 	 @brief Provides the entities as an object collection.
@@ -53,7 +54,7 @@ protected:
 	virtual void render() override;
 
 private:
-	OCollection<OBaseEntity> _entities;
+	OCollection<OEntity> _entities;
 	OCollection<ORenderObject> _renderObjects;
 
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include <OsirisSDK/OSimulation.h>
 #include <OsirisSDK/OObject.h>
-#include <OsirisSDK/OEntity.hpp>
+#include <OsirisSDK/OEntity.h>
 #include <OsirisSDK/OCameraController.h>
 #include <OsirisSDK/OFont.h>
 #include <OsirisSDK/OText2D.h>
@@ -25,6 +25,7 @@ private:
 	OText2D* _infoText;
 	OText2D* _motionText;
 	OText2D* _cameraText;
-	OEntity<void>* _movingPiece;
+	OEntity* _table;
+	OEntity* _movingPiece;
 };
 

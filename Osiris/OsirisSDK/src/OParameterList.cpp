@@ -84,49 +84,49 @@ OParameterList::Parameter::Type OParameterList::Parameter::type() const
 
 bool OParameterList::Parameter::boolVal() const
 {
-	if (_type != Boolean) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Boolean) throw OException("Parameter type mismatch.");
 	return _value._bool;
 }
 
 int OParameterList::Parameter::intVal() const
 {
-	if (_type != Integer) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Integer) throw OException("Parameter type mismatch.");
 	return _value._int;
 }
 
 float OParameterList::Parameter::floatVal() const
 {
-	if (_type != Float) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Float) throw OException("Parameter type mismatch.");
 	return _value._float;
 }
 
 const char * OParameterList::Parameter::strVal() const
 {
-	if (_type != String) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != String) throw OException("Parameter type mismatch.");
 	return _value._str;
 }
 
 void OParameterList::Parameter::setVal(bool val)
 {
-	if (_type != Boolean) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Boolean) throw OException("Parameter type mismatch.");
 	_value._bool = val;
 }
 
 void OParameterList::Parameter::setVal(int val)
 {
-	if (_type != Integer) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Integer) throw OException("Parameter type mismatch.");
 	_value._int = val;
 }
 
 void OParameterList::Parameter::setVal(float val)
 {
-	if (_type != Float) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Float) throw OException("Parameter type mismatch.");
 	_value._float = val;
 }
 
 void OParameterList::Parameter::setVal(const char * val)
 {
-	if (_type != String) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != String) throw OException("Parameter type mismatch.");
 	if (_value._str != NULL) free(_value._str);
 	_value._str = _strdup(val);
 }

@@ -21,7 +21,7 @@
     <ClCompile Include="DemoSimulation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Environment.cpp">
+    <ClCompile Include="PieceBehavior.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +29,7 @@
     <ClInclude Include="DemoSimulation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Environment.h">
+    <ClInclude Include="PieceBehavior.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

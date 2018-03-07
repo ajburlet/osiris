@@ -9,7 +9,7 @@
  Be aware that this class uses an internal vector to store the parameters, and the indeces must be 
  sequential.
  */
-class OParameterList
+class OAPI OParameterList
 {
 public:
 	/**
@@ -33,7 +33,7 @@ public:
 	 is assigned, the object will remain as the same time throughout it's entire lifetime. In case
 	 a method related to a type other than the object's, an OException will be thrown.
 	 */
-	class Parameter {
+	class OAPI Parameter {
 	public:
 		/**
 		 @brief Class constructor.

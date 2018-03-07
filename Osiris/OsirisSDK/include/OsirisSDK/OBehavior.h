@@ -1,12 +1,14 @@
 #pragma once
 
 #include "defs.h"
-#include "OState.h"
-#include "ODoubleBuffer.hpp"
-#include "OEvent.h"
 #include "OTimeIndex.h"
+#include "OEvent.h"
 
 class OMesh;
+class OParameterList;
+template <class stateT> class ODoubleBuffer;
+class OState;
+class OTimeIndex;
 
 /**
   @brief Entity behavior interface.
@@ -18,10 +20,10 @@ class OMesh;
 
   It is able to receive events forwarded by entities.
 
-  @tparam attrT Class containing the attribute data structure.
-  @tparam stateT State class, by default uses the OState. 
+  @tparam OParameterList Class containing the attribute data structure.
+  @tparam OState State class, by default uses the OState. 
  */
-template <class attrT, class stateT=OState> class OBehavior {
+class OAPI OBehavior {
 public:
 	/**
 	 @brief Main event handler.
@@ -33,16 +35,7 @@ public:
 	 @param state Entity state.
 	 @param evt Event class object.
 	 */
-	virtual void processEvent(attrT** attribute, ODoubleBuffer<stateT>* state, const OEvent* event) {
-		switch (event->type()) {
-		case OEvent::KeyboardPressEvent:	onKeyboardPress(attribute, state, (const OKeyboardPressEvent*)event);	break;
-		case OEvent::KeyboardReleaseEvent:	onKeyboardRelease(attribute, state, (const OKeyboardPressEvent*)event);	break;
-		case OEvent::MouseClickEvent:		onMouseClick(attribute, state, (const OMouseClickEvent*)event);		break;
-		case OEvent::MouseActiveMoveEvent:
-		case OEvent::MousePassiveMoveEvent:	onMouseMove(attribute, state, (const OMouseMoveEvent*)event);		break;
-		case OEvent::ResizeEvent:		onScreenResize(attribute, state, (const OResizeEvent*)event);		break;
-		}
-	}
+	virtual void processEvent(OParameterList** attribute, ODoubleBuffer<OState>* state, const OEvent* event);
 
 	/**
 	 @brief Entity update method.
@@ -57,10 +50,11 @@ public:
 	 @param timeIndex Time index.
 	 @param step_us Simulation step in microseconds.
 	 */
-	virtual void update(attrT** attribute, ODoubleBuffer<stateT>* state, OMesh** meshPtr, const OTimeIndex& timeIndex, int step_us)
-	{
-		state->next()->update(timeIndex, step_us);
-	}
+	virtual void update(OParameterList** attribute, 
+			    ODoubleBuffer<OState>* state,
+			    OMesh** meshPtr, 
+			    const OTimeIndex& timeIndex, 
+			    int step_us) = 0;
 
 protected:
 	/**
@@ -72,7 +66,7 @@ protected:
 	 @param state Entity state.
 	 @param evt Keyboard event object.
 	 */
-	virtual void onKeyboardPress(attrT** attribute, ODoubleBuffer<stateT>* state, const OKeyboardPressEvent* evt) { }
+	virtual void onKeyboardPress(OParameterList** attribute, ODoubleBuffer<OState>* state, const OKeyboardPressEvent* evt);
 	
 	/**
 	 @brief Mouse release event handler.
@@ -83,7 +77,7 @@ protected:
 	 @param state Entity state.
 	 @param evt Mouse click event object.
 	 */
-	virtual void onKeyboardRelease(attrT** attribute, ODoubleBuffer<stateT>* state, const OKeyboardPressEvent* evt) { }
+	virtual void onKeyboardRelease(OParameterList** attribute, ODoubleBuffer<OState>* state, const OKeyboardPressEvent* evt);
 
 	/**
 	 @brief Mouse click event handler.
@@ -94,7 +88,7 @@ protected:
 	 @param state Entity state.
 	 @param evt Mouse click event object.
 	 */
-	virtual void onMouseClick(attrT** attribute, ODoubleBuffer<stateT>* state, const OMouseClickEvent* evt) { }
+	virtual void onMouseClick(OParameterList** attribute, ODoubleBuffer<OState>* state, const OMouseClickEvent* evt);
 
 	/**
 	 @brief Mouse active and passive move event handler.
@@ -105,7 +99,7 @@ protected:
 	 @param state Entity state.
 	 @param evt Mouse move event object.
 	 */
-	virtual void onMouseMove(attrT** attribute, ODoubleBuffer<stateT>* state, const OMouseMoveEvent* evt) { }
+	virtual void onMouseMove(OParameterList** attribute, ODoubleBuffer<OState>* state, const OMouseMoveEvent* evt);
 
 	/**
 	 @brief Screen resize event handler.
@@ -116,5 +110,5 @@ protected:
 	 @param state Entity state.
 	 @param evt Screen resize event object.
 	 */
-	virtual void onScreenResize(attrT** attribute, ODoubleBuffer<stateT>* state, const OResizeEvent* evt) { }
+	virtual void onScreenResize(OParameterList** attribute, ODoubleBuffer<OState>* state, const OResizeEvent* evt);
 };

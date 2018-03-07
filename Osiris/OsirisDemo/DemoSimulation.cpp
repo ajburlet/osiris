@@ -1,17 +1,31 @@
 #include <OsirisSDK/OVertexColorMesh.h>
 #include <OsirisSDK/OWavefrontObjectFile.h>
+#include <OsirisSDK/OParameterList.h>
 
 #include "DemoSimulation.h"
-#include "Environment.h"
+#include "PieceBehavior.h"
 
 DemoSimulation::DemoSimulation(int argc, char **argv) :
 	OSimulation("DemoSimulation", argc, argv),
-	_camCtrl(this)
+	_camCtrl(this),
+	_table(NULL),
+	_movingPiece(NULL)
 {
 }
 
 DemoSimulation::~DemoSimulation()
 {
+	if (_table) {
+		delete _table->mesh();
+		delete _table;
+	}
+
+	if (_movingPiece) {
+		delete _movingPiece->attributes();
+		delete _movingPiece->behavior();
+		delete _movingPiece->mesh();
+		delete _movingPiece;
+	}
 }
 
 void DemoSimulation::init()
@@ -84,20 +98,23 @@ void DemoSimulation::init()
 	torus->init();
 
 	/* creating the table entity */
-	EnvironmentAttributes *tableAtt = new EnvironmentAttributes(OVector3(-1.5f, 0, -3.5f), OVector3(1.5f, 0, 3.5f));
-	EnvironmentBehavior *tableBehavior = new EnvironmentBehavior;
-	OEntity<EnvironmentAttributes> *table = new OEntity<EnvironmentAttributes>(tableAtt, tableBehavior, cube);
-	table->state()->curr()->position() = OVector3(0.0f, -0.25f/2, 0.0f);
-	table->state()->curr()->scale() = OVector3(3.0f, 0.15f, 7.0f);
-	entities()->add(table);
+	_table = new OEntity(NULL, NULL, cube);
+	_table->state()->curr()->position() = OVector3(0.0f, -0.25f/2, 0.0f);
+	_table->state()->curr()->scale() = OVector3(3.0f, 0.15f, 7.0f);
+	entities()->add(_table);
 
-	/* creating the moving piece */
-	_movingPiece = new OEntity<void>(NULL, NULL, torus);
-	tableAtt->addPiece(_movingPiece);
-	entities()->add(_movingPiece);
+	/* creating moving piece */
+	PieceBehavior *behavior = new PieceBehavior();
+	OParameterList *attributeList = new OParameterList(4);
+	(*attributeList)[PieceBehavior::attrMinX] = -1.5f;
+	(*attributeList)[PieceBehavior::attrMinZ] = -3.5f;
+	(*attributeList)[PieceBehavior::attrMaxX] = 1.5f;
+	(*attributeList)[PieceBehavior::attrMaxZ] = 3.5f;
+	_movingPiece = new OEntity(attributeList, behavior, torus);
 	_movingPiece->state()->curr()->position() = OVector3(0.0f, 0.0f, 0.0f);
 	_movingPiece->state()->curr()->setMotionComponent(1, OVector3(0.3f, 0.0f, 0.3f) / 1e6, OState::Object);
 	_movingPiece->state()->curr()->scale() = OVector3(0.25);
+	entities()->add(_movingPiece);
 
 	/* creating text */
 	_fontCourier = new OFont("cour.ttf");

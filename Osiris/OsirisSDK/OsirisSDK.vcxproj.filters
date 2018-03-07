@@ -99,15 +99,6 @@
     <ClInclude Include="include\OsirisSDK\OChronometer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\OsirisSDK\OBehavior.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\OsirisSDK\OEntity.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\OsirisSDK\OBaseEntity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\OsirisSDK\ORenderObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -121,6 +112,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\OsirisSDK\OParameterList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OsirisSDK\OEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OsirisSDK\OBehavior.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -182,9 +179,6 @@
     <ClCompile Include="src\OChronometer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\OBaseEntity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ORenderObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -195,6 +189,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\OParameterList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OEntity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OBehavior.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,7 +3,7 @@
 #include <vector>
 #include <map>
 
-class OBaseEntity;
+class OEntity;
 template<class T> class OCollection;
 
 /**
@@ -19,7 +19,7 @@ public:
 	OSpatialGrid(int xCells, int yCells, int zCells);
 	virtual ~OSpatialGrid();
 
-	OCollection<OBaseEntity>* entities();
+	OCollection<OEntity>* entities();
 
 	void process();
 
@@ -35,7 +35,7 @@ protected:
 		 @brief entity Node entity.
 		 @brief next Next node.
 		 */
-		Node(OBaseEntity* entity, Node* next=NULL);
+		Node(OEntity* entity, Node* next=NULL);
 
 		/**
 		 @brief Class destructor.
@@ -55,10 +55,10 @@ protected:
 		/**
 		 @brief Returns pointer to node entity.
 		 */
-		OBaseEntity* entity();
+		OEntity* entity();
 
 	private:
-		OBaseEntity* _ent;
+		OEntity* _ent;
 		Node* _next;
 	};
 	
@@ -103,8 +103,8 @@ protected:
 
 private:
 	std::vector<Cell> _grid;
-	std::map<OBaseEntity*, Node*> _nodeMap;
-	OCollection<OBaseEntity> _entities;
+	std::map<OEntity*, Node*> _nodeMap;
+	OCollection<OEntity> _entities;
 	int _xCells;
 	int _yCells;
 	int _zCells;
