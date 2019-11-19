@@ -18,12 +18,18 @@
     <ClCompile Include="OsirisDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DemoApplication.cpp">
+    <ClCompile Include="DemoSimulation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PieceBehavior.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DemoApplication.h">
+    <ClInclude Include="DemoSimulation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PieceBehavior.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

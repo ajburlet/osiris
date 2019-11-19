@@ -1,0 +1,7 @@
+Osiris/.vs/
+Osiris/freeglut/
+Osiris/freetype/
+Osiris/glm/
+Osiris/glload/
+*.log
+*.user

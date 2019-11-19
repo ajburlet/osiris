@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <utility>
 #include <map>
 
 #include <ft2build.h>
@@ -35,14 +34,29 @@ public:
 	 \brief Clean font cache: texture data and dimensions for each character and size.
 	 */
 	void cleanCache();
-	
+
+	/**
+	 \brief Font cache entry structure.
+	 */
 	struct CacheEntry {
+		/**
+		 \brief OpenGL texture ID.
+		 */
 		GLuint texId;
-		int top;
-		int left;
-		int width;
-		int rows;
+
+		/**
+		 \brief OpenGL array buffer ID.
+		 */
+		GLuint arrBufId;
+		
+		/**
+		 \brief Font horizontal advance space to the next character.
+		 */
 		int advance_x;
+		
+		/**
+		 \brief Font vertical advance space to the next character.
+		 */
 		int advance_y;
 	};
 
@@ -51,15 +65,23 @@ public:
 	 */
 	const CacheEntry* entry(char character, int size);
 
+	/**
+	 @brief Default line spacing (baseline-to-baseline distance).
+	 @return Line spacing in pixels.
+	 */
+	int lineSpacing() const;
 
 private:
 	std::string _fontName;
 	FT_Face _face;
 	int _lastSize;
+	CacheEntry* _currCacheArray;
 
-	std::map<std::pair<char,char>, CacheEntry> _cache; /* key will be (size, character) */
+	std::map<int, CacheEntry*> _cache; /* font size as key */
 
 	static FT_Library _library;
+
+	CacheEntry* loadGlyphs(int size);
 
 	/**
 	 \brief Initialize the required font library (freetype).

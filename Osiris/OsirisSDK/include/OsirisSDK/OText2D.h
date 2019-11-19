@@ -4,6 +4,7 @@
 #include <map>
 
 #include "OObject.h"
+#include "ORenderObject.h"
 #include "OMath.h"
 #include "OShaderProgram.h"
 #include "OFont.h"
@@ -14,7 +15,7 @@
 
  This class enabled the rendering of text on the screen.
  */
-class OAPI OText2D : public OObject
+class OAPI OText2D : public OObject, public ORenderObject
 {
 public:
 
@@ -24,9 +25,11 @@ public:
 	 \param fontSize Font height in pixels.
 	 \param x Position of the beggining of the text box in the X axis.
 	 \param y Position of the beggining of the text box in the Y axis.
-	 \param content Text conte
+	 \param content Text content.
 	 */
-	OText2D(OFont *font, unsigned int fontSize, float x, float y, const OVector4& color = OVector4(1.0f), const char* content=NULL);
+	OText2D(OFont *font, unsigned int fontSize, float x, float y, const OVector4& color = OVector4(1.0f), 
+		const char* content=NULL);
+
 	
 	/**
 	 \brief Class destructor.
@@ -60,6 +63,18 @@ public:
 	 \return An OVector4 class object in the form (r, g, b, alpha).
 	 */
 	OVector4 fontColor() const;
+
+	/**
+	 @brief Set line spacing.
+	 @param Spacing in pixels.
+	 */
+	void setLineSpacing(int spacing);
+
+	/**
+	 @brief Returns line spacing.
+	 @return Spacing in pixels.
+	 */
+	int lineSpacing() const;
 
 	/**
 	 \brief Sets the position of the text box.
@@ -115,16 +130,17 @@ public:
 	/**
 	 \brief Renders the text string on the screen.
 	 */
-	void render();
+	void render(OMatrixStack* mtx=NULL);
 
 	/* inherited from OOBject */
 	void onScreenResize(const OResizeEvent* evt);
+
 private:
 	GLuint _arrayObject;
-	GLuint _arrayBuffer;
 	OFont* _font;
 	unsigned int _fontSize;
 	OVector4 _fontColor;
+	int _lineSpacing;
 	float _x;
 	float _y;
 	float _scale_x;
@@ -137,6 +153,8 @@ private:
 	static GLuint _shaderCoordAttr;
 	static GLuint _shaderTexUniform;
 	static GLuint _shaderColorUniform;
+	static GLuint _shaderPosition;
+	static GLuint _shaderScale;
 
 	/**
 	 \brief Initialize the freetype library for all class objects.

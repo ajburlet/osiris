@@ -68,6 +68,12 @@ OMatrixStack & OMatrixStack::operator*=(const OMatrix4x4 & in)
 	return *this;
 }
 
+OMatrixStack & OMatrixStack::operator*=(const OQuaternion & in)
+{
+	product(in);
+	return *this;
+}
+
 OVector4 OMatrixStack::operator*(const OVector4 & in)
 {
 	return top() * in;
@@ -81,6 +87,11 @@ void OMatrixStack::product(const OMatrixStack & in)
 void OMatrixStack::product(const OMatrix4x4 & in)
 {
 	_currMtx *= in;
+}
+
+void OMatrixStack::product(const OQuaternion & in)
+{
+	_currMtx *= in.toMatrix4();
 }
 
 void OMatrixStack::translate(const OVector3 & dir)

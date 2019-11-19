@@ -28,6 +28,11 @@ void OVertexColorMesh::addVertexColorData(float r, float g, float b, float alpha
 	vertexBuffer()->addData(r, g, b, alpha);
 }
 
+void OVertexColorMesh::addVertexColorData(const OVector4 colorVec)
+{
+	vertexBuffer()->addData(colorVec.x(), colorVec.y(), colorVec.z(), colorVec.w());
+}
+
 void OVertexColorMesh::setupAdditionalVertexArrays()
 {
 	GLuint vertexColorOffset = (GLuint)vertexCount()*sizeof(float) * 3;

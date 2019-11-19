@@ -84,6 +84,17 @@ public:
 	float movementAcceleration() const;
 
 	/**
+	 \brief Set mouse sensitivity factor.
+	 \param sens Mouse sensitivity factor, default to 1.0. 
+	 */
+	void setMouseSensitivity(float sens);
+
+	/**
+	 \brief Returns the mouse sensitivity factor.
+	 */
+	float mouseSensitivity() const;
+
+	/**
 	 \brief Camera movement events.
 	 */
 	enum CameraMoveDir {
@@ -105,8 +116,9 @@ public:
 	/**
 	 \brief Updates the camera position and orientation for a given time index.
 	 \param timeIndex Time index.
+	 \param step_us Simulation step in microseconds.
 	 */
-	void update(const OTimeIndex& timeIndex);
+	void update(const OTimeIndex& timeIndex, int step_us);
 
 
 protected:
@@ -123,6 +135,7 @@ private:
 	OMouseClickEvent::MouseButton _orMouseBtn;
 	float _movementAcceleration;
 	float _movementMaxSpeed;
+	float _mouseSensitivity;
 	
 	bool _activeMoveMouseBtnPressed;
 	int _last_mouse_x;
@@ -143,6 +156,8 @@ private:
 	 \param dir Movement direction.
 	 */
 	bool isMovementKeyPressed(CameraMoveDir dir);
+
+	static CameraMoveDir inverseDir(CameraMoveDir dir);
 
 	/**
 	 \brief Internal helper function to allow translation between motion direction keys and

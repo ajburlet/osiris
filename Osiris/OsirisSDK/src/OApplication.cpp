@@ -213,12 +213,12 @@ void OApplication::loopIteration()
 	int stepCount = 0;
 	while ((cron.lastPartialTime() - _simulationTimeIndex).toInt() > _simulationStep_us) {
 		_simulationTimeIndex += _simulationStep_us;
-		update(_simulationTimeIndex);
+		update(_simulationTimeIndex, _simulationStep_us);
 		stepCount++;
 	}
 
 	/* calculate mean performance indicator */
-	_simulationPerformanceStats.add((float)cron.partial() / stepCount / _simulationStep_us);
+	if (stepCount > 0) _simulationPerformanceStats.add((float)cron.partial() / stepCount / _simulationStep_us);
 
 	/* limit rendering frequency */
 	cron.partial();

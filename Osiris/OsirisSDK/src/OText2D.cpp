@@ -16,6 +16,8 @@ OShaderProgram* OText2D::_shaderProgram = NULL;
 GLuint OText2D::_shaderCoordAttr;
 GLuint OText2D::_shaderTexUniform;
 GLuint OText2D::_shaderColorUniform;
+GLuint OText2D::_shaderPosition;
+GLuint OText2D::_shaderScale;
 
 OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVector4& color,
 		 const char* content) :
@@ -23,7 +25,8 @@ OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVe
 	_y(y),
 	_font(font),
 	_fontSize(fontSize),
-	_fontColor(color)
+	_fontColor(color),
+	_lineSpacing(0)
 {
 	_Init();
 
@@ -33,14 +36,12 @@ OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVe
 	_scale_y = 2.0f / OApplication::activeInstance()->windowHeight();
 
 	OApplication::activeInstance()->addEventRecipient(OEvent::ResizeEvent, this);
-
-	glGenBuffers(1, &_arrayBuffer);
+	
 	glGenVertexArrays(1, &_arrayObject);
 }
 
 OText2D::~OText2D()
 {
-	glDeleteBuffers(1, &_arrayBuffer);
 	glDeleteVertexArrays(1, &_arrayObject);
 }
 
@@ -68,6 +69,16 @@ void OText2D::setFontColor(const OVector4 & color)
 OVector4 OText2D::fontColor() const
 {
 	return _fontColor;
+}
+
+void OText2D::setLineSpacing(int spacing)
+{
+	_lineSpacing = spacing;
+}
+
+int OText2D::lineSpacing() const
+{
+	return _lineSpacing;
 }
 
 void OText2D::setPosition(float x, float y)
@@ -117,8 +128,10 @@ const char * OText2D::content() const
 	return _content.c_str();
 }
 
-void OText2D::render()
+void OText2D::render(OMatrixStack* mtx)
 {
+	if (isHidden()) return;
+
 	/* enabling array object */
 	glBindVertexArray(_arrayObject);
 
@@ -133,17 +146,23 @@ void OText2D::render()
 	glUniform1i(_shaderTexUniform, 0);
 
 	/* now we enable attribute array and prepare the vertex array buffer */
-	glBindBuffer(GL_ARRAY_BUFFER, _arrayBuffer);
 	glEnableVertexAttribArray(_shaderCoordAttr);
-	glVertexAttribPointer(_shaderCoordAttr, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 	/* set font color */
 	glUniform4fv(_shaderColorUniform, 1, _fontColor.glArea());
+	glUniform3fv(_shaderScale, 1, OVector3(_scale_x, _scale_y, 0.0f).glArea());
 
 	/* now we iterate through every character and render */
 	float currX = _x;
 	float currY = _y;
 	for (const char *p = _content.c_str(); *p != '\0'; p++) {
+		/* if char is new line */
+		if (*p == '\n') {
+			currX = _x;
+			currY -= (_font->lineSpacing() + _lineSpacing) * _scale_y;
+			continue;
+		}
+
 		/* Get font data */
 		const OFont::CacheEntry *fEntry = _font->entry(*p, _fontSize);
 		if (fEntry == NULL) throw OException("Failed to load full font charset.");
@@ -152,21 +171,14 @@ void OText2D::render()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, fEntry->texId);
 
-		/* now we estabilish the vertices that will delimeter the character box */
-		float x2 = currX + fEntry->left * _scale_x;
-		float y2 = currY - fEntry->top * _scale_y;
-		float w = fEntry->width * _scale_x;
-		float h = fEntry->rows * _scale_y;
-
-		GLfloat boxVertices[4][4] = {
-			{ x2, -y2, 0, 0 },
-			{ x2 + w, -y2, 1, 0 },
-			{ x2, -y2 - h, 0, 1 },
-			{ x2 + w, -y2 - h, 1, 1 },
-		};
+		/* passing shader uniform parameter: translation */
+		glUniform3fv(_shaderPosition, 1, OVector3(currX, currY, 0.0f).glArea());
+		
+		/* binding buffer */
+		glBindBuffer(GL_ARRAY_BUFFER, fEntry->arrBufId);
+		glVertexAttribPointer(_shaderCoordAttr, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 		/* draw */
-		glBufferData(GL_ARRAY_BUFFER, 4*4*sizeof(GLfloat), boxVertices, GL_DYNAMIC_DRAW);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		
 		/* move the cursor */
@@ -200,6 +212,8 @@ void OText2D::_Init()
 		_shaderCoordAttr = _shaderProgram->attribLocation("position");
 		_shaderTexUniform = _shaderProgram->uniformLocation("tex");
 		_shaderColorUniform = _shaderProgram->uniformLocation("color");
+		_shaderPosition = _shaderProgram->uniformLocation("posOffset");
+		_shaderScale = _shaderProgram->uniformLocation("scale");
 		
 		//if (_shaderCoordAttr == -1 || _shaderTexUniform == -1 || _shaderColorUniform == -1)
 		//	throw OException("Error accessing text shader parameters.");

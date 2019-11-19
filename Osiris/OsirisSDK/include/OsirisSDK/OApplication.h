@@ -204,8 +204,10 @@ protected:
 
 	/**
 	 \brief Method called on each simulation iteration.
+	 \brief timeIndex Time index.
+	 \brief step_us Simulation step in microseconds.
 	 */
-	virtual void update(const OTimeIndex& timeIndex) = 0;
+	virtual void update(const OTimeIndex& timeIndex, int step_us) = 0;
 
 	/**
 	 \brief Renderization method.
