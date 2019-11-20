@@ -10,5 +10,5 @@ Osiris/OsirisSDK/docs
 CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
-ZERO_CHECK.*
-ALL_BUILD.*
+*.vcxproj*
+*.sln

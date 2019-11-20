@@ -4,8 +4,8 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/OsirisSDK/include
 	)
 link_directories(
-	${PROJECT_SOURCE_DIR}/deps/lib/${CMAKE_BUILD_TYPE} 
-	${PROJECT_SOURCE_DIR}/OsirisSDK/lib/${CMAKE_BUILD_TYPE}
+	${PROJECT_SOURCE_DIR}/deps/lib/x64/${CMAKE_BUILD_TYPE} 
+	${PROJECT_SOURCE_DIR}/OsirisSDK/lib/x64/${CMAKE_BUILD_TYPE}
 )
 
 file (GLOB SOURCES *.cpp)
