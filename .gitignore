@@ -3,5 +3,12 @@ Osiris/freeglut/
 Osiris/freetype/
 Osiris/glm/
 Osiris/glload/
+Osiris/deps
 *.log
 *.user
+Osiris/OsirisSDK/docs
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+ZERO_CHECK.*
+ALL_BUILD.*
