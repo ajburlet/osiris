@@ -16,5 +16,5 @@ source_group("Headers" FILES ${HEADERS})
 
 add_executable(OsirisDemo ${SOURCES} ${HEADERS})
 
-target_link_libraries(OsirisDemo freeglut freetype OsirisSDK)
+target_link_libraries(OsirisDemo freeglut freetype27 OsirisSDK)
 
