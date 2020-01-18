@@ -2,10 +2,12 @@ Osiris/.vs/
 Osiris/freeglut/
 Osiris/freetype/
 Osiris/glm/
-Osiris/glload/
 Osiris/deps
+Osiris/build
 *.log
+*.tlog
 *.user
+*.dir
 Osiris/OsirisSDK/docs
 CMakeFiles
 CMakeCache.txt

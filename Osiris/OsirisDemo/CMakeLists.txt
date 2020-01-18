@@ -1,6 +1,7 @@
 
 include_directories(
-	${PROJECT_SOURCE_DIR}/deps/include 
+	${PROJECT_SOURCE_DIR}/deps/include
+	${PROJECT_SOURCE_DIR}/glload/include
 	${PROJECT_SOURCE_DIR}/OsirisSDK/include
 	)
 link_directories(
