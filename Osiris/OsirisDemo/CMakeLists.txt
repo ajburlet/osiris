@@ -1,11 +1,11 @@
 
 include_directories(
-	${PROJECT_SOURCE_DIR}/deps/include
-	${PROJECT_SOURCE_DIR}/glload/include
 	${PROJECT_SOURCE_DIR}/OsirisSDK/include
+	${PROJECT_SOURCE_DIR}/glload/include
+	${PROJECT_SOURCE_DIR}/dependencies/FreeGLUT/freeglut/freeglut/include
+	${PROJECT_SOURCE_DIR}/dependencies/glm
 	)
 link_directories(
-	${PROJECT_SOURCE_DIR}/deps/lib/x64/${CMAKE_BUILD_TYPE} 
 	${PROJECT_SOURCE_DIR}/OsirisSDK/lib/x64/${CMAKE_BUILD_TYPE}
 )
 
@@ -17,5 +17,5 @@ source_group("Headers" FILES ${HEADERS})
 
 add_executable(OsirisDemo ${SOURCES} ${HEADERS})
 
-target_link_libraries(OsirisDemo freeglut freetype27 OsirisSDK)
+target_link_libraries(OsirisDemo OsirisSDK)
 
