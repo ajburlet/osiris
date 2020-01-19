@@ -1,7 +1,7 @@
 
 include_directories(
 	${PROJECT_SOURCE_DIR}/OsirisSDK/include
-	${PROJECT_SOURCE_DIR}/glload/include
+	${PROJECT_SOURCE_DIR}/dependencies/glload/include
 	${PROJECT_SOURCE_DIR}/dependencies/FreeGLUT/freeglut/freeglut/include
 	${PROJECT_SOURCE_DIR}/dependencies/glm
 	)

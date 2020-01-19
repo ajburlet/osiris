@@ -13,7 +13,7 @@ source_group("Sources" FILES ${SOURCES})
 source_group("Headers" FILES ${HEADERS})
 
 include_directories(./include 
-					${PROJECT_SOURCE_DIR}/glload/include
+					${PROJECT_SOURCE_DIR}/dependencies/glload/include
 					${PROJECT_SOURCE_DIR}/dependencies/FreeGLUT/freeglut/freeglut/include
 					${PROJECT_SOURCE_DIR}/dependencies/freetype2/include
 					${PROJECT_SOURCE_DIR}/dependencies/glm)

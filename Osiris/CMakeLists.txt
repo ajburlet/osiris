@@ -32,7 +32,7 @@ add_subdirectory(dependencies/FreeGLUT/freeglut/freeglut)
 # other dependencies
 #
 add_subdirectory(dependencies/freetype2)
-add_subdirectory(glload)
+add_subdirectory(dependencies/glload)
 
 #
 # SDK & Demo
