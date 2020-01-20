@@ -2,6 +2,7 @@
 file (GLOB SOURCES 
 	src/*.cpp 
 	src/*.cc
+	OsirisSDK.rc
 )
 file (GLOB HEADERS 
 	include/resource.h 
@@ -13,10 +14,10 @@ source_group("Sources" FILES ${SOURCES})
 source_group("Headers" FILES ${HEADERS})
 
 include_directories(./include 
-					${PROJECT_SOURCE_DIR}/dependencies/glload/include
-					${PROJECT_SOURCE_DIR}/dependencies/FreeGLUT/freeglut/freeglut/include
-					${PROJECT_SOURCE_DIR}/dependencies/freetype2/include
-					${PROJECT_SOURCE_DIR}/dependencies/glm)
+		    ${PROJECT_SOURCE_DIR}/dependencies/glload/include
+		    ${PROJECT_SOURCE_DIR}/dependencies/FreeGLUT/freeglut/freeglut/include
+		    ${PROJECT_SOURCE_DIR}/dependencies/freetype2/include
+		    ${PROJECT_SOURCE_DIR}/dependencies/glm)
 
 add_definitions(-DOSIRISSDK_EXPORTS -DOSIRIS_DLL_NAME="OsirisSDK.dll")
 
