@@ -13,13 +13,36 @@ This is a simulation framework that uses OpenGL to render 3D graphics.
 - GLM
 - GLSDK
 
-All the dependencies are included as compressed files in the Osiris/ directory. Just unpack these files in the same directory.
+All can be found on the  ```dependencies\``` directory, either linked or hard copied into this repository.
 
 ### Build
 
-There is a VS2015 solution file on the Osiris/ directory. This solution builds the dependencies (if they are unpacked), OsirisSDK (the framework itself as a DLL) and the OsirisDemo application.
+This project uses CMake. For now, the code is fitted to run in Windows, so building in MSVC should work fine. For unix-like 
+systems, there are a couple of issues pending. Once that has been taken care of, no reason why it shouldn't work on Linux or
+Mac OS.
 
-Building process for MacOS and Linux are unavailable at the moment.
+Here are the steps (assume we are starting from the ```Osiris/``` directory:
+
+1) Create a build directory:
+
+```
+# mkdir build
+```
+
+2) Change into this directory:
+
+```
+# cd build
+```
+
+3) Call ```cmake```:
+
+```
+# cmake ..
+```
+
+This will generate the needed build files (VS project, makefile, etc.) in the format you chose (see cmake ```-G``` 
+option documentation for further details).
 
 ## Documentation
 
