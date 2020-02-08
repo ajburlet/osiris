@@ -23,7 +23,8 @@ set (BASE_SOURCES
 	${SRC_DIR}/OEvent.cpp
 	${HDR_DIR}/OEvent.h
 	${SRC_DIR}/OObject.cpp
-	${HDR_DIR}/OObject.h	
+	${HDR_DIR}/OObject.h
+	${HDR_DIR}/OSingleton.hpp
 	${SRC_DIR}/OTimeIndex.cpp
 	${HDR_DIR}/OTimeIndex.h
 	${HDR_DIR}/defs.h
@@ -75,9 +76,14 @@ set (MATH_SOURCES
 source_group("Math" FILES ${MATH_SOURCES})
 
 set (MEMORY_SOURCES
+	${HDR_DIR}/OAbstractMemoryAllocator.hpp
+	${SRC_DIR}/OMemoryManager.cpp
+	${HDR_DIR}/OMemoryManager.h
 	${SRC_DIR}/OMemoryPool.cpp
 	${HDR_DIR}/OMemoryPool.h
 	${HDR_DIR}/OMemoryPoolObject.hpp
+	${SRC_DIR}/OSystemMemoryAllocator.cpp
+	${HDR_DIR}/OSystemMemoryAllocator.h
 )
 source_group("Memory" FILES ${MEMORY_SOURCES})
 
