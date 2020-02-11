@@ -38,8 +38,11 @@ private:
 	static void CheckInstance();
 
 private:
-	static T* _instance = nullptr;
+	static T* _instance;
 };
+template<class T>
+T* OSingleton<T>::_instance = nullptr;
+
 
 template<class T>
 inline T * OSingleton<T>::operator->()
