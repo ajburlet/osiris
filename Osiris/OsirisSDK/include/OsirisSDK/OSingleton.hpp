@@ -9,13 +9,12 @@
 template <class T>
 class OSingleton 
 {
-protected:
+public:
 	/**
 	 @brief Concealed class constructor.
 	 */
 	OSingleton() = default;
 
-public:
 	/**
 	 @brief Class destructor.
 	 */

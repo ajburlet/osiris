@@ -2,17 +2,17 @@
 
 #include "OsirisSDK/OSystemMemoryAllocator.h"
 
-void * OSystemMemoryAllocatorImpl::alloc(uint32_t aBytes)
+void * OSystemMemoryAllocatorImpl::alloc(uint32_t aSize)
 {
-	return malloc(aBytes);
+	return malloc(aSize);
 }
 
-void OSystemMemoryAllocatorImpl::dealloc(void * aPtr)
+void OSystemMemoryAllocatorImpl::dealloc(void * aPtr, size_t)
 {
 	free(aPtr);
 }
 
-void* OSystemMemoryAllocatorImpl::realloc(void * aPtr, uint32_t aSize)
+void* OSystemMemoryAllocatorImpl::realloc(void * aPtr, size_t aSize)
 {
 	return ::realloc(aPtr, aSize);
 }

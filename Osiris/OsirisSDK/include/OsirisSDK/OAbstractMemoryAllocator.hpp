@@ -41,13 +41,13 @@ inline size_t OSTLAllocator<Allocator, T>::max_size() const
 template<class Allocator, typename T>
 inline T* OSTLAllocator<Allocator, T>::allocate(size_t aSize, const void* aHint)
 {
-	return _allocator.allocate(aSize, aHint);
+	return Allocator().allocate(aSize*sizeof(T), aHint);
 }
 
 template<class Allocator, typename T>
 inline void OSTLAllocator<Allocator, T>::deallocate(T* aPtr, size_t aNum)
 {
-	_allocator.deallocate(aPtr, aNum);
+	Allocator().deallocate(aPtr, aNum*sizeof(T));
 }
 
 template<class Allocator, typename T>
@@ -65,30 +65,27 @@ inline void OSTLAllocator<Allocator, T>::destroy(T* aPtr)
 
 /**
  @brief Abstract allocator, serves as a base for allocator implementation.
- @param Allocator The allocator class, derived of this class.
  @param T The type to be allocated.
  @param Scope Allocation scope.
  */
-template <class Allocator, typename T, OMemoryManager::Scope Scope>
+template <OMemoryManager::Scope Scope>
 class OAbstractMemoryAllocator
 {
 public:
-	using Internal = OSTLAllocator<Allocator, T>;
-
 	/**
 	 @brief Allocates memory.
 	 @param aSize The amount of memory to be allocated.
-	 @param aHint A previously allocated T* and not freed, so it can be used in the new allocation.
+	 @param aHint A previously allocated pointer and not freed, so it can be used in the new allocation.
 	 @return Returns newly allocated area.
 	 */
-	T* allocate(size_t aSize, const void* aHint = nullptr);
+	void* allocate(size_t aSize, const void* aHint = nullptr);
 
 	/**
 	 @brief Frees memory.
-	 @param aPtr The T* to be freed.
-	 @param aNum Number of elements used in the allocation call.
+	 @param aPtr The pointer to be freed.
+	 @param aBytes Bytes freed. 
 	 */
-	void deallocate(T* aPtr, size_t aNum = 1);
+	void deallocate(void* aPtr, size_t aBytes);
 
 	/**
 	 @brief Reallocates memory.
@@ -97,7 +94,7 @@ public:
 	 @param aNewSize New size.
 	 @return Returns newly allocated area.
 	 */
-	T* reallocate(T* aPtr, size_t aCurrSize, size_t aNewSize);
+	void* reallocate(void* aPtr, size_t aCurrSize, size_t aNewSize);
 
 protected:
 	/**
@@ -106,14 +103,14 @@ protected:
 	 @param aHint A previously allocated T* and not freed, so it can be used in the new allocation.
 	 @return Returns newly allocated area.
 	 */
-	virtual T* impl_allocate(size_t aSize, const void* aHint) = 0;
+	virtual void* impl_allocate(size_t aSize, const void* aHint) = 0;
 
 	/**
 	 @brief Internal dealloction method, to be implemented on derivation.
 	 @param aPtr The T* to be freed.
-	 @param aNum Number of elements used in the allocation call.
+	 @param aBytes Bytes freed. 
 	 */
-	virtual void impl_deallocate(T* aPtr, size_t aHint) = 0;
+	virtual void impl_deallocate(void* aPtr, size_t aBytes) = 0;
 
 	/**
 	 @brief Internal reallocatio nmethod, to be implemented on derivation.
@@ -122,34 +119,35 @@ protected:
 	 @param aNewSize New size.
 	 @return Returns newly allocated area.
 	 */
-	T* impl_reallocate(T* aPtr, size_t aCurrSize, size_t aNewSize) = 0;
+	virtual void* impl_reallocate(void* aPtr, size_t aCurrSize, size_t aNewSize) = 0;
 
 protected:
 	OMemoryManagerSingleton _memory_manager;
 };
 
-template<class Allocator, typename T, OMemoryManager::Scope Scope>
-inline T* OAbstractMemoryAllocator<Allocator, T, Scope>::allocate(size_t aSize, const void * aHint)
+template<OMemoryManager::Scope Scope>
+inline void* OAbstractMemoryAllocator<Scope>::allocate(size_t aSize, const void * aHint)
 {
-	impl_allocate(aSize, aHint);
-	_memory_manager->increase(Scope, static_cast<uint64_t>(aSize));
+	void* ptr = impl_allocate(aSize, aHint);
+	OMemoryManagerSingleton()->increase(Scope, static_cast<uint64_t>(aSize));
+	return ptr;
 }
 
-template<class Allocator, typename T, OMemoryManager::Scope Scope>
-inline void OAbstractMemoryAllocator<Allocator, T, Scope>::deallocate(T* aPtr, size_t aNum)
+template<OMemoryManager::Scope Scope>
+inline void OAbstractMemoryAllocator<Scope>::deallocate(void* aPtr, size_t aBytes)
 {
-	impl_deallocate(aSize, aHint);
-	_memory_manager->decrease(Scope, static_cast<uint64_t>(aSize));
+	impl_deallocate(aPtr, aBytes);
+	OMemoryManagerSingleton()->decrease(Scope, static_cast<uint64_t>(aBytes));
 }
 
-template<class Allocator, typename T, OMemoryManager::Scope Scope>
-inline T* OAbstractMemoryAllocator<Allocator, T, Scope>::reallocate(T* aPtr, size_t aCurrSize, size_t aNewSize)
+template<OMemoryManager::Scope Scope>
+inline void* OAbstractMemoryAllocator<Scope>::reallocate(void* aPtr, size_t aCurrSize, size_t aNewSize)
 {
 	auto new_ptr = impl_reallocate(aPtr, aCurrSize, aNewSize);
 	if (aCurrSize < aNewSize) {
-		_memory_manager->increase(Scope, aNewSize - aCurrSize);
+		OMemoryManagerSingleton()->increase(Scope, aNewSize - aCurrSize);
 	} else {
-		_memory_manager->decrease(Scope, aCurrSize - aNewSize);
+		OMemoryManagerSingleton()->decrease(Scope, aCurrSize - aNewSize);
 	}
 	return new_ptr;
 }
