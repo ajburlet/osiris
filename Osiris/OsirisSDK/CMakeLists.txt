@@ -1,17 +1,4 @@
 
-file (GLOB SOURCES 
-	src/*.cpp 
-	src/*.cc
-	src/graphics/*.cpp
-	OsirisSDK.rc
-)
-file (GLOB HEADERS 
-	include/resource.h 
-	include/OsirisSDK/*.h
-	include/OsirisSDK/*.hpp
-	include/OsirisSDK/graphics/*.h
-)
-
 set(SRC_DIR src)
 set(HDR_DIR include/OsirisSDK)
 set(SHADER_DIR shaders)
@@ -30,6 +17,13 @@ set (BASE_SOURCES
 	${HDR_DIR}/defs.h
 )
 source_group("Base" FILES ${BASE_SOURCES})
+
+set (CONTAINER_SOURCES
+	${HDR_DIR}/OArray.hpp
+	${HDR_DIR}/OList.hpp
+	${HDR_DIR}/OMap.hpp
+)
+source_group("Container" FILES ${CONTAINER_SOURCES})
 
 set (GRAPHICS_SOURCES
 	${SRC_DIR}/OCamera.cpp
@@ -120,7 +114,8 @@ set (RESOURCES
 source_group("Resources" FILES ${RESOURCES})
 
 set (SOURCES 
-	${BASE_SOURCES} 
+	${BASE_SOURCES}
+	${CONTAINER_SOURCES}
 	${GRAPHICS_SOURCES}
 	${GRAPHICS_SHADERS_SOURCES}
 	${MATH_SOURCES} 
