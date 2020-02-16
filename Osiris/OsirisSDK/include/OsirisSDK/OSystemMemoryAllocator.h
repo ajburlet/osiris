@@ -1,5 +1,6 @@
 #pragma once
 
+#include "OsirisSDK/defs.h"
 #include "OsirisSDK/OAbstractMemoryAllocator.hpp"
 
 /**
@@ -18,7 +19,7 @@ public:
  @brief Allocator that uses system <code>malloc()</code> and <code>free()</code> calls. 
  */
 template <OMemoryManager::Scope Scope = OMemoryManager::Scope::Default>
-class OSystemMemoryAllocator : public OAbstractMemoryAllocator<Scope>
+class OAPI OSystemMemoryAllocator : public OAbstractMemoryAllocator<Scope>
 {
 public:
 	/**

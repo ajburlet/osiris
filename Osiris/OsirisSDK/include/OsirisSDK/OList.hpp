@@ -2,13 +2,14 @@
 
 #include <list>
 
+#include "OsirisSDK/defs.h
 #include "OsirisSDK/OSystemMemoryAllocator.h"
 
 /**
  @brief Linked list class.
  */
 template <typename T, class Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
-class OList : public std::list<T, OSTLAllocator<Allocator>, T>
+class OAPI OList : public std::list<T, OSTLAllocator<Allocator>, T>
 {
 public:
 	/**

@@ -4,7 +4,7 @@
 
 #include "OSingleton.hpp"
 
-class OMemoryManager
+class OAPI OMemoryManager
 {
 public:
 	/**

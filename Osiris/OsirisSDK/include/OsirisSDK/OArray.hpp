@@ -1,5 +1,6 @@
 #pragma once
 
+#include "OsirisSDK/defs.h"
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OMemoryManager.h"
 #include "OsirisSDK/OAbstractMemoryAllocator.hpp"
@@ -9,7 +10,7 @@
  @brief Array handling class.
  */
 template <typename T, class Allocator=OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
-class OArray 
+class OAPI OArray 
 {
 public:
 	/**

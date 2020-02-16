@@ -1,12 +1,13 @@
 #pragma once
 
+#include "OsirisSDK/defs.h"
 #include "OsirisSDK/OMemoryManager.h"
 
 /**
  @brief STL allocator interface.
  */
 template <class Allocator, typename T>
-class OSTLAllocator {
+class OAPI OSTLAllocator {
 public:
 	T* address(T& aRef);
 	const T* address(const T& aRef) const;
@@ -69,7 +70,7 @@ inline void OSTLAllocator<Allocator, T>::destroy(T* aPtr)
  @param Scope Allocation scope.
  */
 template <OMemoryManager::Scope Scope>
-class OAbstractMemoryAllocator
+class OAPI OAbstractMemoryAllocator
 {
 public:
 	/**
