@@ -121,8 +121,6 @@ protected:
 	 */
 	virtual void* impl_reallocate(void* aPtr, size_t aCurrSize, size_t aNewSize) = 0;
 
-protected:
-	OMemoryManagerSingleton _memory_manager;
 };
 
 template<OMemoryManager::Scope Scope>

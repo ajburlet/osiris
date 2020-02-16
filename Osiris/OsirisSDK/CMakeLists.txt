@@ -32,6 +32,8 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OCameraController.h
 	${SRC_DIR}/OFont.cpp
 	${HDR_DIR}/OFont.h
+	${SRC_DIR}/OGPUObject.cpp
+	${HDR_DIR}/OGPUObject.h
 	${SRC_DIR}/OMesh.cpp
 	${HDR_DIR}/OMesh.h
 	${HDR_DIR}/OMeshBuffer.hpp
@@ -43,6 +45,8 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OShaderProgram.h
 	${SRC_DIR}/OText2D.cpp
 	${HDR_DIR}/OText2D.h
+	${SRC_DIR}/OVertexBuffer.cpp
+	${HDR_DIR}/OVertexBuffer.h
 	${SRC_DIR}/OVertexColorMesh.cpp
 	${HDR_DIR}/OVertexColorMesh.h
 	${SRC_DIR}/OWavefrontObjectFile.cpp
