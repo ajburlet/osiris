@@ -34,6 +34,9 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OFont.h
 	${SRC_DIR}/OGPUObject.cpp
 	${HDR_DIR}/OGPUObject.h
+	${HDR_DIR}/OGraphicsDefinitions.h
+	${SRC_DIR}/OIndexBuffer.cpp
+	${HDR_DIR}/OIndexBuffer.h
 	${SRC_DIR}/OMesh.cpp
 	${HDR_DIR}/OMesh.h
 	${HDR_DIR}/OMeshBuffer.hpp

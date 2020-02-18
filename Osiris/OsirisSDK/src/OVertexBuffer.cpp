@@ -5,29 +5,30 @@
 // ****************************************************************************
 // OVertexAttributeDescriptor
 // ****************************************************************************
-OVertexAttributeDescriptor::OVertexAttributeDescriptor(Type aType, Precision aPrecision, uint8_t aDim) :
+OVertexAttributeDescriptor::OVertexAttributeDescriptor(OVarType aType, OVarPrecision aPrecision, 
+						       uint8_t aDim) :
 	_type(aType),
 	_precision(aPrecision),
 	_dim(aDim)
 {
 	uint32_t unit_size = 0;
 	switch (_type) {
-	case Type::Float:
+	case OVarType::Float:
 		switch (_precision) {
-		case Precision::Low:	unit_size = 2;	break;
-		case Precision::Medium:	unit_size = 4;	break;
-		case Precision::High:	unit_size = 8;	break;
+		case OVarPrecision::Low:	unit_size = 2;	break;
+		case OVarPrecision::Medium:	unit_size = 4;	break;
+		case OVarPrecision::High:	unit_size = 8;	break;
 		default: 
 			throw OException("Invalid float vertex attribute precision.");
 		}
 		break;
 
-	case Type::Int:
-	case Type::UnsignedInt:
+	case OVarType::Int:
+	case OVarType::UnsignedInt:
 		switch (_precision) {
-		case Precision::Low:	unit_size = 1;	break;
-		case Precision::Medium:	unit_size = 2;	break;
-		case Precision::High:	unit_size = 4;	break;
+		case OVarPrecision::Low:	unit_size = 1;	break;
+		case OVarPrecision::Medium:	unit_size = 2;	break;
+		case OVarPrecision::High:	unit_size = 4;	break;
 		default:
 			throw OException("Invalid integer vertex attribute precision.");
 		}
