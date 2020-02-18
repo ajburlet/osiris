@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/OGraphicsDefinitions.h"
 #include "OsirisSDK/OGPUObject.h"
 
 /**
@@ -12,43 +13,22 @@ class OAPI OVertexAttributeDescriptor
 {
 public:
 	/**
-	 @brief Variable type.
-	 */
-	enum class Type {
-		Undefined,
-		Float,
-		Int,
-		UnsignedInt
-	};
-
-	/**
-	 @brief Variable precision.
-	 */
-	enum class Precision {
-		Undefined,
-		Low,		/**< Low precision, 16-bit floats or 8-bit integers. */
-		Medium,		/**< Medium precision, 32-bit floats or 16-bit integers. */
-		High		/**< High precision, 64-bit floats or 32-bit integers. */
-	};
-
-public:
-	/**
 	 @brief Class constructor.
 	 @param aType Attribute type.
 	 @param aPrecision Precision type.
 	 @param aDim Number of dimensions.
 	 */
-	OVertexAttributeDescriptor(Type aType, Precision aPrecision, uint8_t aDim);
+	OVertexAttributeDescriptor(OVarType aType, OVarPrecision aPrecision, uint8_t aDim);
 
 	/**
 	 @brief Returns the attribute type.
 	 */
-	Type type() const;
+	OVarType type() const;
 
 	/**
 	 @brief Returns the attribute precision.
 	 */
-	Precision precision() const;
+	OVarPrecision precision() const;
 
 	/**
 	 @brief Returns the attribute dimensions.
@@ -61,18 +41,18 @@ public:
 	uint32_t size() const;
 
 protected:
-	Type		_type		= Type::Undefined;
-	Precision	_precision	= Precision::Undefined;
+	OVarType	_type		= OVarType::Undefined;
+	OVarPrecision	_precision	= OVarPrecision::Undefined;
 	uint8_t		_dim		= 0;
 	uint32_t	_size		= 0;
 };
 
-inline OVertexAttributeDescriptor::Type OVertexAttributeDescriptor::type() const
+inline OVarType OVertexAttributeDescriptor::type() const
 {
 	return _type;
 }
 
-inline OVertexAttributeDescriptor::Precision OVertexAttributeDescriptor::precision() const
+inline OVarPrecision OVertexAttributeDescriptor::precision() const
 {
 	return _precision;
 }
