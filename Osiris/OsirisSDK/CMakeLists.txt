@@ -40,6 +40,7 @@ set (GRAPHICS_SOURCES
 	${SRC_DIR}/OMesh.cpp
 	${HDR_DIR}/OMesh.h
 	${HDR_DIR}/OMeshBuffer.hpp
+	${HDR_DIR}/ORenderable.h
 	${SRC_DIR}/ORenderObject.cpp
 	${HDR_DIR}/ORenderObject.h
 	${SRC_DIR}/OShaderObject.cpp
@@ -58,13 +59,23 @@ set (GRAPHICS_SOURCES
 source_group("Graphics" FILES ${GRAPHICS_SOURCES})
 
 set (GRAPHICS_SHADERS_SOURCES
-	${SHADER_DIR}/Fragment-OText2D.glsl
-	${SHADER_DIR}/Vertex-OText2D.glsl
-	${SHADER_DIR}/Fragment-StandardColor.glsl
-	${SHADER_DIR}/Vertex-OutputSmoothColor.glsl
+	${SHADER_DIR}/OMesh.fragment.glsl
+	${SHADER_DIR}/OMesh.vertex.glsl
+	${SHADER_DIR}/OText2D.fragment.glsl
+	${SHADER_DIR}/OText2D.vertex.glsl
+	${SHADER_DIR}/OShaderID.h
+	${SHADER_DIR}/shaders.h
+	${SHADER_DIR}/shader_conversion.py
+
 )
 source_group("Graphics\\Shaders" FILES ${GRAPHICS_SHADERS_SOURCES})
 
+
+set (GRAPHICS_ENGINE_SOURCES
+	${SRC_DIR}/OGraphicsEngine.cpp
+	${HDR_DIR}/OGraphicsEngine.h
+)
+source_group("Graphics\\Engine" FILES ${GRAPHICS_ENGINE_SOURCES})
 
 set (MATH_SOURCES
 	${SRC_DIR}/OMath.cpp
@@ -125,6 +136,7 @@ set (SOURCES
 	${CONTAINER_SOURCES}
 	${GRAPHICS_SOURCES}
 	${GRAPHICS_SHADERS_SOURCES}
+	${GRAPHICS_ENGINE_SOURCES}
 	${MATH_SOURCES} 
 	${MEMORY_SOURCES}
 	${SIM_SOURCES}
@@ -132,7 +144,8 @@ set (SOURCES
 	${RESOURCES}
 )
 
-include_directories(./include 
+include_directories(./include
+		    ${SHADER_DIR}
 		    ${PROJECT_SOURCE_DIR}/dependencies/glload/include
 		    ${PROJECT_SOURCE_DIR}/dependencies/FreeGLUT/freeglut/freeglut/include
 		    ${PROJECT_SOURCE_DIR}/dependencies/freetype2/include

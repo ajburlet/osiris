@@ -2,7 +2,7 @@
 
 #include "OsirisSDK/OSystemMemoryAllocator.h"
 
-void * OSystemMemoryAllocatorImpl::alloc(uint32_t aSize)
+void * OSystemMemoryAllocatorImpl::alloc(size_t aSize)
 {
 	return malloc(aSize);
 }

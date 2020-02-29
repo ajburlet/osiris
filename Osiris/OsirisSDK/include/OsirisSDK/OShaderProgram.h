@@ -3,14 +3,12 @@
 #include <string>
 #include <list>
 
-#include "GLdefs.h"
-#include "defs.h"
+#include "OsirisSDK/defs.h"
+#include "OsirisSDK/GLdefs.h"
+#include "OsirisSDK/OGPUObject.h"
+#include "OsirisSDK/OShaderObject.h" /* replace by a forward declaration */
 
-#include "OMatrixStack.h"
-#include "OCamera.h"
-
-#include "OShaderObject.h"
-
+/* REPLACE BY A CONCEALED IMPLEMENTATION */
 #ifdef WIN32
 #	pragma warning (disable : 4251) /* STL is restricted for class internal usage only */
 #endif
@@ -18,7 +16,7 @@
 /**
  \brief Class that represents a shader program.
 */
-class OAPI OShaderProgram
+class OAPI OShaderProgram : public OGPUObject
 {
 public:
 	/**
@@ -45,6 +43,8 @@ public:
 
 #ifdef WIN32
 	/**
+	 NO NEED FOR THIS
+	
 	 \brief Add a shader object to the program using the Visual Studio resource file ID (WIN32 only).
 	 \param type Shader type.
 	 \param name Shader name.

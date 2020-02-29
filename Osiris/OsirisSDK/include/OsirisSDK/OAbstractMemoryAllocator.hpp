@@ -6,9 +6,27 @@
 /**
  @brief STL allocator interface.
  */
-template <class Allocator, typename T>
-class OAPI OSTLAllocator {
+template <class Allocator, class T>
+class OSTLAllocator {
 public:
+	using value_type	= T;
+	using pointer		= T*;
+	using const_pointer	= const T*;
+	using reference		= T&;
+	using const_reference	= const T&;
+	using size_type		= std::size_t;
+	using difference_type	= std::ptrdiff_t;
+
+	OSTLAllocator() = default;
+	~OSTLAllocator() = default;
+	template <class U> OSTLAllocator(const OSTLAllocator<Allocator,U>&) {}
+
+	// rebind allocator to type U
+	template <class U>
+	struct rebind {
+		using other = OSTLAllocator<Allocator,U>;
+	};
+
 	T* address(T& aRef);
 	const T* address(const T& aRef) const;
 
@@ -42,7 +60,7 @@ inline size_t OSTLAllocator<Allocator, T>::max_size() const
 template<class Allocator, typename T>
 inline T* OSTLAllocator<Allocator, T>::allocate(size_t aSize, const void* aHint)
 {
-	return Allocator().allocate(aSize*sizeof(T), aHint);
+	return reinterpret_cast<T*>(Allocator().allocate(aSize*sizeof(T), aHint));
 }
 
 template<class Allocator, typename T>
@@ -70,7 +88,7 @@ inline void OSTLAllocator<Allocator, T>::destroy(T* aPtr)
  @param Scope Allocation scope.
  */
 template <OMemoryManager::Scope Scope>
-class OAPI OAbstractMemoryAllocator
+class OAbstractMemoryAllocator
 {
 public:
 	/**

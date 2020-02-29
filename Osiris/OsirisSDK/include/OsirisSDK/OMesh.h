@@ -10,6 +10,9 @@
 #include "OCamera.h"
 #include "OMath.h"
 
+class OVertexIndex;
+class OVertexBuffer;
+
 /**
  \brief Base class that represents a group of vertices that together make a geometrical shape.
 

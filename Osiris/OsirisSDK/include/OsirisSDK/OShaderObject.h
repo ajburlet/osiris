@@ -2,9 +2,11 @@
 
 #include <string>
 
-#include "GLdefs.h"
-#include "defs.h"
+#include "OsirisSDK/defs.h"
+#include "OsirisSDK/GLdefs.h"
+#include "OsirisSDK/OGPUObject.h"
 
+/* CONCEALED IMPLEMENTATION */
 #ifdef WIN32
 #	pragma warning (disable : 4251) /* std::string is encapsulated inside the class */
 #endif
@@ -12,10 +14,20 @@
 /**
  \brief Class that represents a shader object that make up shader programs.
 */
-class OAPI OShaderObject
+class OAPI OShaderObject : public OGPUObject
 {
 public:
 	/**
+	 @brief Shader object type.
+	 */
+	enum class Type : uint8_t {
+		Vertex,		/**< Vertex shader. */
+		Fragment,	/**< Fragment/pixel shader. */
+		Compute		/**< Compute/kernel shader. */
+	};
+
+	/**
+	 REMOVE!!
 	 \brief Shader object type.
 	*/
 	enum ShaderType {

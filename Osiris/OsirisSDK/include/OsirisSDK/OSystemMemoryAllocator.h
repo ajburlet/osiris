@@ -6,7 +6,7 @@
 /**
  @brief System memory allocator implementation.
  */
-class OSystemMemoryAllocatorImpl
+class OAPI OSystemMemoryAllocatorImpl
 {
 public:
 	static void* alloc(size_t aSize);
@@ -30,7 +30,7 @@ public:
 	/**
 	 @brief Class destructor.
 	 */
-	~OSystemMemoryAllocator() = default;
+	virtual ~OSystemMemoryAllocator() = default;
 
 protected:
 	/**
