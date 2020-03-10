@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 
+#include "OsirisSDK/ORenderable.h"
+#include "OsirisSDK/OText2D.h"
 #include "OObject.h"
 #include "ORenderObject.h"
 #include "OMath.h"
@@ -15,7 +17,7 @@
 
  This class enabled the rendering of text on the screen.
  */
-class OAPI OText2D : public OObject, public ORenderObject
+class OAPI OText2D : public OObject, public ORenderObject, public ORenderable
 {
 public:
 

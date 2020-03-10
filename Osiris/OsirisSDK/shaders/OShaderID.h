@@ -15,9 +15,9 @@ struct OShaderID {
 	uint32_t value() const;
 	bool operator<(const OShaderID& aOther) const;
 };
-using OShaderTable = OMap<OShaderID, 
-			  std::string,
-			  OSystemMemoryAllocator<OMemoryManager::Scope::Default>>;
+using OShaderSourceTable = OMap<OShaderID,
+				std::string,
+				OSystemMemoryAllocator<OMemoryManager::Scope::Default>>;
 
 inline uint32_t OShaderID::value() const
 {

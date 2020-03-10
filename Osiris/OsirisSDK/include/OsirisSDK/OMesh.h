@@ -3,6 +3,7 @@
 #include "GLdefs.h"
 #include "defs.h"
 
+#include "OsirisSDK/ORenderable.h"
 #include "ORenderObject.h"
 #include "OMeshBuffer.hpp"
 #include "OMatrixStack.h"
@@ -19,7 +20,7 @@ class OVertexBuffer;
  Meshes are first defined by entering vertex data and indices. The mesh object can then be initialized
  and then redered.
 */
-class OAPI OMesh : public ORenderObject
+class OAPI OMesh : public ORenderObject, public ORenderable
 {
 public:
 	/**

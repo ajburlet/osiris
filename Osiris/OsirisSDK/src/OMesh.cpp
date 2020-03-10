@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 OMesh::OMesh(OShaderProgram *program) :
+	ORenderable(Type::Mesh),
 	_vaoObject(0),
 	_vertexCount(0),
 	_faceCount(0),

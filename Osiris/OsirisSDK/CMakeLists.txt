@@ -72,8 +72,13 @@ source_group("Graphics\\Shaders" FILES ${GRAPHICS_SHADERS_SOURCES})
 
 
 set (GRAPHICS_ENGINE_SOURCES
+	${HDR_DIR}/OGraphicsCommandBuffer.h
+	${HDR_DIR}/OGraphicsCommandEncoder.h
+	${HDR_DIR}/OGraphicsCommandQueue.h
 	${SRC_DIR}/OGraphicsEngine.cpp
 	${HDR_DIR}/OGraphicsEngine.h
+	${HDR_DIR}/OGraphicsRenderCommandEncoder.h
+	${HDR_DIR}/OGraphicsResourceCommandEncoder.h
 )
 source_group("Graphics\\Engine" FILES ${GRAPHICS_ENGINE_SOURCES})
 

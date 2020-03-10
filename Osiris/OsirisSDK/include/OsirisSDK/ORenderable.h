@@ -7,6 +7,7 @@
 class OVertexBuffer;
 class OIndexBuffer;
 class OTexture;
+class OShaderProgram;
 
 /**
  @brief Renderable object base class.
@@ -35,6 +36,11 @@ protected:
 
 public:
 	/**
+	 @brief Renderable type.
+	 */
+	Type type() const;
+
+	/**
 	 @brief Returns the vertex buffer.
 	 */
 	const OVertexBuffer* vertexBuffer() const;
@@ -48,6 +54,11 @@ public:
 	 @brief Returns the texture.
 	 */
 	const OTexture* texture() const;
+
+	/**
+	 * @brief Returns the shader program.
+	 */
+	const OShaderProgram* shaderProgram() const;
 
 	/**
 	 @brief Sets the vertex buffer.
@@ -67,16 +78,28 @@ public:
 	 */
 	void setTexture(OTexture* aTexture);
 
+	/**
+	 @brief Sets the shader program.
+	 @param aShaderProgram The shader program to be set.
+	 */
+	void setShaderProgram(OShaderProgram* aShaderProgram);
+
 private:
 	Type		_type;
 	OVertexBuffer*	_vertexBuffer	= nullptr;
 	OIndexBuffer*	_indexBuffer	= nullptr;
 	OTexture*	_texture	= nullptr;
+	OShaderProgram*	_shaderProgram  = nullptr;
 };
 
 
 ORenderable::ORenderable(Type aType) : _type(aType) 
 {
+}
+
+inline ORenderable::Type ORenderable::type() const
+{
+	return _type;
 }
 
 inline const OVertexBuffer * ORenderable::vertexBuffer() const
@@ -94,6 +117,11 @@ inline const OTexture * ORenderable::texture() const
 	return _texture;
 }
 
+inline const OShaderProgram * ORenderable::shaderProgram() const
+{
+	return _shaderProgram;
+}
+
 inline void ORenderable::setVertexBuffer(OVertexBuffer * aVertexBuffer)
 {
 	_vertexBuffer = aVertexBuffer;
@@ -107,6 +135,11 @@ inline void ORenderable::setIndexBuffer(OIndexBuffer * aIndexBuffer)
 inline void ORenderable::setTexture(OTexture * aTexture)
 {
 	_texture = aTexture;
+}
+
+inline void ORenderable::setShaderProgram(OShaderProgram * aShaderProgram)
+{
+	_shaderProgram = aShaderProgram;
 }
 
 

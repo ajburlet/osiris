@@ -30,6 +30,8 @@ public:
 	*/
 	virtual ~OShaderProgram();
 
+	// TODO: THIS MUST HARBOR the UNIFORM ATTRIBUTES REFERENCES
+
 	/**
 	 \brief Returns the OpenGL reference ID.
 	*/

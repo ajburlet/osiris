@@ -3,6 +3,7 @@
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OGraphicsDefinitions.h"
 
+class OMatrixStack;
 class OGraphicsCommandQueue;
 class OShaderable;
 class OShaderProgram;
@@ -36,18 +37,25 @@ public:
 	virtual OGraphicsCommandQueue* createCommandQueue() = 0;
 
 	/**
-	 @brief Loads mesh resources.
+	 @brief Loads vertices, textures and shaders to the GPU (if needed).
 	 */
-	virtual void load(const ORenderable* aMesh);
+	virtual void load(ORenderable* aRenderable);
 
 	/**
-	 @brief Renders the mesh.
+	 @brief Issues the appropriate render commands.
 	 */
-	virtual void render(const ORenderable* aMesh);
+	virtual void render(ORenderable* aRenderable);
 
+	/**
+	 @brief Keeps a pointer to the pertinent MVP (model-view-projection) matrix.
+	 */
+	void setMatrixStack(OMatrixStack* aMatrixStack);
 
 protected:
-
+	/**
+	 @brief Compiles the shader object and links the program.
+	 */
+	virtual void compile(OShaderProgram* aProgram) = 0;
 
 private:
 	struct Implementation;

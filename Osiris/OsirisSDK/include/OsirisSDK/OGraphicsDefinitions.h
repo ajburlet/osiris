@@ -42,3 +42,12 @@ enum class OVarPrecision {
 	High		/**< High precision, 64-bit floats or 32-bit integers. */
 };
 
+/**
+ @brief Rendering type, combination of the face primitives and how they are built.
+ */
+enum class ORenderType {
+	Undefined,
+	Triangle,		/**< Sets of three vertices that makes a triangle. */
+	TriangleStrip,		/**< Each successive sequence of three vertices makes a triangle. */
+	IndexedTriangle		/**< Each triangle is defined by three indexes referring to vertices on the vertex buffer. */
+};

@@ -25,7 +25,7 @@ class ShaderCodeConverter:
         self.shaders.append(["OpenGL", shaderType.capitalize(), shaderName[1:], shaderID])
 
     def writeShaderTable(self, aOutputFile):
-        aOutputFile.write("void createShaderTable(OShaderTable& aShaderTable)\n")
+        aOutputFile.write("void createShaderTable(OShaderSourceTable& aShaderTable)\n")
         aOutputFile.write("{\n")
         for val in self.shaders:
             aOutputFile.write("\taShaderTable[{{OGraphicsEngine::Type::{},OShaderObject::Type::{},ORenderable::Type::{}}}] = {};\n".format(

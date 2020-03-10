@@ -68,7 +68,7 @@ void main(void)
 }
 )";
 
-void createShaderTable(OShaderTable& aShaderTable)
+void createShaderTable(OShaderSourceTable& aShaderTable)
 {
 	aShaderTable[{OGraphicsEngine::Type::OpenGL,OShaderObject::Type::Fragment,ORenderable::Type::Mesh}] = glsl_OMesh_fragment;
 	aShaderTable[{OGraphicsEngine::Type::OpenGL,OShaderObject::Type::Vertex,ORenderable::Type::Mesh}] = glsl_OMesh_vertex;

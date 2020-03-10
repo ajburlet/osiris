@@ -21,6 +21,7 @@ GLuint OText2D::_shaderScale;
 
 OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVector4& color,
 		 const char* content) :
+	ORenderable(Type::Text2D),
 	_x(x),
 	_y(y),
 	_font(font),
