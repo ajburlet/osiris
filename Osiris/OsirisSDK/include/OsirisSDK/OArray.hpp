@@ -6,6 +6,139 @@
 #include "OsirisSDK/OAbstractMemoryAllocator.hpp"
 #include "OsirisSDK/OSystemMemoryAllocator.h"
 
+
+/**
+ @brief Array base iterator class.
+ */
+template <typename Ptr_t, typename Ref_t>
+class OAPI OBaseArrayIterator {
+public:
+	/**
+	 @brief Default class constructor.
+	 */
+	OBaseArrayIterator() = default;
+
+	/**
+	 @brief Class constructor (meant to be used by parent class).
+	 @param aIndex Array index.
+	 @param aArrayPtr Pointer to the array.
+	 */
+	OBaseArrayIterator(uint32_t aindex, Ptr_t aArray);
+
+	/**
+	 @brief Class destructor.
+	 */
+	~OBaseArrayIterator() = default;
+
+	/**
+	 @brief Dereference operator.
+	 */
+	Ref_t operator*() const;
+
+	/**
+	 @brief Pointer access operator.
+	 */
+	Ptr_t operator->() const;
+
+	/**
+	 @brief Increment by one operator, moves the iterator to the next item.
+	 */
+	OBaseArrayIterator& operator++();
+
+	/**
+	 @brief Increment operator, moves the iterator fowards by a given number of positions.
+	 @param aPositions Number of positions to move the iterator.
+	 */
+	OBaseArrayIterator& operator+(uint32_t aPositions);
+	
+	/**
+	 @brief Increment by one operator, moves the iterator to the next item.
+	 */
+	OBaseArrayIterator& operator--();
+
+	/**
+	 @brief Increment operator, moves the iterator fowards by a given number of positions.
+	 @param aPositions Number of positions to move the iterator.
+	 */
+	OBaseArrayIterator& operator-(uint32_t aPositions);
+
+	/**
+	 @brief Equality comparison operator.
+	 @param aOther The object to be compared against.
+	 */
+	bool operator==(const OBaseArrayIterator& aOther) const;
+
+	/**
+	 @brief Inequeality comparison operator.
+	 @param aOther The object to be compared against.
+	 */
+	bool operator!=(const OBaseArrayIterator& aOther) const;
+
+private:
+	uint32_t	_index		= 0;
+	Ptr_t		_arrayPtr	= nullptr;
+};
+
+template<typename Ptr_t, typename Ref_t>
+inline OBaseArrayIterator<Ptr_t, Ref_t>::OBaseArrayIterator(uint32_t aIndex, Ptr_t aArray) :
+	_index(aIndex),
+	_arrayPtr(aArray)
+{
+}
+
+template<typename Ptr_t, typename Ref_t>
+inline Ref_t OBaseArrayIterator<Ptr_t, Ref_t>::operator*() const
+{
+	return _arrayPtr[_index];
+}
+
+template<typename Ptr_t, typename Ref_t>
+inline Ptr_t OBaseArrayIterator<Ptr_t, Ref_t>::operator->() const
+{
+	return &_arrayPtr[_index];
+}
+
+template<typename Ptr_t, typename Ref_t>
+inline OBaseArrayIterator<Ptr_t, Ref_t>& OBaseArrayIterator<Ptr_t, Ref_t>::operator++()
+{
+	_index++;
+	return *this;
+}
+
+template<typename Ptr_t, typename Ref_t>
+inline OBaseArrayIterator<Ptr_t, Ref_t>& OBaseArrayIterator<Ptr_t, Ref_t>::operator+(uint32_t aPositions)
+{
+	_index += aPositions;
+	return *this;
+}
+
+template<typename Ptr_t, typename Ref_t>
+inline OBaseArrayIterator<Ptr_t, Ref_t>& OBaseArrayIterator<Ptr_t, Ref_t>::operator--()
+{
+	_index--;
+	return *this;
+}
+
+template<typename Ptr_t, typename Ref_t>
+inline OBaseArrayIterator<Ptr_t, Ref_t>& OBaseArrayIterator<Ptr_t, Ref_t>::operator-(uint32_t aPositions)
+{
+	_index -= aPositions;
+	return *this;
+}
+
+template<typename Ptr_t, typename Ref_t>
+inline bool OBaseArrayIterator<Ptr_t, Ref_t>::operator==(const OBaseArrayIterator & aOther) const
+{
+	return (_arrayPtr == aOther._arrayPtr && _index == aOther._index);
+}
+
+template<typename Ptr_t, typename Ref_t>
+inline bool OBaseArrayIterator<Ptr_t, Ref_t>::operator!=(const OBaseArrayIterator & aOther) const
+{
+	return !(*this == aOther);
+}
+
+
 /**
  @brief Array handling class.
  */
@@ -82,6 +215,36 @@ public:
 	 @param aIndex Index of the item on the array.
 	 */
 	const T& operator[](uint32_t aIndex) const;
+
+	/**
+	 @brief Non-const iterator class.
+	 */
+	using Iterator = OBaseArrayIterator<T*, T&>;
+
+	/**
+	 @brief Const iterator class.
+	 */
+	using ConstIterator = OBaseArrayIterator<const T*, const T&>;
+
+	/**
+	 @brief Returns an iterator pointing to the first element.
+	 */
+	Iterator begin();
+
+	/**
+	 @brief Retuns a constant iterator pointing the first element.
+	 */
+	ConstIterator begin() const;
+
+	/**
+	 @brief Returns the end iterator, past the last item.
+	 */
+	Iterator end();
+
+	/**
+	 @brief Retuns the end const iterator, past the last item.
+	 */
+	ConstIterator end() const;
 
 protected:
 	T*		_array		= nullptr;
@@ -195,6 +358,29 @@ inline const T & OArray<T, Allocator>::operator[](uint32_t aIndex) const
 	return get(aIndex);
 }
 
+template<typename T, class Allocator>
+inline typename OArray<T,Allocator>::Iterator OArray<T, Allocator>::begin()
+{
+	return Iterator(0, _array);
+}
+
+template<typename T, class Allocator>
+inline typename OArray<T, Allocator>::ConstIterator OArray<T, Allocator>::begin() const
+{
+	return ConstIterator(0, _array);
+}
+
+template<typename T, class Allocator>
+inline typename OArray<T,Allocator>::Iterator OArray<T, Allocator>::end()
+{
+	return Iterator(_size, _array);
+}
+
+template<typename T, class Allocator>
+inline typename OArray<T, Allocator>::ConstIterator OArray<T, Allocator>::end() const
+{
+	return ConstIterator(_size, _array);
+}
 
 /**
  @brief Dynamic array handler class.
@@ -241,3 +427,4 @@ inline void ODynArray<T, Allocator, BlockSize>::append(const T & aItemValue)
 	}
 	Super::append(aItemValue);
 }
+
