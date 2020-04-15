@@ -11,7 +11,7 @@ class OTexture;
 /**
  @brief Resource command encoder for the graphics engine.
  */
-class OGraphicsResourceCommandEncoder : public OGraphicsCommandEncoder
+class OAPI OGraphicsResourceCommandEncoder : public OGraphicsCommandEncoder
 {
 public:
 	/**

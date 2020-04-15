@@ -40,9 +40,14 @@ set (GRAPHICS_SOURCES
 	${SRC_DIR}/OMesh.cpp
 	${HDR_DIR}/OMesh.h
 	${HDR_DIR}/OMeshBuffer.hpp
+	${SRC_DIR}/ORenderable.cpp
 	${HDR_DIR}/ORenderable.h
+	${SRC_DIR}/ORenderingController.cpp
+	${HDR_DIR}/ORenderingController.h
 	${SRC_DIR}/ORenderObject.cpp
 	${HDR_DIR}/ORenderObject.h
+	${SRC_DIR}/OShaderArgument.cpp
+	${HDR_DIR}/OShaderArgument.h
 	${SRC_DIR}/OShaderObject.cpp
 	${HDR_DIR}/OShaderObject.h
 	${SRC_DIR}/OShaderProgram.cpp
@@ -75,7 +80,6 @@ set (GRAPHICS_ENGINE_SOURCES
 	${HDR_DIR}/OGraphicsCommandBuffer.h
 	${HDR_DIR}/OGraphicsCommandEncoder.h
 	${HDR_DIR}/OGraphicsCommandQueue.h
-	${SRC_DIR}/OGraphicsEngine.cpp
 	${HDR_DIR}/OGraphicsEngine.h
 	${HDR_DIR}/OGraphicsRenderCommandEncoder.h
 	${HDR_DIR}/OGraphicsResourceCommandEncoder.h
@@ -94,6 +98,7 @@ source_group("Math" FILES ${MATH_SOURCES})
 
 set (MEMORY_SOURCES
 	${HDR_DIR}/OAbstractMemoryAllocator.hpp
+	${HDR_DIR}/OMemoryManagedObject.h
 	${SRC_DIR}/OMemoryManager.cpp
 	${HDR_DIR}/OMemoryManager.h
 	${SRC_DIR}/OMemoryPool.cpp

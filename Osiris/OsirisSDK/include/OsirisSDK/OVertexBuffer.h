@@ -1,71 +1,11 @@
 #pragma once
 
 #include <stdint.h>
-#include <assert.h>
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OGraphicsDefinitions.h"
 #include "OsirisSDK/OGPUObject.h"
 
-/**
- @brief The vertex attribute description class.
- */
-class OAPI OVertexAttributeDescriptor
-{
-public:
-	/**
-	 @brief Class constructor.
-	 @param aType Attribute type.
-	 @param aPrecision Precision type.
-	 @param aDim Number of dimensions.
-	 */
-	OVertexAttributeDescriptor(OVarType aType, OVarPrecision aPrecision, uint8_t aDim);
-
-	/**
-	 @brief Returns the attribute type.
-	 */
-	OVarType type() const;
-
-	/**
-	 @brief Returns the attribute precision.
-	 */
-	OVarPrecision precision() const;
-
-	/**
-	 @brief Returns the attribute dimensions.
-	 */
-	uint8_t dimensions() const;
-
-	/**
-	 @brief Attribute size in bytes.
-	 */
-	uint32_t size() const;
-
-protected:
-	OVarType	_type		= OVarType::Undefined;
-	OVarPrecision	_precision	= OVarPrecision::Undefined;
-	uint8_t		_dim		= 0;
-	uint32_t	_size		= 0;
-};
-
-inline OVarType OVertexAttributeDescriptor::type() const
-{
-	return _type;
-}
-
-inline OVarPrecision OVertexAttributeDescriptor::precision() const
-{
-	return _precision;
-}
-
-inline uint8_t OVertexAttributeDescriptor::dimensions() const
-{
-	return _dim;
-}
-
-inline uint32_t OVertexAttributeDescriptor::size() const
-{
-	return _size;
-}
+class OShaderArgument;
 
 /**
  @brief The vertex buffer descriptor.
@@ -88,14 +28,14 @@ public:
 	 @param aAttribute The vertex attribute to be added.
 	 @return The attribute index.
 	 */
-	uint8_t addAttribute(const OVertexAttributeDescriptor& aAttribute);
+	uint8_t addAttribute(const OShaderArgument& aAttribute);
 
 	/**
 	 @brief Returns the attribute at a given index.
 	 @param aAttributeIndex Attribute index.
 	 @return The attribute info object.
 	 */
-	const OVertexAttributeDescriptor& attributeAtIndex(uint8_t aAttributeIndex) const;
+	const OShaderArgument& attributeAtIndex(uint8_t aAttributeIndex) const;
 
 	/**
 	 @brief Attribute memory offset.

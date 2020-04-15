@@ -12,7 +12,7 @@
 #endif
 
 /**
- \brief Class that represents a shader object that make up shader programs.
+ @brief Class that represents a shader object that make up shader programs.
 */
 class OAPI OShaderObject : public OGPUObject
 {
@@ -27,6 +27,40 @@ public:
 	};
 
 	/**
+	 @brief Class constructor.
+	 @param aType Shader type.
+	 @param aSource Shader source code.
+	 */
+	OShaderObject(Type aType, const char* aSource="");
+	
+	/**
+	 @brief Class destructor.
+	 */
+	virtual ~OShaderObject();
+	
+	/**
+	 @brief Set shader source code.
+	 */
+	void setSource(const char* source);
+
+	/**
+	 @brief Sets a preprocessor macro.
+	 @param aName Macro name.
+	 @param aValue Macro value.
+	 */
+	void addPreprocessorMacro(const char *aName, const char* aValue=nullptr);
+
+protected:
+	struct Implementation;
+	Implementation* _impl = nullptr;
+
+
+
+	// ------------------------------------------------------------------------------------
+	// FROM HERE ON, EVERYTHING SHOULD BE REMOVED
+	// ------------------------------------------------------------------------------------
+public:	
+	/**
 	 REMOVE!!
 	 \brief Shader object type.
 	*/
@@ -36,22 +70,14 @@ public:
 	};
 
 	/**
-	 \brief Class constructor.
-	 \param shaderName Shader name.
-	 \param shaderType Shader type.
-	 \param source Shader source code.
+	 @brief Class constructor.
+	 @param shaderName Shader name.
+	 @param shaderType Shader type.
+	 @param source Shader source code.
 	*/
 	OShaderObject(const char* shaderName, ShaderType shaderType, const char* source="");
-	
-	/**
-	 \brief Class destructor.
-	*/
-	virtual ~OShaderObject();
 
-	/**
-	 \brief Set shader source code.
-	*/
-	void setSource(const char* source);
+
 
 #ifdef WIN32
 	/**

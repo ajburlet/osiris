@@ -8,6 +8,7 @@ class OVertexBuffer;
 class OIndexBuffer;
 class OTexture;
 class OShaderProgram;
+class OShaderArgumentInstance;
 
 /**
  @brief Renderable object base class.
@@ -32,7 +33,7 @@ protected:
 	/**
 	 @brief Class destructor.
 	 */
-	virtual ~ORenderable() = default;
+	virtual ~ORenderable();
 
 public:
 	/**
@@ -84,18 +85,22 @@ public:
 	 */
 	void setShaderProgram(OShaderProgram* aShaderProgram);
 
+	/**
+	 @brief Creates a new shader uniform argument instance.
+	 */
+	void addUniformArgument(OShaderArgumentInstance* aNewArgument);
+
 private:
 	Type		_type;
 	OVertexBuffer*	_vertexBuffer	= nullptr;
 	OIndexBuffer*	_indexBuffer	= nullptr;
 	OTexture*	_texture	= nullptr;
 	OShaderProgram*	_shaderProgram  = nullptr;
+
+	struct Impl;
+	Impl* _impl = nullptr;
 };
 
-
-ORenderable::ORenderable(Type aType) : _type(aType) 
-{
-}
 
 inline ORenderable::Type ORenderable::type() const
 {
@@ -141,8 +146,4 @@ inline void ORenderable::setShaderProgram(OShaderProgram * aShaderProgram)
 {
 	_shaderProgram = aShaderProgram;
 }
-
-
-
-
 

@@ -20,17 +20,40 @@ class OAPI OShaderProgram : public OGPUObject
 {
 public:
 	/**
+	 @brief Class default constructor.
+	 */
+	OShaderProgram();
+
+	/**
+	 @brief Class destructor.
+	*/
+	virtual ~OShaderProgram();
+
+	/**
+	 @brief Adds a new shader object.
+	 @param aObject The new object to be added.
+	 */
+	void addObject(OShaderObject* aObject);
+
+	/**
+	 @brief Adds a preprocessor macro to all objects in the program.
+	 @param aName Macro name.
+	 @param aValue Macro value.
+	 */
+	void addPreprocessorMacro(const char* aName, const char* aValue = nullptr);
+
+private:
+	struct Implementation;
+	Implementation* _impl	= nullptr;
+
+	// --- EVERYTHING MUST BE REMOVED BELOW THIS POINT
+public:
+
+	/**
 	 \brief Class constructor.
 	 \param name Shader name.
 	*/
 	OShaderProgram(const char* name);
-	
-	/**
-	 \brief Class destructor.
-	*/
-	virtual ~OShaderProgram();
-
-	// TODO: THIS MUST HARBOR the UNIFORM ATTRIBUTES REFERENCES
 
 	/**
 	 \brief Returns the OpenGL reference ID.

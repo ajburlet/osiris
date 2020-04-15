@@ -10,7 +10,7 @@ class OGraphicsResourceCommandEncoder;
 /**
  @brief Graphics engine command buffer.
  */
-class OGraphicsCommandBuffer
+class OAPI OGraphicsCommandBuffer
 {
 protected:
 	/**

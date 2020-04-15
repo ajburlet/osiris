@@ -9,7 +9,10 @@ class OShaderable;
 class OShaderProgram;
 class ORenderable;
 
-class OGraphicsEngine 
+/**
+ @brief Graphics engine interface.
+ */
+class OAPI OGraphicsEngine 
 {
 public:
 	/**
@@ -28,36 +31,33 @@ protected:
 	/**
 	 @brief Class destructor.
 	 */
-	virtual ~OGraphicsEngine();
+	virtual ~OGraphicsEngine() = default;
 
 public:
+	/**
+	 @brief Returns the graphics engine type.
+	 */
+	Type type() const;
+
 	/**
 	 @brief Creates a new command queue.
 	 */
 	virtual OGraphicsCommandQueue* createCommandQueue() = 0;
 
 	/**
-	 @brief Loads vertices, textures and shaders to the GPU (if needed).
-	 */
-	virtual void load(ORenderable* aRenderable);
-
-	/**
-	 @brief Issues the appropriate render commands.
-	 */
-	virtual void render(ORenderable* aRenderable);
-
-	/**
-	 @brief Keeps a pointer to the pertinent MVP (model-view-projection) matrix.
-	 */
-	void setMatrixStack(OMatrixStack* aMatrixStack);
-
-protected:
-	/**
 	 @brief Compiles the shader object and links the program.
 	 */
 	virtual void compile(OShaderProgram* aProgram) = 0;
 
 private:
-	struct Implementation;
-	Implementation* _impl;
+	Type _type;
 };
+
+inline OGraphicsEngine::OGraphicsEngine(Type aType) : _type(aType)
+{
+}
+
+inline OGraphicsEngine::Type OGraphicsEngine::type() const
+{
+	return _type;
+}

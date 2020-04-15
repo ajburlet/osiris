@@ -4,18 +4,32 @@
 #include "resource.h"
 #endif
 
-#include "OsirisSDK/OShaderObject.h"
+#include <utility>
+#include <string>
+
 #include "OsirisSDK/OException.h"
+#include "OsirisSDK/OList.hpp"
+#include "OsirisSDK/OShaderObject.h"
 
 using namespace std;
 
-OShaderObject::OShaderObject(const char* shaderName, ShaderType shaderType, const char* source) :
-	_shaderName(shaderName),
-	_shaderType(shaderType),
-	_source(source),
-	_shader(0)
+struct OShaderObject::Implementation
 {
-	
+	using PreprocessorPair = pair<string, string>;
+	using PreprocessorList = list<PreprocessorPair>;
+
+	Implementation(Type aType, const char* aSource) : type(aType), source(aSource) {}
+
+	Type			type;
+	std::string		source;
+	PreprocessorList	preprocessorList;
+};
+
+
+OShaderObject::OShaderObject(Type aType, const char * aSource)
+{
+	_impl = new Implementation(aType, aSource);
+	if (_impl == nullptr) throw OException("Error allocating implementation struct.");
 }
 
 OShaderObject::~OShaderObject()
@@ -26,6 +40,23 @@ OShaderObject::~OShaderObject()
 void OShaderObject::setSource(const char* source)
 {
 	_source = source;
+}
+
+void OShaderObject::addPreprocessorMacro(const char * aName, const char * aValue)
+{
+	_impl->preprocessorList.push_back(Implementation::PreprocessorPair(aName, aValue));
+}
+
+// ------------------------------------------------------------------------------------
+// FROM HERE ON, EVERYTHING SHOULD BE REMOVED
+// ------------------------------------------------------------------------------------
+OShaderObject::OShaderObject(const char* shaderName, ShaderType shaderType, const char* source) :
+	_shaderName(shaderName),
+	_shaderType(shaderType),
+	_source(source),
+	_shader(0)
+{
+	
 }
 
 #ifdef WIN32

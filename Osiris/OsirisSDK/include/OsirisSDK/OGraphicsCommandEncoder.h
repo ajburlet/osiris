@@ -5,7 +5,7 @@ class OGraphicsCommandQueue;
 /**
  @brief Graphics command encoder base class.
  */
-class OGraphicsCommandEncoder
+class OAPI OGraphicsCommandEncoder
 {
 public:
 	/**

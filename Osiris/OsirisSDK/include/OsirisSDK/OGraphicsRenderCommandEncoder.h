@@ -12,7 +12,7 @@ class OIndexBuffer;
 /**
  @brief Resource command encoder for the graphics engine.
  */
-class OGraphicsRenderCommandEncoder : public OGraphicsCommandEncoder
+class OAPI OGraphicsRenderCommandEncoder : public OGraphicsCommandEncoder
 {
 public:
 	/**
