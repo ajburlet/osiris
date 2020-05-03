@@ -8,6 +8,8 @@ class OGraphicsCommandQueue;
 class OShaderProgram;
 class OVertexBuffer;
 class OIndexBuffer;
+class OTexture;
+class OShaderArgumentInstanceList;
 
 /**
  @brief Resource command encoder for the graphics engine.
@@ -31,90 +33,74 @@ public:
 	 @param aFace Which face is considered by the rasterizer.
 	 @param aFront How a front face is defined (i.e. when vertices are ordered CW or CCW).
 	 */
-	void setFaceCullingOptions(OCullFace aFace, OCullFront aFront);
+	virtual void setFaceCullingOptions(OCullFace aFace, OCullFront aFront) = 0;
 
 	/**
 	 @brief Sets the shader program to be used in this rendering run.
 	 */
-	void setShaderProgram(OShaderProgram* aShaderProgram);
+	virtual void setShaderProgram(OShaderProgram* aShaderProgram) = 0;
 
 	/**
 	 @brief Sets the vertex buffer cotaining all the vertices to be drawn.
 	 */
-	void setVertexBuffer(OVertexBuffer* aVertexBuffer);
+	virtual void setVertexBuffer(OVertexBuffer* aVertexBuffer) = 0;
 
 	/**
 	 @brief Sets the index buffer, containing the indexes that references vertices on the vertex buffer.
 	 */
-	void setIndexBuffer(OIndexBuffer* aIndexBuffer);
+	virtual void setIndexBuffer(OIndexBuffer* aIndexBuffer) = 0;
+
+	/**
+	 @brief Sets the texture resource.
+	 @param aTexture The pointer to the texture object.
+	 @param aIndex Texture index in the GPU.
+	 */
+	virtual void setTexture(OTexture* aTexture, uint32_t aIndex=0) = 0;
+
+	/**
+	 @brief Sets the shader uniform argument list.
+	 */
+	virtual void setUniformArgumentList(OShaderArgumentInstanceList* aUniformArguments) = 0;
 
 	/**
 	 @brief Returns a pointer to a shader program object.
 	 */
-	OShaderProgram* shaderProgram();
+	virtual OShaderProgram* shaderProgram() = 0;
 
 	/**
 	 @brief Returns a pointer to the vertex buffer used by this encoder.
 	 */
-	OVertexBuffer* vertexBuffer();
+	virtual OVertexBuffer* vertexBuffer() = 0;
 
 	/**
 	 @brief Returns a pointer to the index buffer used by this encoder.
 	 */
-	OIndexBuffer* indexBuffer();
+	virtual OIndexBuffer* indexBuffer() = 0;
+
+	/**
+	 @brief Returns a pointer to the texture object.
+	 @param aIndex Texture index in the GPU.
+	 */
+	virtual OTexture* texture(uint32_t aIndex = 0) = 0;
+
+	/**
+	 @brief Returns a pointer to the uniform argument list. 
+	 */
+	virtual OShaderArgumentInstanceList* uniformArgumentList() = 0;
+	
+	 /**
+	 @brief Clear textures that were previously set.
+	 */
+	virtual void clearTextures() = 0;
 
 	/**
 	 @brief Issues a draw command.
 	 */
-	virtual void draw(ORenderType aRenderType) = 0;
-	
-protected:
-	OGraphicsCommandQueue*	_commandQueue	= nullptr;
-	OShaderProgram*		_shaderProgram	= nullptr;
-	OVertexBuffer*		_vertexBuffer	= nullptr;
-	OIndexBuffer*		_indexBuffer	= nullptr;
-	OCullFace		_faceCulling	= OCullFace::Undefined;
-	OCullFront		_faceFront	= OCullFront::Undefined;
+	virtual void draw(ORenderMode aRenderType) = 0;
 };
 
 inline OGraphicsRenderCommandEncoder::OGraphicsRenderCommandEncoder(OGraphicsCommandQueue * aCommandQueue) :
-	OGraphicsCommandEncoder(aCommandQueue)
+	OGraphicsCommandEncoder(Type::Render, aCommandQueue)
 {
-}
-
-inline void OGraphicsRenderCommandEncoder::setFaceCullingOptions(OCullFace aFace, OCullFront aFront)
-{
-	_faceCulling = aFace;
-	_faceFront = aFront;
-}
-
-inline void OGraphicsRenderCommandEncoder::setShaderProgram(OShaderProgram* aShaderProgram)
-{
-	_shaderProgram = aShaderProgram;
-}
-
-inline void OGraphicsRenderCommandEncoder::setVertexBuffer(OVertexBuffer* aVertexBuffer)
-{
-	_vertexBuffer = aVertexBuffer;
-}
-
-inline void OGraphicsRenderCommandEncoder::setIndexBuffer(OIndexBuffer* aIndexBuffer)
-{
-	_indexBuffer = aIndexBuffer;
-}
-
-inline OShaderProgram* OGraphicsRenderCommandEncoder::shaderProgram()
-{
-	return _shaderProgram;
-}
-
-inline OVertexBuffer* OGraphicsRenderCommandEncoder::vertexBuffer()
-{
-	return _vertexBuffer;
-}
-
-inline OIndexBuffer* OGraphicsRenderCommandEncoder::indexBuffer()
-{
-	return _indexBuffer;
 }
 

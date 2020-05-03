@@ -29,7 +29,13 @@ enum class OVarType {
 	Undefined,
 	Float,
 	Int,
-	UnsignedInt
+	UnsignedInt,
+	Float2x2,
+	Float3x3,
+	Float4x4,
+	Int2x2,
+	Int3x3,
+	Int4x4
 };
 
 /**
@@ -45,7 +51,7 @@ enum class OVarPrecision {
 /**
  @brief Rendering type, combination of the face primitives and how they are built.
  */
-enum class ORenderType {
+enum class ORenderMode {
 	Undefined,
 	Triangle,		/**< Sets of three vertices that makes a triangle. */
 	TriangleStrip,		/**< Each successive sequence of three vertices makes a triangle. */

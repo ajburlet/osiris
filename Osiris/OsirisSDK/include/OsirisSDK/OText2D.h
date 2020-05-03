@@ -17,7 +17,7 @@
 
  This class enabled the rendering of text on the screen.
  */
-class OAPI OText2D : public OObject, public ORenderObject, public ORenderable
+class OAPI OText2D : public OObject, public ORenderObject
 {
 public:
 

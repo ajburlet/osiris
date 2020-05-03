@@ -4,8 +4,10 @@
 #include "OsirisSDK/OGraphicsCommandEncoder.h"
 
 class OGraphicsCommandQueue;
+class OShaderProgram;
 class OVertexBuffer;
 class OIndexBuffer;
+class OShaderArgumentInstance;
 class OTexture;
 
 /**
@@ -30,7 +32,7 @@ public:
 	 */
 	virtual void load(OVertexBuffer* aVertexBuffer) = 0;
 
-	/**
+	/**ORenderingController implementation structure
 	 @brief Encodes commadns to load an index buffer.
 	 */
 	virtual void load(OIndexBuffer* aIndexBuffer) = 0;
@@ -39,10 +41,18 @@ public:
 	 @brief Encodes commands to load a texture.
 	 */
 	virtual void load(OTexture* aTexture) = 0;
+
+	/**
+	 @brief Loads a shader uniform attribute instance.
+	 @param aAttributeInstance The attribute instance to be loaded.
+	 @param aShader The shader program to which the attribute relates.
+	 @param aName The name the argument assumes in the shader.
+	 */
+	virtual void load(OShaderArgumentInstance* aAttributeInstance, OShaderProgram* aShader, const char* aName) = 0;
 };
 
 inline OGraphicsResourceCommandEncoder::OGraphicsResourceCommandEncoder(OGraphicsCommandQueue* aCommandQueue) :
-	OGraphicsCommandEncoder(aCommandQueue)
+	OGraphicsCommandEncoder(Type::Resource, aCommandQueue)
 {
 
 }

@@ -12,7 +12,7 @@ class OGraphicsResourceCommandEncoder;
  */
 class OAPI OGraphicsCommandBuffer
 {
-protected:
+public:
 	/**
 	 @brief Class constructor.
 	 @param aCommandQueue Pointer to the command queue that owns the buffer.

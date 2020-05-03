@@ -92,6 +92,14 @@ public:
 	void* buffer();
 
 	/**
+	 @brief Copies data into the buffer.
+	 @param aSrc The pointer to the source memory.
+	 @param aOffset The amount of bytes to be skipped from the beginning of the buffer.
+	 @param aBytes Number of bytes to be copied (if zero, will copy until the end of the buffer).
+	 */
+	void copyFrom(void* aSrc, uint32_t aOffset = 0, uint32_t aBytes = 0);
+
+	/**
 	 @brief Returns the reference to the value cast to a given type name.
 	 */
 	template <typename T>
@@ -109,7 +117,7 @@ public:
 	static OShaderArgumentInstance* create(OVarType aType, OVarPrecision aPrecision, uint8_t aDim, const T& aValue);
 
 private:
-	void* _buffer	= nullptr;
+	uint8_t* _buffer	= nullptr;
 };
 
 inline void* OShaderArgumentInstance::buffer()
