@@ -138,7 +138,7 @@ public:
 	/**
 	 @brief Class destructor.
 	 */
-	~OList() = default;
+	~OList();
 
 	/**
 	 @brief Returns the list size.
@@ -148,7 +148,7 @@ public:
 	/**
 	 @brief Clears the list, removes all items.
 	 */
-	void Clear();
+	void clear();
 	
 	/**
 	 @brief List node struct.
@@ -230,13 +230,19 @@ private:
 };
 
 template<typename T, class Allocator>
+inline OList<T, Allocator>::~OList()
+{
+	clear();
+}
+
+template<typename T, class Allocator>
 inline uint32_t OList<T, Allocator>::size() const
 {
 	return _count;
 }
 
 template<typename T, class Allocator>
-inline void OList<T, Allocator>::Clear()
+inline void OList<T, Allocator>::clear()
 {
 	auto node = _head;
 	while (node != nullptr) {

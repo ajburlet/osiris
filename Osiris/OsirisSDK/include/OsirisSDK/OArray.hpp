@@ -205,6 +205,11 @@ public:
 	virtual void remove(uint32_t aIndex);
 
 	/**
+	 @brief Clears the array, maintaining the allocated memory.
+	 */
+	virtual void clear();
+
+	/**
 	 @brief Subscript operator override.
 	 @param aIndex Index of the item on the array.
 	 */
@@ -344,6 +349,12 @@ inline void OArray<T, Allocator>::remove(uint32_t aIndex)
 		_array[aIndex - 1] = _array[aIndex];
 	}
 	_size--;
+}
+
+template<typename T, class Allocator>
+inline void OArray<T, Allocator>::clear()
+{
+	_size = 0;
 }
 
 template<typename T, class Allocator>
