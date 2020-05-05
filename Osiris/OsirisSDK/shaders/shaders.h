@@ -70,9 +70,9 @@ void main(void)
 
 void createShaderTable(OShaderSourceTable& aShaderTable)
 {
-	aShaderTable[{OGraphicsEngine::Type::OpenGL,OShaderObject::Type::Fragment,ORenderable::Type::Mesh}] = glsl_OMesh_fragment;
-	aShaderTable[{OGraphicsEngine::Type::OpenGL,OShaderObject::Type::Vertex,ORenderable::Type::Mesh}] = glsl_OMesh_vertex;
-	aShaderTable[{OGraphicsEngine::Type::OpenGL,OShaderObject::Type::Fragment,ORenderable::Type::Glyph}] = glsl_OText2D_fragment;
-	aShaderTable[{OGraphicsEngine::Type::OpenGL,OShaderObject::Type::Vertex,ORenderable::Type::Glyph}] = glsl_OText2D_vertex;
+	aShaderTable[{OGraphicsAPI::Type::OpenGL,OShaderObject::Type::Fragment,ORenderable::Type::Mesh}] = glsl_OMesh_fragment;
+	aShaderTable[{OGraphicsAPI::Type::OpenGL,OShaderObject::Type::Vertex,ORenderable::Type::Mesh}] = glsl_OMesh_vertex;
+	aShaderTable[{OGraphicsAPI::Type::OpenGL,OShaderObject::Type::Fragment,ORenderable::Type::Glyph}] = glsl_OText2D_fragment;
+	aShaderTable[{OGraphicsAPI::Type::OpenGL,OShaderObject::Type::Vertex,ORenderable::Type::Glyph}] = glsl_OText2D_vertex;
 }
 

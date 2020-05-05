@@ -13,7 +13,7 @@
 #include "OsirisSDK/OGraphicsResourceCommandEncoder.h"
 #include "OsirisSDK/OGraphicsCommandBuffer.h"
 #include "OsirisSDK/OGraphicsCommandQueue.h"
-#include "OsirisSDK/ORenderingController.h"
+#include "OsirisSDK/ORenderingEngine.h"
 
 // ----------------------------------------------------------------------------------------------
 // Constants 
@@ -29,7 +29,7 @@ constexpr char	cGlyphUniformColor[]		= "uColor";
 // ----------------------------------------------------------------------------------------------
 // ORenderingController implementation structure
 // ----------------------------------------------------------------------------------------------
-struct ORenderingController::Impl {
+struct ORenderingEngine::Impl {
 	// shaders
 	uint32_t shaderKey(ORenderable* aRenderable);
 	OShaderProgram* createProgram(ORenderable* aRenderable, const char* aVertexSrc, const char* aFragmentSrc);
@@ -60,7 +60,7 @@ struct ORenderingController::Impl {
 	using ShaderProgramCache = OMap<ShaderKey, OShaderProgram*>;
 
 	// class members
-	OGraphicsEngine*		_engine;
+	OGraphicsAPI*			_engine;
 	OShaderSourceTable		_shaderSourceTable;
 	ShaderProgramCache		_shaderProgramCache;
 	OGraphicsCommandBuffer*		_currentBuffer		= nullptr;
@@ -72,34 +72,34 @@ struct ORenderingController::Impl {
 // ----------------------------------------------------------------------------------------------
 // ORenderingController
 // ----------------------------------------------------------------------------------------------
-ORenderingController::ORenderingController(OGraphicsEngine* aEngine)
+ORenderingEngine::ORenderingEngine(OGraphicsAPI* aEngine)
 {
 	OExceptionPointerCheck(_impl = new Impl);
 	_impl->_engine = aEngine;
 	createShaderTable(_impl->_shaderSourceTable);
 }
 
-ORenderingController::~ORenderingController()
+ORenderingEngine::~ORenderingEngine()
 {
 	if (_impl) delete _impl;
 }
 
-void ORenderingController::load(ORenderable* aRenderable)
+void ORenderingEngine::load(ORenderable* aRenderable)
 {
 	_impl->load(aRenderable);
 }
 
-void ORenderingController::render(ORenderable* aRenderable)
+void ORenderingEngine::render(ORenderable* aRenderable)
 {
 	_impl->render(aRenderable);
 }
 
-void ORenderingController::flush()
+void ORenderingEngine::flush()
 {
 
 }
 
-void ORenderingController::setMatrixStack(OMatrixStack * aMatrixStack)
+void ORenderingEngine::setMatrixStack(OMatrixStack * aMatrixStack)
 {
 	_impl->_matrixStack = aMatrixStack;
 }
@@ -107,7 +107,7 @@ void ORenderingController::setMatrixStack(OMatrixStack * aMatrixStack)
 // ----------------------------------------------------------------------------------------------
 // ORenderingController::Impl
 // ----------------------------------------------------------------------------------------------
-uint32_t ORenderingController::Impl::shaderKey(ORenderable* aRenderable)
+uint32_t ORenderingEngine::Impl::shaderKey(ORenderable* aRenderable)
 {
 	uint32_t key = 0;
 	switch (aRenderable->type()) {
@@ -125,7 +125,7 @@ uint32_t ORenderingController::Impl::shaderKey(ORenderable* aRenderable)
 	return key;
 }
 
-OShaderProgram * ORenderingController::Impl::createProgram(ORenderable* aRenderable, const char * aVertexSrc, 
+OShaderProgram * ORenderingEngine::Impl::createProgram(ORenderable* aRenderable, const char * aVertexSrc, 
 							   const char * aFragmentSrc)
 {
 	OShaderProgram*	program		= nullptr;
@@ -171,7 +171,7 @@ OShaderProgram * ORenderingController::Impl::createProgram(ORenderable* aRendera
 	return program;
 }
 
-void ORenderingController::Impl::load(ORenderable * aRenderable)
+void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 {
 	OShaderProgram* shader = nullptr;
 	auto shader_key = shaderKey(aRenderable);
@@ -224,7 +224,7 @@ void ORenderingController::Impl::load(ORenderable * aRenderable)
 	if (aRenderable->indexBuffer()) resourceEncoder->load(aRenderable->indexBuffer());
 }
 
-void ORenderingController::Impl::addUniformToRenderable(ORenderable * aRenderable, 
+void ORenderingEngine::Impl::addUniformToRenderable(ORenderable * aRenderable, 
 							OVarType aType, OVarPrecision aPrecision, 
 							uint8_t aDim, const char * aName)
 {
@@ -238,7 +238,7 @@ void ORenderingController::Impl::addUniformToRenderable(ORenderable * aRenderabl
 	});
 }
 
-void ORenderingController::Impl::loadMeshUniforms(OMesh* aMesh)
+void ORenderingEngine::Impl::loadMeshUniforms(OMesh* aMesh)
 {
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
 
@@ -246,7 +246,7 @@ void ORenderingController::Impl::loadMeshUniforms(OMesh* aMesh)
 	addUniformToRenderable(aMesh, OVarType::Float4x4, OVarPrecision::High, 1, cMeshUniformMVPTransform);
 }
 
-void ORenderingController::Impl::loadGlyphUniforms(OGlyph* aText)
+void ORenderingEngine::Impl::loadGlyphUniforms(OGlyph* aText)
 {
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
 
@@ -256,7 +256,7 @@ void ORenderingController::Impl::loadGlyphUniforms(OGlyph* aText)
 	addUniformToRenderable(aText, OVarType::Float, OVarPrecision::Low, 4, cGlyphUniformColor);
 }
 
-void ORenderingController::Impl::render(ORenderable * aRenderable)
+void ORenderingEngine::Impl::render(ORenderable * aRenderable)
 {
 	if (!_currentBuffer) {
 		OExceptionPointerCheck(_currentBuffer = _currentQueue->createCommandBuffer());
@@ -285,16 +285,16 @@ void ORenderingController::Impl::render(ORenderable * aRenderable)
 	}
 
 	renderEncoder->setShaderProgram(aRenderable->shaderProgram());
-	renderEncoder->setUniformArgumentList(aRenderable->uniformArgumentList);
+	renderEncoder->setUniformArgumentList(aRenderable->uniformArgumentList());
 	renderEncoder->setVertexBuffer(aRenderable->vertexBuffer());
 	if (aRenderable->indexBuffer()) renderEncoder->setIndexBuffer(aRenderable->indexBuffer());
 	if (aRenderable->texture()) renderEncoder->setTexture(aRenderable->texture());
 }
 
-void ORenderingController::Impl::setupMeshUniforms(OMesh* aMesh)
+void ORenderingEngine::Impl::setupMeshUniforms(OMesh* aMesh)
 {
 }
 
-void ORenderingController::Impl::setupGlyphUniforms(OGlyph* aText)
+void ORenderingEngine::Impl::setupGlyphUniforms(OGlyph* aText)
 {
 }

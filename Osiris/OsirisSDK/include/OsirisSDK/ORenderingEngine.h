@@ -1,25 +1,25 @@
 #pragma once
 
-class OGraphicsEngine;
+class OGraphicsAPI;
 class ORenderable;
 class OMatrixStack;
 
 /**
  @brief Intermediates interaction with the graphics engine.
  */
-class ORenderingController
+class ORenderingEngine
 {
 public:
 	/**
 	 @brief Class constructor.
 	 @param aEngine The graphics engine.
 	 */
-	ORenderingController(OGraphicsEngine* aEngine);
+	ORenderingEngine(OGraphicsAPI* aEngine);
 
 	/**
 	 @brief Class destructor.
 	 */
-	~ORenderingController();
+	~ORenderingEngine();
 
 	/**
 	 @brief Loads vertices, textures and shaders to the GPU (if needed).

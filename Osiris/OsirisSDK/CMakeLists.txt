@@ -43,8 +43,8 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OMeshBuffer.hpp
 	${SRC_DIR}/ORenderable.cpp
 	${HDR_DIR}/ORenderable.h
-	${SRC_DIR}/ORenderingController.cpp
-	${HDR_DIR}/ORenderingController.h
+	${SRC_DIR}/ORenderingEngine.cpp
+	${HDR_DIR}/ORenderingEngine.h
 	${SRC_DIR}/ORenderObject.cpp
 	${HDR_DIR}/ORenderObject.h
 	${SRC_DIR}/OShaderArgument.cpp
@@ -84,7 +84,7 @@ set (GRAPHICS_ENGINE_SOURCES
 	${HDR_DIR}/OGraphicsCommandBuffer.h
 	${HDR_DIR}/OGraphicsCommandEncoder.h
 	${HDR_DIR}/OGraphicsCommandQueue.h
-	${HDR_DIR}/OGraphicsEngine.h
+	${HDR_DIR}/OGraphicsAPI.h
 	${HDR_DIR}/OGraphicsRenderCommandEncoder.h
 	${HDR_DIR}/OGraphicsResourceCommandEncoder.h
 )

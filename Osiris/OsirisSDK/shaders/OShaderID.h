@@ -2,13 +2,13 @@
 
 #include <string>
 
-#include "OsirisSDK/OGraphicsEngine.h"
+#include "OsirisSDK/OGraphicsAPI.h"
 #include "OsirisSDK/OShaderObject.h"
 #include "OsirisSDK/ORenderable.h"
 #include "OsirisSDK/OMap.hpp"
 
 struct OShaderID {
-	OGraphicsEngine::Type engineType;
+	OGraphicsAPI::Type engineType;
 	OShaderObject::Type shaderObjectType;
 	ORenderable::Type renderObjectType;
 

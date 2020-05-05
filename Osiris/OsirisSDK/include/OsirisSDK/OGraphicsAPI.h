@@ -12,7 +12,7 @@ class ORenderable;
 /**
  @brief Graphics engine interface.
  */
-class OAPI OGraphicsEngine 
+class OAPI OGraphicsAPI 
 {
 public:
 	/**
@@ -26,12 +26,12 @@ protected:
 	/**
 	 @brief Default class constructor.
 	 */
-	OGraphicsEngine(Type aType);
+	OGraphicsAPI(Type aType);
 
 	/**
 	 @brief Class destructor.
 	 */
-	virtual ~OGraphicsEngine() = default;
+	virtual ~OGraphicsAPI() = default;
 
 public:
 	/**
@@ -53,11 +53,11 @@ private:
 	Type _type;
 };
 
-inline OGraphicsEngine::OGraphicsEngine(Type aType) : _type(aType)
+inline OGraphicsAPI::OGraphicsAPI(Type aType) : _type(aType)
 {
 }
 
-inline OGraphicsEngine::Type OGraphicsEngine::type() const
+inline OGraphicsAPI::Type OGraphicsAPI::type() const
 {
 	return _type;
 }
