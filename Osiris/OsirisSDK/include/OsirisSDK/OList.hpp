@@ -247,7 +247,7 @@ inline void OList<T, Allocator>::clear()
 	auto node = _head;
 	while (node != nullptr) {
 		auto curr = node;
-		node = node->next;
+		node = node->_next;
 		Allocator().deallocate(curr, sizeof(*curr));
 	}
 	_head = nullptr;

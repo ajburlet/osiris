@@ -5,9 +5,7 @@
 
 class OMatrixStack;
 class OGraphicsCommandQueue;
-class OShaderable;
 class OShaderProgram;
-class ORenderable;
 
 /**
  @brief Graphics engine interface.

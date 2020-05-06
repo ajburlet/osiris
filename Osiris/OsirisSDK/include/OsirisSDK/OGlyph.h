@@ -8,6 +8,7 @@
  */
 class OAPI OGlyph : public ORenderable
 {
+public:
 	/**
 	 @brief Class constructor.
 	 @param aAdvanceX Font horizontal advance space to the next character.
