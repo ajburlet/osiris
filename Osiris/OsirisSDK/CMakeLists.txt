@@ -43,6 +43,8 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OMeshBuffer.hpp
 	${SRC_DIR}/ORenderable.cpp
 	${HDR_DIR}/ORenderable.h
+	${SRC_DIR}/ORenderComponents.cpp
+	${HDR_DIR}/ORenderComponents.h
 	${SRC_DIR}/ORenderingEngine.cpp
 	${HDR_DIR}/ORenderingEngine.h
 	${SRC_DIR}/ORenderObject.cpp
