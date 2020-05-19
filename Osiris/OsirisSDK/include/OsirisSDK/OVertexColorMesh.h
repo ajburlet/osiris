@@ -1,8 +1,8 @@
 #pragma once
 
-#include "defs.h"
-
-#include "OMesh.h"
+#include "OsirisSDK/defs.h"
+#include "OsirisSDK/OMesh.h"
+#include "OsirisSDK/OVectorDefs.h"
 
 /**
  \brief Mesh class in which colors can be defined for each vertex.
@@ -42,7 +42,7 @@ public:
 
 	 \param colorVec Four-dimentional vector containing color information in the (r, g, b, alpha) format.
 	 */
-	void addVertexColorData(const OVector4 colorVec);
+	void addVertexColorData(const OVector4F& colorVec);
 
 protected:
 	/* Inherited from OMesh */

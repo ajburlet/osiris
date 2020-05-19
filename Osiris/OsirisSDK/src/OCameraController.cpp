@@ -1,6 +1,9 @@
-#include "OsirisSDK/OMatrixStack.h"
-#include "OsirisSDK/OCameraController.h"
 #include "OsirisSDK/OException.h"
+#include "OsirisSDK/OVector.hpp"
+#include "OsirisSDK/OQuaternion.hpp"
+#include "OsirisSDK/OMatrixStack.h"
+#include "OsirisSDK/OState.h"
+#include "OsirisSDK/OCameraController.h"
 
 using namespace std;
 
@@ -16,9 +19,9 @@ OCameraController::OCameraController(OApplication * app,
 	_delta_mouse_x(0),
 	_delta_mouse_y(0)
 {
-	_app->camera()->state()->setMotionComponent(2, OVector3(0.0f, 0.0f, 0.0f), OState::Scene);
-	for (int axis = (int)OVector3::X; axis <= (int)OVector3::Z; axis++) {
-		_app->camera()->state()->minConstraint(1)->setValue((OVector3::Axis)axis, true, 0.0f);
+	_app->camera()->state()->setMotionComponent(2, OVector3F(0.0f, 0.0f, 0.0f), OState::Scene);
+	for (int axis = (int)OVectorAxis::X; axis <= (int)OVectorAxis::Z; axis++) {
+		_app->camera()->state()->minConstraint(1)->setValue((OVectorAxis)axis, true, 0.0f);
 		_app->camera()->state()->minConstraint(1)->setForce(true);
 		_app->camera()->state()->minConstraint(1)->setForce(false);
 		_app->camera()->state()->minConstraint(1)->setAbsoluteValue(true);
@@ -38,8 +41,8 @@ OCameraController::~OCameraController()
 void OCameraController::setMovementMaxSpeed(float maxSpeed)
 {
 	_movementMaxSpeed = maxSpeed / 1000000.0f;
-	for (int axis = (int)OVector3::X; axis <= (int)OVector3::Z; axis++) {
-		_app->camera()->state()->maxConstraint(1)->setValue((OVector3::Axis)axis, true, _movementMaxSpeed);
+	for (int axis = (int)OVectorAxis::X; axis <= (int)OVectorAxis::Z; axis++) {
+		_app->camera()->state()->maxConstraint(1)->setValue((OVectorAxis)axis, true, _movementMaxSpeed);
 	}
 }
 
@@ -84,10 +87,10 @@ void OCameraController::update(const OTimeIndex& timeIndex, int step_us)
 	float normFactor = _mouseSensitivity * 180.0f / _app->windowWidth();
 	/* update camera orientation (orientation vector) */
 	if (_delta_mouse_x != 0) {
-		orientation = OQuaternion(OVector3(0.0f, 1.0f, 0.0f), (float)_delta_mouse_x * normFactor) * orientation;
+		orientation = OQuaternion(OVector3F(0.0f, 1.0f, 0.0f), (float)_delta_mouse_x * normFactor) * orientation;
 	}
 	if (_delta_mouse_y != 0) {
-		orientation *= OQuaternion(OVector3(1.0f, 0.0f, 0.0f), _delta_mouse_y * normFactor);
+		orientation *= OQuaternion(OVector3F(1.0f, 0.0f, 0.0f), _delta_mouse_y * normFactor);
 	}
 	orientation = orientation.normalize();
 
@@ -107,7 +110,7 @@ void OCameraController::onKeyboardPress(const OKeyboardPressEvent * evt)
 	OState* camState = _app->camera()->state();
 
 	float dir;
-	OVector3::Axis axis = directionToAxis(it->second, &dir);
+	OVectorAxis axis = directionToAxis(it->second, &dir);
 	camState->motionComponent(2)[axis] = dir*_movementAcceleration;
 	camState->minConstraint(1)->setValue(axis, false);
 	_pressedKeys[it->second] = true;
@@ -122,7 +125,7 @@ void OCameraController::onKeyboardRelease(const OKeyboardPressEvent * evt)
 	if (!isMovementKeyPressed(it->second)) return;
 
 	OState* camState = _app->camera()->state();
-	OVector3::Axis axis = directionToAxis(it->second);
+	OVectorAxis axis = directionToAxis(it->second);
 	float accSign = OMath::reverseSign(camState->motionComponent(1)[axis]);
 	camState->motionComponent(2)[axis] = accSign*_movementAcceleration;
 	camState->minConstraint(1)->setValue(axis, true, 0.0f);
@@ -203,18 +206,18 @@ OCameraController::CameraMoveDir OCameraController::inverseDir(CameraMoveDir dir
 	throw OException("Invalid camera movement direction.");
 }
 
-OVector3::Axis OCameraController::directionToAxis(CameraMoveDir dir, float * sign)
+OVectorAxis OCameraController::directionToAxis(CameraMoveDir dir, float * sign)
 {
 	float signVal = 1.0f;
-	OVector3::Axis axis;
+	OVectorAxis axis;
 
 	switch (dir) {
 	case MoveLeft:		signVal = -1.0f;
-	case MoveRight:		axis = OVector3::X;	break;
+	case MoveRight:		axis = OVectorAxis::X;	break;
 	case MoveDown:		signVal = -1.0f;
-	case MoveUp:		axis = OVector3::Y;	break;
+	case MoveUp:		axis = OVectorAxis::Y;	break;
 	case MoveForward:	signVal = -1.0f;
-	case MoveBack:		axis = OVector3::Z;	break;
+	case MoveBack:		axis = OVectorAxis::Z;	break;
 	}
 	if (sign) *sign = signVal;
 	return axis;

@@ -1,5 +1,6 @@
 #include <OsirisSDK/ODoubleBuffer.hpp>
 #include <OsirisSDK/OState.h>
+#include <OsirisSDK/OVector.hpp>
 #include <OsirisSDK/OParameterList.h>
 
 #include "PieceBehavior.h"

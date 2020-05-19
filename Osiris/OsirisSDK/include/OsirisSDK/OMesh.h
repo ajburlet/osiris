@@ -4,15 +4,15 @@
 #include "defs.h"
 
 #include "OsirisSDK/ORenderable.h"
+#include "OsirisSDK/OVectorDefs.h"
 #include "ORenderObject.h"
 #include "OMeshBuffer.hpp"
-#include "OMatrixStack.h"
 #include "OShaderProgram.h"
 #include "OCamera.h"
-#include "OMath.h"
 
 class OVertexIndex;
 class OVertexBuffer;
+class OMatrixStack;
 
 /**
  \brief Base class that represents a group of vertices that together make a geometrical shape.
@@ -77,14 +77,14 @@ public:
 	 \param idx Vertex index numbrt.
 	 \return OVector3 class object containing vector coordinates.
 	 */
-	OVector3 vertexData(int idx) const;
+	OVector3F vertexData(int idx) const;
 
 	/**
 	 \brief Access index information.
 	 \param idx Face index number.
 	 \return OVector3 class object containing face vertex index data. 
 	 */
-	OVector3 indexData(int idx) const;
+	OVector3F indexData(int idx) const;
 
 	/**
 	 \brief Initializes the mesh buffers and shader attributes.

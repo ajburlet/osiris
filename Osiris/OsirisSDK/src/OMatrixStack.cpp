@@ -1,5 +1,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <stack>
+
+#include "OsirisSDK/OException.h"
+#include "OsirisSDK/OMatrix.hpp"
+#include "OsirisSDK/OVector.hpp"
+#include "OsirisSDK/OQuaternion.hpp"
 #include "OsirisSDK/OMatrixStack.h"
 
 #define PI	3.1415f
@@ -8,51 +14,59 @@ using namespace std;
 
 float toRad = 2 * PI / 360;
 
-OMatrixStack::OMatrixStack() :
-	_currMtx(1.0f)
+
+struct OMatrixStack::Impl {
+	Impl() : currMtx(1.0f) {}
+	OMatrix4x4F currMtx;
+	std::stack<OMatrix4x4F> stack;
+};
+
+OMatrixStack::OMatrixStack()
 {
+	OExceptionPointerCheck(_impl = new Impl);
 	push();
 }
 
 OMatrixStack::~OMatrixStack()
 {
+	if (_impl != nullptr) delete _impl;
 }
 
 void OMatrixStack::push()
 {
-	_stack.push(_currMtx);
+	_impl->stack.push(_impl->currMtx);
 }
 
 void OMatrixStack::pop()
 {
-	if (_stack.empty() == false) {
-		_currMtx = _stack.top();
-		_stack.pop();
+	if (_impl->stack.empty() == false) {
+		_impl->currMtx = _impl->stack.top();
+		_impl->stack.pop();
 	} else {
-		_currMtx = OMatrix4x4(1);
+		_impl->currMtx = OMatrix4x4F(1);
 	}
 }
 
-OMatrix4x4 OMatrixStack::top() const
+OMatrix4x4F& OMatrixStack::top() const
 {
-	return _currMtx;
+	return _impl->currMtx;
 }
 
 bool OMatrixStack::isEmpty() const
 {
-	return (_currMtx == OMatrix4x4(1) && _stack.empty());
+	return (_impl->currMtx == OMatrix4x4F(1) && _impl->stack.empty());
 }
 
 void OMatrixStack::clear()
 {
-	while (!_stack.empty()) _stack.pop();
-	_currMtx = OMatrix4x4(1);
+	while (!_impl->stack.empty()) _impl->stack.pop();
+	_impl->currMtx = OMatrix4x4F(1);
 }
 
 OMatrixStack & OMatrixStack::operator=(const OMatrixStack & in)
  {
-	_currMtx = in._currMtx;
-	_stack = in._stack;
+	_impl->currMtx = in._impl->currMtx;
+	_impl->stack = in._impl->stack;
 	return *this;
  }
 
@@ -62,7 +76,7 @@ OMatrixStack & OMatrixStack::operator*=(const OMatrixStack & in)
 	return *this;
 }
 
-OMatrixStack & OMatrixStack::operator*=(const OMatrix4x4 & in)
+OMatrixStack & OMatrixStack::operator*=(const OMatrix4x4F & in)
 {
 	product(in);
 	return *this;
@@ -74,43 +88,38 @@ OMatrixStack & OMatrixStack::operator*=(const OQuaternion & in)
 	return *this;
 }
 
-OVector4 OMatrixStack::operator*(const OVector4 & in)
-{
-	return top() * in;
-}
-
 void OMatrixStack::product(const OMatrixStack & in)
 {
-	_currMtx *= in._currMtx;
+	_impl->currMtx *= in._impl->currMtx;
 }
 
-void OMatrixStack::product(const OMatrix4x4 & in)
+void OMatrixStack::product(const OMatrix4x4F & in)
 {
-	_currMtx *= in;
+	_impl->currMtx *= in;
 }
 
 void OMatrixStack::product(const OQuaternion & in)
 {
-	_currMtx *= in.toMatrix4();
+	_impl->currMtx *= in.toMatrix4();
 }
 
-void OMatrixStack::translate(const OVector3 & dir)
+void OMatrixStack::translate(const OVector3F & dir)
 {
 	translate(dir.x(), dir.y(), dir.z());
 }
 
 void OMatrixStack::translate(const float & dx, const float & dy, const float & dz)
 {
-	OMatrix4x4 ret(1.0f);
+	OMatrix4x4F ret(1.0f);
 
 	ret.setValue(0, 3, dx);
 	ret.setValue(1, 3, dy);
 	ret.setValue(2, 3, dz);
 
-	_currMtx *= ret;
+	_impl->currMtx *= ret;
 }
 
-void OMatrixStack::rotate(const OVector3 & axis, const float & angle)
+void OMatrixStack::rotate(const OVector3F & axis, const float & angle)
 {
 	rotate(axis.x(), axis.y(), axis.z(), angle);
 }
@@ -122,7 +131,7 @@ void OMatrixStack::rotate(const float & axisX, const float & axisY, const float 
 	float sinA = sinf(toRad*angle);
 	float sinComp = 1 - sinA;
 
-	OMatrix4x4 ret(1.0f);
+	OMatrix4x4F ret(1.0f);
 
 	// 1st col
 	ret.setValue(0, 0, axisX*axisX + (1 - axisX*axisX)*cosA);
@@ -139,12 +148,12 @@ void OMatrixStack::rotate(const float & axisX, const float & axisY, const float 
 	ret.setValue(1, 2, cosComp*axisY*axisZ - axisX*sinA);
 	ret.setValue(2, 2, axisZ*axisZ + (1 - axisZ*axisZ)*cosA);
 
-	_currMtx *= ret;
+	_impl->currMtx *= ret;
 }
 
 void OMatrixStack::rotateX(const float & angle)
 {
-	OMatrix4x4 ret(1.0f);
+	OMatrix4x4F ret(1.0f);
 
 	float sinA = sinf(toRad*angle);
 	float cosA = cosf(toRad*angle);
@@ -155,12 +164,12 @@ void OMatrixStack::rotateX(const float & angle)
 	ret.setValue(1, 2, -sinA);
 	ret.setValue(2, 2, cosA);
 
-	_currMtx *= ret;
+	_impl->currMtx *= ret;
 }
 
 void OMatrixStack::rotateY(const float & angle)
 {
-	OMatrix4x4 ret(1.0f);
+	OMatrix4x4F ret(1.0f);
 
 	float sinA = sinf(toRad*angle);
 	float cosA = cosf(toRad*angle);
@@ -171,12 +180,12 @@ void OMatrixStack::rotateY(const float & angle)
 	ret.setValue(0, 2, sinA);
 	ret.setValue(2, 2, cosA);
 
-	_currMtx *= ret;
+	_impl->currMtx *= ret;
 }
 
 void OMatrixStack::rotateZ(const float & angle)
 {
-	OMatrix4x4 ret(1.0f);
+	OMatrix4x4F ret(1.0f);
 
 	float sinA = sinf(toRad*angle);
 	float cosA = cosf(toRad*angle);
@@ -187,33 +196,38 @@ void OMatrixStack::rotateZ(const float & angle)
 	ret.setValue(0, 1, -sinA);
 	ret.setValue(1, 1, cosA);
 
-	_currMtx *= ret;
+	_impl->currMtx *= ret;
 }
 
-void OMatrixStack::scale(const OVector3 & factorVec)
+void OMatrixStack::scale(const OVector3F & factorVec)
 {
-	OMatrix4x4 ret(1.0f);
+	OMatrix4x4F ret(1.0f);
 
 	ret.setValue(0, 0, factorVec.x());
 	ret.setValue(1, 1, factorVec.y());
 	ret.setValue(2, 2, factorVec.z());
 
-	_currMtx *= ret;
+	_impl->currMtx *= ret;
 }
 
 void OMatrixStack::scale(const float & uniformFactor)
 {
-	OVector3 vec(uniformFactor);
+	OVector3F vec(uniformFactor);
 	scale(vec);
 }
 
 void OMatrixStack::perspective(float fieldOfViewDeg, float aspectRatio, float zNear, float zFar)
 {
-	_currMtx *= glm::perspective(fieldOfViewDeg*toRad, aspectRatio, zNear, zFar);
+	_impl->currMtx *= glm::perspective(fieldOfViewDeg*toRad, aspectRatio, zNear, zFar);
 }
 
-void OMatrixStack::camera(const OVector3 &position, const OVector3 &direction, const OVector3 &up)
+void OMatrixStack::camera(const OVector3F &position, const OVector3F &direction, const OVector3F &up)
 {
-	_currMtx *= glm::lookAt(position.glm(), direction.glm(), up.glm());
+	_impl->currMtx *= glm::lookAt(position.glm(), direction.glm(), up.glm());
+}
+
+void OMatrixStack::camera(const OVector3F & position, const OVector3F & direction)
+{
+	camera(position, direction, OVector3F(0, 1, 0));
 }
 

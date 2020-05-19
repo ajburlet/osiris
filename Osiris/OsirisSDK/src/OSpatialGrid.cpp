@@ -1,6 +1,6 @@
 #include "OsirisSDK/OEntity.h"
 #include "OsirisSDK/OCollection.hpp"
-#include "OsirisSDK/OMath.h"
+#include "OsirisSDK/OVector.hpp"
 
 #include "OsirisSDK/OSpatialGrid.h"
 
@@ -31,7 +31,7 @@ OCollection<OEntity>* OSpatialGrid::entities()
 
 void OSpatialGrid::process()
 {
-	OVector3 min, max;
+	OVector3F min, max;
 
 	/*
 	for (map<OEntity*, Node*>::iterator it = _nodeMap.begin(); it != _nodeMap.end(); it++) {

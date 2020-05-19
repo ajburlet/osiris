@@ -1,5 +1,6 @@
 #include "resource.h"
 
+#include "OsirisSDK/OVector.hpp"
 #include "OsirisSDK/OVertexColorMesh.h"
 
 OShaderProgram* OVertexColorMesh::_colorVertexProgram = NULL;
@@ -28,7 +29,7 @@ void OVertexColorMesh::addVertexColorData(float r, float g, float b, float alpha
 	vertexBuffer()->addData(r, g, b, alpha);
 }
 
-void OVertexColorMesh::addVertexColorData(const OVector4 colorVec)
+void OVertexColorMesh::addVertexColorData(const OVector4F& colorVec)
 {
 	vertexBuffer()->addData(colorVec.x(), colorVec.y(), colorVec.z(), colorVec.w());
 }

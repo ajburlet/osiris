@@ -2,9 +2,10 @@
 
 #include <vector>
 
-#include "defs.h"
-#include "OMath.h"
-#include "OTimeIndex.h"
+#include "OsirisSDK/defs.h"
+#include "OsirisSDK/OVectorDefs.h"
+#include "OsirisSDK/OQuaternionDefs.h"
+#include "OsirisSDK/OTimeIndex.h"
 
 /**
  @brief State engine class, controls orientation and motion state.
@@ -44,17 +45,17 @@ public:
 		 @param enabled Constraint is enabled or disabled.
 		 @param value Constraint value.
 		 */
-		void setValue(OVector3::Axis axis, bool enabled, float value=0.0f);
+		void setValue(OVectorAxis axis, bool enabled, float value=0.0f);
 
 		/**
 		 @brief Returns whether the constraint for a given axis is enabled or disabled. 
 		 */
-		bool enabled(OVector3::Axis axis) const;
+		bool enabled(OVectorAxis axis) const;
 
 		/**
 		 @brief Returns constraint value.
 		 */
-		float value(OVector3::Axis axis) const;
+		float value(OVectorAxis axis) const;
 
 		/**
 		 @brief Turns on/off absolute value comparison.
@@ -132,7 +133,7 @@ public:
 	 @param component Component value. Time is given in microseconds.
 	 @param orRef The orientation referencial that this new values is defined in.
 	 */
-	void setMotionComponent(int degree, const OVector3& component, OrientationReferencial orRef);
+	void setMotionComponent(int degree, const OVector3F& component, OrientationReferencial orRef);
 
 	/**
 	 @brief Adds to a motion equation vector component.
@@ -141,7 +142,7 @@ public:
 	 @param component Component value. Time is given in microseconds.
 	 @param orRef The orientation referencial that this new values is defined in.
 	 */
-	void addMotionComponent(int degree, const OVector3& component, OrientationReferencial orRef);
+	void addMotionComponent(int degree, const OVector3F& component, OrientationReferencial orRef);
 
 	/**
 	 @brief Obtain motion state components for a given degree in the specified orientation reference frame.
@@ -150,7 +151,7 @@ public:
 	 @param orRef The orientation referencial that this new values is defined in.
 	 @returns Vector component for a given degree. Time is given in microseconds.
 	 */
-	OVector3 motionComponent(int degree, OrientationReferencial orRef) const;
+	OVector3F motionComponent(int degree, OrientationReferencial orRef) const;
 
 	/**
 	 @brief Obtain motion state component for a given degree in the current orientation reference frame.
@@ -158,18 +159,18 @@ public:
 		       of the motion state equation.
 	 @returns Pointer to the vector component for a given degree. Time is given in microseconds.
 	 */
-	OVector3& motionComponent(int degree);
+	OVector3F& motionComponent(int degree);
 
 	/**
 	 @brief Returns a pointer to the vector containing position coordinates.
 	 */
-	OVector3& position();
+	OVector3F& position();
 
 	/**
 	 @brief Set orientation in terms of Euler angles.
 	 @param or Vector containing Euler angles representing rotation for each axis.
 	 */
-	void setOrientation(const OVector3& or);
+	void setOrientation(const OVector3F& or);
 
 	/**
 	 @brief Retrieves the reference to the quaternion used for orientation transform.
@@ -179,7 +180,7 @@ public:
 	/**
 	 @brief Retrieves the reference to three-dimensional vector that represents the object scale.
 	 */
-	OVector3& scale();
+	OVector3F& scale();
 
 	/**
 	 @brief Return the minimum value constraint for a given motion state degree.
@@ -208,14 +209,6 @@ public:
 	void update(const OTimeIndex& timeIndex, int step_us);
 
 private:
-	std::vector<OVector3> _components;
-	std::vector<Constraint> _minConstraint;
-	std::vector<Constraint> _maxConstraint;
-	OVector3 _position;
-	OQuaternion _orientation;
-	OVector3 _scale;
-	OrientationReferencial _orientationRef;
-
 	/**
 	 @brief Validates if a component value for a given degree exceeds one of the constraints.
 	 @param axis Axis index.
@@ -224,7 +217,7 @@ private:
 	 @returns Returns 0 if value exceeds neither the minimum nor maximum constraints, -1 if it exceeds minimum,
 	          and +1 if exceeds maximum.
 	 */
-	int validateConstraints(OVector3::Axis axis, int compIdx, float value);
+	int validateConstraints(OVectorAxis axis, int compIdx, float value);
 
 	/**
 	 @brief Makes sure that all arrays are ready to handle a given degree level.
@@ -234,6 +227,10 @@ private:
 	/**
 	 @nrief Checks if the vector is in the given referencial, and transforms it if not.
 	 */
-	OVector3 checkReferencial(const OVector3& in, OrientationReferencial orRef) const;
+	OVector3F checkReferencial(const OVector3F& in, OrientationReferencial orRef) const;
+	
+	
+	struct Impl;
+	Impl* _impl = nullptr;
 };
 

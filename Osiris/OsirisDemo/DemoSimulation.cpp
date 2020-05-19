@@ -1,3 +1,5 @@
+#include <OsirisSDK/OVector.hpp>
+#include <OsirisSDK/OQuaternion.hpp>
 #include <OsirisSDK/OVertexColorMesh.h>
 #include <OsirisSDK/OWavefrontObjectFile.h>
 #include <OsirisSDK/OParameterList.h>
@@ -31,8 +33,8 @@ DemoSimulation::~DemoSimulation()
 void DemoSimulation::init()
 {
 	/* setting initial position & orientation */
-	camera()->setPosition(OVector3(3.0f, 1.5f, 7.0f));
-	camera()->setOrientation(OVector3(-30.0f, 30.0f, 0.0f));
+	camera()->setPosition(OVector3F(3.0f, 1.5f, 7.0f));
+	camera()->setOrientation(OVector3F(-30.0f, 30.0f, 0.0f));
 	camera()->setCameraLimits(1.0f, 100.0f);
 
 	/* set camera movement keys */
@@ -57,8 +59,8 @@ void DemoSimulation::init()
 	cube->addVertexData(0.5f, 0.5f, -0.5f);
 	cube->addVertexData(0.5f, 0.5f, 0.5f);
 
-	OVector4 color1(1.0f, 0.8f, 1.0f, 1.0f);
-	OVector4 color2(0.0f, 0.2f, 0.0f, 1.0f);
+	OVector4F color1(1.0f, 0.8f, 1.0f, 1.0f);
+	OVector4F color2(0.0f, 0.2f, 0.0f, 1.0f);
 	cube->addVertexColorData(color1);
 	cube->addVertexColorData(color1);
 	cube->addVertexColorData(color2);
@@ -92,15 +94,15 @@ void DemoSimulation::init()
 	if (objectCount > 0) torusFile.loadMesh(objectList[0], torus);
 
 	for (int i = 0; i < torus->vertexCount(); i++) {
-		OVector3 v = torus->vertexData(i);
+		OVector3F v = torus->vertexData(i);
 		torus->addVertexColorData(fabs(v.x()), fabs(v.y()), fabs(v.z()), 1);
 	}
 	torus->init();
 
 	/* creating the table entity */
 	_table = new OEntity(NULL, NULL, cube);
-	_table->state()->curr()->position() = OVector3(0.0f, -0.25f/2, 0.0f);
-	_table->state()->curr()->scale() = OVector3(3.0f, 0.15f, 7.0f);
+	_table->state()->curr()->position() = OVector3F(0.0f, -0.25f/2, 0.0f);
+	_table->state()->curr()->scale() = OVector3F(3.0f, 0.15f, 7.0f);
 	entities()->add(_table);
 
 	/* creating moving piece */
@@ -111,18 +113,18 @@ void DemoSimulation::init()
 	(*attributeList)[PieceBehavior::attrMaxX] = 1.5f;
 	(*attributeList)[PieceBehavior::attrMaxZ] = 3.5f;
 	_movingPiece = new OEntity(attributeList, behavior, torus);
-	_movingPiece->state()->curr()->position() = OVector3(0.0f, 0.0f, 0.0f);
-	_movingPiece->state()->curr()->setMotionComponent(1, OVector3(0.3f, 0.0f, 0.3f) / 1e6, OState::Object);
-	_movingPiece->state()->curr()->scale() = OVector3(0.25);
+	_movingPiece->state()->curr()->position() = OVector3F(0.0f, 0.0f, 0.0f);
+	_movingPiece->state()->curr()->setMotionComponent(1, OVector3F(0.3f, 0.0f, 0.3f) / 1e6, OState::Object);
+	_movingPiece->state()->curr()->scale() = OVector3F(0.25);
 	entities()->add(_movingPiece);
 
 	/* creating text */
 	_fontCourier = new OFont("cour.ttf");
-	_title = new OText2D(_fontCourier, 12, -1.0f, 0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_title = new OText2D(_fontCourier, 12, -1.0f, 0.95f, OVector4F(0.0f, 1.0f, 0.0f, 1.0f));
 	_title->setContent("Osiris Framework\nDemo Application");
-	_infoText = new OText2D(_fontCourier, 12, 0.45f, 0.95f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
-	_motionText = new OText2D(_fontCourier, 12, -1.0f, 0.50f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
-	_cameraText = new OText2D(_fontCourier, 12, -1.0f, -0.90f, OVector4(0.0f, 1.0f, 0.0f, 1.0f));
+	_infoText = new OText2D(_fontCourier, 12, 0.45f, 0.95f, OVector4F(0.0f, 1.0f, 0.0f, 1.0f));
+	_motionText = new OText2D(_fontCourier, 12, -1.0f, 0.50f, OVector4F(0.0f, 1.0f, 0.0f, 1.0f));
+	_cameraText = new OText2D(_fontCourier, 12, -1.0f, -0.90f, OVector4F(0.0f, 1.0f, 0.0f, 1.0f));
 	renderObjects()->add(_title);
 	renderObjects()->add(_infoText);
 	renderObjects()->add(_motionText);
@@ -153,15 +155,15 @@ void DemoSimulation::update(const OTimeIndex & idx, int step_us)
 	_infoText->setContent(buff);
 
 	/* motion info */
-	OVector3 movPos = _movingPiece->state()->curr()->position();
-	OVector3 movSpd = _movingPiece->state()->curr()->motionComponent(1) * 1e6;
+	OVector3F movPos = _movingPiece->state()->curr()->position();
+	OVector3F movSpd = _movingPiece->state()->curr()->motionComponent(1) * 1e6;
 	snprintf(buff, 256, "Moving piece\nPos: (%.02f, %.02f, %.02f)\nSpd: (%.02f, %.02f, %.02f)",
 		movPos.x(), movPos.y(), movPos.z(), movSpd.x(), movSpd.y(), movSpd.z());
 	_motionText->setContent(buff);
 
 	/* camera speed and position */
-	OVector3 camSpeed = camera()->state()->motionComponent(1, OState::Scene) * 1e6;
-	OVector3 orientation = camera()->state()->orientation().toEulerAngles();
+	OVector3F camSpeed = camera()->state()->motionComponent(1, OState::Scene) * 1e6;
+	OVector3F orientation = camera()->state()->orientation().toEulerAngles();
 	snprintf(buff, 128, "Camera @ (%.02f, %.02f, %.02f), spd: (%.02f, %.02f, %.02f)/sec, or: Euler(%.02f, %.02f, %.02f)",
 		camera()->position().x(), camera()->position().y(), camera()->position().z(),
 		camSpeed.x(), camSpeed.y(), camSpeed.z(),
@@ -179,10 +181,10 @@ void DemoSimulation::onKeyboardPress(const OKeyboardPressEvent * evt)
 		break;
 		
 	case OKeyboardPressEvent::OKey_o:
-		camera()->setPosition(OVector3(3.0f, 1.5f, 7.0f));
-		camera()->state()->setMotionComponent(1, OVector3(0.0f, 0.0f, 0.0f), OState::Scene);
-		camera()->state()->setMotionComponent(2, OVector3(0.0f, 0.0f, 0.0f), OState::Scene);
-		camera()->setOrientation(OVector3(-30.0f, 30.0f, 0.0f));
+		camera()->setPosition(OVector3F(3.0f, 1.5f, 7.0f));
+		camera()->state()->setMotionComponent(1, OVector3F(0.0f, 0.0f, 0.0f), OState::Scene);
+		camera()->state()->setMotionComponent(2, OVector3F(0.0f, 0.0f, 0.0f), OState::Scene);
+		camera()->setOrientation(OVector3F(-30.0f, 30.0f, 0.0f));
 		camera()->setCameraLimits(1.0f, 100.0f);
 		break;
 	}

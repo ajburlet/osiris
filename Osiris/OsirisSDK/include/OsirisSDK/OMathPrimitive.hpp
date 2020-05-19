@@ -6,9 +6,20 @@
 /**
  \brief Template class for the GLM-based classes in OMath.
  */
-template <class MType> class OAPI OMathPrimitive
+template <class MType> 
+class OMathPrimitive
 {
 public:
+	/**
+	 @brief Primitive supertype alias.
+	 */
+	using Super = typename OMathPrimitive<MType>;
+
+	/**
+	 @brief The underlying GLM object type alias.
+	 */
+	using GLMType = typename MType;
+
 	/**
 	 \brief Class constructor.
 	 */
@@ -19,13 +30,11 @@ public:
 	 */
 	OMathPrimitive(const OMathPrimitive<MType>& in);
 
-#ifdef OSIRISSDK_EXPORTS
 	/**
 	 \brief Class constructor from GLM object (for internal usage only).
 	 \param in GLM object.
 	 */
 	OMathPrimitive(const MType& in);
-#endif
 	
 	/**
 	 \brief Class destructor.
@@ -58,7 +67,6 @@ public:
 	bool operator==(const OMathPrimitive<MType>& in) const;
 	bool operator!=(const OMathPrimitive<MType>& in) const;
 
-#ifdef OSIRISSDK_EXPORTS
 	OMathPrimitive<MType>& operator=(const MType& in);
 	OMathPrimitive<MType>& operator*=(const MType& in);
 	OMathPrimitive<MType> operator*(const MType& in);
@@ -76,7 +84,6 @@ public:
 	 \return Internal GLM object.
 	 */
 	const MType & glm() const;
-#endif
 
 	/**
 	 \brief Returns a pointer to the memory area to be used by OpenGL. For internal library usage only.
@@ -88,7 +95,6 @@ protected:
 };
 
 
-#ifdef OSIRISSDK_EXPORTS
 template<class MType>
 inline OMathPrimitive<MType>::OMathPrimitive()
 {
@@ -100,13 +106,11 @@ inline OMathPrimitive<MType>::OMathPrimitive(const OMathPrimitive<MType>& in) :
 {
 }
 
-#ifdef OSIRISSDK_EXPORTS
 template<class MType>
 inline OMathPrimitive<MType>::OMathPrimitive(const MType & in) : 
 	_glmInternal(in)
 {
 }
-#endif
 
 template<class MType>
 inline OMathPrimitive<MType>::~OMathPrimitive()
@@ -216,7 +220,7 @@ inline bool OMathPrimitive<MType>::operator==(const OMathPrimitive<MType>& in) c
 template<class MType>
 inline bool OMathPrimitive<MType>::operator!=(const OMathPrimitive<MType>& in) const
 {
-	return (_glmInternal * in._glmInternal);
+	return (_glmInternal != in._glmInternal);
 }
 
 template<class MType>
@@ -273,5 +277,4 @@ inline const GLfloat * OMathPrimitive<MType>::glArea() const
 {
 	return glm::value_ptr(_glmInternal);
 }
-#endif
 

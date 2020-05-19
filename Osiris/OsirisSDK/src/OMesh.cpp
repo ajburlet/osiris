@@ -1,4 +1,7 @@
 #include "OsirisSDK/OException.h"
+#include "OsirisSDK/OVector.hpp"
+#include "OsirisSDK/OMatrix.hpp"
+#include "OsirisSDK/OMatrixStack.h"
 #include "OsirisSDK/OMesh.h"
 
 #include <stdio.h>
@@ -51,24 +54,24 @@ void OMesh::addIndexData(GLuint vi, GLuint vj, GLuint vk)
 	_faceCount++;
 }
 
-OVector3 OMesh::vertexData(int idx) const
+OVector3F OMesh::vertexData(int idx) const
 {
 	const float *vb;
 	if (idx >= vertexCount()) throw OException("Attempt to access invalid vertex item.");
 
 	vb = vertexBufferConst()->buffer();
 
-	return OVector3(vb[idx*3], vb[idx*3 + 1], vb[idx*3 + 2]);
+	return OVector3F(vb[idx*3], vb[idx*3 + 1], vb[idx*3 + 2]);
 }
 
-OVector3 OMesh::indexData(int idx) const
+OVector3F OMesh::indexData(int idx) const
 {
 	const GLuint* ib;
 	if (idx >= faceCount()) throw OException("Attempt to access invalid face item.");
 
 	ib = indexBufferConst()->buffer();
 
-	return OVector3((float)ib[idx*3], (float)ib[idx*3 + 1], (float)ib[idx*3 + 2]);
+	return OVector3F((float)ib[idx*3], (float)ib[idx*3 + 1], (float)ib[idx*3 + 2]);
 }
 
 void OMesh::init()

@@ -5,6 +5,7 @@
 
 #include "OsirisSDK/OText2D.h"
 #include "OsirisSDK/OApplication.h"
+#include "OsirisSDK/OVector.hpp"
 #include "OsirisSDK/OException.h"
 
 #include "resource.h"
@@ -19,18 +20,25 @@ GLuint OText2D::_shaderColorUniform;
 GLuint OText2D::_shaderPosition;
 GLuint OText2D::_shaderScale;
 
-OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVector4& color,
-		 const char* content) :
-	_x(x),
-	_y(y),
-	_font(font),
-	_fontSize(fontSize),
-	_fontColor(color),
+struct OText2D::Impl {
+	OVector4F fontColor;
+	std::string content;
+};
+
+OText2D::OText2D(OFont* aFont, uint8_t aFontSize, float aX, float aY, const OVector4F& aColor,
+		 const char* aContent) :
+	_x(aX),
+	_y(aY),
+	_font(aFont),
+	_fontSize(aFontSize),
 	_lineSpacing(0)
 {
 	_Init();
 
-	if (content != NULL) _content = content;
+	OExceptionPointerCheck(_impl = new Impl);
+
+	if (aContent != NULL) _impl->content = aContent;
+	_impl->fontColor = aColor;
 
 	_scale_x = 2.0f / OApplication::activeInstance()->windowWidth();
 	_scale_y = 2.0f / OApplication::activeInstance()->windowHeight();
@@ -42,13 +50,18 @@ OText2D::OText2D(OFont* font, unsigned int fontSize, float x, float y, const OVe
 
 OText2D::~OText2D()
 {
+	if (_impl != nullptr) delete _impl;
 	glDeleteVertexArrays(1, &_arrayObject);
 }
 
-void OText2D::setFont(OFont * font, unsigned int fontSize)
+void OText2D::setFont(OFont * font)
 {
 	_font = font;
-	_fontSize = fontSize;
+}
+
+void OText2D::setFontSize(uint8_t aSize)
+{
+	_fontSize = aSize;
 }
 
 OFont * OText2D::font() const
@@ -56,19 +69,19 @@ OFont * OText2D::font() const
 	return _font;
 }
 
-unsigned int OText2D::fontSize() const
+uint8_t OText2D::fontSize() const
 {
 	return _fontSize;
 }
 
-void OText2D::setFontColor(const OVector4 & color)
+void OText2D::setFontColor(const OVector4F & aColor)
 {
-	_fontColor = color;
+	_impl->fontColor = aColor;
 }
 
-OVector4 OText2D::fontColor() const
+OVector4F OText2D::fontColor() const
 {
-	return _fontColor;
+	return _impl->fontColor;
 }
 
 void OText2D::setLineSpacing(int spacing)
@@ -115,17 +128,17 @@ float OText2D::scaleY() const
 
 void OText2D::setContent(const char * content)
 {
-	_content = content;
+	_impl->content = content;
 }
 
 void OText2D::append(const char * content)
 {
-	_content += content;
+	_impl->content += content;
 }
 
 const char * OText2D::content() const
 {
-	return _content.c_str();
+	return _impl->content.c_str();
 }
 
 void OText2D::render(OMatrixStack* mtx)
@@ -149,13 +162,13 @@ void OText2D::render(OMatrixStack* mtx)
 	glEnableVertexAttribArray(_shaderCoordAttr);
 
 	/* set font color */
-	glUniform4fv(_shaderColorUniform, 1, _fontColor.glArea());
-	glUniform3fv(_shaderScale, 1, OVector3(_scale_x, _scale_y, 0.0f).glArea());
+	glUniform4fv(_shaderColorUniform, 1, _impl->fontColor.glArea());
+	glUniform3fv(_shaderScale, 1, OVector3F(_scale_x, _scale_y, 0.0f).glArea());
 
 	/* now we iterate through every character and render */
 	float currX = _x;
 	float currY = _y;
-	for (const char *p = _content.c_str(); *p != '\0'; p++) {
+	for (const char *p = _impl->content.c_str(); *p != '\0'; p++) {
 		/* if char is new line */
 		if (*p == '\n') {
 			currX = _x;
@@ -172,7 +185,7 @@ void OText2D::render(OMatrixStack* mtx)
 		glBindTexture(GL_TEXTURE_2D, fEntry->texId);
 
 		/* passing shader uniform parameter: translation */
-		glUniform3fv(_shaderPosition, 1, OVector3(currX, currY, 0.0f).glArea());
+		glUniform3fv(_shaderPosition, 1, OVector3F(currX, currY, 0.0f).glArea());
 		
 		/* binding buffer */
 		glBindBuffer(GL_ARRAY_BUFFER, fEntry->arrBufId);

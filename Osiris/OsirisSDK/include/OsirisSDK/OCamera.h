@@ -1,132 +1,145 @@
 #pragma once
 
-#include "defs.h"
-#include "OMatrixStack.h"
-#include "OMath.h"
-#include "OState.h"
+#include "OsirisSDK/defs.h"
+#include "OsirisSDK/OVectorDefs.h"
+
+class OMatrixStack;
+class OState;
 
 /**
- \brief Class that represents a camera on the scene.
+ @brief Class that represents a camera on the scene.
 */
 class OAPI OCamera
 {
 public:
+	static const OVector3F DefaultPosition;
+	static const OVector3F DefaultOrientation;
+	static constexpr float DefaultFieldOfView	= 45.0f;
+	static constexpr float DefaultAspectRatio	= 4.0f / 3;
+	static constexpr float DefaultZNear		= 1.0f;
+	static constexpr float DefaultZFar		= 5.0f;
+
 	/**
-	 \brief Class constructor.
+	 @brief Class constructor.
 
 	 The constructor takes in all the attributes of the scene camera.
 
-	 \param fieldOfViewDeg Angle of the camera's field of view in degrees.
-	 \param aspectRatio The aspect ration of the screen (width/height).
-	 \param zNear Nearest camera depth.
-	 \param zFar Farthest camera depth.
-	 \param pos Camera position.
-	 \param or Camera orientation vector containing Euler angles: rotations around axes x, y and z. The camera 
-		   always faces the positive z-axis direction from it's perspective.
+	 @param aFieldOfViewDeg Angle of the camera's field of view in degrees.
+	 @param aAspectRatio The aspect ration of the screen (width/height).
+	 @param aZNear Nearest camera depth.
+	 @param aZFar Farthest camera depth.
+
+	 @note The default values for position and orietation are (0, 0, 0) and (0, 0, -1), respectively.
 	*/
-	OCamera(float fieldOfViewDeg = 45.0f, float aspectRatio = 4.0f / 3, float zNear = 1.0f, float zFar = 5.0f,
-		const OVector3 &pos = OVector3(0.0f , 0.0f, -1.0f), const OVector3 &or = OVector3(0.0f));
+	OCamera(float aFieldOfViewDeg = DefaultFieldOfView, float aAspectRatio = DefaultAspectRatio, 
+		float aZNear = DefaultZNear, float aZFar = DefaultZFar);
 
 	/**
-	 \brief Class destructor.
+	 @brief Class constructor.
+
+	 The constructor takes in all the attributes of the scene camera.
+
+	 @param aPosition Camera position.
+	 @param aOrientation Camera orientation vector containing Euler angles: rotations around axes x, y and z. 
+			    The camera always faces the positive z-axis direction from it's perspective.
+	 @param aFieldOfViewDeg Angle of the camera's field of view in degrees.
+	 @param aAspectRatio The aspect ration of the screen (width/height).
+	 @param aZNear Nearest camera depth.
+	 @param aZFar Farthest camera depth.
+	*/
+	OCamera(const OVector3F& aPosition, const OVector3F& aOrientation, 
+		float aFieldOfViewDeg = DefaultFieldOfView, float aAspectRatio = DefaultAspectRatio, 
+		float aZNear = DefaultZNear, float aZFar = DefaultZFar);
+
+	/**
+	 @brief Class destructor.
 	*/
 	virtual ~OCamera();
 
 	/**
-	 \brief Sets the camera field of view.
-	 \param valueDeg Field of view in degrees.
+	 @brief Sets the camera field of view.
+	 @param aValueDeg Field of view in degrees.
 	*/
-	void setFieldOfView(float valueDeg);
+	void setFieldOfView(float aValueDeg);
 	
 	/**
-	 \brief Sets camera aspect ratio (width/height).
+	 @brief Sets camera aspect ratio (width/height).
 	*/
-	void setAspectRatio(float value);
+	void setAspectRatio(float aValue);
 	
 	/**
-	 \brief Sets camera depth limits.
-	 \param zNear Nearest camera depth.
-	 \param zFar Farthest camera depth.
+	 @brief Sets camera depth limits.
+	 @param aZNear Nearest camera depth.
+	 @param aZFar Farthest camera depth.
 	*/
-	void setCameraLimits(float zNear, float zFar);
+	void setCameraLimits(float aZNear, float aZFar);
 	
 	/**
-	 \brief Set camera position.
-	 \param position Camera position coordinates.
+	 @brief Set camera position.
+	 @param aPosition Camera position coordinates.
 	*/
-	void setPosition(const OVector3 &position);
+	void setPosition(const OVector3F &aPosition);
 
 	/**
-	 \brief Change camera position using a displacement vector.
-	 \param displacement Displacement vector.
+	 @brief Change camera position using a displacement vector.
+	 @param aDisplacement Displacement vector.
 	 */
-	void changePosition(const OVector3 &displacement);
+	void changePosition(const OVector3F &aDisplacement);
 
 	/**
-	 \brief Set camera orientation.
-	 \param orientation New orientation vector given in Euler angles.
+	 @brief Set camera orientation.
+	 @param aOrientation New orientation vector given in Euler angles.
 	*/
-	void setOrientation(const OVector3 &orientation);
+	void setOrientation(const OVector3F &aOrientation);
 
 	/**
-	 \brief Returns the camera field of view.
-	 \return Field of view in degrees.
+	 @brief Returns the camera field of view.
+	 @return Field of view in degrees.
 	*/
 	float fieldOfViewDegrees() const;
 
 	/**
-	 \brief Returns screen aspect ratio.
-	 \return Screen aspect ratio (width/height)
+	 @brief Returns screen aspect ratio.
+	 @return Screen aspect ratio (width/height)
 	*/
 	float aspectRatio() const;
 
 	/**
-	 \brief Returns camera nearest limit.
+	 @brief Returns camera nearest limit.
 	*/
 	float nearLimit() const;
 	
 	/**
-	 \brief Returns camera farthest limit.
+	 @brief Returns camera farthest limit.
 	*/
 	float farLimit() const;
 	
 	/**
-	 \brief Retrieves the camera position from the state object. 
-	 \return Camera position coordinates.
+	 @brief Retrieves the camera position from the state object. 
+	 @return Camera position coordinates.
 	*/
-	OVector3& position();
+	OVector3F& position();
 	
 	/**
-	 \brief Retrieves the camera orientation from the state object.
-	 \return Camera orientation vector in terms of Euler angles.
+	 @brief Retrieves the camera orientation from the state object.
+	 @return Camera orientation vector in terms of Euler angles.
 	*/
-	OVector3 orientation() const;
+	OVector3F orientation() const;
 
 	/**
-	 \brief Direct access to the camera state object.
+	 @brief Direct access to the camera state object.
 	 */
 	OState* state();
 
 	/**
-	 \brief Calculates the perspective and camera transformations.
-	 \return Matrix stack containing the transformation matrix.
+	 @brief Calculates the perspective and camera transformations.
+	 @return Matrix stack containing the transformation matrix.
 	 */
 	const OMatrixStack* transform();
 	
 private:
-	/* control change to avoid unnecessary matrix recalculation */
-	bool _perspectiveChanged; 
+	struct Impl;
+	Impl* _impl = nullptr;
 
-	/* perspective */
-	float _fieldOfViewDeg;
-	float _aspectRatio;
-	float _zNear;
-	float _zFar;
-
-	/* camera state */
-	OState _state;
-
-	/* transform matrix: camera + perspective */
-	OMatrixStack _transform;
 };
 

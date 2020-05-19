@@ -94,9 +94,15 @@ set (MATH_SOURCES
 	${SRC_DIR}/OMath.cpp
 	${HDR_DIR}/OMath.h
 	${HDR_DIR}/OMathPrimitive.hpp	
+	${HDR_DIR}/OMatrix.hpp
+	${HDR_DIR}/OMatrixDefs.h
 	${SRC_DIR}/OMatrixStack.cpp
 	${HDR_DIR}/OMatrixStack.h
+	${HDR_DIR}/OQuaternion.hpp
+	${HDR_DIR}/OQuaternionDefs.h
 	${HDR_DIR}/OStats.hpp
+	${HDR_DIR}/OVector.hpp
+	${HDR_DIR}/OVectorDefs.h
 )
 source_group("Math" FILES ${MATH_SOURCES})
 

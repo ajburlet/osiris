@@ -1,5 +1,6 @@
 #include "OsirisSDK/OEntity.h"
 #include "OsirisSDK/ORenderObject.h"
+#include "OsirisSDK/OMatrixStack.h"
 
 #include "OsirisSDK/OSimulation.h"
 

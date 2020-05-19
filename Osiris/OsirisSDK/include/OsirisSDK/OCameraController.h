@@ -166,7 +166,7 @@ private:
 	 \param sign Fills with 1 if it goes along the positive axis direction, and -1 if negative. 
 		     If NULL is provided to the function, this will be ignored.
 	 */
-	static OVector3::Axis directionToAxis(CameraMoveDir dir, float *sign=NULL);
+	static OVectorAxis directionToAxis(CameraMoveDir dir, float *sign=NULL);
 };
 
 

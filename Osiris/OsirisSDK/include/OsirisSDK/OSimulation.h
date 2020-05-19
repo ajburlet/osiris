@@ -1,8 +1,8 @@
 #pragma once
 
-#include "defs.h"
-#include "OApplication.h"
-#include "OCollection.hpp"
+#include "OsirisSDK/defs.h"
+#include "OsirisSDK/OApplication.h"
+#include "OsirisSDK/OCollection.hpp"
 
 class OEntity;
 class ORenderObject;
