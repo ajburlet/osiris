@@ -13,35 +13,20 @@ class OShaderArgumentInstance;
 class OShaderArgumentInstanceList;
 
 /**
- @brief Renderable object base class.
+ @brief Contains all data pertaining to GPU rendering of a renderable object.
  */
-class OAPI ORenderable 
+class OAPI ORenderComponents 
 {
 public:
 	/**
-	 @brief Renderable type.
-	 */
-	enum class Type : uint8_t {
-		Mesh,
-		Glyph
-	};
-
-protected:
-	/**
 	 @brief Default class constructor.
 	 */
-	ORenderable(Type aType);
+	ORenderComponents();
 
 	/**
 	 @brief Class destructor.
 	 */
-	virtual ~ORenderable();
-
-public:
-	/**
-	 @brief Renderable type.
-	 */
-	Type type() const;
+	virtual ~ORenderComponents();
 
 	/**
 	 @brief Returns the render mode.
@@ -105,7 +90,6 @@ public:
 	OShaderArgumentInstanceList* uniformArgumentList();
 
 private:
-	Type				_type;
 	ORenderMode			_renderMode		= ORenderMode::Undefined;
 	OVertexBuffer*			_vertexBuffer		= nullptr;
 	OIndexBuffer*			_indexBuffer		= nullptr;
@@ -115,57 +99,52 @@ private:
 };
 
 
-inline ORenderable::Type ORenderable::type() const
-{
-	return _type;
-}
-
-inline OVertexBuffer * ORenderable::vertexBuffer()
+inline OVertexBuffer * ORenderComponents::vertexBuffer()
 {
 	return _vertexBuffer;
 }
 
-inline OIndexBuffer * ORenderable::indexBuffer()
+inline OIndexBuffer * ORenderComponents::indexBuffer()
 {
 	return _indexBuffer;
 }
 
-inline OTexture * ORenderable::texture()
+inline OTexture * ORenderComponents::texture()
 {
 	return _texture;
 }
 
-inline OShaderProgram * ORenderable::shaderProgram()
+inline OShaderProgram * ORenderComponents::shaderProgram()
 {
 	return _shaderProgram;
 }
 
-inline void ORenderable::setRenderMode(ORenderMode aRenderMode)
+inline void ORenderComponents::setRenderMode(ORenderMode aRenderMode)
 {
 	_renderMode = aRenderMode;
 }
 
-inline void ORenderable::setVertexBuffer(OVertexBuffer * aVertexBuffer)
+inline void ORenderComponents::setVertexBuffer(OVertexBuffer * aVertexBuffer)
 {
 	_vertexBuffer = aVertexBuffer;
 }
 
-inline void ORenderable::setIndexBuffer(OIndexBuffer * aIndexBuffer)
+inline void ORenderComponents::setIndexBuffer(OIndexBuffer * aIndexBuffer)
 {
 	_indexBuffer = aIndexBuffer;
 }
 
-inline void ORenderable::setTexture(OTexture * aTexture)
+inline void ORenderComponents::setTexture(OTexture * aTexture)
 {
 	_texture = aTexture;
 }
 
-inline void ORenderable::setShaderProgram(OShaderProgram * aShaderProgram)
+inline void ORenderComponents::setShaderProgram(OShaderProgram * aShaderProgram)
 {
 	_shaderProgram = aShaderProgram;
 }
 
-inline OShaderArgumentInstanceList * ORenderable::uniformArgumentList()
+inline OShaderArgumentInstanceList * ORenderComponents::uniformArgumentList()
 {
 	return _argumentInstanceList;
 }

@@ -3,15 +3,15 @@
 #include "OsirisSDK/OShaderArgument.h"
 #include "OsirisSDK/OShaderArgumentInstanceList.h"
 #include "OsirisSDK/OSystemMemoryAllocator.h"
-#include "OsirisSDK/ORenderable.h"
+#include "OsirisSDK/ORenderComponents.h"
 
 
-ORenderable::ORenderable(Type aType) : _type(aType) 
+ORenderComponents::ORenderComponents()
 {
 	OExceptionPointerCheck(_argumentInstanceList = new OShaderArgumentInstanceList);
 }
 
-ORenderable::~ORenderable()
+ORenderComponents::~ORenderComponents()
 {
 	if (_argumentInstanceList) {
 		for (auto arg : *_argumentInstanceList) {
@@ -19,5 +19,10 @@ ORenderable::~ORenderable()
 		}
 		delete _argumentInstanceList;
 	}
+}
+
+ORenderMode ORenderComponents::renderMode() const
+{
+	return _renderMode;
 }
 
