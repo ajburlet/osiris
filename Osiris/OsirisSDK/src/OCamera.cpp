@@ -122,7 +122,7 @@ OState * OCamera::state()
 	return &_impl->state;
 }
 
-const OMatrixStack* OCamera::transform()
+OMatrixStack* OCamera::transform()
 {
 	/* perspective transformation */
 	bool popCameraTransform = true;

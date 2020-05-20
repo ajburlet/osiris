@@ -135,11 +135,16 @@ public:
 	 @brief Calculates the perspective and camera transformations.
 	 @return Matrix stack containing the transformation matrix.
 	 */
-	const OMatrixStack* transform();
+	OMatrixStack* transform();
 	
 private:
+	/**
+	 @cond HIDDEN
+	 */
 	struct Impl;
 	Impl* _impl = nullptr;
-
+	/**
+	 @endcond
+	 */
 };
 

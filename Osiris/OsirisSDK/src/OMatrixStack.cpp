@@ -1,24 +1,22 @@
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <stack>
-
 #include "OsirisSDK/OException.h"
+#include "OsirisSDK/OStack.hpp"
+#include "OsirisSDK/OMath.h"
 #include "OsirisSDK/OMatrix.hpp"
 #include "OsirisSDK/OVector.hpp"
 #include "OsirisSDK/OQuaternion.hpp"
 #include "OsirisSDK/OMatrixStack.h"
 
-#define PI	3.1415f
-
 using namespace std;
 
-float toRad = 2 * PI / 360;
+float toRad = 2 * OMath::PI / 360;
 
 
 struct OMatrixStack::Impl {
 	Impl() : currMtx(1.0f) {}
 	OMatrix4x4F currMtx;
-	std::stack<OMatrix4x4F> stack;
+	OStack<OMatrix4x4F> stack;
 };
 
 OMatrixStack::OMatrixStack()

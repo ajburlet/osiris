@@ -42,13 +42,13 @@ void OSimulation::update(const OTimeIndex & timeIndex, int step_us)
 
 void OSimulation::render()
 {
-	OMatrixStack mtxTransform(*camera()->transform());
+	auto mtxTransform = camera()->transform();
 	/* render entities */
 	for (OCollection<OEntity>::Iterator it = entities()->begin(); it != entities()->end(); it++) {
-		it.object()->render(&mtxTransform);
+		it.object()->render(mtxTransform);
 	}
 	/* render other objects */
 	for (OCollection<ORenderObject>::Iterator it = renderObjects()->begin(); it != renderObjects()->end(); it++) {
-		it.object()->render(&mtxTransform);
+		it.object()->render(mtxTransform);
 	}
 }

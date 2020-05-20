@@ -22,6 +22,7 @@ set (CONTAINER_SOURCES
 	${HDR_DIR}/OArray.hpp
 	${HDR_DIR}/OList.hpp
 	${HDR_DIR}/OMap.hpp
+	${HDR_DIR}/OStack.hpp
 )
 source_group("Container" FILES ${CONTAINER_SOURCES})
 

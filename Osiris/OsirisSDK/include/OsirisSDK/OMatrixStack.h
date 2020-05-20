@@ -182,7 +182,13 @@ public:
 
 
 private:
+	/**
+	 @cond HIDDEN
+	 */
 	struct Impl;
 	Impl* _impl = nullptr;
+	/**
+	 @endcond
+	 */
 };
 
