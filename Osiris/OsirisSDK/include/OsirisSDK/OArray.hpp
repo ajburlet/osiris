@@ -5,6 +5,7 @@
 #include "OsirisSDK/OMemoryManager.h"
 #include "OsirisSDK/OAbstractMemoryAllocator.hpp"
 #include "OsirisSDK/OSystemMemoryAllocator.h"
+#include "OsirisSDK/OMemoryManagedObject.h"
 
 
 /**
@@ -143,7 +144,7 @@ inline bool OBaseArrayIterator<Ptr_t, Ref_t>::operator!=(const OBaseArrayIterato
  @brief Array handling class.
  */
 template <typename T, class Allocator=OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
-class OAPI OArray 
+class OAPI OArray : public OMemoryManagedObject<Allocator>
 {
 public:
 	/**
