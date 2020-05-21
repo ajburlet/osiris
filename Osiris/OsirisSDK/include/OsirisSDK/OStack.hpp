@@ -16,7 +16,7 @@ public:
 	/**
 	 @brief Class destructor.
 	 */
-	~OStack() = default;
+	~OStack();
 
 	/**
 	 @brief Pushes an item to the top of the stack.
@@ -56,10 +56,17 @@ private:
 };
 
 template<typename T, class Allocator>
+inline OStack<T, Allocator>::~OStack()
+{
+	while (!empty()) pop();
+}
+
+template<typename T, class Allocator>
 inline void OStack<T, Allocator>::push(const T & aItem)
 {
 	auto node = new Node{ aItem, _top };
 	OExceptionPointerCheck(node);
+	_top = node;
 }
 
 template<typename T, class Allocator>

@@ -225,12 +225,17 @@ private:
 	void checkDegree(int degree);
 
 	/**
-	 @nrief Checks if the vector is in the given referencial, and transforms it if not.
+	 @brief Checks if the vector is in the given referencial, and transforms it if not.
 	 */
 	OVector3F checkReferencial(const OVector3F& in, OrientationReferencial orRef) const;
 	
-	
+	/**
+	 @cond HIDDEN
+	 */
 	struct Impl;
 	Impl* _impl = nullptr;
+	/**
+	 @endcond
+	 */
 };
 
