@@ -66,7 +66,7 @@ public:
 	/**
 	 @brief Pointer to the list node.
 	 */
-	Ptr_t node() const;
+	Node_t* node();
 
 private:
 	Node_t*	_nodePtr = nullptr;
@@ -117,7 +117,7 @@ inline bool OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::operator!=(const
 }
 
 template<typename Node_t, typename Ptr_t, typename Ref_t, class Allocator>
-inline Ptr_t OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::node() const
+inline Node_t* OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::node()
 {
 	return _node;
 }

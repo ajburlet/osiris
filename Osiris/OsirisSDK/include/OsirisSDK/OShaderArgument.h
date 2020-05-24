@@ -1,6 +1,7 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
+#include <functional>
 
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OGPUObject.h"
@@ -74,6 +75,13 @@ class OAPI OShaderArgumentInstance : public OShaderArgument, public OGPUObject
 {
 public:
 	/**
+	 @brief Update callback function type.
+
+	 The function is in the form of <code>void function(OShaderArgumentInstance&)</code>.
+	 */
+	using UpdateCallbackFn = std::function<void(OShaderArgumentInstance&)>;
+
+	/**
 	 @brief Class constructor.
 	 @param aType Attribute type.
 	 @param aPrecision Precision type.
@@ -97,13 +105,23 @@ public:
 	 @param aOffset The amount of bytes to be skipped from the beginning of the buffer.
 	 @param aBytes Number of bytes to be copied (if zero, will copy until the end of the buffer).
 	 */
-	void copyFrom(void* aSrc, uint32_t aOffset = 0, uint32_t aBytes = 0);
+	void copyFrom(const void* aSrc, uint32_t aOffset = 0, uint32_t aBytes = 0);
 
 	/**
 	 @brief Returns the reference to the value cast to a given type name.
 	 */
 	template <typename T>
 	T& castTo();
+
+	/**
+	 @brief Sets the update callback function.
+	 */
+	void setUpdateCallbackFunction(UpdateCallbackFn aCallback);
+
+	/**
+	 @brief Executes the update callback function.
+	 */
+	void update();
 
 	/**
 	 @brief Creates and initializes an argument instance.
@@ -117,12 +135,24 @@ public:
 	static OShaderArgumentInstance* create(OVarType aType, OVarPrecision aPrecision, uint8_t aDim, const T& aValue);
 
 private:
-	uint8_t* _buffer	= nullptr;
+	uint8_t*		_buffer	= nullptr;
+	UpdateCallbackFn	_updateCallback;
+
 };
 
 inline void* OShaderArgumentInstance::buffer()
 {
 	return _buffer;
+}
+
+inline void OShaderArgumentInstance::setUpdateCallbackFunction(UpdateCallbackFn aCallback)
+{
+	_updateCallback = aCallback;
+}
+
+inline void OShaderArgumentInstance::update()
+{
+	if (_updateCallback) _updateCallback(*this);
 }
 
 template<typename T>

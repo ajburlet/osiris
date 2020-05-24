@@ -33,6 +33,7 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OCameraController.h
 	${SRC_DIR}/OFont.cpp
 	${HDR_DIR}/OFont.h
+	${SRC_DIR}/OGlyph.cpp
 	${HDR_DIR}/OGlyph.h
 	${SRC_DIR}/OGPUObject.cpp
 	${HDR_DIR}/OGPUObject.h

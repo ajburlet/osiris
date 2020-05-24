@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/OVectorDefs.h"
 #include "OsirisSDK/ORenderable.h"
 
 /**
@@ -19,7 +20,7 @@ public:
 	/**
 	 @brief Class destructor.
 	 */
-	~OGlyph() = default;
+	~OGlyph();
 	
 	/**
 	 @brief Provides the font horizontal advance space to the next character.
@@ -31,18 +32,49 @@ public:
 	 */
 	uint16_t advanceY() const;
 
+	/**
+	 @brief Sets the position offset from the starting point of the text box. 
+	 */
+	void setPositionOffset(const OVector2F& aOffset);
+
+	/**
+	 @brief Returns the position offset from the starting point of the text box (const). 
+	 */
+	const OVector2F& positionOffset() const;
+
+	/**
+	 @brief The scale vector to be applied. 
+	 */
+	void setScale(const OVector2F& aScale);
+
+	/**
+	 @brief The scale vector to be applied (const).
+	 */
+	const OVector2F& scale() const;
+
+	/**
+	 @brief Sets the glyph color.
+	 */
+	void setColor(const OVector4FL& aColor);
+
+	/**
+	 @brief Returns the glyph color.
+	 */
+	const OVector4FL& color() const;
+
 private:
-	uint16_t _advanceX;
-	uint16_t _advanceY;
+	uint16_t	_advanceX;
+	uint16_t	_advanceY;
 
+	/**
+	 @cond HIDDEN
+	 */
+	struct Impl;
+	Impl* _impl = nullptr;
+	/**
+	 @endcond
+	 */
 };
-
-inline OGlyph::OGlyph(uint16_t aAdvanceX, uint16_t aAdvanceY) :
-	ORenderable(Type::Glyph),
-	_advanceX(aAdvanceX),
-	_advanceY(aAdvanceY)
-{
-}
 
 inline uint16_t OGlyph::advanceX() const
 {
@@ -53,3 +85,4 @@ inline uint16_t OGlyph::advanceY() const
 {
 	return _advanceY;
 }
+

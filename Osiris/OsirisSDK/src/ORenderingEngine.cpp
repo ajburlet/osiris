@@ -2,6 +2,8 @@
 
 #include "shaders.h"
 #include "OsirisSDK/OException.h"
+#include "OsirisSDK/OVector.hpp"
+#include "OsirisSDK/OMatrix.hpp"
 #include "OsirisSDK/OMatrixStack.h"
 #include "OsirisSDK/OMesh.h"
 #include "OsirisSDK/OGlyph.h"
@@ -13,6 +15,8 @@
 #include "OsirisSDK/OGraphicsResourceCommandEncoder.h"
 #include "OsirisSDK/OGraphicsCommandBuffer.h"
 #include "OsirisSDK/OGraphicsCommandQueue.h"
+#include "OsirisSDK/ORenderable.h"
+#include "OsirisSDK/ORenderComponents.h"
 #include "OsirisSDK/ORenderingEngine.h"
 
 // ----------------------------------------------------------------------------------------------
@@ -37,14 +41,13 @@ struct ORenderingEngine::Impl {
 	// load
 	void load(ORenderable* aRenderable);
 	void addUniformToRenderable(ORenderable* aRenderable, OVarType aType, OVarPrecision aPrecision, 
-				    uint8_t aDim, const char* aName);
+				    uint8_t aDim, const char* aName, 
+				    OShaderArgumentInstance::UpdateCallbackFn aCallbackFn);
 	void loadMeshUniforms(OMesh* aMesh);
 	void loadGlyphUniforms(OGlyph* aText);
 
 	// render
 	void render(ORenderable* aRenderable);
-	void setupMeshUniforms(OMesh* aMesh);
-	void setupGlyphUniforms(OGlyph* aText);
 
 	struct ShaderKey {
 		ORenderable::Type	renderableType;
@@ -112,7 +115,7 @@ uint32_t ORenderingEngine::Impl::shaderKey(ORenderable* aRenderable)
 	uint32_t key = 0;
 	switch (aRenderable->type()) {
 	case ORenderable::Type::Mesh:
-		if (aRenderable->texture() != nullptr) {
+		if (aRenderable->renderComponents()->texture() != nullptr) {
 			key |= (1 << 1);
 		}
 		break;
@@ -158,7 +161,7 @@ OShaderProgram * ORenderingEngine::Impl::createProgram(ORenderable* aRenderable,
 		
 		switch (aRenderable->type()) {
 		case ORenderable::Type::Mesh:
-			if (aRenderable->texture() != nullptr) {
+			if (aRenderable->renderComponents()->texture() != nullptr) {
 				program->addPreprocessorMacro("USE_TEXTURE");
 			}
 			break;
@@ -192,6 +195,7 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 	} else {
 		shader = shaderIt.value();
 	}
+	aRenderable->renderComponents()->setShaderProgram(shader);
 
 	if (!_currentBuffer) {
 		OExceptionPointerCheck(_currentBuffer = _currentQueue->createCommandBuffer());
@@ -219,22 +223,26 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 		throw OException("Invalid renderable.");
 	}
 	
-	resourceEncoder->load(aRenderable->vertexBuffer());
-	if (aRenderable->texture()) resourceEncoder->load(aRenderable->texture());
-	if (aRenderable->indexBuffer()) resourceEncoder->load(aRenderable->indexBuffer());
+	resourceEncoder->load(aRenderable->renderComponents()->vertexBuffer());
+	if (aRenderable->renderComponents()->texture()) 
+		resourceEncoder->load(aRenderable->renderComponents()->texture());
+	if (aRenderable->renderComponents()->indexBuffer()) 
+		resourceEncoder->load(aRenderable->renderComponents()->indexBuffer());
 }
 
 void ORenderingEngine::Impl::addUniformToRenderable(ORenderable * aRenderable, 
-							OVarType aType, OVarPrecision aPrecision, 
-							uint8_t aDim, const char * aName)
+						    OVarType aType, OVarPrecision aPrecision, 
+						    uint8_t aDim, const char * aName,
+						    OShaderArgumentInstance::UpdateCallbackFn aCallbackFn)
 {
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
 	
 	auto uniform = new OShaderArgumentInstance(aType, aPrecision, aDim);
 	OExceptionPointerCheck(uniform);
 	OExceptionForwardCb([&]() { delete uniform; }, {
-		resourceEncoder->load(uniform, aRenderable->shaderProgram(), aName);
-		aRenderable->uniformArgumentList()->pushBack(uniform);
+		uniform->setUpdateCallbackFunction(aCallbackFn);
+		resourceEncoder->load(uniform, aRenderable->renderComponents()->shaderProgram(), aName);
+		aRenderable->renderComponents()->uniformArgumentList()->pushBack(uniform);
 	});
 }
 
@@ -243,7 +251,10 @@ void ORenderingEngine::Impl::loadMeshUniforms(OMesh* aMesh)
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
 
 	// uniforms
-	addUniformToRenderable(aMesh, OVarType::Float4x4, OVarPrecision::High, 1, cMeshUniformMVPTransform);
+	addUniformToRenderable(aMesh, OVarType::Float4x4, OVarPrecision::High, 1, cMeshUniformMVPTransform,
+		[aMesh](OShaderArgumentInstance& aArgumentInstance) {
+		// TODO -- add callback to update MVP transform
+	});
 }
 
 void ORenderingEngine::Impl::loadGlyphUniforms(OGlyph* aText)
@@ -251,9 +262,18 @@ void ORenderingEngine::Impl::loadGlyphUniforms(OGlyph* aText)
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
 
 	// uniforms
-	addUniformToRenderable(aText, OVarType::Float, OVarPrecision::High, 2, cGlyphUniformPosOffset);
-	addUniformToRenderable(aText, OVarType::Float, OVarPrecision::High, 2, cGlyphUniformScale);
-	addUniformToRenderable(aText, OVarType::Float, OVarPrecision::Low, 4, cGlyphUniformColor);
+	addUniformToRenderable(aText, OVarType::Float, OVarPrecision::High, 2, cGlyphUniformPosOffset,
+		[aText](OShaderArgumentInstance& aArgumentInstance) {
+			aArgumentInstance.copyFrom(aText->positionOffset().glArea());
+		});
+	addUniformToRenderable(aText, OVarType::Float, OVarPrecision::High, 2, cGlyphUniformScale, 
+		[aText](OShaderArgumentInstance& aArgumentInstance) {
+			aArgumentInstance.copyFrom(aText->scale().glArea());
+		});
+	addUniformToRenderable(aText, OVarType::Float, OVarPrecision::Low, 4, cGlyphUniformColor,
+		[aText](OShaderArgumentInstance& aArgumentInstance) {
+			aArgumentInstance.copyFrom(aText->color().glArea());
+		});
 }
 
 void ORenderingEngine::Impl::render(ORenderable * aRenderable)
@@ -272,29 +292,19 @@ void ORenderingEngine::Impl::render(ORenderable * aRenderable)
 
 	auto renderEncoder = reinterpret_cast<OGraphicsRenderCommandEncoder*>(_currentEncoder);
 
-	if (aRenderable->shaderProgram() == nullptr) throw OException("Unable to find shader program.");
-	switch (aRenderable->type()) {
-	case ORenderable::Type::Mesh:
-		setupMeshUniforms(reinterpret_cast<OMesh*>(aRenderable));
-		break;
-	case ORenderable::Type::Glyph:
-		setupGlyphUniforms(reinterpret_cast<OGlyph*>(aRenderable));
-		break;
-	default:
-		throw OException("Invalid renderable.");
-	}
+	if (aRenderable->renderComponents()->shaderProgram() == nullptr) 
+		throw OException("Unable to find shader program.");
 
-	renderEncoder->setShaderProgram(aRenderable->shaderProgram());
-	renderEncoder->setUniformArgumentList(aRenderable->uniformArgumentList());
-	renderEncoder->setVertexBuffer(aRenderable->vertexBuffer());
-	if (aRenderable->indexBuffer()) renderEncoder->setIndexBuffer(aRenderable->indexBuffer());
-	if (aRenderable->texture()) renderEncoder->setTexture(aRenderable->texture());
+	renderEncoder->setShaderProgram(aRenderable->renderComponents()->shaderProgram());
+	renderEncoder->setUniformArgumentList(aRenderable->renderComponents()->uniformArgumentList());
+	renderEncoder->setVertexBuffer(aRenderable->renderComponents()->vertexBuffer());
+	if (aRenderable->renderComponents()->indexBuffer()) 
+		renderEncoder->setIndexBuffer(aRenderable->renderComponents()->indexBuffer());
+	if (aRenderable->renderComponents()->texture()) 
+		renderEncoder->setTexture(aRenderable->renderComponents()->texture());
+
+	aRenderable->renderComponents()->uniformArgumentList()->update();
+
+	renderEncoder->draw(aRenderable->renderComponents()->renderMode());
 }
 
-void ORenderingEngine::Impl::setupMeshUniforms(OMesh* aMesh)
-{
-}
-
-void ORenderingEngine::Impl::setupGlyphUniforms(OGlyph* aText)
-{
-}

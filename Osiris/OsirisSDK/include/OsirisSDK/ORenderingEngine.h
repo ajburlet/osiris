@@ -42,6 +42,12 @@ public:
 	void setMatrixStack(OMatrixStack* aMatrixStack);
 
 protected:
+	/**
+	 @cond HIDDEN
+	 */
 	struct Impl;
 	Impl* _impl = nullptr;
+	/**
+	 @endcond
+	 */
 };

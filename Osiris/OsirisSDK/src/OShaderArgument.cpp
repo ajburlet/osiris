@@ -75,7 +75,7 @@ OShaderArgumentInstance::~OShaderArgumentInstance()
 	if (_buffer) Allocator().deallocate(_buffer, size());
 }
 
-void OShaderArgumentInstance::copyFrom(void* aSrc, uint32_t aOffset, uint32_t aBytes)
+void OShaderArgumentInstance::copyFrom(const void* aSrc, uint32_t aOffset, uint32_t aBytes)
 {
 	uint32_t len = (aBytes == 0) ? _size - aOffset : aBytes;
 	if (len > _size) throw new OException("Argument instance buffer overflow.");
