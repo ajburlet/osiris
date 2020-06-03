@@ -15,7 +15,7 @@ public:
 	 @param aAdvanceX Font horizontal advance space to the next character.
 	 @param aAdvanceY Font vertical advance space to the next character.
 	 */
-	OGlyph(uint16_t aAdvanceX, uint16_t aAdvanceY);
+	OGlyph(uint16_t aAdvanceX=0, uint16_t aAdvanceY=0);
 
 	/**
 	 @brief Class destructor.

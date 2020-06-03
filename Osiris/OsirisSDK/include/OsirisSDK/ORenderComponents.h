@@ -54,6 +54,11 @@ public:
 	OShaderProgram* shaderProgram();
 
 	/**
+	 @brief Returns true if the render data have already been loaded to the GPU. 
+	 */
+	bool loaded() const;
+
+	/**
 	 @brief Sets the render mode.
 	 */
 	void setRenderMode(ORenderMode aRenderMode);
@@ -83,9 +88,7 @@ public:
 	void setShaderProgram(OShaderProgram* aShaderProgram);
 
 	/**
-	 @brief Fetches a given uniform argument.
-	 @param aIndex The argument index.
-	 @return A pointer to the argument instance.
+	 @brief Returns the uniform argument list.
 	 */
 	OShaderArgumentInstanceList* uniformArgumentList();
 
@@ -95,6 +98,7 @@ private:
 	OIndexBuffer*			_indexBuffer		= nullptr;
 	OTexture*			_texture		= nullptr;
 	OShaderProgram*			_shaderProgram		= nullptr;
+	bool				_loaded			= false;
 	OShaderArgumentInstanceList*	_argumentInstanceList	= nullptr;
 };
 

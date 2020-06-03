@@ -15,7 +15,7 @@ class OVertexBuffer;
 class OMatrixStack;
 
 /**
- \brief Base class that represents a group of vertices that together make a geometrical shape.
+ @brief Base class that represents a group of vertices that together make a geometrical shape.
 
  Meshes are first defined by entering vertex data and indices. The mesh object can then be initialized
  and then redered.
@@ -24,15 +24,27 @@ class OAPI OMesh : public ORenderObject, public ORenderable
 {
 public:
 	/**
-	 \brief Class constructor.
-	 \param program Pointer to the shader program that will be used to render the object.
+	 @brief Class constructor.
+	 @param program Pointer to the shader program that will be used to render the object.
 	*/
 	OMesh(OShaderProgram *program=NULL);
 
 	/**
-	 \brief Class destructor.
+	 @brief Class destructor.
 	*/
 	virtual ~OMesh();
+
+	/**
+	 @brief Sets the pointer to the matrix stack. 
+	 */
+	void setMatrixStack(OMatrixStack* aMatrixStack);
+
+	/**
+	 @brief Returns the matrix stack.
+	 */
+	OMatrixStack* matrixStack();
+
+	/*  -- TO BE REMOVED BELOW -- */
 
 	/**
 	 \brief Sets a new shader program to be used to render the object.
@@ -169,6 +181,10 @@ protected:
 	const OMeshBuffer<GLuint>* indexBufferConst() const;
 
 private:
+	OMatrixStack* _matrixStack = nullptr;
+
+	/* -- TO BE REMOVED -- */
+
 	GLuint _vaoObject;
 	
 	int _vertexCount;
@@ -185,3 +201,12 @@ private:
 	CullFront _cullFront;
 };
 
+inline void OMesh::setMatrixStack(OMatrixStack* aMatrixStack)
+{
+	_matrixStack = aMatrixStack;
+}
+
+inline OMatrixStack* OMesh::matrixStack()
+{
+	return _matrixStack;
+}

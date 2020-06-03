@@ -29,6 +29,17 @@ public:
 	 */
 	void setNeedsLoading(bool aFlag);
 
+	enum class Usage {
+		GPU,		/**< Will be used by the GPU only. No need to keep local copy after loaded. */
+		Mixed,		/**< Used by GPU and CPU, so a local copy is kept for read/write. */
+		Default=GPU	/**< Default usage: GPU. */
+	};
+
+	/**
+	 @brief Sets the resource usage type.
+	 */
+	void setUsage(Usage aUsage);
+
 	/**
 	 @brief Access to the pointer to the GPU handle (use meant for graphics engine only).
 	 */
@@ -39,8 +50,47 @@ public:
 	*/
 	bool needsLoading() const;
 
+	/**
+	 @brief Returns the resource usage type.
+	 */
+	Usage usage() const;
+
 private:
 	void*	_gpuHandle	= nullptr;
 	bool	_needsLoading	= true;
+	Usage	_usage		= Usage::Default;
 };
 
+inline OGPUObject::OGPUObject(void* aGPUHandle) : _gpuHandle(aGPUHandle)
+{
+}
+
+inline void OGPUObject::setGpuHandle(void * aNewGpuHandle)
+{
+	_gpuHandle = aNewGpuHandle;
+}
+
+inline void OGPUObject::setNeedsLoading(bool aFlag)
+{
+	_needsLoading = true;
+}
+
+inline void OGPUObject::setUsage(Usage aUsage)
+{
+	_usage = aUsage;
+}
+
+inline void * OGPUObject::gpuHandle()
+{
+	return _gpuHandle;
+}
+
+inline bool OGPUObject::needsLoading() const
+{
+	return (_gpuHandle == nullptr || _needsLoading);
+}
+
+inline OGPUObject::Usage OGPUObject::usage() const
+{
+	return _usage;
+}

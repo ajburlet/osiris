@@ -264,7 +264,7 @@ inline OArray<T, Allocator>::OArray(uint32_t aCapacity, bool aSizeToCapacity)
 	if ((_array = static_cast<T*>(Allocator().allocate(aCapacity))) == nullptr) {
 		throw OException("Unable to allocate memory for array.");
 	}
-	_capacity = aCapacity;
+	resize(aCapacity);
 	_size = (aSizeToCapacity) ? _capacity : 0;
 }
 
@@ -291,12 +291,13 @@ inline uint32_t OArray<T, Allocator>::size() const
 template<typename T, class Allocator>
 inline void OArray<T, Allocator>::resize(uint32_t aNewCapacity)
 {
-	auto new_array = static_cast<T*>(Allocator().reallocate(_array,
-								_capacity*sizeof(T),
-								aNewCapacity*sizeof(T)));
-	if (new_array == nullptr) {
-		throw OException("Failed to reallocate array.");
+	auto new_array = new T[aNewCapacity];
+	OExceptionPointerCheck(new_array);
+	for (uint32_t i = 0; i < (aNewCapacity > _size) ? _size : aNewCapacity; i++) {
+		new_array[i] = _array[i];
 	}
+	delete[] _array;
+
 	_array = new_array;
 	_capacity = aNewCapacity;
 	if (aNewCapacity < _size) {

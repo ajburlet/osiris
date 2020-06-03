@@ -146,6 +146,11 @@ public:
 	uint32_t size() const;
 
 	/**
+	 @brief Returns true if there are no items on the list.
+	 */
+	bool empty() const;
+
+	/**
 	 @brief Clears the list, removes all items.
 	 */
 	void clear();
@@ -223,6 +228,26 @@ public:
 	 */
 	void popBack();
 
+	/**
+	 @brief Returns a reference to the first element.
+	 */
+	T& front();
+	
+	/**
+	 @brief Returns a reference to the first element.
+	 */
+	const T& front() const;
+	
+	/**
+	 @brief Returns a reference to the last element.
+	 */
+	T& tail();
+	
+	/**
+	 @brief Returns a reference to the last element.
+	 */
+	const T& tail() const;
+
 private:
 	Node*		_head	= nullptr;
 	Node*		_tail	= nullptr;
@@ -239,6 +264,12 @@ template<typename T, class Allocator>
 inline uint32_t OList<T, Allocator>::size() const
 {
 	return _count;
+}
+
+template<typename T, class Allocator>
+inline bool OList<T, Allocator>::empty() const
+{
+	return (_size == 0);
 }
 
 template<typename T, class Allocator>
@@ -345,5 +376,29 @@ inline void OList<T, Allocator>::popBack()
 	_tail = _tail->_prev;
 	delete node;
 	_count--;
+}
+
+template<typename T, class Allocator>
+inline T & OList<T, Allocator>::front()
+{
+	return _head->_value;
+}
+
+template<typename T, class Allocator>
+inline const T & OList<T, Allocator>::front() const
+{
+	return _head->_value;
+}
+
+template<typename T, class Allocator>
+inline T & OList<T, Allocator>::tail()
+{
+	return _tail->_value;
+}
+
+template<typename T, class Allocator>
+inline const T & OList<T, Allocator>::tail() const
+{
+	return _tail->_value;
 }
 

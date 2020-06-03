@@ -50,8 +50,14 @@ public:
 	uint32_t stride() const;
 
 protected:
+	/**
+	 @cond HIDDEN
+	 */
 	struct Impl;
 	Impl* _impl = nullptr;
+	/**
+	 @endcond
+	 */
 };
 
 /**
@@ -65,7 +71,7 @@ public:
 	 @param aDescriptor Vertex buffer descriptor.
 	 @param aVertexCount Vertex count.
 	 */
-	OVertexBuffer(const OVertexBufferDescriptor& aDescriptor, uint32_t aVertexCount=0);
+	OVertexBuffer(OVertexBufferDescriptor& aDescriptor, uint32_t aVertexCount=0);
 
 	/**
 	 @brief Class destructor.
@@ -97,12 +103,10 @@ public:
 	 @brief Sets an attribute value for a given vertex index.
 	 @param aAttributeIndex Attribute index.
 	 @param aVertexIndex Vertex index.
-	 @param aDimensions The number of dimensions.
 	 @param aValues An array with the values of the attribute components.
 	 */
 	template<typename T>
-	void setAttributeValue(uint32_t aAttributeIndex, uint32_t aVertexIndex,
-			       uint32_t aDimensions, const T* aValuesArr);
+	void setAttributeValue(uint32_t aAttributeIndex, uint32_t aVertexIndex, const T* aValuesArr);
 	
 protected:
 	/**
@@ -122,9 +126,9 @@ protected:
 	void putValue(uint32_t aOffset, const void* aPtr, size_t aSize);
 
 private:
-	OVertexBufferDescriptor _descriptor;
-	uint32_t		_vertexCount	= 0;
-	uint8_t*		_buffer		= nullptr;
+	OVertexBufferDescriptor*	_descriptor	= nullptr;
+	uint32_t			_vertexCount	= 0;
+	uint8_t*			_buffer		= nullptr;
 };
 
 inline uint32_t OVertexBuffer::vertexCount() const
@@ -134,7 +138,7 @@ inline uint32_t OVertexBuffer::vertexCount() const
 
 inline const OVertexBufferDescriptor& OVertexBuffer::descriptor() const
 {
-	return _descriptor;
+	return *_descriptor;
 }
 
 inline const void* OVertexBuffer::buffer() const
@@ -144,14 +148,13 @@ inline const void* OVertexBuffer::buffer() const
 
 
 template<typename T>
-inline void OVertexBuffer::setAttributeValue(uint32_t aAttributeIndex, uint32_t aVertexIndex, 
-					     uint32_t aDimensions, const T* aValuesArr)
+inline void OVertexBuffer::setAttributeValue(uint32_t aAttributeIndex, uint32_t aVertexIndex, const T* aValuesArr)
 {
 	if (aDimensions != _descriptor.attributeAtIndex(aAttributeIndex).dimensions()) {
 		throw OException("Incompatible vertex attribute: dimensions.");
 	}
-	putValue(aVertexIndex*_descriptor.stride() + _descriptor.offset(aAttributeIndex),
-		 aValuesArr, _descriptor.attributeAtIndex(aAttributeIndex).size());
+	putValue(aVertexIndex*_descriptor->stride() + _descriptor->offset(aAttributeIndex),
+		 aValuesArr, _descriptor->attributeAtIndex(aAttributeIndex).size());
 
 }
 

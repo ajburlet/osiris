@@ -37,6 +37,11 @@ public:
 	Type type() const;
 
 	/**
+	 @brief Sets the render components reference.
+	 */
+	void setRenderComponents(ORenderComponents* aRenderComponents);
+
+	/**
 	 @brief Render components.
 	 */
 	ORenderComponents* renderComponents();
@@ -50,6 +55,11 @@ private:
 inline ORenderable::Type ORenderable::type() const
 {
 	return _type;
+}
+
+inline void ORenderable::setRenderComponents(ORenderComponents * aRenderComponents)
+{
+	_renderComponents = aRenderComponents;
 }
 
 inline ORenderComponents * ORenderable::renderComponents()

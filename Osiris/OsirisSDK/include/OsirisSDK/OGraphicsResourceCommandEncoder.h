@@ -32,15 +32,30 @@ public:
 	 */
 	virtual void load(OVertexBuffer* aVertexBuffer) = 0;
 
-	/**ORenderingController implementation structure
-	 @brief Encodes commadns to load an index buffer.
+	/**
+	 @brief Encodes commands to unload a vertex buffer.
+	 */
+	virtual void unload(OVertexBuffer* aVertexBuffer) = 0;
+
+	/**
+	 @brief Encodes commands to load an index buffer.
 	 */
 	virtual void load(OIndexBuffer* aIndexBuffer) = 0;
+
+	/**
+	 @brief Encodes commands to unload an index buffer.
+	 */
+	virtual void unload(OIndexBuffer* aIndexBuffer) = 0;
 
 	/**
 	 @brief Encodes commands to load a texture.
 	 */
 	virtual void load(OTexture* aTexture) = 0;
+
+	/**
+	 @brief Encodes commands to unload a texture.
+	 */
+	virtual void unload(OTexture* aTexture) = 0;
 
 	/**
 	 @brief Loads a shader uniform attribute instance.

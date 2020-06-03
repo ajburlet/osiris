@@ -35,7 +35,6 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OFont.h
 	${SRC_DIR}/OGlyph.cpp
 	${HDR_DIR}/OGlyph.h
-	${SRC_DIR}/OGPUObject.cpp
 	${HDR_DIR}/OGPUObject.h
 	${HDR_DIR}/OGraphicsDefinitions.h
 	${SRC_DIR}/OIndexBuffer.cpp
@@ -120,6 +119,8 @@ set (MEMORY_SOURCES
 	${HDR_DIR}/OMemoryPoolObject.hpp
 	${SRC_DIR}/OSystemMemoryAllocator.cpp
 	${HDR_DIR}/OSystemMemoryAllocator.h
+	${SRC_DIR}/OTrashBin.cpp
+	${HDR_DIR}/OTrashBin.h
 )
 source_group("Memory" FILES ${MEMORY_SOURCES})
 

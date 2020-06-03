@@ -58,8 +58,8 @@ uint32_t OVertexBufferDescriptor::stride() const
 // ****************************************************************************
 using OVertexBufferAllocator = OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>;
 
-OVertexBuffer::OVertexBuffer(const OVertexBufferDescriptor & aDescriptor, uint32_t aVertexCount) :
-	_descriptor(aDescriptor)
+OVertexBuffer::OVertexBuffer(OVertexBufferDescriptor & aDescriptor, uint32_t aVertexCount) :
+	_descriptor(&aDescriptor)
 {
 	resize(aVertexCount);
 }
@@ -67,14 +67,14 @@ OVertexBuffer::OVertexBuffer(const OVertexBufferDescriptor & aDescriptor, uint32
 OVertexBuffer::~OVertexBuffer()
 {
 	if (_buffer != nullptr) {
-		OVertexBufferAllocator().deallocate(_buffer, _vertexCount * _descriptor.stride());
+		OVertexBufferAllocator().deallocate(_buffer, _vertexCount * _descriptor->stride());
 	}
 }
 
 void OVertexBuffer::resize(uint32_t aNewVertexCount)
 {
-	size_t currSize = _vertexCount * _descriptor.stride();
-	size_t newSize = aNewVertexCount * _descriptor.stride();
+	size_t currSize = _vertexCount * _descriptor->stride();
+	size_t newSize = aNewVertexCount * _descriptor->stride();
 	auto new_buffer = static_cast<uint8_t*>(OVertexBufferAllocator().reallocate(_buffer, currSize, newSize));
 	if (new_buffer == nullptr) {
 		throw OException("Unable to reallocate vertex buffer.");

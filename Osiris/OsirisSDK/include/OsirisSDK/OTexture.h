@@ -29,7 +29,8 @@ public:
 		NearestMipmapNearest,	/**< Uses the nearest mipmap level and nearst pixel value. */
 		LinearMipmapNearest,	/**< Uses the nearest mipmap level and linear interpolation pixel value. */
 		NearestMipmapLinear,	/**< Uses an interpolation of nearest pixel values of two mipmap levels. */
-		LinearMipmapLinear	/**< Uses an interpolation of linear pixel values of two mipmap levels. */
+		LinearMipmapLinear,	/**< Uses an interpolation of linear pixel values of two mipmap levels. */
+		Default=Linear		/**< Default value [Linear]. */
 	};
 
 	/**
@@ -60,7 +61,8 @@ public:
 		ClampToBorder,
 		MirroredRepeat,
 		Repeat,
-		MirroredClampedToEdge
+		MirroredClampedToEdge,
+		Default=ClampToEdge
 	};
 
 	/**
@@ -129,6 +131,27 @@ public:
 	void setMipmapLevelCount(uint32_t aMipmapLevelCount);
 
 	/**
+	 @brief The allowed byte alignment for the start of each pixel row. 
+	 */
+	enum class RowAlignment {
+		Byte=1,
+		EvenNumberedByte=2,
+		Word=4,
+		DoubleWord=8,
+		Default=Word
+	};
+
+	/**
+	 @brief Sets the pack pixel row byte alignment.
+	 */
+	void setPackAlignment(RowAlignment aAlignment);
+
+	/**
+	 @brief Sets the pack pixel row byte alignment.
+	 */
+	void setUnpackAlignment(RowAlignment aAlignment);
+
+	/**
 	 @brief Sets the texture content for a given mipmap level.
 	 @param aMipmapLevel Mipmap level.
 	 @param aRows Number of rows.
@@ -141,15 +164,17 @@ public:
 private:
 	struct Impl;
 	
-	Impl*			_impl		= nullptr;
-	FilterType		_minFilter	= FilterType::Nearest;
-	FilterType		_magFilter	= FilterType::Nearest;
-	WrapMode		_wrapTypeS	= WrapMode::ClampToBorder;
-	WrapMode		_wrapTypeT	= WrapMode::ClampToBorder;
-	WrapMode		_wrapTypeR	= WrapMode::ClampToBorder;
-	PixelFormat		_srcPixelFormat = PixelFormat::Undefined;
-	PixelFormat		_dstPixelFormat = PixelFormat::Undefined;
-	PixelDataType		_pixelDataType	= PixelDataType::Undefined;
+	Impl*			_impl			= nullptr;
+	FilterType		_minFilter		= FilterType::Default;
+	FilterType		_magFilter		= FilterType::Default;
+	WrapMode		_wrapTypeS		= WrapMode::Default;
+	WrapMode		_wrapTypeT		= WrapMode::Default;
+	WrapMode		_wrapTypeR		= WrapMode::Default;
+	PixelFormat		_srcPixelFormat		= PixelFormat::Undefined;
+	PixelFormat		_dstPixelFormat		= PixelFormat::Undefined;
+	PixelDataType		_pixelDataType		= PixelDataType::Undefined;
+	RowAlignment		_packAlignment		= RowAlignment::Default;
+	RowAlignment		_unpackAlignment	= RowAlignment::Default;
 	
 };
 
@@ -197,4 +222,14 @@ inline void OTexture::setPixelFormat(OTexture::PixelFormat aSrcPixelFormat, OTex
 	_srcPixelFormat = aSrcPixelFormat;
 	_pixelDataType = aPixelDataType;
 	_dstPixelFormat = (aDstPixelFormat == PixelFormat::Undefined) ? aSrcPixelFormat : aDstPixelFormat;
+}
+
+inline void OTexture::setPackAlignment(OTexture::RowAlignment aAlignment)
+{
+	_packAlignment = aAlignment;
+}
+
+inline void OTexture::setUnpackAlignment(RowAlignment aAlignment)
+{
+	_unpackAlignment = aAlignment;
 }

@@ -2,6 +2,7 @@
 
 #include "shaders.h"
 #include "OsirisSDK/OException.h"
+#include "OsirisSDK/OTrashBin.h"
 #include "OsirisSDK/OVector.hpp"
 #include "OsirisSDK/OMatrix.hpp"
 #include "OsirisSDK/OMatrixStack.h"
@@ -38,6 +39,10 @@ struct ORenderingEngine::Impl {
 	uint32_t shaderKey(ORenderable* aRenderable);
 	OShaderProgram* createProgram(ORenderable* aRenderable, const char* aVertexSrc, const char* aFragmentSrc);
 
+	// encoders
+	OGraphicsRenderCommandEncoder* getRenderEncoder();
+	OGraphicsResourceCommandEncoder* getResourceEncoder();
+
 	// load
 	void load(ORenderable* aRenderable);
 	void addUniformToRenderable(ORenderable* aRenderable, OVarType aType, OVarPrecision aPrecision, 
@@ -45,6 +50,7 @@ struct ORenderingEngine::Impl {
 				    OShaderArgumentInstance::UpdateCallbackFn aCallbackFn);
 	void loadMeshUniforms(OMesh* aMesh);
 	void loadGlyphUniforms(OGlyph* aText);
+	void unload(ORenderComponents* aRenderComponents);
 
 	// render
 	void render(ORenderable* aRenderable);
@@ -70,6 +76,7 @@ struct ORenderingEngine::Impl {
 	OGraphicsCommandQueue*		_currentQueue		= nullptr;
 	OGraphicsCommandEncoder*	_currentEncoder		= nullptr;
 	OMatrixStack*			_matrixStack		= nullptr;
+	OTrashBin			_trashBin;
 };
 
 // ----------------------------------------------------------------------------------------------
@@ -92,6 +99,16 @@ void ORenderingEngine::load(ORenderable* aRenderable)
 	_impl->load(aRenderable);
 }
 
+void ORenderingEngine::unload(ORenderable * aRenderable)
+{
+	_impl->unload(aRenderable->renderComponents());
+}
+
+void ORenderingEngine::unload(ORenderComponents * aRenderComponents)
+{
+	_impl->unload(aRenderComponents);
+}
+
 void ORenderingEngine::render(ORenderable* aRenderable)
 {
 	_impl->render(aRenderable);
@@ -105,6 +122,11 @@ void ORenderingEngine::flush()
 void ORenderingEngine::setMatrixStack(OMatrixStack * aMatrixStack)
 {
 	_impl->_matrixStack = aMatrixStack;
+}
+
+OTrashBin & ORenderingEngine::trashBin()
+{
+	return _impl->_trashBin;
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -129,7 +151,7 @@ uint32_t ORenderingEngine::Impl::shaderKey(ORenderable* aRenderable)
 }
 
 OShaderProgram * ORenderingEngine::Impl::createProgram(ORenderable* aRenderable, const char * aVertexSrc, 
-							   const char * aFragmentSrc)
+						       const char * aFragmentSrc)
 {
 	OShaderProgram*	program		= nullptr;
 	OShaderObject*	vertex		= nullptr;
@@ -174,8 +196,43 @@ OShaderProgram * ORenderingEngine::Impl::createProgram(ORenderable* aRenderable,
 	return program;
 }
 
+OGraphicsRenderCommandEncoder * ORenderingEngine::Impl::getRenderEncoder()
+{
+	if (!_currentBuffer) {
+		OExceptionPointerCheck(_currentBuffer = _currentQueue->createCommandBuffer());
+	}
+
+	if (!_currentEncoder || _currentEncoder->type() != OGraphicsCommandEncoder::Type::Render) {
+		if (_currentEncoder) {
+			_currentEncoder->end();
+			_currentEncoder = nullptr;
+		}
+		OExceptionPointerCheck(_currentEncoder = _currentBuffer->createRenderCommandEncoder());
+	}
+
+	return reinterpret_cast<OGraphicsRenderCommandEncoder*>(_currentEncoder);
+}
+
+OGraphicsResourceCommandEncoder * ORenderingEngine::Impl::getResourceEncoder()
+{
+	if (!_currentBuffer) {
+		OExceptionPointerCheck(_currentBuffer = _currentQueue->createCommandBuffer());
+	}
+
+	if (!_currentEncoder || _currentEncoder->type() != OGraphicsCommandEncoder::Type::Resource) {
+		if (_currentEncoder != nullptr) {
+			_currentEncoder->end();
+			_currentEncoder = nullptr;
+		}
+		OExceptionPointerCheck(_currentEncoder = _currentBuffer->createResourceCommandEncoder());
+	}
+
+	return reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
+}
+
 void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 {
+	// shader loading/referencing
 	OShaderProgram* shader = nullptr;
 	auto shader_key = shaderKey(aRenderable);
 	
@@ -197,20 +254,10 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 	}
 	aRenderable->renderComponents()->setShaderProgram(shader);
 
-	if (!_currentBuffer) {
-		OExceptionPointerCheck(_currentBuffer = _currentQueue->createCommandBuffer());
-	}
+	// make sure there is a buffer and a resource encoder.
+	auto resourceEncoder = getResourceEncoder();
 
-	if (!_currentEncoder || _currentEncoder->type() != OGraphicsCommandEncoder::Type::Resource) {
-		if (_currentEncoder != nullptr) {
-			_currentEncoder->end();
-			_currentEncoder = nullptr;
-		}
-		OExceptionPointerCheck(_currentEncoder = _currentBuffer->createResourceCommandEncoder());
-	}
-
-	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
-	
+	// uniforms
 	switch (aRenderable->type()) {
 	case ORenderable::Type::Mesh:
 		loadMeshUniforms(reinterpret_cast<OMesh*>(aRenderable));
@@ -222,7 +269,8 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 	default:
 		throw OException("Invalid renderable.");
 	}
-	
+
+	// resources (vertices and texture)
 	resourceEncoder->load(aRenderable->renderComponents()->vertexBuffer());
 	if (aRenderable->renderComponents()->texture()) 
 		resourceEncoder->load(aRenderable->renderComponents()->texture());
@@ -253,7 +301,7 @@ void ORenderingEngine::Impl::loadMeshUniforms(OMesh* aMesh)
 	// uniforms
 	addUniformToRenderable(aMesh, OVarType::Float4x4, OVarPrecision::High, 1, cMeshUniformMVPTransform,
 		[aMesh](OShaderArgumentInstance& aArgumentInstance) {
-		// TODO -- add callback to update MVP transform
+			aArgumentInstance.copyFrom(aMesh->matrixStack()->top().glArea());
 	});
 }
 
@@ -276,21 +324,17 @@ void ORenderingEngine::Impl::loadGlyphUniforms(OGlyph* aText)
 		});
 }
 
+void ORenderingEngine::Impl::unload(ORenderComponents* aRenderComponents)
+{
+	auto resourceEncoder = getResourceEncoder();
+	if (aRenderComponents->texture() != nullptr)  resourceEncoder->unload(aRenderComponents->texture());
+	if (aRenderComponents->vertexBuffer() != nullptr) resourceEncoder->unload(aRenderComponents->vertexBuffer());
+	if (aRenderComponents->indexBuffer() != nullptr) resourceEncoder->unload(aRenderComponents->indexBuffer());
+}
+
 void ORenderingEngine::Impl::render(ORenderable * aRenderable)
 {
-	if (!_currentBuffer) {
-		OExceptionPointerCheck(_currentBuffer = _currentQueue->createCommandBuffer());
-	}
-
-	if (!_currentEncoder || _currentEncoder->type() != OGraphicsCommandEncoder::Type::Render) {
-		if (_currentEncoder) {
-			_currentEncoder->end();
-			_currentEncoder = nullptr;
-		}
-		OExceptionPointerCheck(_currentEncoder = _currentBuffer->createRenderCommandEncoder());
-	}
-
-	auto renderEncoder = reinterpret_cast<OGraphicsRenderCommandEncoder*>(_currentEncoder);
+	auto renderEncoder = getRenderEncoder();
 
 	if (aRenderable->renderComponents()->shaderProgram() == nullptr) 
 		throw OException("Unable to find shader program.");
