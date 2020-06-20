@@ -330,6 +330,7 @@ void ORenderingEngine::Impl::unload(ORenderComponents* aRenderComponents)
 	if (aRenderComponents->texture() != nullptr)  resourceEncoder->unload(aRenderComponents->texture());
 	if (aRenderComponents->vertexBuffer() != nullptr) resourceEncoder->unload(aRenderComponents->vertexBuffer());
 	if (aRenderComponents->indexBuffer() != nullptr) resourceEncoder->unload(aRenderComponents->indexBuffer());
+	for (auto arg : *aRenderComponents->uniformArgumentList()) resourceEncoder->unload(arg);
 }
 
 void ORenderingEngine::Impl::render(ORenderable * aRenderable)

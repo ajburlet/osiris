@@ -16,7 +16,7 @@ public:
 	/**
 	 @brief Graphics engine type.
 	 */
-	enum class Type : uint8_t {
+	enum class Type {
 		OpenGL
 	};
 

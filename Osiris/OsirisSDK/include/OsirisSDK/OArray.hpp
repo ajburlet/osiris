@@ -293,7 +293,8 @@ inline void OArray<T, Allocator>::resize(uint32_t aNewCapacity)
 {
 	auto new_array = new T[aNewCapacity];
 	OExceptionPointerCheck(new_array);
-	for (uint32_t i = 0; i < (aNewCapacity > _size) ? _size : aNewCapacity; i++) {
+	uint32_t itemCount = (aNewCapacity > _size) ? _size : aNewCapacity;
+	for (uint32_t i = 0; i < itemCount; i++) {
 		new_array[i] = _array[i];
 	}
 	delete[] _array;

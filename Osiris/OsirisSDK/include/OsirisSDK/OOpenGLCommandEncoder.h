@@ -1,13 +1,14 @@
 #pragma once
 
-#include <OsirisSDK/OException.h>
-#include <OsirisSDK/OGPUObject.h>
-#include <OsirisSDK/OOpenGLCommandBuffer.h>
+#include "OsirisSDK/defs.h"
+#include "OsirisSDK/OException.h"
+#include "OsirisSDK/OGPUObject.h"
+#include "OsirisSDK/OOpenGLCommandBuffer.h"
 
 /**
  @brief OpenGL command encoder common class.
  */
-class OOpenGLCommandEncoder
+class OAPI OOpenGLCommandEncoder
 {
 protected:
 	/**

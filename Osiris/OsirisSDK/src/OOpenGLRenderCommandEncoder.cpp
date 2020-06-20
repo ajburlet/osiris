@@ -46,7 +46,7 @@ void OOpenGLRenderCommandEncoder::setIndexBuffer(OIndexBuffer * aIndexBuffer)
 	_indexBuffer = aIndexBuffer;
 }
 
-void OOpenGLRenderCommandEncoder::setTexture(OTexture * aTexture, uint32_t aIndex = 0)
+void OOpenGLRenderCommandEncoder::setTexture(OTexture * aTexture, uint32_t aIndex)
 {
 	encode(Bind(glActiveTexture, gOpenGLTextureID[aIndex]));
 	encode(Bind(glBindTexture, GL_TEXTURE_2D, (aTexture != nullptr) ? handle(aTexture) : 0));
@@ -110,7 +110,7 @@ OIndexBuffer * OOpenGLRenderCommandEncoder::indexBuffer()
 	return _indexBuffer;
 }
 
-OTexture * OOpenGLRenderCommandEncoder::texture(uint32_t aIndex = 0)
+OTexture * OOpenGLRenderCommandEncoder::texture(uint32_t aIndex)
 {
 	return _texture[aIndex];
 }

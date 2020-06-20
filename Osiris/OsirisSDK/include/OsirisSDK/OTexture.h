@@ -271,6 +271,7 @@ inline void OTexture::setWrapType(Coordinate aCoordinate, OTexture::WrapMode aWr
 	case Coordinate::S:	_wrapTypeS = aWrapType;		break;
 	case Coordinate::R:	_wrapTypeR = aWrapType;		break;
 	case Coordinate::T:	_wrapTypeT = aWrapType;		break;
+	default:		throw OException("Invalid coordinate.");
 	}
 }
 
@@ -280,6 +281,7 @@ inline OTexture::WrapMode OTexture::wrapType(Coordinate aCoordinate) const
 	case Coordinate::S:	return _wrapTypeS;
 	case Coordinate::R:	return _wrapTypeR;
 	case Coordinate::T:	return _wrapTypeT;
+	default:		throw OException("Invalid coordinate.");
 	}
 }
 
@@ -301,7 +303,7 @@ inline OTexture::PixelFormat OTexture::destinationPixelFormat() const
 	return _dstPixelFormat;
 }
 
-inline PixelDataType OTexture::pixelDataType() const
+inline OTexture::PixelDataType OTexture::pixelDataType() const
 {
 	return _pixelDataType;
 }

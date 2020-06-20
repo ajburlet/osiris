@@ -160,12 +160,8 @@ inline const void* OVertexBuffer::buffer() const
 template<typename T>
 inline void OVertexBuffer::setAttributeValue(uint32_t aAttributeIndex, uint32_t aVertexIndex, const T* aValuesArr)
 {
-	if (aDimensions != _descriptor.attributeAtIndex(aAttributeIndex).dimensions()) {
-		throw OException("Incompatible vertex attribute: dimensions.");
-	}
 	putValue(aVertexIndex*_descriptor->stride() + _descriptor->offset(aAttributeIndex),
 		 aValuesArr, _descriptor->attributeAtIndex(aAttributeIndex).size());
-
 }
 
 inline uint32_t OVertexBuffer::size() const

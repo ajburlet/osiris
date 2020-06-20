@@ -2,6 +2,7 @@
 
 #include "OsirisSDK/OSystemMemoryAllocator.h"
 #include "OsirisSDK/OList.hpp"
+#include "OsirisSDK/OShaderArgument.h"
 
 class OShaderArgumentInstance;
 

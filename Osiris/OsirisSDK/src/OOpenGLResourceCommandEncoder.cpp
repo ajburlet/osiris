@@ -139,11 +139,11 @@ void OOpenGLResourceCommandEncoder::load(OVertexBufferDescriptor * aVertexBuffer
 		glBindVertexArray(*reinterpret_cast<GLuint*>(aVertexBufferDescriptor->gpuHandle())); 
 	});
 	
-	for (uint32_t i = 0; i < aVertexBufferDescriptor->attributeCount; i++) {
+	for (uint32_t i = 0; i < aVertexBufferDescriptor->attributeCount(); i++) {
 		auto& attr = aVertexBufferDescriptor->attributeAtIndex(i);
 		GLint size;
 		GLenum type;
-		switch (attr.type) {
+		switch (attr.type()) {
 		case OVarType::Float:
 			size = 1;
 			type = GL_FLOAT;

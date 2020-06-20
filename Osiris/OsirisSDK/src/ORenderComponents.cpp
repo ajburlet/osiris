@@ -29,7 +29,7 @@ ORenderMode ORenderComponents::renderMode() const
 bool ORenderComponents::loaded() const
 {
 	if (_vertexBuffer == nullptr) return false;
-	if (_vertexBuffer->needsLoading() || (_indexBuffer != nullptr && _indexBuffer->needsLoading) ||
+	if (_vertexBuffer->needsLoading() || (_indexBuffer != nullptr && _indexBuffer->needsLoading()) ||
 	    (_texture != nullptr && _texture->needsLoading())) {
 		return false;
 	}

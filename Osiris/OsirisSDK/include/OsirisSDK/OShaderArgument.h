@@ -14,12 +14,22 @@ class OAPI OShaderArgument
 {
 public:
 	/**
+	 @brief Class default constructor.
+	 */
+	OShaderArgument() = default;
+
+	/**
 	 @brief Class constructor.
 	 @param aType Attribute type.
 	 @param aPrecision Precision type.
 	 @param aArrayLength Array length (if not an array, value must be 1).
 	 */
 	OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8_t aArrayLength=1);
+
+	/**
+	 @brief Class destructor.
+	 */
+	~OShaderArgument() = default;
 
 	/**
 	 @brief Returns the attribute type.
@@ -158,7 +168,7 @@ inline void OShaderArgumentInstance::update()
 template<typename T>
 inline T& OShaderArgumentInstance::castTo()
 {
-	return static_cast<T>(*_buffer);
+	return *reinterpret_cast<T*>(_buffer);
 }
 
 template<typename T>

@@ -269,7 +269,7 @@ inline uint32_t OList<T, Allocator>::size() const
 template<typename T, class Allocator>
 inline bool OList<T, Allocator>::empty() const
 {
-	return (_size == 0);
+	return (_count == 0);
 }
 
 template<typename T, class Allocator>
