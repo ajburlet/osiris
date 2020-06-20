@@ -49,7 +49,23 @@ public:
 	 */
 	const void* buffer() const;
 
+	/**
+	 @brief Returns the number of faces.
+	 */
+	uint32_t faceCount() const;
+
+	/**
+	 @brief Returns the total buffer size.
+	 */
+	uint32_t size() const;
+
 private:
+	/**
+	 @cond HIDDEN
+	 */
 	struct Implementation;
 	Implementation*		_impl = nullptr;
+	/**
+	 @endcond
+	 */
 };

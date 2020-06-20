@@ -4,7 +4,6 @@ set(HDR_DIR include/OsirisSDK)
 set(SHADER_DIR shaders)
 
 set (BASE_SOURCES
-	${HDR_DIR}/GLdefs.h
 	${SRC_DIR}/OApplication.cpp
 	${HDR_DIR}/OApplication.h
 	${SRC_DIR}/OEvent.cpp
@@ -93,6 +92,23 @@ set (GRAPHICS_ENGINE_SOURCES
 )
 source_group("Graphics\\Engine" FILES ${GRAPHICS_ENGINE_SOURCES})
 
+set (GRAPHICS_ENGINE_OPENGL_SOURCES
+	${HDR_DIR}/GLdefs.h
+	${SRC_DIR}/OOpenGL.cpp
+	${HDR_DIR}/OOpenGL.h
+	${SRC_DIR}/OOpenGLCommandBuffer.cpp
+	${HDR_DIR}/OOpenGLCommandBuffer.h
+	${HDR_DIR}/OOPenglCommandEncoder.h
+	${SRC_DIR}/OOpenGLCommandQueue.cpp
+	${HDR_DIR}/OOpenGLCommandQueue.h
+	${SRC_DIR}/OOpenGLRenderCommandEncoder.cpp
+	${HDR_DIR}/OOpenGLRenderCommandEncoder.h
+	${SRC_DIR}/OOpenGLResourceCommandEncoder.cpp
+	${HDR_DIR}/OOpenGLResourceCommandEncoder.h
+	${HDR_DIR}/OOpenGLVertexBufferHandle.h
+)
+source_group("Graphics\\Engine\\OpenGL" FILES ${GRAPHICS_ENGINE_OPENGL_SOURCES})
+
 set (MATH_SOURCES
 	${SRC_DIR}/OMath.cpp
 	${HDR_DIR}/OMath.h
@@ -162,6 +178,7 @@ set (SOURCES
 	${GRAPHICS_SOURCES}
 	${GRAPHICS_SHADERS_SOURCES}
 	${GRAPHICS_ENGINE_SOURCES}
+	${GRAPHICS_ENGINE_OPENGL_SOURCES}
 	${MATH_SOURCES} 
 	${MEMORY_SOURCES}
 	${SIM_SOURCES}

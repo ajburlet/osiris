@@ -24,7 +24,7 @@ public:
 	 @brief Filter type, to determine fragment color value between texture pixels.
 	 */
 	enum class FilterType {
-		Nearest,		/**< Uses nearest pixel value. */
+		Nearest=0,		/**< Uses nearest pixel value. */
 		Linear,			/**< Uses a linear interpolation of the four nearest pixels. */
 		NearestMipmapNearest,	/**< Uses the nearest mipmap level and nearst pixel value. */
 		LinearMipmapNearest,	/**< Uses the nearest mipmap level and linear interpolation pixel value. */
@@ -57,7 +57,7 @@ public:
 	 @brief Texture wrap mode.
 	 */
 	enum WrapMode {
-		ClampToEdge,
+		ClampToEdge=0,
 		ClampToBorder,
 		MirroredRepeat,
 		Repeat,
@@ -97,7 +97,17 @@ public:
 		RGB,
 		BGR,
 		RGBA,
-		BGRA
+		BGRA,
+		IntegerR,
+		IntegerRG,
+		IntegerRGB,
+		IntegerBGR,
+		IntegerRGBA,
+		IntegerBGRA,
+		CompressedR,
+		CompressedRG,
+		CompressedRGB,
+		CompressedRGBA
 	};
 
 	/**
@@ -112,7 +122,19 @@ public:
 		Integer,
 		UnsignedInteger,
 		HalfFloat,
-		Float
+		Float,
+		UnsignedByte332,
+		UnsignedByte233Reversed,
+		UnsignedShort565,
+		UnsignedShort565Reversed,
+		UnsignedShort4444,
+		UnsignedShort4444Reversed,
+		UnsignedShort5551,
+		UnsignedShort1555Reversed,
+		UnsignedInteger8888,
+		UnsignedInteger8888Reversed,
+		UnsignedInteger1010102,
+		UnsignedInteger2101010Reversed
 	};
 
 	/**
@@ -126,9 +148,29 @@ public:
 			    PixelFormat aDstPixelFormat=PixelFormat::Undefined);
 
 	/**
+	 @brief Returns the pixel format of the source texture data.
+	 */
+	PixelFormat sourcePixelFormat() const;
+
+	/**
+	 @brief Returns the pixel format of the destination GPU format.
+	 */
+	PixelFormat destinationPixelFormat() const;
+
+	/**
+	 @brief Returns the pixel data type.
+	 */
+	PixelDataType pixelDataType() const;
+
+	/**
 	 @brief Sets the number of mipmap levels.
 	 */
 	void setMipmapLevelCount(uint32_t aMipmapLevelCount);
+
+	/**
+	 @brief Returns the number of mipmap levels.
+	 */
+	uint32_t mipmapLevelCount() const;
 
 	/**
 	 @brief The allowed byte alignment for the start of each pixel row. 
@@ -152,6 +194,16 @@ public:
 	void setUnpackAlignment(RowAlignment aAlignment);
 
 	/**
+	 @brief Returns the pack pixel row byte aligbment.
+	 */
+	RowAlignment packAlignment() const;
+
+	/**
+	 @brief Returns the unpack pixel row byte aligbment.
+	 */
+	RowAlignment unpackAlignment() const;
+
+	/**
 	 @brief Sets the texture content for a given mipmap level.
 	 @param aMipmapLevel Mipmap level.
 	 @param aRows Number of rows.
@@ -161,10 +213,26 @@ public:
 	 */
 	void setContent(uint32_t aMipmapLevel, uint32_t aRows, uint32_t aLines, uint8_t* aData, uint32_t aSize);
 
+	/**
+	 @brief Retrieves the texture content for a given mipmap level.
+	 @param aMipmapLevel Mipmap level.
+	 @param aRows A reference to an integer where the number of rows will be written.
+	 @param aLines A reference to an integer where the number of line will be written.
+	 @param aSize A reference to an integer where the size of the mipmap content will be written.
+	 @return A pointer to the content buffer.
+	 */
+	uint8_t* content(uint32_t aMipmapLevel, uint32_t& aRows, uint32_t& aLines, uint32_t& aSize) const;
+
 private:
+	/**
+	 @cond HIDDEN
+	 */
 	struct Impl;
-	
 	Impl*			_impl			= nullptr;
+	/**
+	 @endcond
+	 */
+
 	FilterType		_minFilter		= FilterType::Default;
 	FilterType		_magFilter		= FilterType::Default;
 	WrapMode		_wrapTypeS		= WrapMode::Default;
@@ -175,7 +243,6 @@ private:
 	PixelDataType		_pixelDataType		= PixelDataType::Undefined;
 	RowAlignment		_packAlignment		= RowAlignment::Default;
 	RowAlignment		_unpackAlignment	= RowAlignment::Default;
-	
 };
 
 inline void OTexture::setMinFilter(OTexture::FilterType aFilter)
@@ -224,6 +291,21 @@ inline void OTexture::setPixelFormat(OTexture::PixelFormat aSrcPixelFormat, OTex
 	_dstPixelFormat = (aDstPixelFormat == PixelFormat::Undefined) ? aSrcPixelFormat : aDstPixelFormat;
 }
 
+inline OTexture::PixelFormat OTexture::sourcePixelFormat() const
+{
+	return _srcPixelFormat;
+}
+
+inline OTexture::PixelFormat OTexture::destinationPixelFormat() const
+{
+	return _dstPixelFormat;
+}
+
+inline PixelDataType OTexture::pixelDataType() const
+{
+	return _pixelDataType;
+}
+
 inline void OTexture::setPackAlignment(OTexture::RowAlignment aAlignment)
 {
 	_packAlignment = aAlignment;
@@ -232,4 +314,14 @@ inline void OTexture::setPackAlignment(OTexture::RowAlignment aAlignment)
 inline void OTexture::setUnpackAlignment(RowAlignment aAlignment)
 {
 	_unpackAlignment = aAlignment;
+}
+
+inline OTexture::RowAlignment OTexture::packAlignment() const
+{
+	return _packAlignment;
+}
+
+inline OTexture::RowAlignment OTexture::unpackAlignment() const
+{
+	return _unpackAlignment;
 }

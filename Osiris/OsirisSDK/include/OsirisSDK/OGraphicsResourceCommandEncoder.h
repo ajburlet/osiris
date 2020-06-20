@@ -3,9 +3,9 @@
 #include "OsirisSDK/OGraphicsDefinitions.h"
 #include "OsirisSDK/OGraphicsCommandEncoder.h"
 
-class OGraphicsCommandQueue;
 class OShaderProgram;
 class OVertexBuffer;
+class OVertexBufferDescriptor;
 class OIndexBuffer;
 class OShaderArgumentInstance;
 class OTexture;
@@ -15,17 +15,29 @@ class OTexture;
  */
 class OAPI OGraphicsResourceCommandEncoder : public OGraphicsCommandEncoder
 {
-public:
+protected:
 	/**
 	 @brief Class constructor.
 	 @param aCommandQueue The queue on which the encoder writes the commands to.
 	 */
-	OGraphicsResourceCommandEncoder(OGraphicsCommandQueue* aCommandQueue);
+	OGraphicsResourceCommandEncoder();
+
+public:
 
 	/**
 	 @brief Class destructor.
 	 */
 	~OGraphicsResourceCommandEncoder() = default;
+
+	/**
+	 @brief Encodes commands to load a vertex buffer descriptor.
+	 */
+	virtual void load(OVertexBufferDescriptor* aVertexBufferDescriptor) = 0;
+
+	/**
+	 @brief Encodes commands to unload a vertex buffer descriptor.
+	 */
+	virtual void unload(OVertexBufferDescriptor* aVertexBufferDescriptor) = 0;
 
 	/**
 	 @brief Encodes commands to load a vertex buffer.
@@ -64,10 +76,15 @@ public:
 	 @param aName The name the argument assumes in the shader.
 	 */
 	virtual void load(OShaderArgumentInstance* aAttributeInstance, OShaderProgram* aShader, const char* aName) = 0;
+
+	/**
+	 @brief Unloads a shader uniform attribute instance.
+	 */
+	virtual void unload(OShaderArgumentInstance* aAttributeInstance) = 0;
 };
 
-inline OGraphicsResourceCommandEncoder::OGraphicsResourceCommandEncoder(OGraphicsCommandQueue* aCommandQueue) :
-	OGraphicsCommandEncoder(Type::Resource, aCommandQueue)
+inline OGraphicsResourceCommandEncoder::OGraphicsResourceCommandEncoder() :
+	OGraphicsCommandEncoder(Type::Resource)
 {
 
 }

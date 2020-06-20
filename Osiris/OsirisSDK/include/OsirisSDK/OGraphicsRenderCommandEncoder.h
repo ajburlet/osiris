@@ -16,13 +16,13 @@ class OShaderArgumentInstanceList;
  */
 class OAPI OGraphicsRenderCommandEncoder : public OGraphicsCommandEncoder
 {
-public:
+protected:
 	/**
-	 @brief Class constructor.
-	 @param aCommandQueue The queue on which the encoder writes the commands to.
+	 @brief Class default constructor.
 	 */
-	OGraphicsRenderCommandEncoder(OGraphicsCommandQueue* aCommandQueue);
+	OGraphicsRenderCommandEncoder();
 
+public:
 	/**
 	 @brief Class destructor.
 	 */
@@ -84,11 +84,6 @@ public:
 	virtual OTexture* texture(uint32_t aIndex = 0) = 0;
 
 	/**
-	 @brief Returns a pointer to the uniform argument list. 
-	 */
-	virtual OShaderArgumentInstanceList* uniformArgumentList() = 0;
-	
-	 /**
 	 @brief Clear textures that were previously set.
 	 */
 	virtual void clearTextures() = 0;
@@ -99,8 +94,8 @@ public:
 	virtual void draw(ORenderMode aRenderType) = 0;
 };
 
-inline OGraphicsRenderCommandEncoder::OGraphicsRenderCommandEncoder(OGraphicsCommandQueue * aCommandQueue) :
-	OGraphicsCommandEncoder(Type::Render, aCommandQueue)
+inline OGraphicsRenderCommandEncoder::OGraphicsRenderCommandEncoder() :
+	OGraphicsCommandEncoder(Type::Render)
 {
 }
 

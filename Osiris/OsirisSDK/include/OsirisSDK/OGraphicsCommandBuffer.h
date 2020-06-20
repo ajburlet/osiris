@@ -2,8 +2,6 @@
 
 #include "OsirisSDK/defs.h"
 
-class OGraphicsCommandQueue;
-class OGraphicsCommandEncoder;
 class OGraphicsRenderCommandEncoder;
 class OGraphicsResourceCommandEncoder;
 
@@ -14,12 +12,9 @@ class OAPI OGraphicsCommandBuffer
 {
 public:
 	/**
-	 @brief Class constructor.
-	 @param aCommandQueue Pointer to the command queue that owns the buffer.
+	 @brief Class default constructor.
 	 */
-	OGraphicsCommandBuffer(OGraphicsCommandQueue* aCommandQueue) :
-		commandQueue_(aCommandQueue)
-	{}
+	OGraphicsCommandBuffer() = default;
 
 	/**
 	 @brief Creates a new render command encoder.
@@ -35,9 +30,4 @@ public:
 	 @brief Commits the command buffer, clearing it to be processed on the next opportunity.
 	 */
 	virtual void commit() = 0;
-
-private:
-	OGraphicsCommandQueue* commandQueue_;
-
-	friend class OGraphicsRenderCommandQueue;
 };

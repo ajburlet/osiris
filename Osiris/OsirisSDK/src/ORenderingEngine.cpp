@@ -46,7 +46,7 @@ struct ORenderingEngine::Impl {
 	// load
 	void load(ORenderable* aRenderable);
 	void addUniformToRenderable(ORenderable* aRenderable, OVarType aType, OVarPrecision aPrecision, 
-				    uint8_t aDim, const char* aName, 
+				    uint8_t aArrayLength, const char* aName, 
 				    OShaderArgumentInstance::UpdateCallbackFn aCallbackFn);
 	void loadMeshUniforms(OMesh* aMesh);
 	void loadGlyphUniforms(OGlyph* aText);
@@ -280,12 +280,12 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 
 void ORenderingEngine::Impl::addUniformToRenderable(ORenderable * aRenderable, 
 						    OVarType aType, OVarPrecision aPrecision, 
-						    uint8_t aDim, const char * aName,
+						    uint8_t aArrayLength, const char * aName,
 						    OShaderArgumentInstance::UpdateCallbackFn aCallbackFn)
 {
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
 	
-	auto uniform = new OShaderArgumentInstance(aType, aPrecision, aDim);
+	auto uniform = new OShaderArgumentInstance(aType, aPrecision, aArrayLength);
 	OExceptionPointerCheck(uniform);
 	OExceptionForwardCb([&]() { delete uniform; }, {
 		uniform->setUpdateCallbackFunction(aCallbackFn);
@@ -310,15 +310,15 @@ void ORenderingEngine::Impl::loadGlyphUniforms(OGlyph* aText)
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
 
 	// uniforms
-	addUniformToRenderable(aText, OVarType::Float, OVarPrecision::High, 2, cGlyphUniformPosOffset,
+	addUniformToRenderable(aText, OVarType::Float2, OVarPrecision::High, 1, cGlyphUniformPosOffset,
 		[aText](OShaderArgumentInstance& aArgumentInstance) {
 			aArgumentInstance.copyFrom(aText->positionOffset().glArea());
 		});
-	addUniformToRenderable(aText, OVarType::Float, OVarPrecision::High, 2, cGlyphUniformScale, 
+	addUniformToRenderable(aText, OVarType::Float2, OVarPrecision::High, 1, cGlyphUniformScale, 
 		[aText](OShaderArgumentInstance& aArgumentInstance) {
 			aArgumentInstance.copyFrom(aText->scale().glArea());
 		});
-	addUniformToRenderable(aText, OVarType::Float, OVarPrecision::Low, 4, cGlyphUniformColor,
+	addUniformToRenderable(aText, OVarType::Float4, OVarPrecision::Low, 1, cGlyphUniformColor,
 		[aText](OShaderArgumentInstance& aArgumentInstance) {
 			aArgumentInstance.copyFrom(aText->color().glArea());
 		});

@@ -43,6 +43,11 @@ const OShaderArgument& OVertexBufferDescriptor::attributeAtIndex(uint8_t aAttrib
 	return _impl->attributes[aAttributeIndex].attribute;
 }
 
+uint32_t OVertexBufferDescriptor::attributeCount() const
+{
+	return _impl->attributes.size();
+}
+
 uint32_t OVertexBufferDescriptor::offset(uint32_t aAttributeIndex) const
 {
 	return _impl->attributes[aAttributeIndex].offset;

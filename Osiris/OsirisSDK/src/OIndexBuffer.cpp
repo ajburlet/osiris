@@ -44,3 +44,13 @@ const void * OIndexBuffer::buffer() const
 {
 	return &(_impl->array[0]);
 }
+
+uint32_t OIndexBuffer::faceCount() const
+{
+	return _impl->array.size();
+}
+
+uint32_t OIndexBuffer::size() const
+{
+	return faceCount() * sizeof(Point);
+}

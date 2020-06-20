@@ -10,7 +10,7 @@ class OShaderArgument;
 /**
  @brief The vertex buffer descriptor.
  */
-class OAPI OVertexBufferDescriptor
+class OAPI OVertexBufferDescriptor : public OGPUObject
 {
 public:
 	/**
@@ -36,6 +36,11 @@ public:
 	 @return The attribute info object.
 	 */
 	const OShaderArgument& attributeAtIndex(uint8_t aAttributeIndex) const;
+
+	/**
+	 @brief Returns the attribute count.
+	 */
+	uint32_t attributeCount() const;
 
 	/**
 	 @brief Attribute memory offset.
@@ -92,7 +97,7 @@ public:
 	/**
 	 @brief Returns the vertex descriptor.
 	 */
-	const OVertexBufferDescriptor& descriptor() const;
+	OVertexBufferDescriptor& descriptor();
 
 	/**
 	 @brief Returns the pointer to the buffer memory.
@@ -107,6 +112,12 @@ public:
 	 */
 	template<typename T>
 	void setAttributeValue(uint32_t aAttributeIndex, uint32_t aVertexIndex, const T* aValuesArr);
+	
+	/**
+	 @brief Total buffer size.
+	 */
+	uint32_t size() const;
+
 	
 protected:
 	/**
@@ -136,7 +147,7 @@ inline uint32_t OVertexBuffer::vertexCount() const
 	return _vertexCount;
 }
 
-inline const OVertexBufferDescriptor& OVertexBuffer::descriptor() const
+inline OVertexBufferDescriptor& OVertexBuffer::descriptor()
 {
 	return *_descriptor;
 }
@@ -145,7 +156,6 @@ inline const void* OVertexBuffer::buffer() const
 {
 	return _buffer;
 }
-
 
 template<typename T>
 inline void OVertexBuffer::setAttributeValue(uint32_t aAttributeIndex, uint32_t aVertexIndex, const T* aValuesArr)
@@ -156,6 +166,11 @@ inline void OVertexBuffer::setAttributeValue(uint32_t aAttributeIndex, uint32_t 
 	putValue(aVertexIndex*_descriptor->stride() + _descriptor->offset(aAttributeIndex),
 		 aValuesArr, _descriptor->attributeAtIndex(aAttributeIndex).size());
 
+}
+
+inline uint32_t OVertexBuffer::size() const
+{
+	return vertexCount() * _descriptor->stride();
 }
 
 template<typename T>

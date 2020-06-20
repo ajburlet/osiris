@@ -35,6 +35,11 @@ void OTexture::setMipmapLevelCount(uint32_t aMipmapLevelCount)
 	_impl->mipmap.resize(aMipmapLevelCount);
 }
 
+uint32_t OTexture::mipmapLevelCount() const
+{
+	return _impl->mipmap.size();
+}
+
 void OTexture::setContent(uint32_t aMipmapLevel, uint32_t aRows, uint32_t aLines, uint8_t* aData, uint32_t aSize)
 {
 	auto& entry = _impl->mipmap[aMipmapLevel];
@@ -44,4 +49,14 @@ void OTexture::setContent(uint32_t aMipmapLevel, uint32_t aRows, uint32_t aLines
 	entry.rows = aRows;
 
 	memcpy(entry.data, aData, aSize);
+}
+
+uint8_t * OTexture::content(uint32_t aMipmapLevel, uint32_t & aRows, uint32_t & aLines, uint32_t& aSize) const
+{
+	if (aMipmapLevel >= _impl->mipmap.size()) throw OException("Invalid mipmap level.");
+	auto& mipmap = _impl->mipmap[aMipmapLevel];
+	aRows = mipmap.rows;
+	aLines = mipmap.lines;
+	aSize = mipmap.size;
+	return mipmap.data;
 }

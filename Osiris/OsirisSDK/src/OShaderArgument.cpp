@@ -9,13 +9,19 @@
 OShaderArgument::OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8_t aDim) :
 	_type(aType),
 	_precision(aPrecision),
-	_dim(aDim)
+	_arrayLength(aDim)
 {
 	uint32_t unit_size = 0;
 	uint32_t multiplier = -1;
 	switch (_type) {
 	case OVarType::Float:
 		if (multiplier == -1) multiplier = 1;
+	case OVarType::Float2:
+		if (multiplier == -1) multiplier = 2;
+	case OVarType::Float3:
+		if (multiplier == -1) multiplier = 3;
+	case OVarType::Float4:
+		if (multiplier == -1) multiplier = 4;
 	case OVarType::Float2x2:
 		if (multiplier == -1) multiplier = 4;
 	case OVarType::Float3x3:
@@ -35,6 +41,15 @@ OShaderArgument::OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8
 	case OVarType::Int:
 	case OVarType::UnsignedInt:
 		if (multiplier == -1) multiplier = 1;
+	case OVarType::Int2:
+	case OVarType::UnsignedInt2:
+		if (multiplier == -1) multiplier = 2;
+	case OVarType::Int3:
+	case OVarType::UnsignedInt3:
+		if (multiplier == -1) multiplier = 3;
+	case OVarType::Int4:
+	case OVarType::UnsignedInt4:
+		if (multiplier == -1) multiplier = 4;
 	case OVarType::Int2x2:
 		if (multiplier == -1) multiplier = 4;
 	case OVarType::Int3x3:
@@ -55,7 +70,7 @@ OShaderArgument::OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8
 		throw OException("Invalid vertex attribute type.");
 	}
 	
-	_size = unit_size * multiplier;
+	_size = unit_size * multiplier * _arrayLength;
 }
 
 

@@ -17,9 +17,9 @@ public:
 	 @brief Class constructor.
 	 @param aType Attribute type.
 	 @param aPrecision Precision type.
-	 @param aDim Number of dimensions.
+	 @param aArrayLength Array length (if not an array, value must be 1).
 	 */
-	OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8_t aDim);
+	OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8_t aArrayLength=1);
 
 	/**
 	 @brief Returns the attribute type.
@@ -34,7 +34,7 @@ public:
 	/**
 	 @brief Returns the attribute dimensions.
 	 */
-	uint8_t dimensions() const;
+	uint8_t arrayLength() const;
 
 	/**
 	 @brief Attribute size in bytes.
@@ -44,7 +44,7 @@ public:
 protected:
 	OVarType	_type		= OVarType::Undefined;
 	OVarPrecision	_precision	= OVarPrecision::Undefined;
-	uint8_t		_dim		= 0;
+	uint8_t		_arrayLength	= 0;
 	uint32_t	_size		= 0;
 };
 
@@ -58,9 +58,9 @@ inline OVarPrecision OShaderArgument::precision() const
 	return _precision;
 }
 
-inline uint8_t OShaderArgument::dimensions() const
+inline uint8_t OShaderArgument::arrayLength() const
 {
-	return _dim;
+	return _arrayLength;
 }
 
 inline uint32_t OShaderArgument::size() const
@@ -85,9 +85,9 @@ public:
 	 @brief Class constructor.
 	 @param aType Attribute type.
 	 @param aPrecision Precision type.
-	 @param aDim Number of dimensions.
+	 @param aArrayLength Array length (if not an array, value must be 1).
 	 */
-	OShaderArgumentInstance(OVarType aType, OVarPrecision aPrecision, uint8_t aDim);
+	OShaderArgumentInstance(OVarType aType, OVarPrecision aPrecision, uint8_t aArrayLength=1);
 
 	/**
 	 @brief Class destructor.
@@ -127,12 +127,12 @@ public:
 	 @brief Creates and initializes an argument instance.
 	 @param aType Attribute type.
 	 @param aPrecision Precision type.
-	 @param aDim Number of dimensions.
+	 @param aArrayLength Number of dimensions.
 	 @param aValue The initial value of the argument instance.
 	 @return The newly created argument instance.
 	 */
 	template <typename T>
-	static OShaderArgumentInstance* create(OVarType aType, OVarPrecision aPrecision, uint8_t aDim, const T& aValue);
+	static OShaderArgumentInstance* create(OVarType aType, OVarPrecision aPrecision, uint8_t aArrayLength, const T& aValue);
 
 private:
 	uint8_t*		_buffer	= nullptr;
@@ -162,9 +162,9 @@ inline T& OShaderArgumentInstance::castTo()
 }
 
 template<typename T>
-inline OShaderArgumentInstance * OShaderArgumentInstance::create(OVarType aType, OVarPrecision aPrecision, uint8_t aDim, const T & aValue)
+inline OShaderArgumentInstance * OShaderArgumentInstance::create(OVarType aType, OVarPrecision aPrecision, uint8_t aArrayLength, const T & aValue)
 {
-	auto var = new OShaderArgumentInstance(aType, aPrecision, aDim);
+	auto var = new OShaderArgumentInstance(aType, aPrecision, aArrayLength);
 	OExceptionPointerCheck(var);
 	var->castTo<T>() = aValue;
 	return var;

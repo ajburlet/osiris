@@ -1,6 +1,6 @@
 #pragma once
 
-class OGraphicsCommandQueue;
+#include "OsirisSDK/defs.h"
 
 /**
  @brief Graphics command encoder base class.
@@ -18,26 +18,23 @@ public:
 		Compute			/**< Compute command encoder. */
 	};
 
+protected:
 	/**
 	 @brief Class constructor.
-	 @param aCommandQueue The queue on which the encoder writes the commands to.
+	 @param aType Command encoder type.
 	 */
-	OGraphicsCommandEncoder(Type aType, OGraphicsCommandQueue* aCommandQueue = nullptr);
+	OGraphicsCommandEncoder(Type aType);
 
+public:
 	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OGraphicsCommandEncoder() = default;
 
 	/**
-	 @brief Returns the command queue on which the encoder writes the commands to.
-	 */
-	OGraphicsCommandQueue* commandQueue();
-
-	/**
 	 @brief Ends the encoding process.
 	 */
-	virtual void end();
+	virtual void end() = 0;
 
 	/**
 	 @brief Returns the type of the command encoder.
@@ -46,23 +43,11 @@ public:
 
 private:
 	Type			_type		= Type::Undefined;
-	OGraphicsCommandQueue*	_commandQueue	= nullptr;
 };
 
-inline OGraphicsCommandEncoder::OGraphicsCommandEncoder(Type aType, OGraphicsCommandQueue* aCommandQueue) :
-	_type(aType),
-	_commandQueue(aCommandQueue)
+inline OGraphicsCommandEncoder::OGraphicsCommandEncoder(Type aType) :
+	_type(aType)
 {
-}
-
-inline OGraphicsCommandQueue * OGraphicsCommandEncoder::commandQueue()
-{
-	return _commandQueue;
-}
-
-inline void OGraphicsCommandEncoder::end()
-{
-	// does nothing by default
 }
 
 inline OGraphicsCommandEncoder::Type OGraphicsCommandEncoder::type() const
