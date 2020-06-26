@@ -60,6 +60,18 @@ public:
 	 */
 	OTrashBin& trashBin();
 
+	/**
+	 @brief Clear render target.
+	 @param aColor The color used to set every screen pixel.
+	 */
+	void clearRenderTarget(const OVector4F& aColor);
+
+	/**
+	 @brief Clear depth buffer.
+	 @param aValue The value used to set every depth buffer bin.
+	 */
+	void clearDepthBuffer(float aValue);
+
 protected:
 	/**
 	 @cond HIDDEN

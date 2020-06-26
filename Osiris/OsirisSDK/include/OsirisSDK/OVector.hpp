@@ -46,6 +46,12 @@ public:
 	virtual T& getComponent(OVectorAxis aComponent) = 0;
 
 	/**
+	 @brief Returns a vector component.
+	 @param aComponent The component identifier.
+	 */
+	virtual const T& getComponent(OVectorAxis aComponent) const;
+
+	/**
 	 @brief Access operator for the vector components.
 	 */
 	T& operator[](OVectorAxis aComponent);
@@ -66,6 +72,12 @@ template<uint8_t Dim, typename T, glm::qualifier Q>
 inline OVector<Dim, T, Q>::OVector(const GLMType & aGLM) :
 	Super(aGLM)
 {
+}
+
+template<uint8_t Dim, typename T, glm::qualifier Q>
+inline const T & OVector<Dim, T, Q>::getComponent(OVectorAxis aComponent) const
+{
+	return static_cast<const T&>(const_cast<OVector*>(this)->getComponent(aComponent));
 }
 
 template <uint8_t Dim, typename T, glm::qualifier Q>

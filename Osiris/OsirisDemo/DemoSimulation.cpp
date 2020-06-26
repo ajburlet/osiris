@@ -3,12 +3,13 @@
 #include <OsirisSDK/OVertexColorMesh.h>
 #include <OsirisSDK/OWavefrontObjectFile.h>
 #include <OsirisSDK/OParameterList.h>
+#include <OsirisSDK/OStats.hpp>
 
 #include "DemoSimulation.h"
 #include "PieceBehavior.h"
 
 DemoSimulation::DemoSimulation(int argc, char **argv) :
-	OSimulation("DemoSimulation", argc, argv),
+	OSimulation("DemoSimulation", argc, argv, OApplication::GraphicsAPI::OpenGL),
 	_camCtrl(this),
 	_table(NULL),
 	_movingPiece(NULL)
@@ -38,88 +39,88 @@ void DemoSimulation::init()
 	camera()->setCameraLimits(1.0f, 100.0f);
 
 	/* set camera movement keys */
-	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_a, OCameraController::MoveLeft);
-	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_s, OCameraController::MoveBack);
-	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_d, OCameraController::MoveRight);
-	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_w, OCameraController::MoveForward);
-	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_q, OCameraController::MoveUp);
-	_camCtrl.setMoveEventKey(OKeyboardPressEvent::OKey_e, OCameraController::MoveDown);
+	_camCtrl.setMoveEventKey(OKeyCode::a, OCameraController::MoveLeft);
+	_camCtrl.setMoveEventKey(OKeyCode::s, OCameraController::MoveBack);
+	_camCtrl.setMoveEventKey(OKeyCode::d, OCameraController::MoveRight);
+	_camCtrl.setMoveEventKey(OKeyCode::w, OCameraController::MoveForward);
+	_camCtrl.setMoveEventKey(OKeyCode::q, OCameraController::MoveUp);
+	_camCtrl.setMoveEventKey(OKeyCode::e, OCameraController::MoveDown);
 	
 	/* subscribe to keyboard event */
-	addEventRecipient(OEvent::KeyboardPressEvent, this);
+	addEventRecipient(OEventType::KeyboardPressEvent, this);
 
 	/* setting up the cube */
-	OVertexColorMesh *cube = new OVertexColorMesh();
-	cube->addVertexData(-0.5f, -0.5f, -0.5f);
-	cube->addVertexData(-0.5f, -0.5f, 0.5f);
-	cube->addVertexData(-0.5f, 0.5f, -0.5f);
-	cube->addVertexData(-0.5f, 0.5f, 0.5f);
-	cube->addVertexData(0.5f, -0.5f, -0.5f);
-	cube->addVertexData(0.5f, -0.5f, 0.5f);
-	cube->addVertexData(0.5f, 0.5f, -0.5f);
-	cube->addVertexData(0.5f, 0.5f, 0.5f);
+	//OVertexColorMesh *cube = new OVertexColorMesh();
+	//cube->addVertexData(-0.5f, -0.5f, -0.5f);
+	//cube->addVertexData(-0.5f, -0.5f, 0.5f);
+	//cube->addVertexData(-0.5f, 0.5f, -0.5f);
+	//cube->addVertexData(-0.5f, 0.5f, 0.5f);
+	//cube->addVertexData(0.5f, -0.5f, -0.5f);
+	//cube->addVertexData(0.5f, -0.5f, 0.5f);
+	//cube->addVertexData(0.5f, 0.5f, -0.5f);
+	//cube->addVertexData(0.5f, 0.5f, 0.5f);
 
-	OVector4F color1(1.0f, 0.8f, 1.0f, 1.0f);
-	OVector4F color2(0.0f, 0.2f, 0.0f, 1.0f);
-	cube->addVertexColorData(color1);
-	cube->addVertexColorData(color1);
-	cube->addVertexColorData(color2);
-	cube->addVertexColorData(color2);
-	cube->addVertexColorData(color1);
-	cube->addVertexColorData(color1);
-	cube->addVertexColorData(color2);
-	cube->addVertexColorData(color2);
+	//OVector4F color1(1.0f, 0.8f, 1.0f, 1.0f);
+	//OVector4F color2(0.0f, 0.2f, 0.0f, 1.0f);
+	//cube->addVertexColorData(color1);
+	//cube->addVertexColorData(color1);
+	//cube->addVertexColorData(color2);
+	//cube->addVertexColorData(color2);
+	//cube->addVertexColorData(color1);
+	//cube->addVertexColorData(color1);
+	//cube->addVertexColorData(color2);
+	//cube->addVertexColorData(color2);
 
-	cube->addIndexData(0, 4, 1);
-	cube->addIndexData(1, 2, 0);
-	cube->addIndexData(1, 4, 5);
-	cube->addIndexData(1, 7, 3);
-	cube->addIndexData(2, 4, 0);
-	cube->addIndexData(2, 7, 6);
-	cube->addIndexData(3, 2, 1);
-	cube->addIndexData(3, 7, 2);
-	cube->addIndexData(4, 7, 5);
-	cube->addIndexData(5, 7, 1);
-	cube->addIndexData(6, 4, 2);
-	cube->addIndexData(6, 7, 4);
+	//cube->addIndexData(0, 4, 1);
+	//cube->addIndexData(1, 2, 0);
+	//cube->addIndexData(1, 4, 5);
+	//cube->addIndexData(1, 7, 3);
+	//cube->addIndexData(2, 4, 0);
+	//cube->addIndexData(2, 7, 6);
+	//cube->addIndexData(3, 2, 1);
+	//cube->addIndexData(3, 7, 2);
+	//cube->addIndexData(4, 7, 5);
+	//cube->addIndexData(5, 7, 1);
+	//cube->addIndexData(6, 4, 2);
+	//cube->addIndexData(6, 7, 4);
 
-	cube->setFaceCulling(true, OMesh::CullFace_Front, OMesh::CullFront_CW);
-	cube->init();
+	//cube->setFaceCulling(true, OMesh::CullFace_Front, OMesh::CullFront_CW);
+	//cube->init();
 
 	/* loading torus mesh from file */
-	OVertexColorMesh* torus = new OVertexColorMesh();
-	OWavefrontObjectFile torusFile("Meshes/TestTorus.mesh.obj");
-	int objectCount=0;
-	const char **objectList = torusFile.objectList(&objectCount);
-	if (objectCount > 0) torusFile.loadMesh(objectList[0], torus);
+	//OVertexColorMesh* torus = new OVertexColorMesh();
+	//OWavefrontObjectFile torusFile("Meshes/TestTorus.mesh.obj");
+	//int objectCount=0;
+	//const char **objectList = torusFile.objectList(&objectCount);
+	//if (objectCount > 0) torusFile.loadMesh(objectList[0], torus);
 
-	for (int i = 0; i < torus->vertexCount(); i++) {
-		OVector3F v = torus->vertexData(i);
-		torus->addVertexColorData(fabs(v.x()), fabs(v.y()), fabs(v.z()), 1);
-	}
-	torus->init();
+	//for (int i = 0; i < torus->vertexCount(); i++) {
+	//	OVector3F v = torus->vertexData(i);
+	//	torus->addVertexColorData(fabs(v.x()), fabs(v.y()), fabs(v.z()), 1);
+	//}
+	//torus->init();
 
 	/* creating the table entity */
-	_table = new OEntity(NULL, NULL, cube);
-	_table->state()->curr()->position() = OVector3F(0.0f, -0.25f/2, 0.0f);
-	_table->state()->curr()->scale() = OVector3F(3.0f, 0.15f, 7.0f);
-	entities()->add(_table);
+	//_table = new OEntity(NULL, NULL, cube);
+	//_table->state()->curr()->position() = OVector3F(0.0f, -0.25f/2, 0.0f);
+	//_table->state()->curr()->scale() = OVector3F(3.0f, 0.15f, 7.0f);
+	//entities()->add(_table);
 
 	/* creating moving piece */
-	PieceBehavior *behavior = new PieceBehavior();
-	OParameterList *attributeList = new OParameterList(4);
-	(*attributeList)[PieceBehavior::attrMinX] = -1.5f;
-	(*attributeList)[PieceBehavior::attrMinZ] = -3.5f;
-	(*attributeList)[PieceBehavior::attrMaxX] = 1.5f;
-	(*attributeList)[PieceBehavior::attrMaxZ] = 3.5f;
-	_movingPiece = new OEntity(attributeList, behavior, torus);
-	_movingPiece->state()->curr()->position() = OVector3F(0.0f, 0.0f, 0.0f);
-	_movingPiece->state()->curr()->setMotionComponent(1, OVector3F(0.3f, 0.0f, 0.3f) / 1e6, OState::Object);
-	_movingPiece->state()->curr()->scale() = OVector3F(0.25);
-	entities()->add(_movingPiece);
+	//PieceBehavior *behavior = new PieceBehavior();
+	//OParameterList *attributeList = new OParameterList(4);
+	//(*attributeList)[PieceBehavior::attrMinX] = -1.5f;
+	//(*attributeList)[PieceBehavior::attrMinZ] = -3.5f;
+	//(*attributeList)[PieceBehavior::attrMaxX] = 1.5f;
+	//(*attributeList)[PieceBehavior::attrMaxZ] = 3.5f;
+	//_movingPiece = new OEntity(attributeList, behavior, torus);
+	//_movingPiece->state()->curr()->position() = OVector3F(0.0f, 0.0f, 0.0f);
+	//_movingPiece->state()->curr()->setMotionComponent(1, OVector3F(0.3f, 0.0f, 0.3f) / 1e6, OState::Object);
+	//_movingPiece->state()->curr()->scale() = OVector3F(0.25);
+	//entities()->add(_movingPiece);
 
 	/* creating text */
-	_fontCourier = new OFont("cour.ttf");
+	_fontCourier = new OFont(renderingEngine(), "cour.ttf");
 	_title = new OText2D(_fontCourier, 12, -1.0f, 0.95f, OVector4F(0.0f, 1.0f, 0.0f, 1.0f));
 	_title->setContent("Osiris Framework\nDemo Application");
 	_infoText = new OText2D(_fontCourier, 12, 0.45f, 0.95f, OVector4F(0.0f, 1.0f, 0.0f, 1.0f));
@@ -175,12 +176,12 @@ void DemoSimulation::update(const OTimeIndex & idx, int step_us)
 void DemoSimulation::onKeyboardPress(const OKeyboardPressEvent * evt)
 {
 	switch (evt->code()) {
-	case OKeyboardPressEvent::OKey_Space:
+	case OKeyCode::Space:
 		if (targetFPS() == 0) setTargetFPS(40);
 		else setTargetFPS(0);
 		break;
 		
-	case OKeyboardPressEvent::OKey_o:
+	case OKeyCode::o:
 		camera()->setPosition(OVector3F(3.0f, 1.5f, 7.0f));
 		camera()->state()->setMotionComponent(1, OVector3F(0.0f, 0.0f, 0.0f), OState::Scene);
 		camera()->state()->setMotionComponent(2, OVector3F(0.0f, 0.0f, 0.0f), OState::Scene);

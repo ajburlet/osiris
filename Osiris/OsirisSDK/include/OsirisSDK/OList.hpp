@@ -1,6 +1,5 @@
 #pragma once
 
-#include <list>
 #include <stdint.h>
 
 #include "OsirisSDK/defs.h"
@@ -34,17 +33,22 @@ public:
 	/**
 	 @brief Dereference operator.
 	 */
-	Ref_t operator*() const;
+	Ref_t operator*();
 
 	/**
 	 @brief Pointer access operator.
 	 */
-	Ptr_t operator->() const;
+	Ptr_t operator->();
 
 	/**
-	 @brief Increment by one operator, moves the iterator to the next item.
+	 @brief Prefix increment by one operator, moves the iterator to the next item.
 	 */
 	OBaseListIterator& operator++();
+	
+	/**
+	 @brief Postfix increment by one operator, moves the iterator to the next item.
+	 */
+	OBaseListIterator operator++(int);
 
 	/**
 	 @brief Subtract by one operator, moves the iterator to the previous item.
@@ -79,13 +83,13 @@ inline OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::OBaseListIterator(Nod
 }
 
 template<typename Node_t, typename Ptr_t, typename Ref_t, class Allocator>
-inline Ref_t OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::operator*() const
+inline Ref_t OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::operator*()
 {
 	return _nodePtr->_value;
 }
 
 template<typename Node_t, typename Ptr_t, typename Ref_t, class Allocator>
-inline Ptr_t OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::operator->() const
+inline Ptr_t OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::operator->()
 {
 	return &(_nodePtr->_value);
 }
@@ -95,6 +99,14 @@ inline OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>& OBaseListIterator<Nod
 {
 	_nodePtr = _nodePtr->_next;
 	return *this;
+}
+
+template<typename Node_t, typename Ptr_t, typename Ref_t, class Allocator>
+inline OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator> OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::operator++(int)
+{
+	OBaseListIterator it(*this);
+	++(*this);
+	return it;
 }
 
 template<typename Node_t, typename Ptr_t, typename Ref_t, class Allocator>
@@ -119,7 +131,7 @@ inline bool OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::operator!=(const
 template<typename Node_t, typename Ptr_t, typename Ref_t, class Allocator>
 inline Node_t* OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::node()
 {
-	return _node;
+	return _nodePtr;
 }
 
 
@@ -227,6 +239,18 @@ public:
 	 @brief Removes the last element from the list.
 	 */
 	void popBack();
+
+	/**
+	 @brief Remos an item from the list using the iterator.
+	 @param aIterator The iterator pointing to the item to be removed.
+	 */
+	void remove(Iterator& aIterator);
+
+	/**
+	 @brief Removes an item from the list.
+	 @param aItem The item to be removed from the list.
+	 */
+	void remove(const T& aItem);
 
 	/**
 	 @brief Returns a reference to the first element.
@@ -371,11 +395,43 @@ inline void OList<T, Allocator>::popBack()
 	if (_head == _tail) {
 		_head = nullptr;
 	} else {
-		_tail->-_prev->_next = nullptr;
+		_tail->_prev->_next = nullptr;
 	}
 	_tail = _tail->_prev;
 	delete node;
 	_count--;
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::remove(Iterator & aIterator)
+{
+	auto node = aIterator.node();
+	++aIterator;
+	if (node->_prev == nullptr) {
+		_head = node->_next;
+	} else {
+		node->_prev->_next = node->_next;
+	}
+	if (node->_next == nullptr) {
+		_tail = node->_prev;
+	} else {
+		node->_next->_prev = node->_prev;
+	}
+	delete node;
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::remove(const T & aItem)
+{
+	if (aItem == _tail->_value) {
+		popBack();
+	} else {
+		for (Iterator it = begin(); it != end(); ++it) {
+			if (*it = aItem) {
+				remove(it);
+			}
+		}
+	}
 }
 
 template<typename T, class Allocator>

@@ -43,7 +43,7 @@ OText2D::OText2D(OFont* aFont, uint8_t aFontSize, float aX, float aY, const OVec
 	_scale_x = 2.0f / OApplication::activeInstance()->windowWidth();
 	_scale_y = 2.0f / OApplication::activeInstance()->windowHeight();
 
-	OApplication::activeInstance()->addEventRecipient(OEvent::ResizeEvent, this);
+	OApplication::activeInstance()->addEventRecipient(OEventType::ResizeEvent, this);
 	
 	glGenVertexArrays(1, &_arrayObject);
 }
@@ -144,26 +144,6 @@ const char * OText2D::content() const
 void OText2D::render(OMatrixStack* mtx)
 {
 	if (isHidden()) return;
-
-	/* enabling array object */
-	glBindVertexArray(_arrayObject);
-
-	/* we use the specific shader program */
-	_shaderProgram->use();
-
-	/* enable blending */
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	/* let us define the texture that will hold the glyph */
-	glUniform1i(_shaderTexUniform, 0);
-
-	/* now we enable attribute array and prepare the vertex array buffer */
-	glEnableVertexAttribArray(_shaderCoordAttr);
-
-	/* set font color */
-	glUniform4fv(_shaderColorUniform, 1, _impl->fontColor.glArea());
-	glUniform3fv(_shaderScale, 1, OVector3F(_scale_x, _scale_y, 0.0f).glArea());
 
 	/* now we iterate through every character and render */
 	float currX = _x;

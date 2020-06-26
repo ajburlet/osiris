@@ -1,12 +1,15 @@
 #include "OsirisSDK/OEntity.h"
 #include "OsirisSDK/ORenderObject.h"
 #include "OsirisSDK/OMatrixStack.h"
+#include "OsirisSDK/OCamera.h"
 
 #include "OsirisSDK/OSimulation.h"
 
-OSimulation::OSimulation(const char * title, int argc, char ** argv, int windowPos_x, int windowPos_y, 
-			 int windowWidth, int windowHeight, int targetFPS, int simulationStep_us) :
-	OApplication(title, argc, argv, windowPos_x, windowPos_y, windowWidth, windowHeight, targetFPS, simulationStep_us)
+OSimulation::OSimulation(const char * aTitle, int aArgc, char ** aArgv, GraphicsAPI aGraphicsAPI, 
+			 int aWindowPosX, int aWindowPosY, int aWindowWidth, int aWindowHeight, 
+			 int aTargetFPS, int aSimulationStep_us) :
+	OApplication(aTitle, aArgc, aArgv, aGraphicsAPI, aWindowPosX, aWindowPosY, aWindowWidth, aWindowHeight, 
+		     aTargetFPS, aSimulationStep_us)
 {
 }
 

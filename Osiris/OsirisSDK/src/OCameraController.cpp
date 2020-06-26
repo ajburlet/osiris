@@ -1,14 +1,21 @@
 #include "OsirisSDK/OException.h"
+#include "OsirisSDK/OApplication.h"
+#include "OsirisSDK/OObject.h"
+#include "OsirisSDK/OEvent.h"
 #include "OsirisSDK/OVector.hpp"
 #include "OsirisSDK/OQuaternion.hpp"
 #include "OsirisSDK/OMatrixStack.h"
 #include "OsirisSDK/OState.h"
 #include "OsirisSDK/OCameraController.h"
+#include "OsirisSDK/OCamera.h"
+#include "OsirisSDK/OMath.h"
+#include "OsirisSDK/OTimeIndex.h"
+#include "OsirisSDK/OEventDefs.h"
 
 using namespace std;
 
 OCameraController::OCameraController(OApplication * app, 
-				     MouseOrientationMode orMode, OMouseClickEvent::MouseButton orMouseBtn,
+				     MouseOrientationMode orMode, OMouseButton orMouseBtn,
 				     float movementAcceleration, float movementMaxSpeed) :
 	_app(app),
 	_orMode(orMode),
@@ -72,11 +79,11 @@ float OCameraController::mouseSensitivity() const
 }
 
 
-void OCameraController::setMoveEventKey(OKeyboardPressEvent::KeyCode key, CameraMoveDir camEvt)
+void OCameraController::setMoveEventKey(OKeyCode key, CameraMoveDir camEvt)
 {
 	if (_keyBind.size() == 0) {
-		_app->addEventRecipient(OEvent::KeyboardPressEvent, this);
-		_app->addEventRecipient(OEvent::KeyboardReleaseEvent, this);
+		_app->addEventRecipient(OEventType::KeyboardPressEvent, this);
+		_app->addEventRecipient(OEventType::KeyboardReleaseEvent, this);
 	}
 	_keyBind[key] = camEvt;
 }
@@ -102,7 +109,7 @@ void OCameraController::update(const OTimeIndex& timeIndex, int step_us)
 
 void OCameraController::onKeyboardPress(const OKeyboardPressEvent * evt)
 {
-	map<OKeyboardPressEvent::KeyCode, CameraMoveDir>::iterator it;
+	map<OKeyCode, CameraMoveDir>::iterator it;
 	if ((it = _keyBind.find(evt->code())) == _keyBind.end()) return;
 
 	if (isMovementKeyPressed(it->second)) return;
@@ -119,7 +126,7 @@ void OCameraController::onKeyboardPress(const OKeyboardPressEvent * evt)
 
 void OCameraController::onKeyboardRelease(const OKeyboardPressEvent * evt)
 {
-	map<OKeyboardPressEvent::KeyCode, CameraMoveDir>::iterator it;
+	map<OKeyCode, CameraMoveDir>::iterator it;
 	if ((it = _keyBind.find(evt->code())) == _keyBind.end()) return;
 	
 	if (!isMovementKeyPressed(it->second)) return;
@@ -151,12 +158,12 @@ void OCameraController::onMouseClick(const OMouseClickEvent * evt)
 	if (evt->button() != _orMouseBtn)  return;
 	
 	switch (evt->status()) {
-	case OMouseClickEvent::Press:
+	case OMouseButtonStatus::Press:
 		_activeMoveMouseBtnPressed = true;
 		_last_mouse_x = evt->x();
 		_last_mouse_y = evt->y();
 		break;
-	case OMouseClickEvent::Release:
+	case OMouseButtonStatus::Release:
 		_activeMoveMouseBtnPressed = false;
 		_last_mouse_x = -1;
 		_last_mouse_y = -1;
@@ -168,21 +175,21 @@ void OCameraController::updateApplication()
 {
 	switch (_orMode) {
 	case ActiveOrientation:
-		_app->addEventRecipient(OEvent::MouseClickEvent, this);
-		_app->addEventRecipient(OEvent::MouseActiveMoveEvent, this);
-		_app->removeEventRecipient(OEvent::MousePassiveMoveEvent, this);
+		_app->addEventRecipient(OEventType::MouseClickEvent, this);
+		_app->addEventRecipient(OEventType::MouseActiveMoveEvent, this);
+		_app->removeEventRecipient(OEventType::MousePassiveMoveEvent, this);
 		break;
 
 	case PassiveOrientation:
-		_app->removeEventRecipient(OEvent::MouseClickEvent, this);
-		_app->removeEventRecipient(OEvent::MouseActiveMoveEvent, this);
-		_app->addEventRecipient(OEvent::MousePassiveMoveEvent, this);
+		_app->removeEventRecipient(OEventType::MouseClickEvent, this);
+		_app->removeEventRecipient(OEventType::MouseActiveMoveEvent, this);
+		_app->addEventRecipient(OEventType::MousePassiveMoveEvent, this);
 		break;
 		
 	case OrientationDisabled:
-		_app->removeEventRecipient(OEvent::MouseClickEvent, this);
-		_app->removeEventRecipient(OEvent::MouseActiveMoveEvent, this);
-		_app->removeEventRecipient(OEvent::MousePassiveMoveEvent, this);
+		_app->removeEventRecipient(OEventType::MouseClickEvent, this);
+		_app->removeEventRecipient(OEventType::MouseActiveMoveEvent, this);
+		_app->removeEventRecipient(OEventType::MousePassiveMoveEvent, this);
 		break;
 	}
 }

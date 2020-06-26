@@ -3,7 +3,7 @@
 // ***********************************************************************
 // OEvent
 // ***********************************************************************
-OEvent::OEvent(OEvent::EventType type) :
+OEvent::OEvent(OEventType type) :
 	_type(type)
 {
 }
@@ -12,7 +12,7 @@ OEvent::~OEvent()
 {
 }
 
-OEvent::EventType OEvent::type() const
+OEventType OEvent::type() const
 {
 	return _type;
 }
@@ -20,7 +20,7 @@ OEvent::EventType OEvent::type() const
 // ***********************************************************************
 // OMemoryPoolEvent
 // ***********************************************************************
-OMemoryPoolEvent::OMemoryPoolEvent(OEvent::EventType type) : OEvent(type)
+OMemoryPoolEvent::OMemoryPoolEvent(OEventType type) : OEvent(type)
 {
 }
 
@@ -32,11 +32,11 @@ OMemoryPoolEvent::~OMemoryPoolEvent()
 // ***********************************************************************
 // OKeyboardPressEvent
 // ***********************************************************************
-OKeyboardPressEvent::OKeyboardPressEvent(KeyCode code, int mouse_x, int mouse_y, bool keyPressed) :
-	OMemoryPoolEvent((keyPressed) ? OEvent::KeyboardPressEvent : OEvent::KeyboardReleaseEvent),
-	_code(code),
-	_mouse_x(mouse_x),
-	_mouse_y(mouse_y)
+OKeyboardPressEvent::OKeyboardPressEvent(OKeyCode aCode, int aMouseX, int aMouseY, bool aKeyPressed) :
+	OMemoryPoolEvent((aKeyPressed) ? OEventType::KeyboardPressEvent : OEventType::KeyboardReleaseEvent),
+	_code(aCode),
+	_mouse_x(aMouseX),
+	_mouse_y(aMouseY)
 {
 }
 
@@ -45,7 +45,7 @@ OKeyboardPressEvent::~OKeyboardPressEvent()
 
 }
 
-OKeyboardPressEvent::KeyCode OKeyboardPressEvent::code() const
+OKeyCode OKeyboardPressEvent::code() const
 {
 	return _code;
 }
@@ -63,12 +63,12 @@ int OKeyboardPressEvent::mouseY() const
 // ***********************************************************************
 // OMouseClickEvent
 // ***********************************************************************
-OMouseClickEvent::OMouseClickEvent(OMouseClickEvent::MouseButton btn, OMouseClickEvent::MouseStatus status, int x, int y) :
-	OMemoryPoolEvent(OEvent::MouseClickEvent),
-	_btn(btn),
-	_status(status),
-	_x(x),
-	_y(y)
+OMouseClickEvent::OMouseClickEvent(OMouseButton aBtn, OMouseButtonStatus aStatus, int aX, int aY) :
+	OMemoryPoolEvent(OEventType::MouseClickEvent),
+	_btn(aBtn),
+	_status(aStatus),
+	_x(aX),
+	_y(aY)
 {
 }
 
@@ -76,12 +76,12 @@ OMouseClickEvent::~OMouseClickEvent()
 {
 }
 
-OMouseClickEvent::MouseButton OMouseClickEvent::button() const
+OMouseButton OMouseClickEvent::button() const
 {
 	return _btn;
 }
 
-OMouseClickEvent::MouseStatus OMouseClickEvent::status() const
+OMouseButtonStatus OMouseClickEvent::status() const
 {
 	return _status;
 }
@@ -99,15 +99,20 @@ int OMouseClickEvent::y() const
 // ***********************************************************************
 // OMouseMoveEvent 
 // ***********************************************************************
-OMouseMoveEvent::OMouseMoveEvent(MovementType type, int x, int y) :
-	OMemoryPoolEvent((type == ActiveMove) ? OEvent::MouseActiveMoveEvent : OEvent::MousePassiveMoveEvent),
-	_x(x),
-	_y(y)
+OMouseMoveEvent::OMouseMoveEvent(OMouseMovementType aType, int aX, int aY) :
+	OMemoryPoolEvent((aType == OMouseMovementType::Active) ? OEventType::MouseActiveMoveEvent : OEventType::MousePassiveMoveEvent),
+	_x(aX),
+	_y(aY)
 {
 }
 
 OMouseMoveEvent::~OMouseMoveEvent()
 {
+}
+
+OMouseMovementType OMouseMoveEvent::movementType() const
+{
+	return _type;
 }
 
 int OMouseMoveEvent::x() const
@@ -123,10 +128,10 @@ int OMouseMoveEvent::y() const
 // ***********************************************************************
 // OResizeEvent
 // ***********************************************************************
-OResizeEvent::OResizeEvent(int width, int height) :
-	OMemoryPoolEvent(OEvent::ResizeEvent),
-	_width(width),
-	_height(height)
+OResizeEvent::OResizeEvent(int aWidth, int aHeight) :
+	OMemoryPoolEvent(OEventType::ResizeEvent),
+	_width(aWidth),
+	_height(aHeight)
 {
 }
 

@@ -34,6 +34,8 @@ public:
 	virtual OTexture * texture(uint32_t aIndex = 0) override;
 	virtual void clearTextures() override;
 	virtual void draw(ORenderMode aRenderType) override;
+	virtual void clearRenderTarget(const OVector4F& aColor) override;
+	virtual void clearDepthBuffer(float aValue) override;
 
 	// OGraphicsCommandEncoder interface
 	virtual void end() override;

@@ -26,12 +26,12 @@ protected:
 	 */
 	OGraphicsAPI(Type aType);
 
+public:
 	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OGraphicsAPI() = default;
 
-public:
 	/**
 	 @brief Returns the graphics engine type.
 	 */

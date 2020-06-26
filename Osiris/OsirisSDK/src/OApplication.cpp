@@ -3,10 +3,19 @@
 
 #include "OsirisSDK/GLdefs.h"
 #include "OsirisSDK/OException.h"
-#include "OsirisSDK/OApplication.h"
+#include "OsirisSDK/OVector.hpp"
+#include "OsirisSDK/OMap.hpp"
+#include "OsirisSDK/OList.hpp"
+#include "OsirisSDK/OObject.h"
+#include "OsirisSDK/OTrashBin.h"
 #include "OsirisSDK/OChronometer.h"
+#include "OsirisSDK/OStats.hpp"
+#include "OsirisSDK/OTimeIndex.h"
+#include "OsirisSDK/OCamera.h"
+#include "OsirisSDK/ORenderingEngine.h"
+#include "OsirisSDK/OOpenGL.h"
 
-#include <glload/gl_load.hpp>
+#include "OsirisSDK/OApplication.h"
 
 #ifndef OAPPLICATION_DEFAULT_STATSSAMPLE
 #define OAPPLICATION_DEFAULT_STATSSAMPLE	100
@@ -14,36 +23,83 @@
 
 using namespace std;
 
+
+struct OApplication::Impl {
+	using ObjectList = OList<OObject*>;
+	using EventRecipientMap = OMap<OEventType, ObjectList>;
+	using EventQueue = OList<OEvent*>;
+
+	Impl(uint32_t aTargetFPS, uint32_t aSimulationStep_us) :
+		targetFPS(aTargetFPS),
+		simulationStep_us(aSimulationStep_us),
+		fpsStats(OAPPLICATION_DEFAULT_STATSSAMPLE),
+		idleTimeStats(OAPPLICATION_DEFAULT_STATSSAMPLE),
+		renderTimeStats(OAPPLICATION_DEFAULT_STATSSAMPLE),
+		clearColor(0.0f, 0.0f, 0.0f, 0.0f)
+	{
+	}
+
+	~Impl() {
+		if (engine != nullptr) delete engine;
+	}
+
+
+	uint32_t		targetFPS;
+	uint32_t		simulationStep_us;
+	ORenderingEngine*	engine				= nullptr;
+	OCamera			cam;
+	OTrashBin		trashBin;
+	EventRecipientMap	eventRecipients;
+	EventQueue		eventQueue;
+	OStats<float>		fpsStats;
+	OStats<int>		idleTimeStats;
+	OStats<int>		renderTimeStats;
+	OStats<float>		simulationPerformanceStats;
+	OTimeIndex		simulationTimeIndex;
+	OTimeIndex		lastRenderTimeIndex;
+	float			depthBufferClearValue		= 0.0f;
+	OVector4F		clearColor;
+};
+
 OApplication* OApplication::_activeInstance = NULL;
 
-OApplication::OApplication(const char* title, int argc, char **argv, int windowPos_x, int windowPos_y, 
-			   int windowWidth, int windowHeight, int targetFPS, int simulationStep_us) :
-	_targetFPS(targetFPS),
-	_simulationStep_us(simulationStep_us),
-	_fpsStats(OAPPLICATION_DEFAULT_STATSSAMPLE),
-	_idleTimeStats(OAPPLICATION_DEFAULT_STATSSAMPLE),
-	_renderTimeStats(OAPPLICATION_DEFAULT_STATSSAMPLE)
+OApplication::OApplication(const char* aTitle, int aArgc, char **aArgv, GraphicsAPI aGraphicsAPI, 
+			   int aWindowPosX, int aWindowPosY, int aWindowWidth, int aWindowHeight, 
+			   int aTargetFPS, int aSimulationStep_us) 
 {
 	if (_activeInstance != NULL) throw OException("There is already an OApplication instance created.");
 	_activeInstance = this;
 
+	OExceptionPointerCheck(_impl = new Impl(aTargetFPS, aSimulationStep_us));
+
 	/* GLUT init */
-	glutInit(&argc, argv);
+	glutInit(&aArgc, aArgv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH | GLUT_STENCIL);
 	glutInitContextVersion(OSIRIS_GL_VERSION);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
-	glutInitWindowSize(windowWidth, windowHeight);
-	glutInitWindowPosition(windowPos_x, windowPos_y);
-	int window = glutCreateWindow(title);
+	glutInitWindowSize(aWindowWidth, aWindowHeight);
+	glutInitWindowPosition(aWindowPosX, aWindowPosY);
+	int window = glutCreateWindow(aTitle);
+	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
-	/* GLload init */
-	glload::LoadFunctions();
-	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
-	if (!glload::IsVersionGEQ(OSIRIS_GL_VERSION)) {
+	/* init rendering engine init */
+	OGraphicsAPI* graphics_api = nullptr;
+	
+	auto error_cb = [graphics_api, window]() {
+		if (graphics_api != nullptr) delete graphics_api;
 		glutDestroyWindow(window);
-		throw OException("Incorrect OpenGL version.");
+	};
+
+	switch (aGraphicsAPI) {
+	case GraphicsAPI::OpenGL:
+		OExceptionPointerCheckCb(graphics_api = new OOpenGL, error_cb);
+		break;
+	default:
+		error_cb();
+		throw OException("Unknow graphics API.");
 	}
+	OExceptionPointerCheckCb(_impl->engine = new ORenderingEngine(graphics_api), error_cb);
 
 	/* setup callbacks */
 	glutDisplayFunc(displayCallback);
@@ -54,27 +110,21 @@ OApplication::OApplication(const char* title, int argc, char **argv, int windowP
 	glutPassiveMotionFunc(mousePassiveMoveCallback);
 	glutReshapeFunc(resizeCallback);
 
-	/* z-buffer */
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
-	glDepthRange(0.0f, 1.0f);
-	glEnable(GL_DEPTH_CLAMP);
-
 	/* initializing simulation time frame */
 	OTimeIndex::init();
-	_simulationTimeIndex = OTimeIndex::current();
-	_lastRenderTimeIndex = 0;
+	_impl->simulationTimeIndex = OTimeIndex::current();
+	_impl->lastRenderTimeIndex = 0;
 }
 
 OApplication::~OApplication()
 {
 	_activeInstance = NULL;
+	delete _impl;
 }
 
 OCamera * OApplication::camera()
 {
-	return &_cam;
+	return &_impl->cam;
 }
 
 int OApplication::windowWidth() const
@@ -89,39 +139,39 @@ int OApplication::windowHeight() const
 
 int OApplication::targetFPS() const
 {
-	return _targetFPS;
+	return _impl->targetFPS;
 }
 
 int OApplication::simulationStep() const
 {
-	return _simulationStep_us;
+	return _impl->simulationStep_us;
 }
 
-void OApplication::setTargetFPS(int targetFPS)
+void OApplication::setTargetFPS(int aTargetFPS)
 {
-	_targetFPS = targetFPS;
+	_impl->targetFPS = aTargetFPS;
 }
 
-void OApplication::setSimulationStep(int simulationStep)
+void OApplication::setSimulationStep(int aSimulationStep)
 {
-	_simulationStep_us = simulationStep;
+	_impl->simulationStep_us = aSimulationStep;
 }
 
-void OApplication::addEventRecipient(OEvent::EventType eventType, OObject * recipient)
+void OApplication::addEventRecipient(OEventType aEventType, OObject * aRecipient)
 {
 	bool exists = false;
-	for (list<OObject*>::iterator it = _eventRecipients[eventType].begin(); it != _eventRecipients[eventType].end(); it++) {
-		if (*it == recipient) {
+	for (auto recipient : _impl->eventRecipients[aEventType]) {
+		if (recipient == aRecipient) {
 			exists = true;
 			break;
 		}
 	}
-	if (!exists) _eventRecipients[eventType].push_back(recipient);
+	if (!exists) _impl->eventRecipients[aEventType].pushBack(aRecipient);
 }
 
-void OApplication::removeEventRecipient(OEvent::EventType eventType, OObject * recipient)
+void OApplication::removeEventRecipient(OEventType aEventType, OObject * aRecipient)
 {
-	_eventRecipients[eventType].remove(recipient);
+	_impl->eventRecipients[aEventType].remove(aRecipient);
 }
 
 void OApplication::start()
@@ -130,30 +180,34 @@ void OApplication::start()
 	glutMainLoop();
 }
 
-void OApplication::scheduleDelete(OObject * obj)
+OTrashBin & OApplication::trashBin()
 {
-	map<OObject*, int>::iterator it;
-	if ((it = _deleteList.find(obj)) != _deleteList.end()) _deleteList[obj] = 1;
+	return _impl->trashBin;
+}
+
+ORenderingEngine * OApplication::renderingEngine()
+{
+	return _impl->engine;
 }
 
 const OStats<float>& OApplication::fpsStats() const
 {
-	return _fpsStats;
+	return _impl->fpsStats;
 }
 
 const OStats<int>& OApplication::idleTimeStats() const
 {
-	return _idleTimeStats;
+	return _impl->idleTimeStats;
 }
 
 const OStats<int>& OApplication::renderTimeStats() const
 {
-	return _renderTimeStats;
+	return _impl->renderTimeStats;
 }
 
 const OStats<float>& OApplication::performanceStats() const
 {
-	return _simulationPerformanceStats;
+	return _impl->simulationPerformanceStats;
 }
 
 OApplication * OApplication::activeInstance()
@@ -163,41 +217,32 @@ OApplication * OApplication::activeInstance()
 
 void OApplication::clearScreen()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClearDepth(1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	_impl->engine->clearDepthBuffer(_impl->depthBufferClearValue);
+	_impl->engine->clearRenderTarget(_impl->clearColor);
 }
 
-int OApplication::eventRecipientCount(OEvent::EventType type)
+int OApplication::eventRecipientCount(OEventType aType)
 {
-	map<OEvent::EventType, list<OObject*> >::iterator it = _eventRecipients.find(type);
-	if (it == _eventRecipients.end()) return 0;
-	return it->second.size();
+	auto it = _impl->eventRecipients.find(aType);
+	if (it == _impl->eventRecipients.end()) return 0;
+	return it.value().size();
 }
 
 void OApplication::queueEvent(OEvent * evt)
 {
-	_eventQueue.push(evt);
+	_impl->eventQueue.pushBack(evt);
 }
 
 void OApplication::processEvents()
 {
-	while (_eventQueue.empty() == false) {
-		OEvent *cur = _eventQueue.front();
-		list<OObject*>::iterator it;
-		for (it = _eventRecipients[cur->type()].begin(); it != _eventRecipients[cur->type()].end(); it++) {
-			(*it)->processEvent(cur);
+	while (_impl->eventQueue.empty() == false) {
+		OEvent *cur = _impl->eventQueue.front();
+		for (auto recipient : _impl->eventRecipients[cur->type()]) {
+			recipient->processEvent(cur);
 		}
 		delete cur;
-		_eventQueue.pop();
+		_impl->eventQueue.popFront();
 	}
-}
-
-void OApplication::deleteObjects()
-{
-	map<OObject*, int>::iterator it;
-	for (it = _deleteList.begin(); it != _deleteList.end(); it++) delete it->first;
-	_deleteList.clear();
 }
 
 void OApplication::loopIteration()
@@ -211,88 +256,86 @@ void OApplication::loopIteration()
 	/* running the simulation */
 	cron.partial();
 	int stepCount = 0;
-	while ((cron.lastPartialTime() - _simulationTimeIndex).toInt() > _simulationStep_us) {
-		_simulationTimeIndex += _simulationStep_us;
-		update(_simulationTimeIndex, _simulationStep_us);
+	while ((cron.lastPartialTime() - _impl->simulationTimeIndex).toInt() > _impl->simulationStep_us) {
+		_impl->simulationTimeIndex += _impl->simulationStep_us;
+		update(_impl->simulationTimeIndex, _impl->simulationStep_us);
 		stepCount++;
 	}
 
 	/* calculate mean performance indicator */
-	if (stepCount > 0) _simulationPerformanceStats.add((float)cron.partial() / stepCount / _simulationStep_us);
+	if (stepCount > 0) _impl->simulationPerformanceStats.add((float)cron.partial() / stepCount / _impl->simulationStep_us);
 
 	/* limit rendering frequency */
 	cron.partial();
-	if (_targetFPS > 0) {
-		int renderInterval_us = (cron.lastPartialTime() - _lastRenderTimeIndex).toInt();
-		int frameInterval_us = 1000000 / _targetFPS;
-		if (renderInterval_us < frameInterval_us && _lastRenderTimeIndex > 0) {
+	if (_impl->targetFPS > 0) {
+		int renderInterval_us = (cron.lastPartialTime() - _impl->lastRenderTimeIndex).toInt();
+		int frameInterval_us = 1000000 / _impl->targetFPS;
+		if (renderInterval_us < frameInterval_us && _impl->lastRenderTimeIndex > 0) {
 			this_thread::sleep_for(chrono::microseconds(frameInterval_us - renderInterval_us));
 		}
-		_idleTimeStats.add(frameInterval_us - renderInterval_us);
+		_impl->idleTimeStats.add(frameInterval_us - renderInterval_us);
 	} else {
-		_idleTimeStats.add(0);
+		_impl->idleTimeStats.add(0);
 	}
 
 	/* calculate FPS and render */
 	cron.partial();
-	_fpsStats.add(1000000.0f / (cron.lastPartialTime() - _lastRenderTimeIndex).toInt());
-	_lastRenderTimeIndex = cron.lastPartialTime();
+	_impl->fpsStats.add(1000000.0f / (cron.lastPartialTime() - _impl->lastRenderTimeIndex).toInt());
+	_impl->lastRenderTimeIndex = cron.lastPartialTime();
 
 	render();
 	glutSwapBuffers();
 	glutPostRedisplay();
 	
-	_renderTimeStats.add(cron.partial());
+	_impl->renderTimeStats.add(cron.partial());
 
-	/* delete objects at the end of the iteration */
-	deleteObjects();
+	/* clear trash bin */
+	_impl->trashBin.clear();
 }
 
 void OApplication::keyboardCallback(unsigned char key, int mouse_x, int mouse_y)
 {
-	if (_activeInstance->eventRecipientCount(OEvent::KeyboardPressEvent)) {
-		OKeyboardPressEvent *evt = new OKeyboardPressEvent((OKeyboardPressEvent::KeyCode)key, mouse_x, mouse_y, true);
+	if (_activeInstance->eventRecipientCount(OEventType::KeyboardPressEvent)) {
+		OKeyboardPressEvent *evt = new OKeyboardPressEvent((OKeyCode)key, mouse_x, mouse_y, true);
 		_activeInstance->queueEvent(evt);
 	}
 }
 
 void OApplication::keyboardUpCallback(unsigned char key, int mouse_x, int mouse_y)
 {
-	if (_activeInstance->eventRecipientCount(OEvent::KeyboardReleaseEvent)) {
-		OKeyboardPressEvent *evt = new OKeyboardPressEvent((OKeyboardPressEvent::KeyCode)key, mouse_x, mouse_y, false);
+	if (_activeInstance->eventRecipientCount(OEventType::KeyboardReleaseEvent)) {
+		OKeyboardPressEvent *evt = new OKeyboardPressEvent((OKeyCode)key, mouse_x, mouse_y, false);
 		_activeInstance->queueEvent(evt);
 	}
 }
 
 void OApplication::mouseCallback(int button, int state, int x, int y)
 {
-	if (_activeInstance->eventRecipientCount(OEvent::MouseClickEvent) > 0) {
-		OMouseClickEvent *evt = new OMouseClickEvent((OMouseClickEvent::MouseButton)button,
-						   (OMouseClickEvent::MouseStatus)state,
-						   x, y);
+	if (_activeInstance->eventRecipientCount(OEventType::MouseClickEvent) > 0) {
+		OMouseClickEvent *evt = new OMouseClickEvent((OMouseButton)button, (OMouseButtonStatus)state, x, y);
 		_activeInstance->queueEvent(evt);
 	}
 }
 
 void OApplication::mouseActiveMoveCallback(int x, int y)
 {
-	if (_activeInstance->eventRecipientCount(OEvent::MouseActiveMoveEvent) > 0) {
-		OMouseMoveEvent *evt = new OMouseMoveEvent(OMouseMoveEvent::ActiveMove, x, y);
+	if (_activeInstance->eventRecipientCount(OEventType::MouseActiveMoveEvent) > 0) {
+		OMouseMoveEvent *evt = new OMouseMoveEvent(OMouseMovementType::Active, x, y);
 		_activeInstance->queueEvent(evt);
 	}
 }
 
 void OApplication::mousePassiveMoveCallback(int x, int y)
 {
-	if (_activeInstance->eventRecipientCount(OEvent::MousePassiveMoveEvent) > 0) {
-		OMouseMoveEvent *evt = new OMouseMoveEvent(OMouseMoveEvent::PassiveMove, x, y);
+	if (_activeInstance->eventRecipientCount(OEventType::MousePassiveMoveEvent) > 0) {
+		OMouseMoveEvent *evt = new OMouseMoveEvent(OMouseMovementType::Passive, x, y);
 		_activeInstance->queueEvent(evt);
 	}
 }
 
 void OApplication::resizeCallback(int width, int height)
 {
-	if (_activeInstance->eventRecipientCount(OEvent::ResizeEvent) > 0) {
+	if (_activeInstance->eventRecipientCount(OEventType::ResizeEvent) > 0) {
 		OResizeEvent *evt = new OResizeEvent(width, height);
 
 		glViewport(0, 0, (GLsizei)width, (GLsizei)height);

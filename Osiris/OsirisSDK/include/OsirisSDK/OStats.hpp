@@ -11,7 +11,7 @@
 /**
  @brief Template class to handle statistical data.
  */
-template <class VType> class OStats
+template <typename VType> class OStats
 {
 public:
 	/**

@@ -8,6 +8,7 @@ set (BASE_SOURCES
 	${HDR_DIR}/OApplication.h
 	${SRC_DIR}/OEvent.cpp
 	${HDR_DIR}/OEvent.h
+	${HDR_DIR}/OEventDefs.h
 	${SRC_DIR}/OObject.cpp
 	${HDR_DIR}/OObject.h
 	${HDR_DIR}/OSingleton.hpp

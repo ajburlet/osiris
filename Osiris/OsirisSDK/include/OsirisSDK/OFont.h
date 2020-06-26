@@ -1,13 +1,8 @@
 #pragma once
 
 #include <string>
-#include <map>
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
-#include "defs.h"
-#include "GLdefs.h"
+#include "OsirisSDK/defs.h"
 
 class OGlyph;
 class ORenderingEngine;
@@ -42,36 +37,6 @@ public:
 	void cleanCache();
 
 	/**
-	 \brief Font cache entry structure.
-	 */
-	struct CacheEntry {
-		/**
-		 \brief OpenGL texture ID.
-		 */
-		GLuint texId;
-
-		/**
-		 \brief OpenGL array buffer ID.
-		 */
-		GLuint arrBufId;
-		
-		/**
-		 \brief Font horizontal advance space to the next character.
-		 */
-		int advance_x;
-		
-		/**
-		 \brief Font vertical advance space to the next character.
-		 */
-		int advance_y;
-	};
-
-	/**
-	 \brief Returns the font cache entry related to a given character and size.
-	 */
-	const CacheEntry* entry(char character, int size);
-
-	/**
 	 @brief Creates a new glyph object for a given character.
 	 @param aCharCode Charecter code byte.
 	 @param aSize Font size.
@@ -103,18 +68,7 @@ private:
 	 */
 
 
-	std::string _fontName;
-	FT_Face _face;
-	int _lastSize;
-	CacheEntry* _currCacheArray;
-
-	std::map<int, CacheEntry*> _cache; /* font size as key */
-
-	static FT_Library _library;
-
 	void loadToCache(uint8_t aSize);
-	CacheEntry* loadGlyphs(int size);
-
 };
 
 

@@ -3,6 +3,7 @@
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OGraphicsDefinitions.h"
 #include "OsirisSDK/OGraphicsCommandEncoder.h"
+#include "OsirisSDK/OVectorDefs.h"
 
 class OGraphicsCommandQueue;
 class OShaderProgram;
@@ -92,6 +93,18 @@ public:
 	 @brief Issues a draw command.
 	 */
 	virtual void draw(ORenderMode aRenderType) = 0;
+
+	/**
+	 @brief Encodes commands to clear the render target buffer.
+	 @param aColor The color used to set every screen pixel.
+	 */
+	virtual void clearRenderTarget(const OVector4F& aColor) = 0;
+
+	/**
+	 @brief Encodes commands to clear the depth buffer.
+	 @param aValue The value used to set every depth buffer bin.
+	 */
+	virtual void clearDepthBuffer(float aValue) = 0;
 };
 
 inline OGraphicsRenderCommandEncoder::OGraphicsRenderCommandEncoder() :

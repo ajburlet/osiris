@@ -19,20 +19,21 @@ public:
 	/**
 	 @brief Class constructor.
 
-	 @param title Application window title.
-	 @param argc Number of command line arguments
-	 @param argv Command line arguments.
-	 @param windowPos_x Window position on the X axis.
-	 @param windowPos_y Window position on the Y axis.
-	 @param windowWidth Window width.
-	 @param windowHeight Window height.
-	 @param targetFPS Target FPS.
-	 @param simulationStep_us Simulation step in microseconds.
+	 @param aTitle Application window title.
+	 @param aArgc Number of command line arguments
+	 @param aArgv Command line arguments.
+	 @param aGraphicsAPI The graphics API used by the application.
+	 @param AWindowPosX Window position on the X axis.
+	 @param aWindowPosY Window position on the Y axis.
+	 @param aWindowWidth Window width.
+	 @param aWindowHeight Window height.
+	 @param aTargetFPS Target FPS.
+	 @param aSimulationStep_us Simulation step in microseconds.
 	 */
-	OSimulation(const char* title, int argc, char **argv,
-		int windowPos_x=OAPPLICATION_DEFAULT_POSX, int windowPos_y=OAPPLICATION_DEFAULT_POSY,
-		int windowWidth=OAPPLICATION_DEFAULT_WIDTH, int windowHeight=OAPPLICATION_DEFAULT_HEIGHT,
-		int targetFPS=OAPPLICATION_DEFAULT_TARGETFPS, int simulationStep_us=OAPPLICATION_DEFAULT_SIMULATIONSTEP);
+	OSimulation(const char* aTitle, int aArgc, char **aArgv, GraphicsAPI aGraphicsAPI,
+		int aWindowPosX=OAPPLICATION_DEFAULT_POSX, int aWindowPosY=OAPPLICATION_DEFAULT_POSY,
+		int aWindowWidth=OAPPLICATION_DEFAULT_WIDTH, int aWindowHeight=OAPPLICATION_DEFAULT_HEIGHT,
+		int aTargetFPS=OAPPLICATION_DEFAULT_TARGETFPS, int aSimulationStep_us=OAPPLICATION_DEFAULT_SIMULATIONSTEP);
 
 	/**
 	 @brief Class destructor.

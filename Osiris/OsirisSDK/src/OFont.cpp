@@ -1,3 +1,8 @@
+#include <string>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OMap.hpp"
 #include "OsirisSDK/OArray.hpp"
@@ -58,9 +63,6 @@ OFont::OFont(ORenderingEngine* aRenderingEngine, const char* aFontName)
 	if (FT_New_Face(Impl::library, _impl->fontName.c_str(), 0, &_impl->face) != 0) {
 		throw OException("Unable to open font.");
 	}
-
-	_lastSize = 0;
-	_currCacheArray = NULL;
 }
 
 OFont::~OFont()
@@ -84,21 +86,6 @@ void OFont::cleanCache()
 		}
 	}
 	_impl->cache.clear();
-}
-
-const OFont::CacheEntry * OFont::entry(char character, int size)
-{
-	if (size != _lastSize) {
-		map<int, CacheEntry*>::iterator it = _cache.find(size);
-		if (it == _cache.end()) {
-			_currCacheArray = loadGlyphs(size);
-		} else {
-			_currCacheArray = it->second;
-		}
-		_lastSize = size;
-	}
-	if (!_currCacheArray || _currCacheArray[character].texId == 0) return NULL;
-	return &_currCacheArray[character];
 }
 
 OGlyph * OFont::createGlyph(char aCharCode, uint8_t aSize, uint16_t aAdvanceX, uint16_t aAdvanceY)
@@ -190,58 +177,6 @@ void OFont::loadToCache(uint8_t aSize)
 		throw e;
 	}
 
-}
-
-OFont::CacheEntry* OFont::loadGlyphs(int size)
-{
-	if (FT_Set_Pixel_Sizes(_impl->face, 0, size) != 0) throw OException("Unable to set font size.");
-
-	CacheEntry *entArray = (CacheEntry*) malloc(255 * sizeof(CacheEntry));
-	memset(entArray, 0, sizeof(CacheEntry) * 255);
-	for (unsigned char character = 0; character < 255; character++) {
-		if (FT_Load_Char(_impl->face, character, FT_LOAD_RENDER) != 0) continue;
-
-		entArray[character].advance_x = _impl->face->glyph->advance.x;
-		entArray[character].advance_y = _impl->face->glyph->advance.y;
-	
-		/* Activating texture unit and binding texture ID */
-		glActiveTexture(GL_TEXTURE0);
-		glGenTextures(1, &entArray[character].texId);
-		glBindTexture(GL_TEXTURE_2D, entArray[character].texId);
-		
-		/* Clamping to edges is important to preventArray[character].artifacts when scaling */
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		/* Linear filtering usually looks best for text */
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		/* We require 1 byte alignmentArray[character].when uploading texture data */
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, _impl->face->glyph->bitmap.width, _impl->face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, _impl->face->glyph->bitmap.buffer);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		/* Now we estabilish the vertices that will delimeter the character box */
-		glGenBuffers(1, &entArray[character].arrBufId);
-		glBindBuffer(GL_ARRAY_BUFFER, entArray[character].arrBufId);
-		float x2 = (float)_impl->face->glyph->bitmap_left;
-		float y2 = (float)-_impl->face->glyph->bitmap_top;
-		float w = (float)_impl->face->glyph->bitmap.width;
-		float h = (float)_impl->face->glyph->bitmap.rows;
-
-		GLfloat boxVertices[4][4] = {
-			{ x2, -y2, 0, 0 },
-			{ x2 + w, -y2, 1, 0 },
-			{ x2, -y2 - h, 0, 1 },
-			{ x2 + w, -y2 - h, 1, 1 },
-		};
-		
-		glBufferData(GL_ARRAY_BUFFER, 4*4*sizeof(GLfloat), boxVertices, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-	_cache[size] = entArray;
-	return entArray;
 }
 
 void OFont::init()

@@ -129,6 +129,18 @@ OTrashBin & ORenderingEngine::trashBin()
 	return _impl->_trashBin;
 }
 
+void ORenderingEngine::clearRenderTarget(const OVector4F & aColor)
+{
+	auto renderingEncoder = _impl->getRenderEncoder();
+	renderingEncoder->clearRenderTarget(aColor);
+}
+
+void ORenderingEngine::clearDepthBuffer(float aValue)
+{
+	auto renderingEncoder = _impl->getRenderEncoder();
+	renderingEncoder->clearDepthBuffer(aValue);
+}
+
 // ----------------------------------------------------------------------------------------------
 // ORenderingController::Impl
 // ----------------------------------------------------------------------------------------------

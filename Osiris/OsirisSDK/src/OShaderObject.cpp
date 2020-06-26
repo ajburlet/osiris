@@ -16,7 +16,7 @@ using namespace std;
 struct OShaderObject::Implementation
 {
 	using PreprocessorPair = pair<string, string>;
-	using PreprocessorList = list<PreprocessorPair>;
+	using PreprocessorList = OList<PreprocessorPair>;
 
 	Implementation(Type aType, const char* aSource) : type(aType), source(aSource) {}
 
@@ -44,7 +44,7 @@ void OShaderObject::setSource(const char* source)
 
 void OShaderObject::addPreprocessorMacro(const char * aName, const char * aValue)
 {
-	_impl->preprocessorList.push_back(Implementation::PreprocessorPair(aName, aValue));
+	_impl->preprocessorList.pushBack(Implementation::PreprocessorPair(aName, aValue));
 }
 
 // ------------------------------------------------------------------------------------

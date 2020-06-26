@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/OException.h"
 
 /**
  @brief Maintains pointers to objects that must be removed at a given time.
@@ -8,6 +9,9 @@
 class OAPI OTrashBin
 {
 protected:
+	/**
+	 @cond HIDDEN
+	 */
 	class BaseItem {
 	public:
 		virtual ~BaseItem() = default;
@@ -23,6 +27,9 @@ protected:
 	private:
 		T* _object;
 	};
+	/**
+	 @endcond
+	 */
 
 public:
 	/**
