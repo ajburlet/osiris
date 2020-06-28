@@ -7,3 +7,6 @@
 [submodule "Osiris/dependencies/glm"]
 	path = Osiris/dependencies/glm
 	url = https://github.com/g-truc/glm
+[submodule "Osiris/dependencies/googletest"]
+	path = Osiris/dependencies/googletest
+	url = https://github.com/google/googletest

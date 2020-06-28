@@ -8,6 +8,10 @@ if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 			    "Create a build directory and run cmake from there.")
 endif ()
 
+#
+# needed to force MSVC runtime library setting in SDK tests
+#
+cmake_policy(SET CMP0091 NEW)
 
 #
 # Project definitions
@@ -33,6 +37,7 @@ add_subdirectory(dependencies/FreeGLUT/freeglut/freeglut)
 #
 add_subdirectory(dependencies/freetype2)
 add_subdirectory(dependencies/glload)
+add_subdirectory(dependencies/googletest)
 
 #
 # SDK & Demo

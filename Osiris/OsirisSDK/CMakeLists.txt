@@ -204,3 +204,5 @@ if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
 else()
 	target_link_libraries(OsirisSDK freeglut_static freetype glload)
 endif()
+
+add_subdirectory(tests)
