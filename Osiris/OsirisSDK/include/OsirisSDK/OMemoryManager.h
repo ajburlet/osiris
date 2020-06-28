@@ -21,7 +21,7 @@ public:
 	/**
 	 @brief Private class constructor.
 	 */
-	OMemoryManager() = default;
+	OMemoryManager();
 
 	/**
 	 @brief Class destructor.
@@ -42,6 +42,10 @@ public:
 	 */
 	void decrease(Scope aScope, uint64_t aBytes);
 
+	/**
+	 @brief Memory usage at a given scope.
+	 */
+	uint64_t usageAt(Scope aScope) const;
 
 protected:
 	uint64_t _usage[static_cast<int>(Scope::COUNT)];

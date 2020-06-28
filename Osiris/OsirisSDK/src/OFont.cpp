@@ -124,7 +124,7 @@ void OFont::loadToCache(uint8_t aSize)
 	auto& sizeCache = _impl->cache[aSize-Impl::minFontSize];
 	if (sizeCache != nullptr) throw OException("Font size already loaded.");
 
-	OExceptionPointerCheck(sizeCache = new Impl::GlyphArray(UINT8_MAX, true));
+	OExceptionPointerCheck(sizeCache = new Impl::GlyphArray(UINT8_MAX, nullptr));
 	ORenderComponents* renderComponents = nullptr;
 	OVertexBuffer* vertexBuffer = nullptr;
 	OTexture* texture = nullptr;

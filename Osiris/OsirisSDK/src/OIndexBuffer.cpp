@@ -8,7 +8,7 @@ struct Point {
 
 struct OIndexBuffer::Implementation 
 {
-	Implementation(uint32_t aVertexCount) : array(aVertexCount, true) {}
+	Implementation(uint32_t aVertexCount) : array(aVertexCount, {0,0,0}) {}
 	OArray<Point,OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>> array;
 };
 

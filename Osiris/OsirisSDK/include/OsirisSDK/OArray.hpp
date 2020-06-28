@@ -149,10 +149,21 @@ class OAPI OArray : public OMemoryManagedObject<Allocator>
 public:
 	/**
 	 @brief Class constructor.
-	 @brief aCapacity Array capacity, to be allocated right away.
-	 @brief aSizeToCapacity If true sets array size to capacity.
+	 @param aCapacity Array capacity, to be allocated right away.
 	 */
-	OArray(uint32_t aCapacity=0, bool aSizeToCapacity=false);
+	OArray(uint32_t aCapacity=0);
+
+	/**
+	 @brief Class constructor, sets array size to capacity and initializes members.
+	 @param aCapacity Array capacity, to be allocated right away.
+	 @param aInitValue Initial value of the items.
+	 */
+	OArray(uint32_t aCapacity, const T& aInitValue);
+
+	/**
+	 @brief Move constructor.
+	 */
+	OArray(OArray&& aOther);
 
 	/**
 	 @brief Class destructor.
@@ -259,21 +270,35 @@ protected:
 };
 
 template<typename T, class Allocator>
-inline OArray<T, Allocator>::OArray(uint32_t aCapacity, bool aSizeToCapacity)
+inline OArray<T, Allocator>::OArray(uint32_t aCapacity)
 {
-	if ((_array = static_cast<T*>(Allocator().allocate(aCapacity))) == nullptr) {
-		throw OException("Unable to allocate memory for array.");
-	}
 	resize(aCapacity);
-	_size = (aSizeToCapacity) ? _capacity : 0;
+}
+
+template<typename T, class Allocator>
+inline OArray<T, Allocator>::OArray(uint32_t aCapacity, const T & aInitValue)
+{
+	resize(aCapacity);
+	_size = aCapacity;
+	for (auto& item : *this) item = aInitValue;
+}
+
+template<typename T, class Allocator>
+inline OArray<T, Allocator>::OArray(OArray && aOther)
+{
+	_size = aOther._size;
+	_capacity = aOther._capacity;
+	_array = aOther._array;
+
+	aOther._array = nullptr;
+	aOther._capacity = 0;
+	aOther._size = 0;
 }
 
 template<typename T, class Allocator>
 inline OArray<T, Allocator>::~OArray()
 {
-	if (_array != nullptr) {
-		Allocator().deallocate(_array, _capacity*sizeof(T));
-	}
+	if (_array != nullptr) Allocator().deallocate(_array, _capacity*sizeof(T));
 }
 
 template<typename T, class Allocator>
@@ -291,13 +316,18 @@ inline uint32_t OArray<T, Allocator>::size() const
 template<typename T, class Allocator>
 inline void OArray<T, Allocator>::resize(uint32_t aNewCapacity)
 {
-	auto new_array = new T[aNewCapacity];
-	OExceptionPointerCheck(new_array);
+	T* new_array = nullptr;
+	if (aNewCapacity > 0) {
+		new_array = static_cast<T*>(Allocator().allocate(aNewCapacity*sizeof(T)));
+		OExceptionPointerCheck(new_array);
+	} 
 	uint32_t itemCount = (aNewCapacity > _size) ? _size : aNewCapacity;
-	for (uint32_t i = 0; i < itemCount; i++) {
-		new_array[i] = _array[i];
+	if (_array) {
+		for (uint32_t i = 0; i < itemCount; i++) {
+			new_array[i] = _array[i];
+		}
+		Allocator().deallocate(_array, _capacity*sizeof(T));
 	}
-	delete[] _array;
 
 	_array = new_array;
 	_capacity = aNewCapacity;
@@ -349,7 +379,7 @@ inline void OArray<T, Allocator>::remove(uint32_t aIndex)
 		throw OException("Invalid array index.");
 	}
 	for (uint32_t i = aIndex + 1; i < _size; i++) {
-		_array[aIndex - 1] = _array[aIndex];
+		_array[i - 1] = _array[i];
 	}
 	_size--;
 }
@@ -412,9 +442,19 @@ private:
 
 public:
 	/**
-	 @copydoc OArray(uint32_t, bool)
+	 @copydoc OArray(uint32_t)
 	 */
-	ODynArray(uint32_t aCapacity=0, bool aSizeToCapacity = false);
+	ODynArray(uint32_t aCapacity=0);
+	
+	/**
+	 @copydoc OArray(uint32_t, const T&)
+	 */
+	ODynArray(uint32_t aCapacity, const T& aInitValue);
+
+	/**
+	 @copydoc OArray(OArray&&)
+	 */
+	ODynArray(ODynArray&& aOther);
 
 	/**
 	 @brief Class destructor.
@@ -428,8 +468,20 @@ public:
 };
 
 template<typename T, class Allocator, size_t BlockSize>
-inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, bool aSizeToCapacity) :
-	Super(aCapacity, aSizeToCapacity)
+inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity) :
+	Super(aCapacity)
+{
+}
+
+template<typename T, class Allocator, size_t BlockSize>
+inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, const T & aInitValue) :
+	Super(aCapacity, aInitValue)
+{
+}
+
+template<typename T, class Allocator, size_t BlockSize>
+inline ODynArray<T, Allocator, BlockSize>::ODynArray(ODynArray && aOther) :
+	Super(aOther)
 {
 }
 
