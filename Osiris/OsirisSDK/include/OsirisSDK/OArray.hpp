@@ -225,13 +225,13 @@ public:
 	 @brief Subscript operator override.
 	 @param aIndex Index of the item on the array.
 	 */
-	T& operator[](uint32_t aIndex);
+	virtual T& operator[](uint32_t aIndex);
 
 	/**
 	 @brief Const subscript operator override.
 	 @param aIndex Index of the item on the array.
 	 */
-	const T& operator[](uint32_t aIndex) const;
+	virtual const T& operator[](uint32_t aIndex) const;
 
 	/**
 	 @brief Non-const iterator class.
@@ -272,7 +272,7 @@ protected:
 template<typename T, class Allocator>
 inline OArray<T, Allocator>::OArray(uint32_t aCapacity)
 {
-	resize(aCapacity);
+	if (aCapacity > 0) resize(aCapacity);
 }
 
 template<typename T, class Allocator>
@@ -461,36 +461,64 @@ public:
 	 */
 	~ODynArray() = default;
 
-	/**
-	 @copydoc OArray::append(const T&)
-	 */
+	virtual void resize(uint32_t aNewCapacity) override;
+
 	virtual void append(const T& aItemValue) override;
+	
+	T& operator[](uint32_t aIndex) override;
+
+	const T& operator[](uint32_t aIndex) const override;
 };
 
 template<typename T, class Allocator, size_t BlockSize>
-inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity) :
-	Super(aCapacity)
+inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity)
 {
+	if (aCapacity > 0) resize(aCapacity);
 }
 
 template<typename T, class Allocator, size_t BlockSize>
-inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, const T & aInitValue) :
-	Super(aCapacity, aInitValue)
+inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, const T & aInitValue)
 {
+	if (aCapacity > 0) {
+		resize(aCapacity);
+		_size = aCapacity;
+		for (auto& item : *this) item = aInitValue;
+	}
 }
 
 template<typename T, class Allocator, size_t BlockSize>
 inline ODynArray<T, Allocator, BlockSize>::ODynArray(ODynArray && aOther) :
-	Super(aOther)
+	Super(std::move(aOther))
 {
+}
+
+template<typename T, class Allocator, size_t BlockSize>
+inline void ODynArray<T, Allocator, BlockSize>::resize(uint32_t aNewCapacity)
+{
+	auto originalSize = _size;
+	Super::resize(aNewCapacity + (BlockSize - (aNewCapacity % BlockSize)));
+	if (aNewCapacity < originalSize) _size = aNewCapacity;
 }
 
 template<typename T, class Allocator, size_t BlockSize>
 inline void ODynArray<T, Allocator, BlockSize>::append(const T & aItemValue)
 {
 	if (_capacity == _size) {
-		resize(_capacity + BlockSize);
+		resize(_capacity + 1);
 	}
 	Super::append(aItemValue);
+}
+
+template<typename T, class Allocator, size_t BlockSize>
+inline T & ODynArray<T, Allocator, BlockSize>::operator[](uint32_t aIndex)
+{
+	if (aIndex >= _capacity) resize(aIndex + 1);
+	return Super::operator[](aIndex);
+}
+
+template<typename T, class Allocator, size_t BlockSize>
+inline const T & ODynArray<T, Allocator, BlockSize>::operator[](uint32_t aIndex) const
+{
+	return const_cast<ODynArray*>(this)->operator[](aIndex);
 }
 

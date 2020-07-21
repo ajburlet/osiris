@@ -8,6 +8,10 @@ include_directories(${PROJECT_SOURCE_DIR}/dependencies/googletest/googletest/inc
 set (TEST_FILES
 	OsirisTests.h
 	OArray.cc
+	ODynArray.cc
+	OList.cc
+	OStack.cc
+	OMap.cc
 )
 
 add_executable(OsirisTests ${TEST_FILES})

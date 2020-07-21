@@ -224,11 +224,18 @@ public:
 	void pushBack(const T& aItem);
 
 	/**
-	 @brief Inserts an item at a given position.
+	 @brief Inserts an item after a given iterator marking position.
 	 @param aItem The item to be added to the list.
-	 @param aPositionIt 
+	 @param aPositionIt The iterator used as reference to the insertion point.
 	 */
-	void insert(const T& aItem, Iterator& aPositionIt);
+	void insertAfter(const T& aItem, Iterator& aPositionIt);
+	
+	/**
+	 @brief Inserts an item before a given iterator marking position.
+	 @param aItem The item to be added to the list.
+	 @param aPositionIt The iterator used as reference to the insertion point.
+	 */
+	void insertBefore(const T& aItem, Iterator& aPositionIt);
 
 	/**
 	 @brief Removes first element from the list.
@@ -247,10 +254,11 @@ public:
 	void remove(Iterator& aIterator);
 
 	/**
-	 @brief Removes an item from the list.
+	 @brief Removes the first occurence of an item from the list.
 	 @param aItem The item to be removed from the list.
+	 @return true if an item was removed.
 	 */
-	void remove(const T& aItem);
+	bool remove(const T& aItem);
 
 	/**
 	 @brief Returns a reference to the first element.
@@ -350,7 +358,7 @@ inline void OList<T, Allocator>::pushBack(const T & aItem)
 {
 	auto node = new Node(aItem, _tail, nullptr);
 	OExceptionPointerCheck(node);
-	if (_tail = nullptr) {
+	if (_tail == nullptr) {
 		_head = node;
 	} else {
 		_tail->_next = node;
@@ -360,7 +368,7 @@ inline void OList<T, Allocator>::pushBack(const T & aItem)
 }
 
 template<typename T, class Allocator>
-inline void OList<T, Allocator>::insert(const T & aItem, Iterator & aPositionIt)
+inline void OList<T, Allocator>::insertAfter(const T & aItem, Iterator & aPositionIt)
 {
 	if (aPositionIt.node() == nullptr || _count == 0) {
 		// empty list or iterator to the end of the list
@@ -368,10 +376,29 @@ inline void OList<T, Allocator>::insert(const T & aItem, Iterator & aPositionIt)
 		return;
 	}
 
-	auto node = new Node(aItem, , aPositionIt.node(), aPositionIt.node()->_next);
+	auto node = new Node(aItem, aPositionIt.node(), aPositionIt.node()->_next);
 	OExceptionPointerCheck(node);
 	if (aPositionIt.node()->_next != nullptr) aPositionIt.node()->_next->_prev = node;
 	aPositionIt.node()->_next = node;
+	_count++;
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::insertBefore(const T & aItem, Iterator & aPositionIt)
+{
+	if (aPositionIt.node() == nullptr || _count == 0) {
+		// empty list or iterator to the end of the list
+		pushBack(aItem);
+		return;
+	} else if (aPositionIt.node()->_prev == nullptr) {
+		pushFront(aItem);
+		return;
+	}
+	
+	auto node = new Node(aItem, aPositionIt.node()->_prev, aPositionIt.node());
+	OExceptionPointerCheck(node);
+	if (aPositionIt.node()->_prev != nullptr) aPositionIt.node()->_prev->_next = node;
+	aPositionIt.node()->_prev = node;
 	_count++;
 }
 
@@ -418,20 +445,26 @@ inline void OList<T, Allocator>::remove(Iterator & aIterator)
 		node->_next->_prev = node->_prev;
 	}
 	delete node;
+	_count--;
 }
 
 template<typename T, class Allocator>
-inline void OList<T, Allocator>::remove(const T & aItem)
+inline bool OList<T, Allocator>::remove(const T & aItem)
 {
+	bool removed = false;
 	if (aItem == _tail->_value) {
 		popBack();
+		removed = true;
 	} else {
 		for (Iterator it = begin(); it != end(); ++it) {
-			if (*it = aItem) {
+			if (*it == aItem) {
 				remove(it);
+				removed = true;
+				break;
 			}
 		}
 	}
+	return removed;
 }
 
 template<typename T, class Allocator>

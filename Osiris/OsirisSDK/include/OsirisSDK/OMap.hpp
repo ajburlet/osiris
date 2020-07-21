@@ -21,127 +21,85 @@ protected:
 	using MapConstIterator = typename MapType::const_iterator;
 
 public:
-	/**
-	 @brief Iterator class for OMap.
-	 */
-	class Iterator {
+	template <class MapIteratorType>
+	class BaseIterator : public OMemoryManagedObject<Allocator>
+	{
 	public:
 		/**
-		 @brief Class default constructor.
+		 @brief Default class constructor.
 		 */
-		Iterator() = default;
-
+		BaseIterator() = default;
+		
 		/**
 		 @brief Class constructor.
 		 @param aOrigIterator The original iterator.
 		 */
-		Iterator(MapIterator& aOrigIterator);
+		BaseIterator(MapIteratorType& aOrigIterator) : _it(aOrigIterator) {}
 
 		/**
 		 @brief Class copy constructor.
 		 @param aOther The iterator to be copied.
 		 */
-		Iterator(const Iterator& aOther);
+		BaseIterator(const BaseIterator& aOther) : _it(aOther._it) {}
 
 		/**
 		 @brief Class destructor.
 		 */
-		virtual ~Iterator() = default;
+		virtual ~BaseIterator() = default;
 
 		/**
 		 @brief Return the key value.
 		 */
-		TKey& key();
+		const TKey& key() const { return _it->first; };
 
 		/**
 		 @brief Returns the value.
 		 */
-		TValue& value();
+		TValue& value() { return _it->second; }
 
 		/**
 		 @brief Moves the iterator forward.
 		 */
-		Iterator& operator++();
+		BaseIterator& operator++() { ++_it; return *this; }
 
 		/**
 		 @brief Moves the iterator backwards.
 		 */
-		Iterator& operator--();
-
-		/**
-		 @brief Assignment operator.
-		 */
-		Iterator& operator=(const Iterator& aOther);
-
-		/**
-		 @brief Equal comparison operator.
-		 */
-		bool operator==(const Iterator& aOther) const;
-
-	protected:
-		MapIterator _it;
-	};
-
-	/**
-	 @brief Constant iterator for OMap.
-	 */
-	class ConstIterator {
-	public:
-		/**
-		 @brief Class default constructor.
-		 */
-		ConstIterator() = default;
-
-		/**
-		 @brief Class constructor.
-		 @param aOrigIterator The original iterator.
-		 */
-		ConstIterator(MapConstIterator& aOrigIterator);
-
-		/**
-		 @brief Class copy constructor.
-		 @param aOther The iterator to be copied.
-		 */
-		ConstIterator(const ConstIterator& aOther);
-
-		/**
-		 @brief Class destructor.
-		 */
-		virtual ~ConstIterator() = default;
-
-		/**
-		 @brief Return the key value.
-		 */
-		const TKey& key() const;
-
-		/**
-		 @brief Returns the value.
-		 */
-		const TValue& value() const;
-
+		BaseIterator& operator--() { --_it; return *this; }
+		
 		/**
 		 @brief Moves the iterator forward.
 		 */
-		ConstIterator& operator++();
+		BaseIterator operator++(int) { auto tmp = *this; ++tmp; return tmp; }
 
 		/**
 		 @brief Moves the iterator backwards.
 		 */
-		ConstIterator& operator--();
+		BaseIterator operator--(int) { auto tmp = *this; --tmp; return tmp; }
 
 		/**
 		 @brief Assignment operator.
 		 */
-		ConstIterator& operator=(const ConstIterator& aOther);
+		BaseIterator& operator=(const BaseIterator& aOther) { _it = aOther._it; return *this; }
 
 		/**
-		 @brief Equal comparison operator.
+		 @brief Equality comparison operator.
 		 */
-		bool operator==(const ConstIterator& aOther) const;
+		bool operator==(const BaseIterator& aOther) const { return _it == aOther._it; }
+
+		/**
+		 @brief Inequality comparison operator.
+		 */
+		bool operator!=(const BaseIterator& aOther) const { return _it != aOther._it; }
 
 	private:
-		MapConstIterator _it;
+		MapIteratorType _it;
+
+		friend class OMap;
 	};
+
+	using Iterator = BaseIterator<MapIterator>;
+	using ConstIterator = BaseIterator<MapConstIterator>;
 
 	/**
 	 @brief Class default constructor.
@@ -176,7 +134,7 @@ public:
 	/**
 	 @brief Returns the number of items in the collection.
 	 */
-	uint32_t count() const;
+	uint32_t size() const;
 
 	/**
 	 @brief Find an element by it's key.
@@ -204,6 +162,16 @@ public:
 	bool insert(const TKey& aKey, const TValue& aValue, Iterator* aItemAtMap = nullptr);
 
 	/**
+	 @brief Removes an item pointer to by an iterator.
+	 */
+	void remove(Iterator& aIterator);
+
+	/**
+	 @brief Removes an item by it's key.
+	 */
+	void remove(const TKey& aKey);
+
+	/**
 	 @brief Subscript operators, gives access to the value given by a key.
 	 @param aKey The key related to the value we are interested in.
 	 @return A reference to the value related to the key.
@@ -214,114 +182,6 @@ protected:
 	MapType _map;
 };
 
-// ------------------------------------------------------------------------------------------
-// INLINE IMPLEMENTATION - Iterator
-// ------------------------------------------------------------------------------------------
-template<typename TKey, typename TValue, class Allocator, class Compare>
-OMap<TKey, TValue, Allocator, Compare>::Iterator::Iterator(MapIterator& aOrigIterator) :
-	_it(aOrigIterator)
-{
-
-}
-
-template<class TKey, class TValue, class Allocator, class Compare>
-inline OMap<TKey, TValue, Allocator, Compare>::Iterator::Iterator(const Iterator & aOther) :
-	_it(aOther._it)
-{
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-TKey& OMap<TKey, TValue, Allocator, Compare>::Iterator::key()
-{
-	return _it->first;
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline TValue & OMap<TKey, TValue, Allocator, Compare>::Iterator::value()
-{
-	return _it->second;
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline typename OMap<TKey, TValue, Allocator, Compare>::Iterator & OMap<TKey, TValue, Allocator, Compare>::Iterator::operator++()
-{
-	_it++;
-	return *this;
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline typename OMap<TKey, TValue, Allocator, Compare>::Iterator & OMap<TKey, TValue, Allocator, Compare>::Iterator::operator--()
-{
-	_it--;
-	return *this;
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline typename OMap<TKey, TValue, Allocator, Compare>::Iterator & OMap<TKey, TValue, Allocator, Compare>::Iterator::operator=(const Iterator& aOther)
-{
-	_it = aOther._it;
-	return *this;
-}
-
-template<class TKey, class TValue, class Allocator, class Compare>
-inline bool OMap<TKey, TValue, Allocator, Compare>::Iterator::operator==(const Iterator & aOther) const
-{
-	return (_it == aOther._it);
-}
-
-// ------------------------------------------------------------------------------------------
-// INLINE IMPLEMENTATION - ConstIterator
-// ------------------------------------------------------------------------------------------
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline OMap<TKey, TValue, Allocator, Compare>::ConstIterator::ConstIterator(MapConstIterator & aOrigIterator) :
-	_it(aOrigIterator)
-{
-}
-
-template<class TKey, class TValue, class Allocator, class Compare>
-inline OMap<TKey, TValue, Allocator, Compare>::ConstIterator::ConstIterator(const ConstIterator & aOther) :
-	_it(aOther._it)
-{
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline const TKey & OMap<TKey, TValue, Allocator, Compare>::ConstIterator::key() const
-{
-	return _it->first;
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline const TValue & OMap<TKey, TValue, Allocator, Compare>::ConstIterator::value() const
-{
-	return _it->second;
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline typename OMap<TKey, TValue, Allocator, Compare>::ConstIterator & OMap<TKey, TValue, Allocator, Compare>::ConstIterator::operator++()
-{
-	_it++;
-	return *this;
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline typename OMap<TKey, TValue, Allocator, Compare>::ConstIterator & OMap<TKey, TValue, Allocator, Compare>::ConstIterator::operator--()
-{
-	_it--;
-	return *this;
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline typename OMap<TKey, TValue, Allocator, Compare>::ConstIterator & OMap<TKey, TValue, Allocator, Compare>::ConstIterator::operator=(const ConstIterator & aOther)
-{
-	_it = aOther._it;
-	return *this;
-}
-
-template<typename TKey, typename TValue, class Allocator, class Compare>
-inline bool OMap<TKey, TValue, Allocator, Compare>::ConstIterator::operator==(const ConstIterator & aOther) const
-{
-	return (_it == aOther._it);
-}
 
 // ------------------------------------------------------------------------------------------
 // INLINE IMPLEMENTATION - OMap
@@ -351,9 +211,9 @@ inline typename OMap<TKey, TValue, Allocator, Compare>::ConstIterator OMap<TKey,
 }
 
 template<typename TKey, typename TValue, class Allocator, class Compare>
-inline uint32_t OMap<TKey, TValue, Allocator, Compare>::count() const
+inline uint32_t OMap<TKey, TValue, Allocator, Compare>::size() const
 {
-	return _map.count();
+	return _map.size();
 }
 
 template<typename TKey, typename TValue, class Allocator, class Compare>
@@ -378,6 +238,18 @@ inline bool OMap<TKey, TValue, Allocator, Compare>::insert(const TKey & aKey, co
 	return pair.second;
 }
 
+template<class TKey, class TValue, class Allocator, class Compare>
+inline void OMap<TKey, TValue, Allocator, Compare>::remove(Iterator & aIterator)
+{
+	_map.erase(aIterator._it);
+}
+
+template<class TKey, class TValue, class Allocator, class Compare>
+inline void OMap<TKey, TValue, Allocator, Compare>::remove(const TKey & aKey)
+{
+	_map.erase(aKey);
+}
+
 template<typename TKey, typename TValue, class Allocator, class Compare>
 inline TValue & OMap<TKey, TValue, Allocator, Compare>::operator[](const TKey & aKey)
 {
@@ -387,3 +259,4 @@ inline TValue & OMap<TKey, TValue, Allocator, Compare>::operator[](const TKey & 
 	}
 	return it.value();
 }
+
