@@ -12,6 +12,7 @@ set (TEST_FILES
 	OList.cc
 	OStack.cc
 	OMap.cc
+	OSet.cc
 )
 
 add_executable(OsirisTests ${TEST_FILES})
