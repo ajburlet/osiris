@@ -3,6 +3,8 @@
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OList.hpp"
 #include "OsirisSDK/OOpenGLCommandQueue.h"
+#include "OsirisSDK/OOpenGLRenderCommandEncoder.h"
+#include "OsirisSDK/OOpenGLResourceCommandEncoder.h"
 #include "OsirisSDK/OOpenGLCommandBuffer.h"
 
 struct OOpenGLCommandBuffer::Impl {
@@ -18,24 +20,34 @@ OOpenGLCommandBuffer::OOpenGLCommandBuffer(OOpenGLCommandQueue * aCommandQueue)
 	_impl->commandQueue = aCommandQueue;
 }
 
-OOpenGLCommandBuffer::OOpenGLCommandBuffer()
+OOpenGLCommandBuffer::~OOpenGLCommandBuffer()
 {
 	if (_impl != nullptr) delete _impl;
 }
 
 OGraphicsRenderCommandEncoder * OOpenGLCommandBuffer::createRenderCommandEncoder()
 {
-	return nullptr;
+	return new OOpenGLRenderCommandEncoder(this);
 }
 
 OGraphicsResourceCommandEncoder * OOpenGLCommandBuffer::createResourceCommandEncoder()
 {
-	return nullptr;
+	return new OOpenGLResourceCommandEncoder(this);
 }
 
 void OOpenGLCommandBuffer::commit()
 {
 	_impl->commandQueue->pushBuffer(this);
+}
+
+void OOpenGLCommandBuffer::waitUntilCompleted()
+{
+	// must be completed when multithread approach is done
+}
+
+void OOpenGLCommandBuffer::run()
+{
+	for (auto& cmd : _impl->commandList) cmd();
 }
 
 void OOpenGLCommandBuffer::addCommandItem(CommandItem aCommandItem)

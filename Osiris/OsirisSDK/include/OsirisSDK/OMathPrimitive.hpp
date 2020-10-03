@@ -21,6 +21,11 @@ public:
 	using GLMType = typename MType;
 
 	/**
+	 @brief Value type.
+	 */
+	using ValueType = typename MType::value_type;
+
+	/**
 	 \brief Class constructor.
 	 */
 	OMathPrimitive();
@@ -59,10 +64,10 @@ public:
 	OMathPrimitive<MType>& operator-=(const OMathPrimitive<MType>& in);
 	OMathPrimitive<MType> operator-(const OMathPrimitive<MType>& in) const;
 
-	OMathPrimitive<MType>& operator*=(float x);
-	virtual OMathPrimitive<MType> operator*(float x) const;
-	OMathPrimitive<MType>& operator/=(float x);
-	virtual OMathPrimitive<MType> operator/(float x) const;
+	OMathPrimitive<MType>& operator*=(ValueType x);
+	virtual OMathPrimitive<MType> operator*(ValueType x) const;
+	OMathPrimitive<MType>& operator/=(ValueType x);
+	virtual OMathPrimitive<MType> operator/(ValueType x) const;
 	
 	bool operator==(const OMathPrimitive<MType>& in) const;
 	bool operator!=(const OMathPrimitive<MType>& in) const;
@@ -182,14 +187,14 @@ inline OMathPrimitive<MType> OMathPrimitive<MType>::operator-(const OMathPrimiti
 }
 
 template<class MType>
-inline OMathPrimitive<MType>& OMathPrimitive<MType>::operator*=(float x)
+inline OMathPrimitive<MType>& OMathPrimitive<MType>::operator*=(ValueType x)
 {
 	_glmInternal *= x;
 	return *this;
 }
 
 template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(float x) const
+inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(ValueType x) const
 {
 	OMathPrimitive<MType> res;
 	res._glmInternal = _glmInternal * x;
@@ -197,14 +202,14 @@ inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(float x) const
 }
 
 template<class MType>
-inline OMathPrimitive<MType>& OMathPrimitive<MType>::operator/=(float x)
+inline OMathPrimitive<MType>& OMathPrimitive<MType>::operator/=(ValueType x)
 {
 	_glmInternal /= x;
 	return *this;
 }
 
 template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator/(float x) const
+inline OMathPrimitive<MType> OMathPrimitive<MType>::operator/(ValueType x) const
 {
 	OMathPrimitive<MType> res;
 	res._glmInternal = _glmInternal / x;

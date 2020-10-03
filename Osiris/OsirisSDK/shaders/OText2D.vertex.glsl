@@ -2,8 +2,8 @@
 
 layout (location = 0) in vec4 position;
 varying vec2 texcoord;
-uniform vec3 posOffset;
-uniform vec3 scale;
+uniform vec2 posOffset;
+uniform vec2 scale;
 
 void main(void) 
 {

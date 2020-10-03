@@ -24,5 +24,7 @@ OGraphicsCommandBuffer * OOpenGLCommandQueue::createCommandBuffer()
 
 void OOpenGLCommandQueue::pushBuffer(OOpenGLCommandBuffer * aCommandBuffer)
 {
-	_impl->queue.pushBack(aCommandBuffer);
+	//_impl->queue.pushBack(aCommandBuffer);
+	// for now, we run the commands right away. with multithreading, this should be done elsewhere.
+	aCommandBuffer->run();
 }

@@ -12,16 +12,26 @@ class OAPI OGlyph : public ORenderable
 public:
 	/**
 	 @brief Class constructor.
+	 @param aCharCode Charecter code byte.
 	 @param aAdvanceX Font horizontal advance space to the next character.
 	 @param aAdvanceY Font vertical advance space to the next character.
+	 @param aPositionOffset Position offset (NDC).
+	 @param aColor Font color.
+	 @param aScale Scale vector.
 	 */
-	OGlyph(uint16_t aAdvanceX=0, uint16_t aAdvanceY=0);
+	OGlyph(char aCharCode, uint16_t aAdvanceX, uint16_t aAdvanceY, const OVector2F& aPositionOffset,
+		const OVector4FL& aColor, const OVector2F& aScale);
 
 	/**
 	 @brief Class destructor.
 	 */
 	~OGlyph();
-	
+
+	/**
+	 @brief Charecter code byte.
+	 */
+	char charCode() const;
+
 	/**
 	 @brief Provides the font horizontal advance space to the next character.
 	 */
@@ -63,6 +73,7 @@ public:
 	const OVector4FL& color() const;
 
 private:
+	char		_charCode;
 	uint16_t	_advanceX;
 	uint16_t	_advanceY;
 
@@ -75,6 +86,11 @@ private:
 	 @endcond
 	 */
 };
+
+inline char OGlyph::charCode() const
+{
+	return _charCode;
+}
 
 inline uint16_t OGlyph::advanceX() const
 {

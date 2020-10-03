@@ -5,53 +5,69 @@
 
 #include "OsirisSDK/OText2D.h"
 #include "OsirisSDK/OApplication.h"
+#include "OsirisSDK/OList.hpp"
 #include "OsirisSDK/OVector.hpp"
+#include "OsirisSDK/OGlyph.h"
+#include "OsirisSDK/ORenderingEngine.h"
+#include "OsirisSDK/OFont.h"
 #include "OsirisSDK/OException.h"
 
 #include "resource.h"
 
 using namespace std;
 
-bool OText2D::_initialized = false;
-OShaderProgram* OText2D::_shaderProgram = NULL;
-GLuint OText2D::_shaderCoordAttr;
-GLuint OText2D::_shaderTexUniform;
-GLuint OText2D::_shaderColorUniform;
-GLuint OText2D::_shaderPosition;
-GLuint OText2D::_shaderScale;
-
+// ****************************************************************************
+// OText2D concealed members & methods
+// ****************************************************************************
 struct OText2D::Impl {
-	OVector4F fontColor;
-	std::string content;
+	OVector2I32	position;
+	OVector4FL	fontColor;
+	OVector2F	scale;
+	std::string	content;
+	OList<OGlyph*>	glyph_list;
+	bool		redraw = false;
+
+	void UpdateViewportConversion(uint32_t aViewportWidth, uint32_t aViewportHeight);
+	OVector2F ConvertToNDC(const OVector2I32& a_viewport_coordinate);
 };
 
-OText2D::OText2D(OFont* aFont, uint8_t aFontSize, float aX, float aY, const OVector4F& aColor,
+void OText2D::Impl::UpdateViewportConversion(uint32_t aViewportWidth, uint32_t aViewportHeight)
+{
+	// NDC space goes from -1.0 to 1.0 on X and Y axes
+	scale = OVector2F(2.0f / aViewportWidth, 2.0f / aViewportHeight);
+}
+
+OVector2F OText2D::Impl::ConvertToNDC(const OVector2I32 & aViewportCoordinate)
+{
+	return OVector2F(aViewportCoordinate.x() * scale.x() - 1.0f, - aViewportCoordinate.y() * scale.y() + 1.0f);
+}
+
+// ****************************************************************************
+// OText2D class methods
+// ****************************************************************************
+OText2D::OText2D(OFont* aFont, uint8_t aFontSize, const OVector2I32& aPosition, const OVector4FL& aColor,
 		 const char* aContent) :
-	_x(aX),
-	_y(aY),
 	_font(aFont),
 	_fontSize(aFontSize),
 	_lineSpacing(0)
 {
-	_Init();
-
 	OExceptionPointerCheck(_impl = new Impl);
 
 	if (aContent != NULL) _impl->content = aContent;
+	_impl->position = aPosition;
 	_impl->fontColor = aColor;
-
-	_scale_x = 2.0f / OApplication::activeInstance()->windowWidth();
-	_scale_y = 2.0f / OApplication::activeInstance()->windowHeight();
-
-	OApplication::activeInstance()->addEventRecipient(OEventType::ResizeEvent, this);
+	_impl->UpdateViewportConversion(OApplication::activeInstance()->windowWidth(),
+					OApplication::activeInstance()->windowHeight());
 	
-	glGenVertexArrays(1, &_arrayObject);
+	OApplication::activeInstance()->addEventRecipient(OEventType::ResizeEvent, this);
 }
 
 OText2D::~OText2D()
 {
-	if (_impl != nullptr) delete _impl;
-	glDeleteVertexArrays(1, &_arrayObject);
+	if (_impl != nullptr) {
+		for (auto glyph : _impl->glyph_list) delete glyph;
+		delete _impl;
+	}
 }
 
 void OText2D::setFont(OFont * font)
@@ -74,12 +90,12 @@ uint8_t OText2D::fontSize() const
 	return _fontSize;
 }
 
-void OText2D::setFontColor(const OVector4F & aColor)
+void OText2D::setFontColor(const OVector4FL & aColor)
 {
 	_impl->fontColor = aColor;
 }
 
-OVector4F OText2D::fontColor() const
+const OVector4FL& OText2D::fontColor() const
 {
 	return _impl->fontColor;
 }
@@ -94,45 +110,35 @@ int OText2D::lineSpacing() const
 	return _lineSpacing;
 }
 
-void OText2D::setPosition(float x, float y)
+void OText2D::setPosition(const OVector2I32& aPosition)
 {
-	_x = x;
-	_y = y;
+	_impl->position = aPosition;
 }
 
-float OText2D::x() const
+const OVector2I32& OText2D::position() const
 {
-	return _x;
+	return _impl->position;
 }
 
-float OText2D::y() const
+void OText2D::setScale(const OVector2F& aScale)
 {
-	return _y;
+	_impl->scale = aScale;
 }
 
-void OText2D::setScale(float sx, float sy)
+const OVector2F & OText2D::scale() const
 {
-	_scale_x = sx;
-	_scale_y = sy;
-}
-
-float OText2D::scaleX() const
-{
-	return _scale_x;
-}
-
-float OText2D::scaleY() const
-{
-	return _scale_y;
+	return _impl->scale;
 }
 
 void OText2D::setContent(const char * content)
 {
+	_impl->redraw = true;
 	_impl->content = content;
 }
 
 void OText2D::append(const char * content)
 {
+	_impl->redraw = true;
 	_impl->content += content;
 }
 
@@ -141,74 +147,41 @@ const char * OText2D::content() const
 	return _impl->content.c_str();
 }
 
-void OText2D::render(OMatrixStack* mtx)
+void OText2D::render(ORenderingEngine* aRenderingEngine, OMatrixStack*)
 {
-	if (isHidden()) return;
-
 	/* now we iterate through every character and render */
-	float currX = _x;
-	float currY = _y;
-	for (const char *p = _impl->content.c_str(); *p != '\0'; p++) {
-		/* if char is new line */
-		if (*p == '\n') {
-			currX = _x;
-			currY -= (_font->lineSpacing() + _lineSpacing) * _scale_y;
-			continue;
+	if (_impl->redraw) {
+		for (auto glyph : _impl->glyph_list) delete glyph;
+		_impl->glyph_list.clear();
+
+		auto initialPos = _impl->ConvertToNDC(_impl->position);
+		auto currPos = initialPos;
+		for (const char *p = _impl->content.c_str(); *p != '\0'; p++) {
+			/* if char is new line */
+			if (*p == '\n') {
+				currPos.setX(initialPos.x());
+				currPos.setY(currPos.y() - (_font->lineSpacing() + _lineSpacing) * _impl->scale.y());
+				continue;
+			}
+
+			/* Get font data */
+			auto glyph = _font->createGlyph(*p, _fontSize, currPos, _impl->fontColor, _impl->scale);
+			_impl->glyph_list.pushBack(glyph);
+
+			/* move the cursor */
+			currPos += OVector2F((glyph->advanceX() >> 6) * _impl->scale.x(), 
+					     (glyph->advanceY() >> 6) * _impl->scale.y());
 		}
 
-		/* Get font data */
-		const OFont::CacheEntry *fEntry = _font->entry(*p, _fontSize);
-		if (fEntry == NULL) throw OException("Failed to load full font charset.");
-
-		/* Activate the texture unit 0 and bind the font texture */ 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, fEntry->texId);
-
-		/* passing shader uniform parameter: translation */
-		glUniform3fv(_shaderPosition, 1, OVector3F(currX, currY, 0.0f).glArea());
-		
-		/* binding buffer */
-		glBindBuffer(GL_ARRAY_BUFFER, fEntry->arrBufId);
-		glVertexAttribPointer(_shaderCoordAttr, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-		/* draw */
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		
-		/* move the cursor */
-		currX += (fEntry->advance_x >> 6) * _scale_x;
-		currY += (fEntry->advance_y >> 6) * _scale_y;
+		_impl->redraw = false;
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDisableVertexAttribArray(_shaderCoordAttr);
-	glBindVertexArray(0);
+	for (auto glyph : _impl->glyph_list) aRenderingEngine->render(glyph);
 }
 
 void OText2D::onScreenResize(const OResizeEvent * evt)
 {
-	_scale_x = 2.0f / evt->width();
-	_scale_y = 2.0f / evt->height();
+	_impl->UpdateViewportConversion(evt->width(), evt->height());
+	_impl->redraw = true;
 }
 
-void OText2D::_Init()
-{
-	if (!_initialized) {
-		_shaderProgram = new OShaderProgram("OText2DRenderer");
-#ifdef WIN32
-		_shaderProgram->addShader(OShaderObject::ShaderType_Vertex, "Vertex-OText2D", IDR_SHADER_VERTEX_OTEXT2D);
-		_shaderProgram->addShader(OShaderObject::ShaderType_Fragment, "Fragment-OText2D", IDR_SHADER_FRAGMENT_OTEXT2D);
-#else
-#error Embedded shader is not yet implemented for non-Windows platforms.
-#endif
-		_shaderProgram->compile();
-
-		_shaderCoordAttr = _shaderProgram->attribLocation("position");
-		_shaderTexUniform = _shaderProgram->uniformLocation("tex");
-		_shaderColorUniform = _shaderProgram->uniformLocation("color");
-		_shaderPosition = _shaderProgram->uniformLocation("posOffset");
-		_shaderScale = _shaderProgram->uniformLocation("scale");
-		
-		//if (_shaderCoordAttr == -1 || _shaderTexUniform == -1 || _shaderColorUniform == -1)
-		//	throw OException("Error accessing text shader parameters.");
-	}
-}

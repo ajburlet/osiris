@@ -8,12 +8,17 @@ struct OGlyph::Impl {
 	OVector4FL	color;
 };
 
-OGlyph::OGlyph(uint16_t aAdvanceX, uint16_t aAdvanceY) :
+OGlyph::OGlyph(char aCharCode, uint16_t aAdvanceX, uint16_t aAdvanceY, const OVector2F& aPositionOffset,
+		const OVector4FL& aColor, const OVector2F& aScale) :
 	ORenderable(Type::Glyph),
+	_charCode(aCharCode),
 	_advanceX(aAdvanceX),
 	_advanceY(aAdvanceY)
 {
 	OExceptionPointerCheck(_impl = new Impl);
+	setPositionOffset(aPositionOffset);
+	setColor(aColor);
+	setScale(aScale);
 }
 
 OGlyph::~OGlyph()

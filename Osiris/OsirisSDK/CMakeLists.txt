@@ -49,8 +49,6 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/ORenderComponents.h
 	${SRC_DIR}/ORenderingEngine.cpp
 	${HDR_DIR}/ORenderingEngine.h
-	${SRC_DIR}/ORenderObject.cpp
-	${HDR_DIR}/ORenderObject.h
 	${SRC_DIR}/OShaderArgument.cpp
 	${HDR_DIR}/OShaderArgument.h
 	${HDR_DIR}/OShaderArgumentInstanceList.h
@@ -64,8 +62,7 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OTexture.h
 	${SRC_DIR}/OVertexBuffer.cpp
 	${HDR_DIR}/OVertexBuffer.h
-	${SRC_DIR}/OVertexColorMesh.cpp
-	${HDR_DIR}/OVertexColorMesh.h
+	${HDR_DIR}/OVisualObject.h
 	${SRC_DIR}/OWavefrontObjectFile.cpp
 	${HDR_DIR}/OWavefrontObjectFile.h
 )

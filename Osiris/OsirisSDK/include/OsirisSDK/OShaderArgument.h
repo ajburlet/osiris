@@ -7,6 +7,8 @@
 #include "OsirisSDK/OGPUObject.h"
 #include "OsirisSDK/OGraphicsDefinitions.h"
 
+class ORenderable;
+
 /**
  @brief The shader attribute description class.
  */
@@ -89,7 +91,7 @@ public:
 
 	 The function is in the form of <code>void function(OShaderArgumentInstance&)</code>.
 	 */
-	using UpdateCallbackFn = std::function<void(OShaderArgumentInstance&)>;
+	using UpdateCallbackFn = std::function<void(OShaderArgumentInstance&, const ORenderable*)>;
 
 	/**
 	 @brief Class constructor.
@@ -129,9 +131,9 @@ public:
 	void setUpdateCallbackFunction(UpdateCallbackFn aCallback);
 
 	/**
-	 @brief Executes the update callback function.
+	 @brief Executes the update callback function for a given renderable.
 	 */
-	void update();
+	void update(const ORenderable* aRenderable);
 
 	/**
 	 @brief Creates and initializes an argument instance.
@@ -160,9 +162,9 @@ inline void OShaderArgumentInstance::setUpdateCallbackFunction(UpdateCallbackFn 
 	_updateCallback = aCallback;
 }
 
-inline void OShaderArgumentInstance::update()
+inline void OShaderArgumentInstance::update(const ORenderable* aRenderable)
 {
-	if (_updateCallback) _updateCallback(*this);
+	if (_updateCallback) _updateCallback(*this, aRenderable);
 }
 
 template<typename T>

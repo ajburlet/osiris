@@ -85,6 +85,7 @@ void OVertexBuffer::resize(uint32_t aNewVertexCount)
 		throw OException("Unable to reallocate vertex buffer.");
 	}
 	_buffer = new_buffer;
+	_vertexCount = aNewVertexCount;
 }
 
 void OVertexBuffer::putValue(uint32_t aOffset, const void* aPtr, size_t aSize)

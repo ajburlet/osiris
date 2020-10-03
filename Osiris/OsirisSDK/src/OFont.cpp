@@ -19,7 +19,13 @@ using namespace std;
 
 
 struct OFont::Impl {
-	using GlyphArray = OArray<ORenderComponents*>;
+	struct CacheEntry {
+		ORenderComponents*	renderComponents	= nullptr;
+		uint16_t		advanceX		= 0;
+		uint16_t		advanceY		= 0;
+	};
+
+	using GlyphArray = OArray<CacheEntry>;
 	using GlyphCache = OArray<GlyphArray*>;
 
 	static constexpr uint8_t minFontSize = 7;
@@ -40,7 +46,8 @@ OVertexBufferDescriptor* OFont::Impl::vertexBufferDescriptor = nullptr;
 OFont::OFont(ORenderingEngine* aRenderingEngine, const char* aFontName)
 {
 	OExceptionPointerCheck(_impl = new Impl);
-	for (auto& entry : _impl->cache) entry = nullptr;
+	_impl->cache.resize(Impl::maxFontSize - Impl::minFontSize);
+	for (uint32_t i = 0; i < _impl->cache.capacity(); i++) _impl->cache[i] = nullptr;
 	_impl->renderingEngine = aRenderingEngine;
 	init();
 
@@ -76,10 +83,10 @@ void OFont::cleanCache()
 {
 	for (auto& entry : _impl->cache) {
 		if (entry != nullptr) {
-			for (auto rc : *entry) {
-				if (rc != nullptr) {
-					_impl->renderingEngine->unload(rc);
-					_impl->renderingEngine->trashBin().trash(rc);
+			for (auto ce: *entry) {
+				if (ce.renderComponents != nullptr) {
+					_impl->renderingEngine->unload(ce.renderComponents);
+					_impl->renderingEngine->trashBin().trash(ce.renderComponents);
 				}
 			}
 			delete entry;
@@ -88,7 +95,8 @@ void OFont::cleanCache()
 	_impl->cache.clear();
 }
 
-OGlyph * OFont::createGlyph(char aCharCode, uint8_t aSize, uint16_t aAdvanceX, uint16_t aAdvanceY)
+OGlyph * OFont::createGlyph(char aCharCode, uint8_t aSize, const OVector2F& aPosition, const OVector4FL& aColor,
+			    const OVector2F& aScale)
 {
 	if (aSize < Impl::minFontSize || aSize > Impl::maxFontSize) throw OException("Invalid font size.");
 
@@ -96,14 +104,14 @@ OGlyph * OFont::createGlyph(char aCharCode, uint8_t aSize, uint16_t aAdvanceX, u
 
 	if (_impl->cache[fontIdx] == nullptr) loadToCache(aSize);
 
-	auto renderComponents = _impl->cache[fontIdx]->get(aCharCode);
-	if (renderComponents == nullptr) throw OException("No corresponding font glyph for char code.");
+	auto cacheEntry = _impl->cache[fontIdx]->get(aCharCode);
+	if (cacheEntry.renderComponents == nullptr) throw OException("No corresponding font glyph for char code.");
 
-	auto glyph = new OGlyph(aAdvanceX, aAdvanceY);
+	auto glyph = new OGlyph(aCharCode, cacheEntry.advanceX, cacheEntry.advanceY, aPosition, aColor, aScale);
 	OExceptionPointerCheck(glyph);
 	try {
-		glyph->setRenderComponents(renderComponents);
-		if (renderComponents->loaded() == false) _impl->renderingEngine->load(glyph);
+		glyph->setRenderComponents(cacheEntry.renderComponents);
+		if (cacheEntry.renderComponents->loaded() == false) _impl->renderingEngine->load(glyph);
 	} catch (OException& e) {
 		delete glyph;
 		throw e;
@@ -124,18 +132,21 @@ void OFont::loadToCache(uint8_t aSize)
 	auto& sizeCache = _impl->cache[aSize-Impl::minFontSize];
 	if (sizeCache != nullptr) throw OException("Font size already loaded.");
 
-	OExceptionPointerCheck(sizeCache = new Impl::GlyphArray(UINT8_MAX, nullptr));
+	OExceptionPointerCheck(sizeCache = new Impl::GlyphArray(UINT8_MAX+1));
 	ORenderComponents* renderComponents = nullptr;
 	OVertexBuffer* vertexBuffer = nullptr;
 	OTexture* texture = nullptr;
 
 	try {
-		for (uint8_t charCode = 0; charCode <= UINT8_MAX; charCode++) {
+		for (uint16_t charCode = 0; charCode <= UINT8_MAX; charCode++) {
 			if (FT_Load_Char(_impl->face, charCode, FT_LOAD_RENDER) != 0) continue;
 
 			auto& cacheEntry = (*sizeCache)[charCode];
-			OExceptionPointerCheck(cacheEntry = new ORenderComponents);
-			cacheEntry->setRenderMode(ORenderMode::TriangleStrip);
+			OExceptionPointerCheck(cacheEntry.renderComponents = new ORenderComponents);
+			cacheEntry.renderComponents->setRenderMode(ORenderMode::TriangleStrip);
+
+			cacheEntry.advanceX = static_cast<uint16_t>(_impl->face->glyph->advance.x);
+			cacheEntry.advanceY = static_cast<uint16_t>(_impl->face->glyph->advance.y);
 
 			OExceptionPointerCheck(vertexBuffer = new OVertexBuffer(*Impl::vertexBufferDescriptor, 4));
 			float x2 = (float)_impl->face->glyph->bitmap_left;
@@ -165,8 +176,8 @@ void OFont::loadToCache(uint8_t aSize)
 					    _impl->face->glyph->bitmap.buffer,
 					    _impl->face->glyph->bitmap.width*_impl->face->glyph->bitmap.rows);
 
-			cacheEntry->setVertexBuffer(vertexBuffer);
-			cacheEntry->setTexture(texture);
+			cacheEntry.renderComponents->setVertexBuffer(vertexBuffer);
+			cacheEntry.renderComponents->setTexture(texture);
 			vertexBuffer = nullptr;
 			texture = nullptr;
 		}

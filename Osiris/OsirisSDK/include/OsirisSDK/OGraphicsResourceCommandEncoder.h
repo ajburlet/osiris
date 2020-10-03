@@ -27,7 +27,7 @@ public:
 	/**
 	 @brief Class destructor.
 	 */
-	~OGraphicsResourceCommandEncoder() = default;
+	virtual ~OGraphicsResourceCommandEncoder() = default;
 
 	/**
 	 @brief Encodes commands to load a vertex buffer descriptor.

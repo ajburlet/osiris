@@ -452,16 +452,11 @@ template<typename T, class Allocator>
 inline bool OList<T, Allocator>::remove(const T & aItem)
 {
 	bool removed = false;
-	if (aItem == _tail->_value) {
-		popBack();
-		removed = true;
-	} else {
-		for (Iterator it = begin(); it != end(); ++it) {
-			if (*it == aItem) {
-				remove(it);
-				removed = true;
-				break;
-			}
+	for (Iterator it = begin(); it != end(); ++it) {
+		if (*it == aItem) {
+			remove(it);
+			removed = true;
+			break;
 		}
 	}
 	return removed;

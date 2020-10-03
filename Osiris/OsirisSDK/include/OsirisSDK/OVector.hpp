@@ -134,6 +134,26 @@ public:
 	 @copydoc OVector::getComponent(OVectorAxis)
 	 */
 	T& getComponent(OVectorAxis aComponent) override;
+
+	/**
+	 @brief Set the value for the cartesian X axis component.
+	*/
+	void setX(T aValue);
+	
+	/**
+	 @brief Set the value for the cartesian Y axis component.
+	*/
+	void setY(T aValue);
+
+	/**
+	 @brief Returns x component.
+	 */
+	T x() const;
+
+	/**
+	 @brief Returns y component.
+	 */
+	T y() const;
 };
 
 template<typename T, glm::qualifier Q>
@@ -168,6 +188,30 @@ inline T & OVector2<T, Q>::getComponent(OVectorAxis aComponent)
 	case OVectorAxis::Y:	return _glmInternal.y;
 	default:		throw OException("Invalid vector component.");
 	}
+}
+
+template<typename T, glm::qualifier Q>
+inline void OVector2<T, Q>::setX(T aValue)
+{
+	_glmInternal.x = aValue;
+}
+
+template<typename T, glm::qualifier Q>
+inline void OVector2<T, Q>::setY(T aValue)
+{
+	_glmInternal.y = aValue;
+}
+
+template<typename T, glm::qualifier Q>
+inline T OVector2<T, Q>::x() const
+{
+	return _glmInternal.x;
+}
+
+template<typename T, glm::qualifier Q>
+inline T OVector2<T, Q>::y() const
+{
+	return _glmInternal.y;
 }
 
 /**

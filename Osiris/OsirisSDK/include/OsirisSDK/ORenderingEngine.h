@@ -2,7 +2,6 @@
 
 class OGraphicsAPI;
 class ORenderable;
-class OMatrixStack;
 class ORenderComponents;
 class OTrashBin;
 
@@ -14,9 +13,9 @@ class ORenderingEngine
 public:
 	/**
 	 @brief Class constructor.
-	 @param aEngine The graphics engine.
+	 @param aGraphicsAPI The graphics API.
 	 */
-	ORenderingEngine(OGraphicsAPI* aEngine);
+	ORenderingEngine(OGraphicsAPI* aGraphicsAPI);
 
 	/**
 	 @brief Class destructor.
@@ -51,11 +50,6 @@ public:
 	virtual void flush();
 
 	/**
-	 @brief Keeps a pointer to the pertinent MVP (model-view-projection) matrix.
-	 */
-	void setMatrixStack(OMatrixStack* aMatrixStack);
-
-	/**
 	 @brief The trash bean for rendering-related objects.
 	 */
 	OTrashBin& trashBin();
@@ -71,6 +65,11 @@ public:
 	 @param aValue The value used to set every depth buffer bin.
 	 */
 	void clearDepthBuffer(float aValue);
+
+	/**
+	 @brief Wait until all pending commands are executed.
+	 */
+	void waitUntilCompleted();
 
 protected:
 	/**

@@ -2,10 +2,10 @@
 
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OApplication.h"
-#include "OsirisSDK/OCollection.hpp"
 
 class OEntity;
-class ORenderObject;
+class OVisualObject;
+template <typename, class> class OList;
 
 /**
  @brief An OApplication implementation, designed to ease entity handling and renderization.
@@ -41,22 +41,37 @@ public:
 	virtual ~OSimulation();
 
 	/**
-	 @brief Provides the entities as an object collection.
+	 @brief Adds an entity to the simulation.
 	 */
-	OCollection<OEntity>* entities();
-	
+	void addEntity(OEntity* aEntity);
+
 	/**
-	 @brief Provides the entities as an object collection.
+	 @brief Removes an entity from the simulation.
 	 */
-	OCollection<ORenderObject>* renderObjects();
+	void removeEntity(OEntity* aEntity);
+
+	/**
+	 @brief Adds a visual object to be rendered.
+	 */
+	void addVisualObject(OVisualObject* aVisualObject);
+
+	/**
+	 @brief Removes a visual object. 
+	 */
+	void removeVisualObject(OVisualObject* aVisualObject);
 
 protected:
 	virtual void update(const OTimeIndex & timeIndex, int step_us) override;
 	virtual void render() override;
 
 private:
-	OCollection<OEntity> _entities;
-	OCollection<ORenderObject> _renderObjects;
-
+	/**
+	 @cond HIDDEN
+	 */
+	struct Impl;
+	Impl* _impl = nullptr;
+	/**
+	 @endcond
+	 */
 };
 

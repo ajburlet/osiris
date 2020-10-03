@@ -1,10 +1,10 @@
 #pragma once
 
-#include "OObject.h"
-#include "ORenderObject.h"
-#include "ODoubleBuffer.hpp"
-#include "OState.h"
-#include "OTimeIndex.h"
+#include "OsirisSDK/OObject.h"
+#include "OsirisSDK/OVisualObject.h"
+#include "OsirisSDK/ODoubleBuffer.hpp"
+#include "OsirisSDK/OState.h"
+#include "OsirisSDK/OTimeIndex.h"
 
 class OParameterList;
 class OBehavior;
@@ -17,7 +17,7 @@ class OMesh;
  inheritance, so this class isn't supposed to be derived. If specialization is needed, then one can do so using
  the attributes, state or behavior classes.
  */
-class OAPI OEntity : public OObject, public ORenderObject { 
+class OAPI OEntity : public OObject, public OVisualObject { 
 public:
 	/**
 	 @brief Class constructor.
@@ -48,7 +48,7 @@ public:
 	
 	void swapState(const OTimeIndex& timeIndex, int step_us);
 
-	void render(OMatrixStack* stack);
+	virtual void render(ORenderingEngine* aRenderingEngine, OMatrixStack* aMatrixStack) override;
 
 	/**
 	 @brief Set object behavior.

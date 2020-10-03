@@ -28,7 +28,7 @@ protected:
 	/**
 	 @brief Class destructor.
 	 */
-	virtual ~ORenderable();
+	virtual ~ORenderable() = default;
 	
 public:
 	/**

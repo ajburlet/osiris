@@ -3,20 +3,21 @@
 #include <string>
 #include <map>
 
-#include "OsirisSDK/ORenderable.h"
+#include "OsirisSDK/OObject.h"
+#include "OsirisSDK/OVisualObject.h"
 #include "OsirisSDK/OVectorDefs.h"
-#include "OObject.h"
-#include "ORenderObject.h"
-#include "OShaderProgram.h"
-#include "OFont.h"
-#include "defs.h"
+#include "OsirisSDK/defs.h"
+
+
+class ORenderingEngine;
+class OFont;
 
 /**
  @brief Two-dimensional text handling class.
 
  This class enabled the rendering of text on the screen.
  */
-class OAPI OText2D : public OObject, public ORenderObject
+class OAPI OText2D : public OObject, public OVisualObject
 {
 public:
 
@@ -24,14 +25,12 @@ public:
 	 @brief Class constructor.
 	 @param aFont Object containing font definitions and cache.
 	 @param aFontSize Font height in pixels.
-	 @param aX Position of the beggining of the text box in the X axis.
-	 @param aY Position of the beggining of the text box in the Y axis.
+	 @param aPosition Position of the beggining of the text box.
 	 @param aContent Text content.
 	 */
-	OText2D(OFont *aFont, uint8_t aFontSize, float aX, float aY, const OVector4F& aColor, 
+	OText2D(OFont *aFont, uint8_t aFontSize, const OVector2I32& aPosition, const OVector4FL& aColor, 
 		const char* aContent=NULL);
 
-	
 	/**
 	 @brief Class destructor.
 	 */
@@ -62,13 +61,13 @@ public:
 	 @param color A four-dimensional vector containing the color components in 
 		      the form (r, g, b, alpha).
 	 */
-	void setFontColor(const OVector4F& color);
+	void setFontColor(const OVector4FL& color);
 	
 	/**
 	 @brief Provides the font color in the form of a four-dimensional vector.
 	 @return An OVector4 class object in the form (r, g, b, alpha).
 	 */
-	OVector4F fontColor() const;
+	const OVector4FL& fontColor() const;
 
 	/**
 	 @brief Set line spacing.
@@ -84,37 +83,26 @@ public:
 
 	/**
 	 @brief Sets the position of the text box.
-	 @param x Position of the text box on the X axis in pixels.
-	 @param y Position of the text box on the Y axis in pixels.
+	 @param aPosition Position of the text box in pixels.
 	 */
-	void setPosition(float x, float y);
+	void setPosition(const OVector2I32& aPosition);
 	
 	/**
-	 @brief Returns the position of the text box on the X axis in pixels.
+	 @brief Returns the position of the text box in pixels.
 	 */
-	float x() const;
+	const OVector2I32& position() const;
 	
 	/**
-	 @brief Returns the position of the text box on the Y axis in pixels.
-	 */
-	float y() const;
-	
-	/**
-	 @brief Sets the size of the text box.
+	 @brief Sets the scale of the text box.
 	 @param sx Horizontal scale of the text box.
 	 @param sx Vertical scale of the text box.
 	 */
-	void setScale(float sx, float sy);
+	void setScale(const OVector2F& aScale);
 	
 	/**
-	 @brief Returns the horizontal size of the text box in pixels.
+	 @brief Returns the scale components.
 	 */
-	float scaleX() const;
-	
-	/**
-	 @brief Returns the vertical size of the text box in pixels.
-	 */
-	float scaleY() const;
+	const OVector2F& scale() const;
 
 	/**
 	 @brief Sets the text content of the text box.
@@ -135,8 +123,10 @@ public:
 	
 	/**
 	 @brief Renders the text string on the screen.
+	 @param aRenderingEngine The rendering engine.
+	 @param aMatrixStack Matrix stack (not relevant for this class).
 	 */
-	void render(OMatrixStack* mtx=NULL);
+	void render(ORenderingEngine* aRenderingEngine, OMatrixStack* aMatrixStack = nullptr);
 
 	/**
 	 @copydoc OObject::onScreenResize(const OResizeEvent*)
@@ -144,30 +134,18 @@ public:
 	void onScreenResize(const OResizeEvent* evt);
 
 private:
-	GLuint _arrayObject;
 	OFont* _font;
 	uint8_t _fontSize;
 	int _lineSpacing;
-	float _x;
-	float _y;
-	float _scale_x;
-	float _scale_y;
-	
-	struct Impl;
-	Impl* _impl = nullptr;
 
-	/* static properties and methods */
-	static bool _initialized;
-	static OShaderProgram *_shaderProgram;
-	static GLuint _shaderCoordAttr;
-	static GLuint _shaderTexUniform;
-	static GLuint _shaderColorUniform;
-	static GLuint _shaderPosition;
-	static GLuint _shaderScale;
 
 	/**
-	 @brief Initialize the freetype library for all class objects.
+	 @cond HIDDEN
 	 */
-	static void _Init();
+	struct Impl;
+	Impl* _impl = nullptr;
+	/**
+	 @endcond
+	 */
 };
 

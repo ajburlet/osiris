@@ -10,6 +10,17 @@ class OGraphicsCommandBuffer;
 class OAPI OGraphicsCommandQueue
 {
 public:
+
+	/**
+	 @brief Class default constructor.
+	 */
+	OGraphicsCommandQueue() = default;
+
+	/**
+	 @brief Class destructor.
+	 */
+	virtual ~OGraphicsCommandQueue() = default;
+
 	/**
 	 @brief Creates a new command buffer linked to the queue.
 	 */

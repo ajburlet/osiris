@@ -40,11 +40,13 @@ public:
 	 @brief Creates a new glyph object for a given character.
 	 @param aCharCode Charecter code byte.
 	 @param aSize Font size.
-	 @param aAdvanceX The font horizontal advance space to the next character.
-	 @param aAdvanceY The font vertical advance space to the next character.
+	 @param aPositionOffset Position offset (NDC).
+	 @param aColor Font color.
+	 @param aScale Scale vector.
 
 	 */
-	OGlyph* createGlyph(char aCharCode, uint8_t aSize, uint16_t aAdvanceX, uint16_t aAdvanceY);
+	OGlyph* createGlyph(char aCharCode, uint8_t aSize, const OVector2F& aPosition, const OVector4FL& aColor,
+			    const OVector2F& aScale);
 
 	/**
 	 @brief Default line spacing (baseline-to-baseline distance).

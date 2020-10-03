@@ -249,6 +249,7 @@ void OOpenGLResourceCommandEncoder::unload(OIndexBuffer * aIndexBuffer)
 
 void OOpenGLResourceCommandEncoder::load(OTexture * aTexture)
 {
+	createHandle(aTexture);
 	encode([aTexture]() {
 		glGenTextures(1, reinterpret_cast<GLuint*>(aTexture->gpuHandle()));
 		glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<GLuint*>(aTexture->gpuHandle()));

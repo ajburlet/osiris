@@ -17,6 +17,11 @@ public:
 	OGraphicsCommandBuffer() = default;
 
 	/**
+	 @brief Class destructor.
+	 */
+	virtual ~OGraphicsCommandBuffer() = default;
+
+	/**
 	 @brief Creates a new render command encoder.
 	 */
 	virtual OGraphicsRenderCommandEncoder* createRenderCommandEncoder() = 0;
@@ -30,4 +35,9 @@ public:
 	 @brief Commits the command buffer, clearing it to be processed on the next opportunity.
 	 */
 	virtual void commit() = 0;
+
+	/**
+	 @brief Waits until all commands are executed.
+	 */
+	virtual void waitUntilCompleted() = 0;
 };

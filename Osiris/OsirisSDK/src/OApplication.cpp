@@ -284,6 +284,9 @@ void OApplication::loopIteration()
 	_impl->lastRenderTimeIndex = cron.lastPartialTime();
 
 	render();
+	_impl->engine->flush();
+	_impl->engine->waitUntilCompleted();
+	_impl->engine->trashBin().clear();
 	glutSwapBuffers();
 	glutPostRedisplay();
 	

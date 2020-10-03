@@ -98,7 +98,6 @@ private:
 	OIndexBuffer*			_indexBuffer		= nullptr;
 	OTexture*			_texture		= nullptr;
 	OShaderProgram*			_shaderProgram		= nullptr;
-	bool				_loaded			= false;
 	OShaderArgumentInstanceList*	_argumentInstanceList	= nullptr;
 };
 

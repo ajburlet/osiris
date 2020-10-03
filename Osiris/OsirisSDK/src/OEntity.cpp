@@ -40,15 +40,15 @@ void OEntity::swapState(const OTimeIndex & timeIndex, int step_us)
 	_state.swap();
 }
 
-void OEntity::render(OMatrixStack * stack)
+void OEntity::render(ORenderingEngine* aRenderingEngine, OMatrixStack * aMatrixStack)
 {
 	if (isHidden()) return;
-	stack->push();
-	stack->translate(_state.curr()->position());
-	*stack *= _state.curr()->orientation();
-	stack->scale(_state.curr()->scale());
-	_mesh->render(stack);
-	stack->pop();
+	aMatrixStack->push();
+	aMatrixStack->translate(_state.curr()->position());
+	*aMatrixStack *= _state.curr()->orientation();
+	aMatrixStack->scale(_state.curr()->scale());
+	_mesh->render(aRenderingEngine, aMatrixStack);
+	aMatrixStack->pop();
 }
 
 void OEntity::setBehavior(OBehavior * behavior) 

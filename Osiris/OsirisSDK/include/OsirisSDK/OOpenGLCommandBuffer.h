@@ -23,13 +23,21 @@ public:
 	/**
 	 @brief Class destructor.
 	 */
-	OOpenGLCommandBuffer();
+	virtual ~OOpenGLCommandBuffer();
 
 	virtual OGraphicsRenderCommandEncoder * createRenderCommandEncoder() override;
 
 	virtual OGraphicsResourceCommandEncoder * createResourceCommandEncoder() override;
 
 	virtual void commit() override;
+
+	virtual void waitUntilCompleted() override;
+
+public:
+	/**
+	 @brief Runs all commands in the buffer.
+	 */
+	void run();
 
 protected:
 	/**

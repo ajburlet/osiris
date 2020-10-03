@@ -72,7 +72,7 @@ inline void OGPUObject::setGpuHandle(void * aNewGpuHandle)
 
 inline void OGPUObject::setNeedsLoading(bool aFlag)
 {
-	_needsLoading = true;
+	_needsLoading = aFlag;
 }
 
 inline void OGPUObject::setUsage(Usage aUsage)
