@@ -138,7 +138,6 @@ public:
 	/**
 	 @brief Inserts a value in the map.
 	 @param aKey The value to be added. 
-	 @param aItemAtSet Pointer to the iterator related to the inserted value (if not NULL).
 	 @return True if the value is added, false if there was a value previously assigned to the key.
 	 */
 	bool insert(const T& aValue) { return Super::insert(aValue, true);  }
