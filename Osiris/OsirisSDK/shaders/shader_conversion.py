@@ -28,7 +28,7 @@ class ShaderCodeConverter:
         aOutputFile.write("void createShaderTable(OShaderSourceTable& aShaderTable)\n")
         aOutputFile.write("{\n")
         for val in self.shaders:
-            aOutputFile.write("\taShaderTable[{{OGraphicsEngine::Type::{},OShaderObject::Type::{},ORenderable::Type::{}}}] = {};\n".format(
+            aOutputFile.write("\taShaderTable[{{OGraphicsAPI::Type::{},OShaderObject::Type::{},ORenderable::Type::{}}}] = {};\n".format(
                 val[0], val[1], val[2], val[3]
             ))
         aOutputFile.write("}\n\n")

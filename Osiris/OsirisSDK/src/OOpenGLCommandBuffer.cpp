@@ -47,7 +47,9 @@ void OOpenGLCommandBuffer::waitUntilCompleted()
 
 void OOpenGLCommandBuffer::run()
 {
-	for (auto& cmd : _impl->commandList) cmd();
+	for (auto& cmd : _impl->commandList) {
+		cmd();
+	}
 }
 
 void OOpenGLCommandBuffer::addCommandItem(CommandItem aCommandItem)

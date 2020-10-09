@@ -111,7 +111,7 @@ OGlyph * OFont::createGlyph(char aCharCode, uint8_t aSize, const OVector2F& aPos
 	OExceptionPointerCheck(glyph);
 	try {
 		glyph->setRenderComponents(cacheEntry.renderComponents);
-		if (cacheEntry.renderComponents->loaded() == false) _impl->renderingEngine->load(glyph);
+		if (cacheEntry.renderComponents->componentsLoaded() == false) _impl->renderingEngine->load(glyph);
 	} catch (OException& e) {
 		delete glyph;
 		throw e;
@@ -172,6 +172,7 @@ void OFont::loadToCache(uint8_t aSize)
 			texture->setWrapType(OTexture::Coordinate::T, OTexture::WrapMode::ClampToEdge);
 			texture->setPixelFormat(OTexture::PixelFormat::R, OTexture::PixelDataType::UnsignedByte,
 				OTexture::PixelFormat::R);
+			texture->setUnpackAlignment(OTexture::RowAlignment::Byte);
 			texture->setContent(0, _impl->face->glyph->bitmap.width, _impl->face->glyph->bitmap.rows,
 					    _impl->face->glyph->bitmap.buffer,
 					    _impl->face->glyph->bitmap.width*_impl->face->glyph->bitmap.rows);
@@ -197,6 +198,6 @@ void OFont::init()
 	}
 	if (Impl::vertexBufferDescriptor == nullptr) {
 		OExceptionPointerCheck(Impl::vertexBufferDescriptor = new OVertexBufferDescriptor);
-		Impl::vertexBufferDescriptor->addAttribute(OShaderArgument(OVarType::Float, OVarPrecision::High, 4));
+		Impl::vertexBufferDescriptor->addAttribute(OShaderVertexArgument(OVarType::Float4, 0));
 	}
 }

@@ -9,6 +9,7 @@ class OVertexBufferDescriptor;
 class OIndexBuffer;
 class OShaderArgumentInstance;
 class OTexture;
+class ORenderComponents;
 
 /**
  @brief Resource command encoder for the graphics engine.
@@ -30,14 +31,14 @@ public:
 	virtual ~OGraphicsResourceCommandEncoder() = default;
 
 	/**
-	 @brief Encodes commands to load a vertex buffer descriptor.
+	 @brief Encodes commands to load general rendering definitions for all render components. 
 	 */
-	virtual void load(OVertexBufferDescriptor* aVertexBufferDescriptor) = 0;
+	virtual void load(ORenderComponents* aRenderComponents) = 0;
 
 	/**
-	 @brief Encodes commands to unload a vertex buffer descriptor.
+	 @brief Encodes commands to unload general rendering definitions for all render components. 
 	 */
-	virtual void unload(OVertexBufferDescriptor* aVertexBufferDescriptor) = 0;
+	virtual void unload(ORenderComponents* aRenderComponents) = 0;
 
 	/**
 	 @brief Encodes commands to load a vertex buffer.

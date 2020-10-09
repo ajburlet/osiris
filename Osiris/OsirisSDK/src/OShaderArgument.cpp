@@ -6,9 +6,8 @@
 // ****************************************************************************
 // OShaderArgument
 // ****************************************************************************
-OShaderArgument::OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8_t aDim) :
+OShaderArgument::OShaderArgument(OVarType aType, uint8_t aDim) :
 	_type(aType),
-	_precision(aPrecision),
 	_arrayLength(aDim)
 {
 	uint32_t unit_size = 0;
@@ -28,14 +27,8 @@ OShaderArgument::OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8
 		if (multiplier == -1) multiplier = 9;
 	case OVarType::Float4x4:
 		if (multiplier == -1) multiplier = 16;
-
-		switch (_precision) {
-		case OVarPrecision::Low:	unit_size = 2;	break;
-		case OVarPrecision::Medium:	unit_size = 4;	break;
-		case OVarPrecision::High:	unit_size = 8;	break;
-		default: 
-			throw OException("Invalid float vertex attribute precision.");
-		}
+	
+		unit_size = sizeof(float);
 		break;
 
 	case OVarType::Int:
@@ -56,14 +49,8 @@ OShaderArgument::OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8
 		if (multiplier == -1) multiplier = 9;
 	case OVarType::Int4x4:
 		if (multiplier == -1) multiplier = 16;
-
-		switch (_precision) {
-		case OVarPrecision::Low:	unit_size = 1;	break;
-		case OVarPrecision::Medium:	unit_size = 2;	break;
-		case OVarPrecision::High:	unit_size = 4;	break;
-		default:
-			throw OException("Invalid integer vertex attribute precision.");
-		}
+		
+		unit_size = 4;
 		break;
 
 	default:
@@ -79,8 +66,8 @@ OShaderArgument::OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8
 // ****************************************************************************
 using Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>;
 
-OShaderArgumentInstance::OShaderArgumentInstance(OVarType aType, OVarPrecision aPrecision, uint8_t aDim) :
-	OShaderArgument(aType, aPrecision, aDim)
+OShaderArgumentInstance::OShaderArgumentInstance(OVarType aType, uint8_t aDim) :
+	OShaderArgument(aType, aDim)
 {
 	OExceptionPointerCheck(_buffer = static_cast<uint8_t*>(Allocator().allocate(size())));
 }

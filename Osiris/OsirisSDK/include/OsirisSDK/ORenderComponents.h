@@ -4,6 +4,7 @@
 
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OGraphicsDefinitions.h"
+#include "OsirisSDK/OGPUObject.h"
 
 class OVertexBuffer;
 class OIndexBuffer;
@@ -15,7 +16,7 @@ class OShaderArgumentInstanceList;
 /**
  @brief Contains all data pertaining to GPU rendering of a renderable object.
  */
-class OAPI ORenderComponents 
+class OAPI ORenderComponents : public OGPUObject
 {
 public:
 	/**
@@ -49,14 +50,39 @@ public:
 	OTexture* texture();
 
 	/**
-	 * @brief Returns the shader program.
+	 @brief Returns the shader program.
 	 */
 	OShaderProgram* shaderProgram();
 
 	/**
-	 @brief Returns true if the render data have already been loaded to the GPU. 
+	 @brief Returns true if face culling.
 	 */
-	bool loaded() const;
+	bool faceCullingEnabled() const;
+
+	/**
+	 @brief Returns the face that must be drawn.
+	 */
+	OCullFace cullingFace() const;
+
+	/**
+	 @brief Returns the definition of the front face by polygon vertex winding order.
+	 */
+	OCullFront cullingFrontFace() const;
+
+	/**
+	 @brief Returns true if the depth testing is enabled.
+	 */
+	bool depthTestingEnabled() const;
+
+	/**
+	 @brief Returns true if depth buffer writing is enabled.
+	 */
+	bool depthBufferWriteEnabled() const;
+
+	/**
+	 @brief Returns true if all related components are already loaded to the GPU. 
+	 */
+	bool componentsLoaded() const;
 
 	/**
 	 @brief Sets the render mode.
@@ -88,6 +114,22 @@ public:
 	void setShaderProgram(OShaderProgram* aShaderProgram);
 
 	/**
+	 @brief Sets face culling preferences.
+	 @param aEnabled Enables/disables face culling.
+	 @param aFace Defines which face is drawn.
+	 @param aFrontFace Defines which is the front face by polygon vertex winding order.
+	 */
+	void setFaceCulling(bool aEnabled, OCullFace aFace = OCullFace::Undefined, 
+			    OCullFront aFrontFace = OCullFront::Undefined);
+
+	/**
+	 @brief Sets depth testing settings.
+	 @param aTestEnabled Depth test enabled/disabled.
+	 @param aBufferWrite Depth buffer write.
+	 */
+	void setDepthTesting(bool aTestEnabled, bool aBufferWrite);
+
+	/**
 	 @brief Returns the uniform argument list.
 	 */
 	OShaderArgumentInstanceList* uniformArgumentList();
@@ -99,6 +141,11 @@ private:
 	OTexture*			_texture		= nullptr;
 	OShaderProgram*			_shaderProgram		= nullptr;
 	OShaderArgumentInstanceList*	_argumentInstanceList	= nullptr;
+	bool				_faceCullingEnabled	= false;
+	OCullFace			_cullFace		= OCullFace::Undefined;
+	OCullFront			_cullFront		= OCullFront::Undefined;
+	bool				_depthTestEnabled	= false;
+	bool				_depthBufferWrite	= false;
 };
 
 
@@ -120,6 +167,31 @@ inline OTexture * ORenderComponents::texture()
 inline OShaderProgram * ORenderComponents::shaderProgram()
 {
 	return _shaderProgram;
+}
+
+inline bool ORenderComponents::faceCullingEnabled() const
+{
+	return _faceCullingEnabled;
+}
+
+inline OCullFace ORenderComponents::cullingFace() const
+{
+	return _cullFace;
+}
+
+inline OCullFront ORenderComponents::cullingFrontFace() const
+{
+	return _cullFront;
+}
+
+inline bool ORenderComponents::depthTestingEnabled() const
+{
+	return _depthTestEnabled;
+}
+
+inline bool ORenderComponents::depthBufferWriteEnabled() const
+{
+	return _depthBufferWrite;
 }
 
 inline void ORenderComponents::setRenderMode(ORenderMode aRenderMode)
@@ -145,6 +217,19 @@ inline void ORenderComponents::setTexture(OTexture * aTexture)
 inline void ORenderComponents::setShaderProgram(OShaderProgram * aShaderProgram)
 {
 	_shaderProgram = aShaderProgram;
+}
+
+inline void ORenderComponents::setFaceCulling(bool aEnabled, OCullFace aFace, OCullFront aFrontFace)
+{
+	_faceCullingEnabled = aEnabled;
+	_cullFace = aFace;
+	_cullFront = aFrontFace;
+}
+
+inline void ORenderComponents::setDepthTesting(bool aTestEnabled, bool aBufferWrite)
+{
+	_depthTestEnabled = aTestEnabled;
+	_depthBufferWrite = aBufferWrite;
 }
 
 inline OShaderArgumentInstanceList * ORenderComponents::uniformArgumentList()

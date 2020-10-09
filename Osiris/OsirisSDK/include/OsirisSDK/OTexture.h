@@ -206,22 +206,22 @@ public:
 	/**
 	 @brief Sets the texture content for a given mipmap level.
 	 @param aMipmapLevel Mipmap level.
-	 @param aRows Number of rows.
-	 @param aLines Number of lines.
+	 @param aWidth Texture width (number of rows).
+	 @param aHeight Texture height (number of lines).
 	 @param aData Texture content.
 	 @param aSize Size of the texture data.
 	 */
-	void setContent(uint32_t aMipmapLevel, uint32_t aRows, uint32_t aLines, uint8_t* aData, uint32_t aSize);
+	void setContent(uint32_t aMipmapLevel, uint32_t aWidth, uint32_t aHeight, uint8_t* aData, uint32_t aSize);
 
 	/**
 	 @brief Retrieves the texture content for a given mipmap level.
 	 @param aMipmapLevel Mipmap level.
-	 @param aRows A reference to an integer where the number of rows will be written.
-	 @param aLines A reference to an integer where the number of line will be written.
+	 @param aWidth A reference to an integer where the width will be written.
+	 @param aHeight A reference to an integer where the height will be written.
 	 @param aSize A reference to an integer where the size of the mipmap content will be written.
 	 @return A pointer to the content buffer.
 	 */
-	uint8_t* content(uint32_t aMipmapLevel, uint32_t& aRows, uint32_t& aLines, uint32_t& aSize) const;
+	uint8_t* content(uint32_t aMipmapLevel, uint32_t& aWidth, uint32_t& aHeight, uint32_t& aSize) const;
 
 private:
 	/**

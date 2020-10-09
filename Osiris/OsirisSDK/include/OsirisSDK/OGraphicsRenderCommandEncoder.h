@@ -11,6 +11,7 @@ class OVertexBuffer;
 class OIndexBuffer;
 class OTexture;
 class OShaderArgumentInstanceList;
+class ORenderComponents;
 
 /**
  @brief Resource command encoder for the graphics engine.
@@ -28,13 +29,6 @@ public:
 	 @brief Class destructor.
 	 */
 	virtual ~OGraphicsRenderCommandEncoder() = default;
-
-	/**
-	 @brief Sets face culling options.
-	 @param aFace Which face is considered by the rasterizer.
-	 @param aFront How a front face is defined (i.e. when vertices are ordered CW or CCW).
-	 */
-	virtual void setFaceCullingOptions(OCullFace aFace, OCullFront aFront) = 0;
 
 	/**
 	 @brief Sets the shader program to be used in this rendering run.
@@ -57,6 +51,11 @@ public:
 	 @param aIndex Texture index in the GPU.
 	 */
 	virtual void setTexture(OTexture* aTexture, uint32_t aIndex=0) = 0;
+
+	/**
+	 @brief Sets the render components (buffers, textures and programs) needed.
+	 */
+	virtual void setRenderComponents(ORenderComponents* aRenderComponents) = 0;
 
 	/**
 	 @brief Sets the shader uniform argument list.

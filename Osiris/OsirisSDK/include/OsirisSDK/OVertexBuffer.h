@@ -5,7 +5,7 @@
 #include "OsirisSDK/OGraphicsDefinitions.h"
 #include "OsirisSDK/OGPUObject.h"
 
-class OShaderArgument;
+class OShaderVertexArgument;
 
 /**
  @brief The vertex buffer descriptor.
@@ -28,14 +28,14 @@ public:
 	 @param aAttribute The vertex attribute to be added.
 	 @return The attribute index.
 	 */
-	uint8_t addAttribute(const OShaderArgument& aAttribute);
+	uint8_t addAttribute(const OShaderVertexArgument& aAttribute);
 
 	/**
 	 @brief Returns the attribute at a given index.
 	 @param aAttributeIndex Attribute index.
 	 @return The attribute info object.
 	 */
-	const OShaderArgument& attributeAtIndex(uint8_t aAttributeIndex) const;
+	const OShaderVertexArgument& attributeAtIndex(uint8_t aAttributeIndex) const;
 
 	/**
 	 @brief Returns the attribute count.

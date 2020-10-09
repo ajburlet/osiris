@@ -22,11 +22,11 @@ public:
 	~OOpenGLRenderCommandEncoder() = default;
 
 	// OGraphicsRenderCommandEncoder interface
-	virtual void setFaceCullingOptions(OCullFace aFace, OCullFront aFront) override;
 	virtual void setShaderProgram(OShaderProgram * aShaderProgram) override;
 	virtual void setVertexBuffer(OVertexBuffer * aVertexBuffer) override;
 	virtual void setIndexBuffer(OIndexBuffer * aIndexBuffer) override;
 	virtual void setTexture(OTexture * aTexture, uint32_t aIndex = 0) override;
+	virtual void setRenderComponents(ORenderComponents* aRenderComponents) override;
 	virtual void setUniformArgumentList(OShaderArgumentInstanceList * aUniformArguments) override;
 	virtual OShaderProgram * shaderProgram() override;
 	virtual OVertexBuffer * vertexBuffer() override;

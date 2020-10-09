@@ -7,6 +7,7 @@
 #include "OsirisSDK/OShaderArgument.h"
 #include "OsirisSDK/OShaderArgumentInstanceList.h"
 #include "OsirisSDK/OShaderProgram.h"
+#include "OsirisSDK/ORenderComponents.h"
 #include "OsirisSDK/OOpenGLVertexBufferHandle.h"
 #include "OsirisSDK/OOpenGLResourceCommandEncoder.h"
 
@@ -131,16 +132,23 @@ OOpenGLResourceCommandEncoder::OOpenGLResourceCommandEncoder(OOpenGLCommandBuffe
 {
 }
 
-void OOpenGLResourceCommandEncoder::load(OVertexBufferDescriptor * aVertexBufferDescriptor)
+void OOpenGLResourceCommandEncoder::load(ORenderComponents* aRenderComponents)
 {
-	createHandle(aVertexBufferDescriptor);
-	encode([aVertexBufferDescriptor]() {
-		glGenVertexArrays(1, reinterpret_cast<GLuint*>(aVertexBufferDescriptor->gpuHandle()));
-		glBindVertexArray(*reinterpret_cast<GLuint*>(aVertexBufferDescriptor->gpuHandle())); 
+	auto& vertexDescriptor = aRenderComponents->vertexBuffer()->descriptor();
+
+	createHandle(aRenderComponents);
+	encode([aRenderComponents]() {
+		glGenVertexArrays(1, &(aRenderComponents->gpuHandleCastTo<GLuint>()));
+		glBindVertexArray(aRenderComponents->gpuHandleCastTo<GLuint>());
+		glBindBuffer(GL_ARRAY_BUFFER, aRenderComponents->vertexBuffer()->gpuHandleCastTo<GLuint>());
+		if (aRenderComponents->indexBuffer() != nullptr) {
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, aRenderComponents->indexBuffer()->gpuHandleCastTo<GLuint>());
+		}
 	});
-	
-	for (uint32_t i = 0; i < aVertexBufferDescriptor->attributeCount(); i++) {
-		auto& attr = aVertexBufferDescriptor->attributeAtIndex(i);
+
+	uint32_t cummulative_size = 0;
+	for (uint32_t i = 0; i < vertexDescriptor.attributeCount(); i++) {
+		auto& attr = vertexDescriptor.attributeAtIndex(i);
 		GLint size;
 		GLenum type;
 		switch (attr.type()) {
@@ -195,17 +203,24 @@ void OOpenGLResourceCommandEncoder::load(OVertexBufferDescriptor * aVertexBuffer
 		default:
 			throw OException("Invalid variable type.");
 		}
-		encode(Bind(glEnableVertexAttribArray, i));
-		encode(Bind(glVertexAttribPointer, i, size, type, GL_FALSE, aVertexBufferDescriptor->stride() - attr.size(), nullptr));
+		encode(Bind(glEnableVertexAttribArray, attr.index()));
+		encode(Bind(glVertexAttribPointer, attr.index(), size, type, GL_FALSE, 
+			    vertexDescriptor.stride(), 
+			    reinterpret_cast<GLvoid*>(cummulative_size)));
+		cummulative_size += attr.size();
 	}
 
 	encode(Bind(glBindVertexArray, 0));
+	encode(Bind(glBindBuffer, GL_ARRAY_BUFFER, 0));
+	encode(Bind(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
-void OOpenGLResourceCommandEncoder::unload(OVertexBufferDescriptor * aVertexBufferDescriptor)
+void OOpenGLResourceCommandEncoder::unload(ORenderComponents* aRenderComponents)
 {
-	encode(Bind(glDeleteVertexArrays, 1, reinterpret_cast<GLuint*>(aVertexBufferDescriptor->gpuHandle())));
-	destroyHandle(aVertexBufferDescriptor);
+	encode([&]() {
+		glDeleteVertexArrays(1, &(aRenderComponents->gpuHandleCastTo<GLuint>()));
+		destroyHandle(aRenderComponents);
+	});
 }
 
 void OOpenGLResourceCommandEncoder::load(OVertexBuffer * aVertexBuffer)
@@ -213,9 +228,7 @@ void OOpenGLResourceCommandEncoder::load(OVertexBuffer * aVertexBuffer)
 	GLenum usage = getUsageType(aVertexBuffer);
 	createHandle(aVertexBuffer);
 	encode([aVertexBuffer, usage]() {
-		if (aVertexBuffer->gpuHandle() == nullptr) {
-			glGenBuffers(1, reinterpret_cast<GLuint*>(aVertexBuffer->gpuHandle()));
-		}
+		glGenBuffers(1, reinterpret_cast<GLuint*>(aVertexBuffer->gpuHandle()));
 		glBindBuffer(GL_ARRAY_BUFFER, *reinterpret_cast<GLuint*>(aVertexBuffer->gpuHandle())); 
 		glBufferData(GL_ARRAY_BUFFER, aVertexBuffer->size(), aVertexBuffer->buffer(), usage);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -225,8 +238,10 @@ void OOpenGLResourceCommandEncoder::load(OVertexBuffer * aVertexBuffer)
 
 void OOpenGLResourceCommandEncoder::unload(OVertexBuffer * aVertexBuffer)
 {
-	encode(Bind(glDeleteBuffers, 1, reinterpret_cast<GLuint*>(aVertexBuffer->gpuHandle())));
-	destroyHandle(aVertexBuffer);
+	encode([&] {
+		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aVertexBuffer->gpuHandle()));
+		destroyHandle(aVertexBuffer);
+	});
 }
 
 void OOpenGLResourceCommandEncoder::load(OIndexBuffer * aIndexBuffer)
@@ -243,8 +258,10 @@ void OOpenGLResourceCommandEncoder::load(OIndexBuffer * aIndexBuffer)
 
 void OOpenGLResourceCommandEncoder::unload(OIndexBuffer * aIndexBuffer)
 {
-	encode(Bind(glDeleteBuffers, 1, reinterpret_cast<GLuint*>(aIndexBuffer->gpuHandle())));
-	destroyHandle(aIndexBuffer);
+	encode([&]() {
+		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aIndexBuffer->gpuHandle()));
+		destroyHandle(aIndexBuffer);
+	});
 }
 
 void OOpenGLResourceCommandEncoder::load(OTexture * aTexture)
@@ -269,18 +286,18 @@ void OOpenGLResourceCommandEncoder::load(OTexture * aTexture)
 		GLenum pxDataType = pixelDataTypeConvert(aTexture->pixelDataType());
 
 		for (uint32_t i = 0; i < aTexture->mipmapLevelCount(); i++) {
-			uint32_t rows = 0;
-			uint32_t cols = 0;
+			uint32_t width = 0;
+			uint32_t height = 0;
 			uint8_t* data = nullptr;
 			uint32_t size = 0;
 
-			data = aTexture->content(i, rows, cols, size);
+			data = aTexture->content(i, width, height, size);
 
 			if (isCompressed) {
-				glCompressedTexImage2D(GL_TEXTURE_2D, i, srcFmt, cols, rows, 0, 
+				glCompressedTexImage2D(GL_TEXTURE_2D, i, srcFmt, width, height, 0, 
 						       static_cast<GLsizei>(size), data);
 			} else {
-				glTexImage2D(GL_TEXTURE_2D, i, srcFmt, cols, rows, 0, dstFmt, pxDataType, data);
+				glTexImage2D(GL_TEXTURE_2D, i, srcFmt, width, height, 0, dstFmt, pxDataType, data);
 			}
 		}
 
@@ -290,25 +307,20 @@ void OOpenGLResourceCommandEncoder::load(OTexture * aTexture)
 
 void OOpenGLResourceCommandEncoder::unload(OTexture * aTexture)
 {
-	encode(Bind(glDeleteTextures, 1, reinterpret_cast<GLuint*>(aTexture->gpuHandle())));
-	destroyHandle(aTexture);
+	encode([&]() {
+		glDeleteTextures(1, reinterpret_cast<GLuint*>(aTexture->gpuHandle()));
+		destroyHandle(aTexture);
+	});
 }
 
 void OOpenGLResourceCommandEncoder::load(OShaderArgumentInstance * aAttributeInstance, OShaderProgram * aShader, const char * aName)
 {
 	createHandle(aAttributeInstance);
-	auto uniformName = strdup(aName);
-	OExceptionPointerCheck(aName);
-	try {
-		encode([aAttributeInstance, aShader, uniformName]() {
-			auto uniform = glGetUniformLocation(*reinterpret_cast<GLuint*>(aShader->gpuHandle()), uniformName);
-			free(uniformName);
-			*reinterpret_cast<GLint*>(aAttributeInstance->gpuHandle()) = uniform;
-		});
-	} catch (OException& e) {
-		free(uniformName);
-		throw e;
-	}
+	encode([aAttributeInstance, aShader, aName]() {
+		auto uniform = glGetUniformLocation(*reinterpret_cast<GLuint*>(aShader->gpuHandle()), aName);
+		*reinterpret_cast<GLint*>(aAttributeInstance->gpuHandle()) = uniform;
+	});
+	aAttributeInstance->setNeedsLoading(false);
 }
 
 void OOpenGLResourceCommandEncoder::unload(OShaderArgumentInstance * aAttributeInstance)

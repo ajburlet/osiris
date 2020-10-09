@@ -71,8 +71,8 @@ source_group("Graphics" FILES ${GRAPHICS_SOURCES})
 set (GRAPHICS_SHADERS_SOURCES
 	${SHADER_DIR}/OMesh.fragment.glsl
 	${SHADER_DIR}/OMesh.vertex.glsl
-	${SHADER_DIR}/OText2D.fragment.glsl
-	${SHADER_DIR}/OText2D.vertex.glsl
+	${SHADER_DIR}/OGlyph.fragment.glsl
+	${SHADER_DIR}/OGlyph.vertex.glsl
 	${SHADER_DIR}/OShaderID.h
 	${SHADER_DIR}/shaders.h
 	${SHADER_DIR}/shader_conversion.py
@@ -165,12 +165,6 @@ set (UTIL_SOURCES
 )
 source_group("Utilities" FILES ${UTIL_SOURCES})
 
-set (RESOURCES
-	include/resource.h
-	OsirisSDK.rc
-)
-source_group("Resources" FILES ${RESOURCES})
-
 set (SOURCES 
 	${BASE_SOURCES}
 	${CONTAINER_SOURCES}
@@ -182,7 +176,6 @@ set (SOURCES
 	${MEMORY_SOURCES}
 	${SIM_SOURCES}
 	${UTIL_SOURCES}
-	${RESOURCES}
 )
 
 include_directories(./include
@@ -196,7 +189,7 @@ add_definitions(-DOSIRISSDK_EXPORTS -DOSIRIS_DLL_NAME="OsirisSDK.dll")
 
 add_library(OsirisSDK SHARED ${SOURCES})
 
-# freetype
+# debug/release
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
 	target_link_libraries(OsirisSDK freeglut_staticd freetyped glload)
 else()

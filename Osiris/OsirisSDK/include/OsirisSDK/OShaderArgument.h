@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <type_traits>
 
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OGPUObject.h"
@@ -23,10 +24,9 @@ public:
 	/**
 	 @brief Class constructor.
 	 @param aType Attribute type.
-	 @param aPrecision Precision type.
 	 @param aArrayLength Array length (if not an array, value must be 1).
 	 */
-	OShaderArgument(OVarType aType, OVarPrecision aPrecision, uint8_t aArrayLength=1);
+	OShaderArgument(OVarType aType,  uint8_t aArrayLength=1);
 
 	/**
 	 @brief Class destructor.
@@ -37,11 +37,6 @@ public:
 	 @brief Returns the attribute type.
 	 */
 	OVarType type() const;
-
-	/**
-	 @brief Returns the attribute precision.
-	 */
-	OVarPrecision precision() const;
 
 	/**
 	 @brief Returns the attribute dimensions.
@@ -55,7 +50,6 @@ public:
 
 protected:
 	OVarType	_type		= OVarType::Undefined;
-	OVarPrecision	_precision	= OVarPrecision::Undefined;
 	uint8_t		_arrayLength	= 0;
 	uint32_t	_size		= 0;
 };
@@ -63,11 +57,6 @@ protected:
 inline OVarType OShaderArgument::type() const
 {
 	return _type;
-}
-
-inline OVarPrecision OShaderArgument::precision() const
-{
-	return _precision;
 }
 
 inline uint8_t OShaderArgument::arrayLength() const
@@ -79,6 +68,47 @@ inline uint32_t OShaderArgument::size() const
 {
 	return _size;
 }
+
+/**
+ @brief Shader vertex argument.
+ */
+class OAPI OShaderVertexArgument : public OShaderArgument
+{
+public:
+	static constexpr uint32_t DefaultIndex = 0;
+
+	/**
+	 @brief Class constructor.
+	 @param aType Attribute type.
+	 @param aIndex The attribute index.
+	 @param aArrayLength Array length (if not an array, value must be 1).
+	 */
+	OShaderVertexArgument(OVarType aType, uint32_t aIndex=DefaultIndex, uint8_t aArrayLength=1);
+	
+	/**
+	 @brief Class destructor.
+	 */
+	virtual ~OShaderVertexArgument() = default;
+
+	/**
+	 @brief Argument index.
+	 */
+	uint32_t index() const;
+
+
+protected:
+	uint32_t _index = DefaultIndex;
+};
+
+inline OShaderVertexArgument::OShaderVertexArgument(OVarType aType, uint32_t aIndex, uint8_t aArrayLength) :
+	OShaderArgument(aType, aArrayLength)
+{}
+
+inline uint32_t OShaderVertexArgument::index() const
+{
+	return _index;
+}
+
 
 /**
  @brief A shader argument instance on the GPU.
@@ -96,10 +126,9 @@ public:
 	/**
 	 @brief Class constructor.
 	 @param aType Attribute type.
-	 @param aPrecision Precision type.
 	 @param aArrayLength Array length (if not an array, value must be 1).
 	 */
-	OShaderArgumentInstance(OVarType aType, OVarPrecision aPrecision, uint8_t aArrayLength=1);
+	OShaderArgumentInstance(OVarType aType, uint8_t aArrayLength=1);
 
 	/**
 	 @brief Class destructor.
@@ -138,13 +167,12 @@ public:
 	/**
 	 @brief Creates and initializes an argument instance.
 	 @param aType Attribute type.
-	 @param aPrecision Precision type.
 	 @param aArrayLength Number of dimensions.
 	 @param aValue The initial value of the argument instance.
 	 @return The newly created argument instance.
 	 */
 	template <typename T>
-	static OShaderArgumentInstance* create(OVarType aType, OVarPrecision aPrecision, uint8_t aArrayLength, const T& aValue);
+	static OShaderArgumentInstance* create(OVarType aType, uint8_t aArrayLength, const T& aValue);
 
 private:
 	uint8_t*		_buffer	= nullptr;
@@ -170,13 +198,16 @@ inline void OShaderArgumentInstance::update(const ORenderable* aRenderable)
 template<typename T>
 inline T& OShaderArgumentInstance::castTo()
 {
+	if (std::is_pointer<T>::value) {
+		return reinterpret_cast<T&>(_buffer);
+	}
 	return *reinterpret_cast<T*>(_buffer);
 }
 
 template<typename T>
-inline OShaderArgumentInstance * OShaderArgumentInstance::create(OVarType aType, OVarPrecision aPrecision, uint8_t aArrayLength, const T & aValue)
+inline OShaderArgumentInstance * OShaderArgumentInstance::create(OVarType aType, uint8_t aArrayLength, const T & aValue)
 {
-	auto var = new OShaderArgumentInstance(aType, aPrecision, aArrayLength);
+	auto var = new OShaderArgumentInstance(aType, aArrayLength);
 	OExceptionPointerCheck(var);
 	var->castTo<T>() = aValue;
 	return var;

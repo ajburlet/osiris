@@ -23,8 +23,8 @@ public:
 
 
 	// OGraphicsResourceCommandEncoder interface
-	virtual void load(OVertexBufferDescriptor* aVertexBufferDescriptor);
-	virtual void unload(OVertexBufferDescriptor* aVertexBufferDescriptor);
+	virtual void load(ORenderComponents* aRenderComponents) override;
+	virtual void unload(ORenderComponents* aVertexBufferDescriptor) override;
 	virtual void load(OVertexBuffer * aVertexBuffer) override;
 	virtual void unload(OVertexBuffer * aVertexBuffer) override;
 	virtual void load(OIndexBuffer * aIndexBuffer) override;

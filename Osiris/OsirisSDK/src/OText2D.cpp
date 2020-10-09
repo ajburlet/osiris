@@ -12,8 +12,6 @@
 #include "OsirisSDK/OFont.h"
 #include "OsirisSDK/OException.h"
 
-#include "resource.h"
-
 using namespace std;
 
 // ****************************************************************************

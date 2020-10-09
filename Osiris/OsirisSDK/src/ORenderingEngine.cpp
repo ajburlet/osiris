@@ -53,9 +53,8 @@ struct ORenderingEngine::Impl {
 
 	// load
 	void load(ORenderable* aRenderable);
-	void addUniformToRenderable(ORenderable* aRenderable, OVarType aType, OVarPrecision aPrecision, 
-				    uint8_t aArrayLength, const char* aName, 
-				    OShaderArgumentInstance::UpdateCallbackFn aCallbackFn);
+	void addUniformToRenderable(ORenderable* aRenderable, OVarType aType, uint8_t aArrayLength, 
+				    const char* aName, OShaderArgumentInstance::UpdateCallbackFn aCallbackFn);
 	void loadMeshUniforms(OMesh* aMesh);
 	void loadGlyphUniforms(OGlyph* aText);
 	void unload(ORenderComponents* aRenderComponents);
@@ -337,16 +336,19 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 		resourceEncoder->load(indexBuffer);
 		indexBuffer->setNeedsLoading(false);
 	}
+	if (aRenderable->renderComponents()->needsLoading()) {
+		resourceEncoder->load(aRenderable->renderComponents());
+		aRenderable->renderComponents()->setNeedsLoading(false);
+	}
 }
 
-void ORenderingEngine::Impl::addUniformToRenderable(ORenderable * aRenderable, 
-						    OVarType aType, OVarPrecision aPrecision, 
+void ORenderingEngine::Impl::addUniformToRenderable(ORenderable * aRenderable, OVarType aType, 
 						    uint8_t aArrayLength, const char * aName,
 						    OShaderArgumentInstance::UpdateCallbackFn aCallbackFn)
 {
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
 	
-	auto uniform = new OShaderArgumentInstance(aType, aPrecision, aArrayLength);
+	auto uniform = new OShaderArgumentInstance(aType, aArrayLength);
 	OExceptionPointerCheck(uniform);
 	OExceptionForwardCb([&]() { delete uniform; }, {
 		uniform->setUpdateCallbackFunction(aCallbackFn);
@@ -360,7 +362,7 @@ void ORenderingEngine::Impl::loadMeshUniforms(OMesh* aMesh)
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
 
 	// uniforms
-	addUniformToRenderable(aMesh, OVarType::Float4x4, OVarPrecision::High, 1, cMeshUniformMVPTransform,
+	addUniformToRenderable(aMesh, OVarType::Float4x4, 1, cMeshUniformMVPTransform,
 		[](OShaderArgumentInstance& aArgumentInstance, const ORenderable* aMesh) {
 			aArgumentInstance.copyFrom(reinterpret_cast<const OMesh*>(aMesh)->matrixStack()->top().glArea());
 	});
@@ -371,15 +373,15 @@ void ORenderingEngine::Impl::loadGlyphUniforms(OGlyph* aGlyph)
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
 
 	// uniforms
-	addUniformToRenderable(aGlyph, OVarType::Float2, OVarPrecision::High, 1, cGlyphUniformPosOffset,
+	addUniformToRenderable(aGlyph, OVarType::Float2, 1, cGlyphUniformPosOffset,
 		[](OShaderArgumentInstance& aArgumentInstance, const ORenderable* aGlyph) {
 			aArgumentInstance.copyFrom(static_cast<const OGlyph*>(aGlyph)->positionOffset().glArea());
 		});
-	addUniformToRenderable(aGlyph, OVarType::Float2, OVarPrecision::High, 1, cGlyphUniformScale, 
+	addUniformToRenderable(aGlyph, OVarType::Float2, 1, cGlyphUniformScale, 
 		[](OShaderArgumentInstance& aArgumentInstance, const ORenderable* aGlyph) {
 			aArgumentInstance.copyFrom(static_cast<const OGlyph*>(aGlyph)->scale().glArea());
 		});
-	addUniformToRenderable(aGlyph, OVarType::Float4, OVarPrecision::Low, 1, cGlyphUniformColor,
+	addUniformToRenderable(aGlyph, OVarType::Float4, 1, cGlyphUniformColor,
 		[](OShaderArgumentInstance& aArgumentInstance, const ORenderable* aGlyph) {
 			aArgumentInstance.copyFrom(static_cast<const OGlyph*>(aGlyph)->color().glArea());
 		});
@@ -388,10 +390,20 @@ void ORenderingEngine::Impl::loadGlyphUniforms(OGlyph* aGlyph)
 void ORenderingEngine::Impl::unload(ORenderComponents* aRenderComponents)
 {
 	auto resourceEncoder = getResourceEncoder();
-	if (aRenderComponents->texture() != nullptr)  resourceEncoder->unload(aRenderComponents->texture());
-	if (aRenderComponents->vertexBuffer() != nullptr) resourceEncoder->unload(aRenderComponents->vertexBuffer());
-	if (aRenderComponents->indexBuffer() != nullptr) resourceEncoder->unload(aRenderComponents->indexBuffer());
+	if (aRenderComponents->texture() != nullptr) {
+		resourceEncoder->unload(aRenderComponents->texture());
+		aRenderComponents->texture()->setNeedsLoading(true);
+	}
+	if (aRenderComponents->vertexBuffer() != nullptr) {
+		resourceEncoder->unload(aRenderComponents->vertexBuffer());
+		aRenderComponents->vertexBuffer()->setNeedsLoading(true);
+	}
+	if (aRenderComponents->indexBuffer() != nullptr) {
+		resourceEncoder->unload(aRenderComponents->indexBuffer());
+		aRenderComponents->indexBuffer()->setNeedsLoading(true);
+	}
 	for (auto arg : *aRenderComponents->uniformArgumentList()) resourceEncoder->unload(arg);
+	aRenderComponents->uniformArgumentList()->setNeedsLoading(true);
 }
 
 void ORenderingEngine::Impl::render(ORenderable * aRenderable)
@@ -401,15 +413,18 @@ void ORenderingEngine::Impl::render(ORenderable * aRenderable)
 	if (aRenderable->renderComponents()->shaderProgram() == nullptr) 
 		throw OException("Unable to find shader program.");
 
+	// shader & arguments
 	renderEncoder->setShaderProgram(aRenderable->renderComponents()->shaderProgram());
+	aRenderable->renderComponents()->uniformArgumentList()->update(aRenderable);
 	renderEncoder->setUniformArgumentList(aRenderable->renderComponents()->uniformArgumentList());
+
+	// vertex, index & texture
 	renderEncoder->setVertexBuffer(aRenderable->renderComponents()->vertexBuffer());
 	if (aRenderable->renderComponents()->indexBuffer()) 
 		renderEncoder->setIndexBuffer(aRenderable->renderComponents()->indexBuffer());
 	if (aRenderable->renderComponents()->texture()) 
 		renderEncoder->setTexture(aRenderable->renderComponents()->texture());
-
-	aRenderable->renderComponents()->uniformArgumentList()->update(aRenderable);
+	renderEncoder->setRenderComponents(aRenderable->renderComponents());
 
 	renderEncoder->draw(aRenderable->renderComponents()->renderMode());
 }

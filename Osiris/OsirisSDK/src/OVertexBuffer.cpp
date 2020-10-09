@@ -8,8 +8,8 @@
 // ****************************************************************************
 struct OVertexBufferDescriptor::Impl {
 	struct Attribute {
-		OShaderArgument	attribute;
-		uint32_t	offset		= 0;
+		OShaderVertexArgument	attribute;
+		uint32_t		offset		= 0;
 	};
 	ODynArray<Attribute>	attributes;
 	uint32_t		stride		= 0;
@@ -30,7 +30,7 @@ OVertexBufferDescriptor::~OVertexBufferDescriptor()
 	}
 }
 
-uint8_t OVertexBufferDescriptor::addAttribute(const OShaderArgument & aAttribute)
+uint8_t OVertexBufferDescriptor::addAttribute(const OShaderVertexArgument & aAttribute)
 {
 	auto idx = static_cast<uint8_t>(_impl->attributes.size());
 	_impl->attributes.append({ aAttribute,  _impl->stride });
@@ -38,7 +38,7 @@ uint8_t OVertexBufferDescriptor::addAttribute(const OShaderArgument & aAttribute
 	return idx;
 }
 
-const OShaderArgument& OVertexBufferDescriptor::attributeAtIndex(uint8_t aAttributeIndex) const
+const OShaderVertexArgument& OVertexBufferDescriptor::attributeAtIndex(uint8_t aAttributeIndex) const
 {
 	return _impl->attributes[aAttributeIndex].attribute;
 }

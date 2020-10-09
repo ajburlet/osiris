@@ -48,16 +48,6 @@ enum class OVarType {
 };
 
 /**
- @brief Variable precision.
- */
-enum class OVarPrecision {
-	Undefined,
-	Low,		/**< Low precision, 16-bit floats or 8-bit integers. */
-	Medium,		/**< Medium precision, 32-bit floats or 16-bit integers. */
-	High		/**< High precision, 64-bit floats or 32-bit integers. */
-};
-
-/**
  @brief Rendering type, combination of the face primitives and how they are built.
  */
 enum class ORenderMode {

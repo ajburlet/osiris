@@ -6,6 +6,7 @@
 #include "OsirisSDK/OVertexBuffer.h"
 #include "OsirisSDK/OIndexBuffer.h"
 #include "OsirisSDK/OTexture.h"
+#include "OsirisSDK/ORenderComponents.h"
 #include "OsirisSDK/OShaderArgument.h"
 #include "OsirisSDK/OShaderArgumentInstanceList.h"
 #include "OsirisSDK/OOpenGLRenderCommandEncoder.h"
@@ -52,82 +53,93 @@ OOpenGLRenderCommandEncoder::OOpenGLRenderCommandEncoder(OOpenGLCommandBuffer* a
 	for (auto& tex : _texture) tex = nullptr;
 }
 
-void OOpenGLRenderCommandEncoder::setFaceCullingOptions(OCullFace aFace, OCullFront aFront)
-{
-	if (aFace != OCullFace::Undefined) {
-		encode(Bind(glEnable, GL_CULL_FACE));
-		encode(Bind(glCullFace, (aFace == OCullFace::Back) ? GL_BACK : GL_FRONT));
-		encode(Bind(glFrontFace, (aFront == OCullFront::CCW) ? GL_CCW : GL_CW));
-	} else {
-		encode(Bind(glDisable, GL_CULL_FACE));
-	}
-}
-
 void OOpenGLRenderCommandEncoder::setShaderProgram(OShaderProgram * aShaderProgram)
 {
-	encode(Bind(glUseProgram, (aShaderProgram != nullptr) ? handle(aShaderProgram) : 0));
+	encode([this, aShaderProgram]() {
+		glUseProgram((aShaderProgram != nullptr) ? handle(aShaderProgram) : 0);
+	});
 	_shaderProgram = aShaderProgram;
 }
 
 void OOpenGLRenderCommandEncoder::setVertexBuffer(OVertexBuffer * aVertexBuffer)
 {
-	encode(Bind(glBindBuffer, GL_ARRAY_BUFFER, (aVertexBuffer != nullptr) ? handle(aVertexBuffer) : 0));
 	_vertexBuffer = aVertexBuffer;
 }
 
 void OOpenGLRenderCommandEncoder::setIndexBuffer(OIndexBuffer * aIndexBuffer)
 {
-	encode(Bind(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, (aIndexBuffer != nullptr) ? handle(aIndexBuffer) : 0));
 	_indexBuffer = aIndexBuffer;
 }
 
 void OOpenGLRenderCommandEncoder::setTexture(OTexture * aTexture, uint32_t aIndex)
 {
 	encode(Bind(glActiveTexture, gOpenGLTextureID[aIndex]));
-	encode(Bind(glBindTexture, GL_TEXTURE_2D, (aTexture != nullptr) ? handle(aTexture) : 0));
+	encode([this, aTexture]() {
+		glBindTexture(GL_TEXTURE_2D, (aTexture != nullptr) ? handle(aTexture) : 0); 
+	});
 	_texture[aIndex] = aTexture;
+}
+
+void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents * aRenderComponents)
+{
+	if (aRenderComponents->faceCullingEnabled()) {
+		encode(Bind(glEnable, GL_CULL_FACE));
+		encode(Bind(glCullFace, (aRenderComponents->cullingFace() == OCullFace::Back) ? GL_BACK : GL_FRONT));
+		encode(Bind(glFrontFace, (aRenderComponents->cullingFrontFace() == OCullFront::CCW) ? GL_CCW : GL_CW));
+	} else {
+		encode(Bind(glDisable, GL_CULL_FACE));
+	}
+
+	encode(Bind(aRenderComponents->depthTestingEnabled() ? glEnable : glDisable, GL_DEPTH_TEST));
+	encode(Bind(glDepthMask, aRenderComponents->depthBufferWriteEnabled() ? GL_TRUE : GL_FALSE));
+
+	encode([this, aRenderComponents]() {
+		glBindVertexArray(aRenderComponents->gpuHandleCastTo<GLuint>());
+	});
 }
 
 void OOpenGLRenderCommandEncoder::setUniformArgumentList(OShaderArgumentInstanceList * aUniformArguments)
 {
+	encode([this, aUniformArguments]() {
 	for (auto arg : *aUniformArguments) {
 		switch (arg->type()) {
 		case OVarType::Float:
-			encode(Bind(glUniform1fv, handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>()));
+			glUniform1fv(handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float2:
-			encode(Bind(glUniform2fv, handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>()));
+			glUniform2fv(handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float3:
-			encode(Bind(glUniform3fv, handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>()));
+			glUniform3fv(handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float4:
-			encode(Bind(glUniform4fv, handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>()));
+			glUniform4fv(handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>());
 			break;
 			
 		case OVarType::UnsignedInt:
-			encode(Bind(glUniform1uiv, handle(arg), arg->arrayLength(), arg->castTo<GLuint*>()));
+			glUniform1uiv(handle(arg), arg->arrayLength(), arg->castTo<GLuint*>());
 			break;
 
 		case OVarType::Float2x2:
-			encode(Bind(glUniformMatrix2fv, handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>()));
+			glUniformMatrix2fv(handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float3x3:
-			encode(Bind(glUniformMatrix3fv, handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>()));
+			glUniformMatrix3fv(handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>());
 			break;
 
 		case OVarType::Float4x4:
-			encode(Bind(glUniformMatrix4fv, handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>()));
+			glUniformMatrix4fv(handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>());
 			break;
 
 		default:
 			throw OException("Unsupported shader uniform argument type.");
 		}
 	}
+	});
 }
 
 OShaderProgram * OOpenGLRenderCommandEncoder::shaderProgram()

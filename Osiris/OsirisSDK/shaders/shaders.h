@@ -4,6 +4,36 @@
 
 #include "OShaderID.h"
 
+constexpr char glsl_OGlyph_fragment[] = R"(
+#version 330 
+
+varying mediump vec2 aTexcoord;
+out vec4 oOutColor;
+
+uniform sampler2D uTexture;
+uniform lowp vec4 uColor;
+
+void main(void) 
+{
+	oOutColor = vec4(1, 1, 1, texture2D(uTexture, aTexcoord).r) * uColor;
+}
+)";
+
+constexpr char glsl_OGlyph_vertex[] = R"(
+#version 330 
+
+layout (location = 0) in vec4 aPosition;
+varying mediump vec2 oTexcoord;
+uniform vec2 uPosOffset;
+uniform vec2 uScale;
+
+void main(void) 
+{
+	gl_Position = vec4(aPosition.xy * uScale.xy + uPosOffset.xy, 0.0f, 1.0f);
+	oTexcoord = aPosition.zw;
+}
+)";
+
 constexpr char glsl_OMesh_fragment[] = R"(
 #version 330
 
@@ -38,41 +68,11 @@ void main()
 
 )";
 
-constexpr char glsl_OText2D_fragment[] = R"(
-#version 330 
-
-varying vec2 texcoord;
-out vec4 outColor;
-
-uniform sampler2D tex;
-uniform vec4 color;
-
-void main(void) 
-{
-	outColor = vec4(1, 1, 1, texture2D(tex, texcoord).r) * color;
-}
-)";
-
-constexpr char glsl_OText2D_vertex[] = R"(
-#version 330 
-
-layout (location = 0) in vec4 position;
-varying vec2 texcoord;
-uniform vec3 posOffset;
-uniform vec3 scale;
-
-void main(void) 
-{
-	gl_Position = vec4(position.xy * scale.xy + posOffset.xy, 0.0f, 1.0f);
-	texcoord = position.zw;
-}
-)";
-
 void createShaderTable(OShaderSourceTable& aShaderTable)
 {
+	aShaderTable[{OGraphicsAPI::Type::OpenGL,OShaderObject::Type::Fragment,ORenderable::Type::Glyph}] = glsl_OGlyph_fragment;
+	aShaderTable[{OGraphicsAPI::Type::OpenGL,OShaderObject::Type::Vertex,ORenderable::Type::Glyph}] = glsl_OGlyph_vertex;
 	aShaderTable[{OGraphicsAPI::Type::OpenGL,OShaderObject::Type::Fragment,ORenderable::Type::Mesh}] = glsl_OMesh_fragment;
 	aShaderTable[{OGraphicsAPI::Type::OpenGL,OShaderObject::Type::Vertex,ORenderable::Type::Mesh}] = glsl_OMesh_vertex;
-	aShaderTable[{OGraphicsAPI::Type::OpenGL,OShaderObject::Type::Fragment,ORenderable::Type::Glyph}] = glsl_OText2D_fragment;
-	aShaderTable[{OGraphicsAPI::Type::OpenGL,OShaderObject::Type::Vertex,ORenderable::Type::Glyph}] = glsl_OText2D_vertex;
 }
 

@@ -59,6 +59,7 @@ inline OOpenGLCommandEncoder::OOpenGLCommandEncoder(OOpenGLCommandBuffer* aComma
 
 inline void OOpenGLCommandEncoder::encode(OOpenGLCommandBuffer::CommandItem aCommandItem)
 {
+	if (!aCommandItem) throw OException("Added non-callable command.");
 	_commandBuffer->addCommandItem(aCommandItem);
 }
 
