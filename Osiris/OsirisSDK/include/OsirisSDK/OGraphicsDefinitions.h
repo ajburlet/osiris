@@ -21,7 +21,32 @@ enum class OCullFront {
 	CW,		/**< Front face is defined by clockwise vertex order. */
 	CCW		/**< Front face is defined by counter-clockwise vertex order. */
 };
-	
+
+/**
+ @brief Blend factors.
+ */
+enum class OBlendFactor {
+	Zero,				/**< Factor of zero. In RGBA: (0,0,0,0). */
+	One,				/**< Factor of one. In RGBA: (1,1,1,1). */
+	SourceColor,			/**< Source color. */
+	OneMinusSourceColor,		/**< One minus source color. */
+	DestinationColor,		/**< Destination color. */
+	OneMinusDestinationColor,	/**< One minus destination color. */
+	SourceAlpha,			/**< Source alpha. */
+	OneMinusSourceAlpha,		/**< One minus source alpha. */
+	DestinationAlpha,		/**< Destination alpha. */
+	OneMinusDestinationAlpha,	/**< One minus destination alpha.  */
+	ConstantColor,			/**< Constant color (i.e. blend color). */
+	OneMinusConstantColor,		/**< One minus constant color. */
+	ConstantAlpha,			/**< Constant alpha (i.e. blend alpha). */
+	OneMinusConstantAlpha,		/**< One minus constant alpha. */
+	SourceAlphaSaturated,		/**< Minimum of source alpha and destination one minus alpha. */
+	Source1Color,			/**< Source color for dual-source blending. */
+	OneMinusSource1Color,		/**< One minus source color for dual-source blending. */
+	Source1Alpha,			/**< Source alpha for dual-source blending. */
+	OneMinusSource1Alpha		/**< One minus source alpha for dual-source blending. */
+};
+
 /**
  @brief Variable type.
  */

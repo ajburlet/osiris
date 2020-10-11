@@ -55,7 +55,22 @@ public:
 	OShaderProgram* shaderProgram();
 
 	/**
-	 @brief Returns true if face culling.
+	 @brief Returns true if color blending is enabled.
+	 */
+	bool colorBlendingEnabled() const;
+
+	/**
+	 @brief Returns the color blending source factor.
+	 */
+	OBlendFactor colorBlendingSourceFactor() const;
+
+	/**
+	 @brief Returns the color blenduing destination factor.
+	 */
+	OBlendFactor colorBlendingDestinationFactor() const;
+
+	/**
+	 @brief Returns true if face culling is enabled.
 	 */
 	bool faceCullingEnabled() const;
 
@@ -114,6 +129,20 @@ public:
 	void setShaderProgram(OShaderProgram* aShaderProgram);
 
 	/**
+	 @brief Sets color blending preferences.
+	 @param aEnabled Enables/disables color blending.
+	 @param aSourceFactor Source blend factor.
+	 @param aDestinationFactor Destination blend factor.
+	 */
+	void setColorBlending(bool aEnabled, OBlendFactor aSourceFactor = OBlendFactor::One,
+			      OBlendFactor aDestinationFactor = OBlendFactor::Zero)
+	{
+		_blendingEnabled = aEnabled;
+		_blendSourceFactor = aSourceFactor;
+		_blendDestinationFactor = aDestinationFactor;
+	}
+
+	/**
 	 @brief Sets face culling preferences.
 	 @param aEnabled Enables/disables face culling.
 	 @param aFace Defines which face is drawn.
@@ -141,6 +170,9 @@ private:
 	OTexture*			_texture		= nullptr;
 	OShaderProgram*			_shaderProgram		= nullptr;
 	OShaderArgumentInstanceList*	_argumentInstanceList	= nullptr;
+	bool				_blendingEnabled	= false;
+	OBlendFactor			_blendSourceFactor	= OBlendFactor::One;
+	OBlendFactor			_blendDestinationFactor = OBlendFactor::Zero;
 	bool				_faceCullingEnabled	= false;
 	OCullFace			_cullFace		= OCullFace::Undefined;
 	OCullFront			_cullFront		= OCullFront::Undefined;
@@ -167,6 +199,21 @@ inline OTexture * ORenderComponents::texture()
 inline OShaderProgram * ORenderComponents::shaderProgram()
 {
 	return _shaderProgram;
+}
+
+inline bool ORenderComponents::colorBlendingEnabled() const
+{
+	return _blendingEnabled;
+}
+
+inline OBlendFactor ORenderComponents::colorBlendingSourceFactor() const
+{
+	return _blendSourceFactor;
+}
+
+inline OBlendFactor ORenderComponents::colorBlendingDestinationFactor() const
+{
+	return _blendDestinationFactor;
 }
 
 inline bool ORenderComponents::faceCullingEnabled() const

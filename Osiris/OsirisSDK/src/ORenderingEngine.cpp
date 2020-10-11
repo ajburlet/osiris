@@ -53,8 +53,9 @@ struct ORenderingEngine::Impl {
 
 	// load
 	void load(ORenderable* aRenderable);
-	void addUniformToRenderable(ORenderable* aRenderable, OVarType aType, uint8_t aArrayLength, 
-				    const char* aName, OShaderArgumentInstance::UpdateCallbackFn aCallbackFn);
+	OShaderArgumentInstance* addUniformToRenderable(ORenderable* aRenderable, OVarType aType,
+							uint8_t aArrayLength, const char* aName, 
+							OShaderArgumentInstance::UpdateCallbackFn aCallbackFn);
 	void loadMeshUniforms(OMesh* aMesh);
 	void loadGlyphUniforms(OGlyph* aText);
 	void unload(ORenderComponents* aRenderComponents);
@@ -342,8 +343,10 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 	}
 }
 
-void ORenderingEngine::Impl::addUniformToRenderable(ORenderable * aRenderable, OVarType aType, 
-						    uint8_t aArrayLength, const char * aName,
+OShaderArgumentInstance* ORenderingEngine::Impl::addUniformToRenderable(ORenderable * aRenderable, 
+									OVarType aType, 
+									uint8_t aArrayLength, 
+									const char * aName,
 						    OShaderArgumentInstance::UpdateCallbackFn aCallbackFn)
 {
 	auto resourceEncoder = reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
@@ -355,6 +358,7 @@ void ORenderingEngine::Impl::addUniformToRenderable(ORenderable * aRenderable, O
 		resourceEncoder->load(uniform, aRenderable->renderComponents()->shaderProgram(), aName);
 		aRenderable->renderComponents()->uniformArgumentList()->pushBack(uniform);
 	});
+	return uniform;
 }
 
 void ORenderingEngine::Impl::loadMeshUniforms(OMesh* aMesh)
@@ -385,6 +389,9 @@ void ORenderingEngine::Impl::loadGlyphUniforms(OGlyph* aGlyph)
 		[](OShaderArgumentInstance& aArgumentInstance, const ORenderable* aGlyph) {
 			aArgumentInstance.copyFrom(static_cast<const OGlyph*>(aGlyph)->color().glArea());
 		});
+	
+	auto texUniform = addUniformToRenderable(aGlyph, OVarType::Int, 1, cGlyphUniformTexture, nullptr);
+	texUniform->castTo<int32_t>() = 0; // texture index always set to zero
 }
 
 void ORenderingEngine::Impl::unload(ORenderComponents* aRenderComponents)

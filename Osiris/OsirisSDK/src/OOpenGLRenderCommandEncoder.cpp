@@ -82,6 +82,39 @@ void OOpenGLRenderCommandEncoder::setTexture(OTexture * aTexture, uint32_t aInde
 
 void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents * aRenderComponents)
 {
+	auto GetBlendGLFactor = [](OBlendFactor aFactor) {
+		switch (aFactor) {
+		case OBlendFactor::Zero:			return GL_ZERO;
+		case OBlendFactor::One:				return GL_ONE;
+		case OBlendFactor::SourceColor:			return GL_SRC_COLOR;
+		case OBlendFactor::OneMinusSourceColor:		return GL_ONE_MINUS_SRC_COLOR;
+		case OBlendFactor::DestinationColor:		return GL_DST_COLOR;
+		case OBlendFactor::OneMinusDestinationColor:	return GL_ONE_MINUS_DST_COLOR;
+		case OBlendFactor::SourceAlpha:			return GL_SRC_ALPHA;
+		case OBlendFactor::OneMinusSourceAlpha:		return GL_ONE_MINUS_SRC_ALPHA;
+		case OBlendFactor::DestinationAlpha:		return GL_DST_ALPHA;
+		case OBlendFactor::OneMinusDestinationAlpha:	return GL_ONE_MINUS_DST_ALPHA;
+		case OBlendFactor::ConstantColor:		return GL_CONSTANT_COLOR;
+		case OBlendFactor::OneMinusConstantColor:	return GL_ONE_MINUS_CONSTANT_COLOR;
+		case OBlendFactor::ConstantAlpha:		return GL_CONSTANT_ALPHA;
+		case OBlendFactor::OneMinusConstantAlpha:	return GL_ONE_MINUS_CONSTANT_ALPHA;
+		case OBlendFactor::SourceAlphaSaturated:	return GL_SRC_ALPHA_SATURATE;
+		case OBlendFactor::Source1Color:		return GL_SRC1_COLOR;
+		case OBlendFactor::OneMinusSource1Color:	return GL_ONE_MINUS_SRC1_COLOR;
+		case OBlendFactor::Source1Alpha:		return GL_SRC1_ALPHA;
+		case OBlendFactor::OneMinusSource1Alpha:	return GL_ONE_MINUS_SRC1_ALPHA;
+		default:
+			throw OException("Invalid color blending setting.");
+		}
+		return GL_ONE;
+	};
+
+	if (aRenderComponents->colorBlendingEnabled()) {
+		encode(Bind(glEnable, GL_BLEND));
+		encode(Bind(glBlendFunc, GetBlendGLFactor(aRenderComponents->colorBlendingSourceFactor()),
+					 GetBlendGLFactor(aRenderComponents->colorBlendingDestinationFactor())));
+	}
+
 	if (aRenderComponents->faceCullingEnabled()) {
 		encode(Bind(glEnable, GL_CULL_FACE));
 		encode(Bind(glCullFace, (aRenderComponents->cullingFace() == OCullFace::Back) ? GL_BACK : GL_FRONT));
@@ -103,6 +136,7 @@ void OOpenGLRenderCommandEncoder::setUniformArgumentList(OShaderArgumentInstance
 	encode([this, aUniformArguments]() {
 	for (auto arg : *aUniformArguments) {
 		switch (arg->type()) {
+
 		case OVarType::Float:
 			glUniform1fv(handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>());
 			break;
@@ -119,10 +153,6 @@ void OOpenGLRenderCommandEncoder::setUniformArgumentList(OShaderArgumentInstance
 			glUniform4fv(handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>());
 			break;
 			
-		case OVarType::UnsignedInt:
-			glUniform1uiv(handle(arg), arg->arrayLength(), arg->castTo<GLuint*>());
-			break;
-
 		case OVarType::Float2x2:
 			glUniformMatrix2fv(handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>());
 			break;
@@ -133,6 +163,38 @@ void OOpenGLRenderCommandEncoder::setUniformArgumentList(OShaderArgumentInstance
 
 		case OVarType::Float4x4:
 			glUniformMatrix4fv(handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>());
+			break;
+		
+		case OVarType::Int:
+			glUniform1iv(handle(arg), arg->arrayLength(), arg->castTo<GLint*>());
+			break;
+
+		case OVarType::Int2:
+			glUniform2iv(handle(arg), arg->arrayLength(), arg->castTo<GLint*>());
+			break;
+
+		case OVarType::Int3:
+			glUniform3iv(handle(arg), arg->arrayLength(), arg->castTo<GLint*>());
+			break;
+
+		case OVarType::Int4:
+			glUniform4iv(handle(arg), arg->arrayLength(), arg->castTo<GLint*>());
+			break;
+
+		case OVarType::UnsignedInt:
+			glUniform1uiv(handle(arg), arg->arrayLength(), arg->castTo<GLuint*>());
+			break;
+
+		case OVarType::UnsignedInt2:
+			glUniform2uiv(handle(arg), arg->arrayLength(), arg->castTo<GLuint*>());
+			break;
+
+		case OVarType::UnsignedInt3:
+			glUniform3uiv(handle(arg), arg->arrayLength(), arg->castTo<GLuint*>());
+			break;
+
+		case OVarType::UnsignedInt4:
+			glUniform4uiv(handle(arg), arg->arrayLength(), arg->castTo<GLuint*>());
 			break;
 
 		default:

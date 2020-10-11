@@ -144,6 +144,9 @@ void OFont::loadToCache(uint8_t aSize)
 			auto& cacheEntry = (*sizeCache)[charCode];
 			OExceptionPointerCheck(cacheEntry.renderComponents = new ORenderComponents);
 			cacheEntry.renderComponents->setRenderMode(ORenderMode::TriangleStrip);
+			cacheEntry.renderComponents->setColorBlending(true, OBlendFactor::SourceAlpha,
+								      OBlendFactor::OneMinusSourceAlpha);
+			cacheEntry.renderComponents->setFaceCulling(false);
 
 			cacheEntry.advanceX = static_cast<uint16_t>(_impl->face->glyph->advance.x);
 			cacheEntry.advanceY = static_cast<uint16_t>(_impl->face->glyph->advance.y);
