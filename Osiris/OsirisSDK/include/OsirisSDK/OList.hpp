@@ -171,10 +171,10 @@ public:
 	 @brief List node struct.
 	 */
 	struct Node : public OMemoryManagedObject<Allocator> {
-		/**
-		 @brief Constructor.
-		 */
-		Node(const T& aValue, Node* aPrev, Node* aNext) : _value(aValue), _prev(aPrev), _next(aNext) {}
+		Node(const T& aValue, Node* aPrev = nullptr, Node* aNext=nullptr) : 
+			_value(aValue), _prev(aPrev), _next(aNext) {}
+		Node(T&& aValue, Node* aPrev=nullptr, Node* aNext=nullptr) : 
+			_value(std::move(aValue)), _prev(aPrev), _next(aNext) {}
 
 		T	_value;
 		Node*	_prev = nullptr;
@@ -218,10 +218,32 @@ public:
 	void pushFront(const T& aItem);
 
 	/**
+	 @copydoc pushFront(const T&)
+	 */
+	void pushFront(T&& aItem);
+
+	/**
+	 @brief Push node to the front of the list.
+	 @param aNode Node to be added to the list.
+	 */
+	void pushFront(Node* aNode);
+
+	/**
 	 @brief Push item to the back of the list.
 	 @param aItem The item to be added to the list.
 	 */
 	void pushBack(const T& aItem);
+
+	/**
+	 @copydoc pushBack(comnst T&)
+	 */
+	void pushBack(T&& aItem);
+
+	/**
+	 @brief Push node to the back of the list.
+	 @param aNode Node to be added to the list.
+	 */
+	void pushBack(Node* aNode);
 
 	/**
 	 @brief Inserts an item after a given iterator marking position.
@@ -229,13 +251,37 @@ public:
 	 @param aPositionIt The iterator used as reference to the insertion point.
 	 */
 	void insertAfter(const T& aItem, Iterator& aPositionIt);
-	
+
+	/**
+	 @copydoc insertAfter(const T&, Iterator&)
+	 */
+	void insertAfter(T&& aItem, Iterator& aPositionIt);
+
+	/**
+	 @brief Inserts a node after a given iterator marking position.
+	 @param aNode The node to be added to the list.
+	 @param aPositionIt The iterator used as reference to the insertion point.
+	 */
+	void insertAfter(Node* aNode, Iterator& aPositionIt);
+
 	/**
 	 @brief Inserts an item before a given iterator marking position.
 	 @param aItem The item to be added to the list.
 	 @param aPositionIt The iterator used as reference to the insertion point.
 	 */
 	void insertBefore(const T& aItem, Iterator& aPositionIt);
+
+	/**
+	 @copydoc insertBefore(const T&, Iterator&)
+	 */
+	void insertBefore(T&& aItem, Iterator& aPositionIt);
+
+	/**
+	 @brief Inserts a node before a given iterator marking position.
+	 @param aNode The node to be added to the list.
+	 @param aPositionIt The iterator used as reference to the insertion point.
+	 */
+	void insertBefore(Node* aNode, Iterator& aPositionIt);
 
 	/**
 	 @brief Removes first element from the list.
@@ -345,60 +391,118 @@ inline typename OList<T,Allocator>::ConstIterator OList<T, Allocator>::end() con
 template<typename T, class Allocator>
 inline void OList<T, Allocator>::pushFront(const T & aItem)
 {
-	auto node = new Node(aItem, nullptr, _head);
+	auto node = new Node{ aItem, nullptr, _head };
 	OExceptionPointerCheck(node);
-	if (_head != nullptr) _head->_prev = node;
+	pushFront(node);
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::pushFront(T && aItem)
+{
+	auto node = new Node{ std::move(aItem), nullptr, _head };
+	OExceptionPointerCheck(node);
+	pushFront(node);
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::pushFront(Node * aNode)
+{
+	if (_head != nullptr) _head->_prev = aNode;
 	if (_tail == nullptr) _tail = _head;
-	_head = node;
+	_head = aNode;
 	_count++;
 }
 
 template<typename T, class Allocator>
 inline void OList<T, Allocator>::pushBack(const T & aItem)
 {
-	auto node = new Node(aItem, _tail, nullptr);
+	auto node = new Node{ aItem, _tail, nullptr };
 	OExceptionPointerCheck(node);
+	pushBack(node);
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::pushBack(T && aItem)
+{
+	auto node = new Node{ std::move(aItem), _tail, nullptr };
+	OExceptionPointerCheck(node);
+	pushBack(node);
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::pushBack(Node * aNode)
+{
 	if (_tail == nullptr) {
-		_head = node;
+		_head = aNode;
 	} else {
-		_tail->_next = node;
+		_tail->_next = aNode;
 	}
-	_tail = node;
+	_tail = aNode;
 	_count++;
 }
 
 template<typename T, class Allocator>
 inline void OList<T, Allocator>::insertAfter(const T & aItem, Iterator & aPositionIt)
 {
+	auto node = new Node{ aItem };
+	OExceptionPointerCheck(node);
+	insertAfter(node, aPositionIt);
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::insertAfter(T && aItem, Iterator & aPositionIt)
+{
+	auto node = new Node{ std::move(aItem) };
+	OExceptionPointerCheck(node);
+	insertAfter(node, aPositionIt);
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::insertAfter(Node * aNode, Iterator & aPositionIt)
+{
+	aNode->_prev = aPositionIt.node();
 	if (aPositionIt.node() == nullptr || _count == 0) {
 		// empty list or iterator to the end of the list
-		pushBack(aItem);
+		pushBack(aNode);
 		return;
 	}
-
-	auto node = new Node(aItem, aPositionIt.node(), aPositionIt.node()->_next);
-	OExceptionPointerCheck(node);
-	if (aPositionIt.node()->_next != nullptr) aPositionIt.node()->_next->_prev = node;
-	aPositionIt.node()->_next = node;
+	aNode->_next = aPositionIt.node()->_next;
+	if (aPositionIt.node()->_next != nullptr) aPositionIt.node()->_next->_prev = aNode;
+	aPositionIt.node()->_next = aNode;
 	_count++;
 }
 
 template<typename T, class Allocator>
 inline void OList<T, Allocator>::insertBefore(const T & aItem, Iterator & aPositionIt)
 {
+	auto node = new Node{ aItem, aPositionIt.node()->_prev, aPositionIt.node() };
+	OExceptionPointerCheck(node);
+	insertBefore(node, aPositionIt);
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::insertBefore(T && aItem, Iterator & aPositionIt)
+{
+	auto node = new Node{ std::move(aItem) };
+	OExceptionPointerCheck(node);
+	insertBefore(node, aPositionIt);
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::insertBefore(Node * aNode, Iterator & aPositionIt)
+{
+	aNode->_next = aPositionIt.node();
 	if (aPositionIt.node() == nullptr || _count == 0) {
 		// empty list or iterator to the end of the list
-		pushBack(aItem);
+		pushBack(aNode);
 		return;
 	} else if (aPositionIt.node()->_prev == nullptr) {
-		pushFront(aItem);
+		pushFront(aNode);
 		return;
 	}
-	
-	auto node = new Node(aItem, aPositionIt.node()->_prev, aPositionIt.node());
-	OExceptionPointerCheck(node);
-	if (aPositionIt.node()->_prev != nullptr) aPositionIt.node()->_prev->_next = node;
-	aPositionIt.node()->_prev = node;
+	aNode->_prev = aPositionIt.node()->_prev;
+	if (aPositionIt.node()->_prev != nullptr) aPositionIt.node()->_prev->_next = aNode;
+	aPositionIt.node()->_prev = aNode;
 	_count++;
 }
 
