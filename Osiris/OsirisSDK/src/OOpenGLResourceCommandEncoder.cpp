@@ -5,7 +5,6 @@
 #include "OsirisSDK/OIndexBuffer.h"
 #include "OsirisSDK/OTexture.h"
 #include "OsirisSDK/OShaderArgument.h"
-#include "OsirisSDK/OShaderArgumentInstanceList.h"
 #include "OsirisSDK/OShaderProgram.h"
 #include "OsirisSDK/ORenderComponents.h"
 #include "OsirisSDK/OOpenGLVertexBufferHandle.h"
@@ -313,7 +312,7 @@ void OOpenGLResourceCommandEncoder::unload(OTexture * aTexture)
 	});
 }
 
-void OOpenGLResourceCommandEncoder::load(OShaderArgumentInstance * aAttributeInstance, OShaderProgram * aShader, const char * aName)
+void OOpenGLResourceCommandEncoder::load(OShaderUniformArgument * aAttributeInstance, OShaderProgram * aShader, const char * aName)
 {
 	createHandle(aAttributeInstance);
 	encode([aAttributeInstance, aShader, aName]() {
@@ -323,7 +322,7 @@ void OOpenGLResourceCommandEncoder::load(OShaderArgumentInstance * aAttributeIns
 	aAttributeInstance->setNeedsLoading(false);
 }
 
-void OOpenGLResourceCommandEncoder::unload(OShaderArgumentInstance * aAttributeInstance)
+void OOpenGLResourceCommandEncoder::unload(OShaderUniformArgument * aAttributeInstance)
 {
 	destroyHandle(aAttributeInstance);
 }

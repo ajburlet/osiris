@@ -174,7 +174,9 @@ void OText2D::render(ORenderingEngine* aRenderingEngine, OMatrixStack*)
 		_impl->redraw = false;
 	}
 
-	for (auto glyph : _impl->glyph_list) aRenderingEngine->render(glyph);
+	for (auto glyph : _impl->glyph_list) {
+		aRenderingEngine->render(glyph);
+	}
 }
 
 void OText2D::onScreenResize(const OResizeEvent * evt)

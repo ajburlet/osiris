@@ -8,7 +8,6 @@
 #include "OsirisSDK/OTexture.h"
 #include "OsirisSDK/ORenderComponents.h"
 #include "OsirisSDK/OShaderArgument.h"
-#include "OsirisSDK/OShaderArgumentInstanceList.h"
 #include "OsirisSDK/OOpenGLRenderCommandEncoder.h"
 #include "OsirisSDK/OVector.hpp"
 
@@ -131,76 +130,74 @@ void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents * aRende
 	});
 }
 
-void OOpenGLRenderCommandEncoder::setUniformArgumentList(OShaderArgumentInstanceList * aUniformArguments)
+void OOpenGLRenderCommandEncoder::setUniformArgument(OShaderUniformArgument * aUniformArgument)
 {
-	encode([this, aUniformArguments]() {
-	for (auto arg : *aUniformArguments) {
-		switch (arg->type()) {
+	encode([this, aUniformArgument]() {
+		switch (aUniformArgument->type()) {
 
 		case OVarType::Float:
-			glUniform1fv(handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>());
+			glUniform1fv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float2:
-			glUniform2fv(handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>());
+			glUniform2fv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float3:
-			glUniform3fv(handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>());
+			glUniform3fv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float4:
-			glUniform4fv(handle(arg), arg->arrayLength(), arg->castTo<GLfloat*>());
+			glUniform4fv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLfloat*>());
 			break;
 			
 		case OVarType::Float2x2:
-			glUniformMatrix2fv(handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>());
+			glUniformMatrix2fv(handle(aUniformArgument), aUniformArgument->arrayLength(), false, aUniformArgument->castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float3x3:
-			glUniformMatrix3fv(handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>());
+			glUniformMatrix3fv(handle(aUniformArgument), aUniformArgument->arrayLength(), false, aUniformArgument->castTo<GLfloat*>());
 			break;
 
 		case OVarType::Float4x4:
-			glUniformMatrix4fv(handle(arg), arg->arrayLength(), false, arg->castTo<GLfloat*>());
+			glUniformMatrix4fv(handle(aUniformArgument), aUniformArgument->arrayLength(), false, aUniformArgument->castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Int:
-			glUniform1iv(handle(arg), arg->arrayLength(), arg->castTo<GLint*>());
+			glUniform1iv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLint*>());
 			break;
 
 		case OVarType::Int2:
-			glUniform2iv(handle(arg), arg->arrayLength(), arg->castTo<GLint*>());
+			glUniform2iv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLint*>());
 			break;
 
 		case OVarType::Int3:
-			glUniform3iv(handle(arg), arg->arrayLength(), arg->castTo<GLint*>());
+			glUniform3iv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLint*>());
 			break;
 
 		case OVarType::Int4:
-			glUniform4iv(handle(arg), arg->arrayLength(), arg->castTo<GLint*>());
+			glUniform4iv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLint*>());
 			break;
 
 		case OVarType::UnsignedInt:
-			glUniform1uiv(handle(arg), arg->arrayLength(), arg->castTo<GLuint*>());
+			glUniform1uiv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLuint*>());
 			break;
 
 		case OVarType::UnsignedInt2:
-			glUniform2uiv(handle(arg), arg->arrayLength(), arg->castTo<GLuint*>());
+			glUniform2uiv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLuint*>());
 			break;
 
 		case OVarType::UnsignedInt3:
-			glUniform3uiv(handle(arg), arg->arrayLength(), arg->castTo<GLuint*>());
+			glUniform3uiv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLuint*>());
 			break;
 
 		case OVarType::UnsignedInt4:
-			glUniform4uiv(handle(arg), arg->arrayLength(), arg->castTo<GLuint*>());
+			glUniform4uiv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLuint*>());
 			break;
 
 		default:
 			throw OException("Unsupported shader uniform argument type.");
 		}
-	}
 	});
 }
 

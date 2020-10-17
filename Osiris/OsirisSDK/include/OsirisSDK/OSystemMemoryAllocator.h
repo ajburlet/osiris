@@ -19,7 +19,7 @@ public:
  @brief Allocator that uses system <code>malloc()</code> and <code>free()</code> calls. 
  */
 template <OMemoryManager::Scope Scope = OMemoryManager::Scope::Default>
-class OAPI OSystemMemoryAllocator : public OAbstractMemoryAllocator<Scope>
+class OSystemMemoryAllocator : public OAbstractMemoryAllocator<Scope>
 {
 public:
 	/**

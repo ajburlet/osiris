@@ -10,7 +10,7 @@ class OShaderProgram;
 class OVertexBuffer;
 class OIndexBuffer;
 class OTexture;
-class OShaderArgumentInstanceList;
+class OShaderUniformArgument;
 class ORenderComponents;
 
 /**
@@ -58,9 +58,9 @@ public:
 	virtual void setRenderComponents(ORenderComponents* aRenderComponents) = 0;
 
 	/**
-	 @brief Sets the shader uniform argument list.
+	 @brief Sets a shader uniform argument.
 	 */
-	virtual void setUniformArgumentList(OShaderArgumentInstanceList* aUniformArguments) = 0;
+	virtual void setUniformArgument(OShaderUniformArgument* aUniformArgument) = 0;
 
 	/**
 	 @brief Returns a pointer to a shader program object.

@@ -27,7 +27,7 @@ public:
 	virtual void setIndexBuffer(OIndexBuffer * aIndexBuffer) override;
 	virtual void setTexture(OTexture * aTexture, uint32_t aIndex = 0) override;
 	virtual void setRenderComponents(ORenderComponents* aRenderComponents) override;
-	virtual void setUniformArgumentList(OShaderArgumentInstanceList * aUniformArguments) override;
+	virtual void setUniformArgument(OShaderUniformArgument * aUniformArguments) override;
 	virtual OShaderProgram * shaderProgram() override;
 	virtual OVertexBuffer * vertexBuffer() override;
 	virtual OIndexBuffer * indexBuffer() override;

@@ -73,9 +73,9 @@ public:
 	const OVector4FL& color() const;
 
 private:
-	char		_charCode;
-	uint16_t	_advanceX;
-	uint16_t	_advanceY;
+	char		_charCode	= 0;
+	uint16_t	_advanceX	= 0;
+	uint16_t	_advanceY	= 0;
 
 	/**
 	 @cond HIDDEN

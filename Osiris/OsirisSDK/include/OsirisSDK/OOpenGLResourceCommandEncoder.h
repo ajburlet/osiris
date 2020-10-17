@@ -31,8 +31,8 @@ public:
 	virtual void unload(OIndexBuffer * aIndexBuffer) override;
 	virtual void load(OTexture * aTexture) override;
 	virtual void unload(OTexture * aTexture) override;
-	virtual void load(OShaderArgumentInstance * aAttributeInstance, OShaderProgram * aShader, const char * aName) override;
-	virtual void unload(OShaderArgumentInstance* aAttributeInstance) override;
+	virtual void load(OShaderUniformArgument * aAttributeInstance, OShaderProgram * aShader, const char * aName) override;
+	virtual void unload(OShaderUniformArgument* aAttributeInstance) override;
 
 	// Inherited via OGraphicsCommandEncoder interface
 	virtual void end() override;

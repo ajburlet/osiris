@@ -7,7 +7,7 @@ class OShaderProgram;
 class OVertexBuffer;
 class OVertexBufferDescriptor;
 class OIndexBuffer;
-class OShaderArgumentInstance;
+class OShaderUniformArgument;
 class OTexture;
 class ORenderComponents;
 
@@ -76,12 +76,12 @@ public:
 	 @param aShader The shader program to which the attribute relates.
 	 @param aName The name the argument assumes in the shader.
 	 */
-	virtual void load(OShaderArgumentInstance* aAttributeInstance, OShaderProgram* aShader, const char* aName) = 0;
+	virtual void load(OShaderUniformArgument* aAttributeInstance, OShaderProgram* aShader, const char* aName) = 0;
 
 	/**
 	 @brief Unloads a shader uniform attribute instance.
 	 */
-	virtual void unload(OShaderArgumentInstance* aAttributeInstance) = 0;
+	virtual void unload(OShaderUniformArgument* aAttributeInstance) = 0;
 };
 
 inline OGraphicsResourceCommandEncoder::OGraphicsResourceCommandEncoder() :

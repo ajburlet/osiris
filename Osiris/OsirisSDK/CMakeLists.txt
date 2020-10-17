@@ -51,7 +51,6 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/ORenderingEngine.h
 	${SRC_DIR}/OShaderArgument.cpp
 	${HDR_DIR}/OShaderArgument.h
-	${HDR_DIR}/OShaderArgumentInstanceList.h
 	${SRC_DIR}/OShaderObject.cpp
 	${HDR_DIR}/OShaderObject.h
 	${SRC_DIR}/OShaderProgram.cpp

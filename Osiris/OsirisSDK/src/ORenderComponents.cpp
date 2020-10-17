@@ -1,5 +1,4 @@
 #include "OsirisSDK/OException.h"
-#include "OsirisSDK/OShaderArgumentInstanceList.h"
 #include "OsirisSDK/OVertexBuffer.h"
 #include "OsirisSDK/OIndexBuffer.h"
 #include "OsirisSDK/OTexture.h"
@@ -8,17 +7,10 @@
 
 ORenderComponents::ORenderComponents()
 {
-	OExceptionPointerCheck(_argumentInstanceList = new OShaderArgumentInstanceList);
 }
 
 ORenderComponents::~ORenderComponents()
 {
-	if (_argumentInstanceList) {
-		for (auto arg : *_argumentInstanceList) {
-			delete arg;
-		}
-		delete _argumentInstanceList;
-	}
 }
 
 ORenderMode ORenderComponents::renderMode() const

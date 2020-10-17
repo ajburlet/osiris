@@ -62,22 +62,29 @@ OShaderArgument::OShaderArgument(OVarType aType, uint8_t aDim) :
 
 
 // ****************************************************************************
-// OShaderArgumentInstance
+// OShaderUniformArgument
 // ****************************************************************************
 using Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>;
 
-OShaderArgumentInstance::OShaderArgumentInstance(OVarType aType, uint8_t aDim) :
+OShaderUniformArgument::OShaderUniformArgument(OVarType aType, uint8_t aDim) :
 	OShaderArgument(aType, aDim)
 {
 	OExceptionPointerCheck(_buffer = static_cast<uint8_t*>(Allocator().allocate(size())));
 }
 
-OShaderArgumentInstance::~OShaderArgumentInstance()
+OShaderUniformArgument::OShaderUniformArgument(OShaderUniformArgument && aOther) :
+	OShaderArgument(aOther)
+{
+	_buffer = aOther._buffer;
+	aOther._buffer = nullptr;
+}
+
+OShaderUniformArgument::~OShaderUniformArgument()
 {
 	if (_buffer) Allocator().deallocate(_buffer, size());
 }
 
-void OShaderArgumentInstance::copyFrom(const void* aSrc, uint32_t aOffset, uint32_t aBytes)
+void OShaderUniformArgument::copyFrom(const void* aSrc, uint32_t aOffset, uint32_t aBytes)
 {
 	uint32_t len = (aBytes == 0) ? _size - aOffset : aBytes;
 	if (len > _size) throw new OException("Argument instance buffer overflow.");

@@ -113,27 +113,37 @@ inline uint32_t OShaderVertexArgument::index() const
 /**
  @brief A shader argument instance on the GPU.
  */
-class OAPI OShaderArgumentInstance : public OShaderArgument, public OGPUObject
+class OAPI OShaderUniformArgument : public OShaderArgument, public OGPUObject
 {
 public:
 	/**
 	 @brief Update callback function type.
 
-	 The function is in the form of <code>void function(OShaderArgumentInstance&)</code>.
+	 The function is in the form of <code>void function(OShaderUniformArgument&)</code>.
 	 */
-	using UpdateCallbackFn = std::function<void(OShaderArgumentInstance&, const ORenderable*)>;
+	using UpdateCallbackFn = std::function<void(OShaderUniformArgument&, const ORenderable*)>;
 
 	/**
 	 @brief Class constructor.
 	 @param aType Attribute type.
 	 @param aArrayLength Array length (if not an array, value must be 1).
 	 */
-	OShaderArgumentInstance(OVarType aType, uint8_t aArrayLength=1);
+	OShaderUniformArgument(OVarType aType, uint8_t aArrayLength=1);
+
+	/**
+	 @brief Deleted copy constructor.
+	 */
+	OShaderUniformArgument(const OShaderUniformArgument&) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OShaderUniformArgument(OShaderUniformArgument&& aOther);
 
 	/**
 	 @brief Class destructor.
 	 */
-	~OShaderArgumentInstance();
+	~OShaderUniformArgument();
 
 	/**
 	 @brief Returns the pointer to the buffer.
@@ -172,7 +182,7 @@ public:
 	 @return The newly created argument instance.
 	 */
 	template <typename T>
-	static OShaderArgumentInstance* create(OVarType aType, uint8_t aArrayLength, const T& aValue);
+	static OShaderUniformArgument* create(OVarType aType, uint8_t aArrayLength, const T& aValue);
 
 private:
 	uint8_t*		_buffer	= nullptr;
@@ -180,23 +190,23 @@ private:
 
 };
 
-inline void* OShaderArgumentInstance::buffer()
+inline void* OShaderUniformArgument::buffer()
 {
 	return _buffer;
 }
 
-inline void OShaderArgumentInstance::setUpdateCallbackFunction(UpdateCallbackFn aCallback)
+inline void OShaderUniformArgument::setUpdateCallbackFunction(UpdateCallbackFn aCallback)
 {
 	_updateCallback = aCallback;
 }
 
-inline void OShaderArgumentInstance::update(const ORenderable* aRenderable)
+inline void OShaderUniformArgument::update(const ORenderable* aRenderable)
 {
 	if (_updateCallback) _updateCallback(*this, aRenderable);
 }
 
 template<typename T>
-inline T& OShaderArgumentInstance::castTo()
+inline T& OShaderUniformArgument::castTo()
 {
 	if (std::is_pointer<T>::value) {
 		return reinterpret_cast<T&>(_buffer);
@@ -205,9 +215,9 @@ inline T& OShaderArgumentInstance::castTo()
 }
 
 template<typename T>
-inline OShaderArgumentInstance * OShaderArgumentInstance::create(OVarType aType, uint8_t aArrayLength, const T & aValue)
+inline OShaderUniformArgument * OShaderUniformArgument::create(OVarType aType, uint8_t aArrayLength, const T & aValue)
 {
-	auto var = new OShaderArgumentInstance(aType, aArrayLength);
+	auto var = new OShaderUniformArgument(aType, aArrayLength);
 	OExceptionPointerCheck(var);
 	var->castTo<T>() = aValue;
 	return var;

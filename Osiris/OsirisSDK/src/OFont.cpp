@@ -111,7 +111,7 @@ OGlyph * OFont::createGlyph(char aCharCode, uint8_t aSize, const OVector2F& aPos
 	OExceptionPointerCheck(glyph);
 	try {
 		glyph->setRenderComponents(cacheEntry.renderComponents);
-		if (cacheEntry.renderComponents->componentsLoaded() == false) _impl->renderingEngine->load(glyph);
+		_impl->renderingEngine->load(glyph);
 	} catch (OException& e) {
 		delete glyph;
 		throw e;

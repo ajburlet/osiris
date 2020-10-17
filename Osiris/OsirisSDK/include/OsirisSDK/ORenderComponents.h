@@ -10,8 +10,7 @@ class OVertexBuffer;
 class OIndexBuffer;
 class OTexture;
 class OShaderProgram;
-class OShaderArgumentInstance;
-class OShaderArgumentInstanceList;
+class OShaderUniformArgument;
 
 /**
  @brief Contains all data pertaining to GPU rendering of a renderable object.
@@ -158,18 +157,12 @@ public:
 	 */
 	void setDepthTesting(bool aTestEnabled, bool aBufferWrite);
 
-	/**
-	 @brief Returns the uniform argument list.
-	 */
-	OShaderArgumentInstanceList* uniformArgumentList();
-
 private:
 	ORenderMode			_renderMode		= ORenderMode::Undefined;
 	OVertexBuffer*			_vertexBuffer		= nullptr;
 	OIndexBuffer*			_indexBuffer		= nullptr;
 	OTexture*			_texture		= nullptr;
 	OShaderProgram*			_shaderProgram		= nullptr;
-	OShaderArgumentInstanceList*	_argumentInstanceList	= nullptr;
 	bool				_blendingEnabled	= false;
 	OBlendFactor			_blendSourceFactor	= OBlendFactor::One;
 	OBlendFactor			_blendDestinationFactor = OBlendFactor::Zero;
@@ -277,10 +270,5 @@ inline void ORenderComponents::setDepthTesting(bool aTestEnabled, bool aBufferWr
 {
 	_depthTestEnabled = aTestEnabled;
 	_depthBufferWrite = aBufferWrite;
-}
-
-inline OShaderArgumentInstanceList * ORenderComponents::uniformArgumentList()
-{
-	return _argumentInstanceList;
 }
 
