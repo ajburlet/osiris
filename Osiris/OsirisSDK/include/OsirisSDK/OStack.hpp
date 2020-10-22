@@ -14,15 +14,40 @@ public:
 	OStack() = default;
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OStack(const OStack& aOther) = delete;
+
+	/**
+	 @brief Move constructor
+	 */
+	OStack(OStack&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	~OStack();
+
+	/**
+	 @brief Deleted assingment operator.
+	 */
+	OStack& operator=(const OStack& aOther) = delete;
+
+	/**
+	 @broef Move assignment operator.
+	 */
+	OStack& operator=(OStack&& aOther);
 
 	/**
 	 @brief Pushes an item to the top of the stack.
 	 @param aItem Item to be added.
 	 */
 	void push(const T& aItem);
+
+	/**
+	 @copydoc push(const T&)
+	 */
+	void push(T&& aOther);
 
 	/**
 	 @brief Retrieves the top item in the stack.
@@ -56,15 +81,39 @@ private:
 };
 
 template<typename T, class Allocator>
+inline OStack<T, Allocator>::OStack(OStack && aOther)
+{
+	_top = aOther._top;
+	aOther._top = nullptr;
+}
+
+template<typename T, class Allocator>
 inline OStack<T, Allocator>::~OStack()
 {
 	while (!empty()) pop();
 }
 
 template<typename T, class Allocator>
+inline OStack<T, Allocator>& OStack<T, Allocator>::operator=(OStack && aOther)
+{
+	while (!empty()) pop();
+	_top = aOther._top;
+	aOther._top = nullptr;
+	return *this;
+}
+
+template<typename T, class Allocator>
 inline void OStack<T, Allocator>::push(const T & aItem)
 {
 	auto node = new Node{ aItem, _top };
+	OExceptionPointerCheck(node);
+	_top = node;
+}
+
+template<typename T, class Allocator>
+inline void OStack<T, Allocator>::push(T && aOther)
+{
+	auto node = new Node{ std::move(aOther), _top };
 	OExceptionPointerCheck(node);
 	_top = node;
 }

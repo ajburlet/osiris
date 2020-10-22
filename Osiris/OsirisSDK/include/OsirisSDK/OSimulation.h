@@ -36,9 +36,29 @@ public:
 		int aTargetFPS=OAPPLICATION_DEFAULT_TARGETFPS, int aSimulationStep_us=OAPPLICATION_DEFAULT_SIMULATIONSTEP);
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OSimulation(const OSimulation& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OSimulation(OSimulation&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OSimulation();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OSimulation& operator=(const OSimulation& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OSimulation& operator=(OSimulation&& aOther);
 
 	/**
 	 @brief Adds an entity to the simulation.
@@ -74,4 +94,10 @@ private:
 	 @endcond
 	 */
 };
+
+inline OSimulation::OSimulation(OSimulation && aOther) : OApplication(std::move(aOther))
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}
 

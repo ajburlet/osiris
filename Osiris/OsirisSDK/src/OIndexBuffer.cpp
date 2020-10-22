@@ -6,15 +6,15 @@ struct Point {
 	uint32_t i, j, k;
 };
 
-struct OIndexBuffer::Implementation 
+struct OIndexBuffer::Impl 
 {
-	Implementation(uint32_t aVertexCount) : array(aVertexCount, {0,0,0}) {}
+	Impl(uint32_t aVertexCount) : array(aVertexCount, {0,0,0}) {}
 	OArray<Point,OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>> array;
 };
 
 OIndexBuffer::OIndexBuffer(uint32_t aVertexCount)
 {
-	_impl = new Implementation(aVertexCount);
+	_impl = new Impl(aVertexCount);
 	if (!_impl) {
 		throw OException("Unable to allocate memory for internal implementation.");
 	}
@@ -23,6 +23,14 @@ OIndexBuffer::OIndexBuffer(uint32_t aVertexCount)
 OIndexBuffer::~OIndexBuffer()
 {
 	delete _impl;
+}
+
+OIndexBuffer & OIndexBuffer::operator=(OIndexBuffer && aOther)
+{
+	if (_impl != nullptr) delete _impl;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+	return *this;
 }
 
 void OIndexBuffer::setFaceCount(uint32_t aNewFaceCount)

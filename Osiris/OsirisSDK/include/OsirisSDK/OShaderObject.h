@@ -26,11 +26,31 @@ public:
 	 @param aSource Shader source code.
 	 */
 	OShaderObject(Type aType, const char* aSource="");
+
+	/**
+	 @brief Deleted copy constructor.
+	 */
+	OShaderObject(const OShaderObject& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OShaderObject(OShaderObject&& aOther);
 	
 	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OShaderObject();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OShaderObject& operator=(const OShaderObject& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OShaderObject& operator=(OShaderObject&& aOther);
 	
 	/**
 	 @brief Set shader source code.
@@ -70,10 +90,15 @@ protected:
 	/**
 	 @cond HIDDEN
 	 */
-	struct Implementation;
-	Implementation* _impl = nullptr;
+	struct Impl;
+	Impl* _impl = nullptr;
 	/**
 	 @endcond
 	 */
 };
 
+inline OShaderObject::OShaderObject(OShaderObject&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}

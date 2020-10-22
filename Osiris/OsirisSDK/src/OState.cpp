@@ -1,10 +1,12 @@
 #include <utility>
 #include <cstring>
 
-#include "OsirisSDK/OState.h"
+#include "OsirisSDK/OException.h"
+#include "OsirisSDK/OArray.hpp"
 #include "OsirisSDK/OVector.hpp"
 #include "OsirisSDK/OQuaternion.hpp"
-#include "OsirisSDK/OException.h"
+#include "OsirisSDK/OTimeIndex.h"
+#include "OsirisSDK/OState.h"
 
 using namespace std;
 
@@ -77,9 +79,9 @@ struct OState::Impl {
 		scale(1.0f)
 	{}
 
-	std::vector<OVector3F>	components;
-	std::vector<Constraint>	minConstraint;
-	std::vector<Constraint>	maxConstraint;
+	OArray<OVector3F>	components;
+	OArray<Constraint>	minConstraint;
+	OArray<Constraint>	maxConstraint;
 	OVector3F		position;
 	OQuaternion		orientation;
 	OVector3F		scale;
@@ -96,31 +98,31 @@ OState::~OState()
 	if (_impl != nullptr) delete _impl;
 }
 
-OState & OState::operator=(const OState & in)
+OState & OState::operator=(OState && aOther)
 {
-	if (_impl->components.size() != in._impl->components.size()) {
-		_impl->components.resize(in._impl->components.size());
-	}
-	for (int i = 0; i < (int)_impl->components.size(); i++) {
-		_impl->components[i] = in._impl->components[i];
-	}
-	if (_impl->minConstraint.size() != in._impl->minConstraint.size()) {
-		_impl->minConstraint.resize(in._impl->minConstraint.size());
-	}
-	for (int i = 0; i < (int)_impl->minConstraint.size(); i++) {
-		_impl->minConstraint[i] = in._impl->minConstraint[i];
-	}
-	if (_impl->maxConstraint.size() != in._impl->maxConstraint.size()) {
-		_impl->maxConstraint.resize(in._impl->maxConstraint.size());
-	}
-	for (int i = 0; i < (int)_impl->maxConstraint.size(); i++) {
-		_impl->maxConstraint[i] = in._impl->maxConstraint[i];
-	}
-	_impl->position = in._impl->position;
-	_impl->orientation = in._impl->orientation;
-	_impl->scale = in._impl->scale;
-	_impl->orientationRef = in._impl->orientationRef;
+	if (_impl != nullptr) delete _impl;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
 	return *this;
+}
+
+void OState::cloneTo(OState & aOther) const
+{
+	aOther._impl->components.cloneTo(_impl->components);
+	aOther._impl->minConstraint.cloneTo(_impl->minConstraint);
+	aOther._impl->maxConstraint.cloneTo(_impl->maxConstraint);
+	_impl->position = aOther._impl->position;
+	_impl->orientation = aOther._impl->orientation;
+	_impl->scale = aOther._impl->scale;
+	_impl->orientationRef = aOther._impl->orientationRef;
+}
+
+OState * OState::clone() const
+{
+	auto newClone = new OState;
+	OExceptionPointerCheck(newClone);
+	cloneTo(*newClone);
+	return newClone;
 }
 
 void OState::setOrientationReferencial(OrientationReferencial orRef)
@@ -278,9 +280,9 @@ void OState::checkDegree(int degree)
 {
 	int currComponentsSize = _impl->components.size();
 	if ( currComponentsSize < degree + 1  ) {
-		_impl->components.resize(degree + 1);
-		_impl->minConstraint.resize(degree + 1);
-		_impl->maxConstraint.resize(degree + 1);
+		_impl->components.resize(degree + 1, true);
+		_impl->minConstraint.resize(degree + 1, true);
+		_impl->maxConstraint.resize(degree + 1, true);
 		for (int i = currComponentsSize; i <= degree; i++) _impl->components[i] = OVector3F(0.0f);
 	}
 

@@ -8,12 +8,12 @@
 
 using namespace std;
 
-struct OShaderObject::Implementation
+struct OShaderObject::Impl
 {
 	using PreprocessorPair = pair<string, string>;
 	using PreprocessorList = OList<PreprocessorPair>;
 
-	Implementation(Type aType, const char* aSource) : type(aType), source(aSource) {}
+	Impl(Type aType, const char* aSource) : type(aType), source(aSource) {}
 
 	Type			type;
 	std::string		source;
@@ -23,12 +23,22 @@ struct OShaderObject::Implementation
 
 OShaderObject::OShaderObject(Type aType, const char * aSource)
 {
-	OExceptionPointerCheck(_impl = new Implementation(aType, aSource));
+	OExceptionPointerCheck(_impl = new Impl(aType, aSource));
 }
 
 OShaderObject::~OShaderObject()
 {
 	if (_impl != nullptr) delete _impl;
+}
+
+OShaderObject & OShaderObject::operator=(OShaderObject && aOther)
+{
+	if (_impl != nullptr) delete _impl;
+
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+
+	return *this;
 }
 
 void OShaderObject::setSource(const char* source)
@@ -48,7 +58,7 @@ OShaderObject::Type OShaderObject::type() const
 
 void OShaderObject::addPreprocessorMacro(const char * aName, const char * aValue)
 {
-	_impl->preprocessorList.pushBack(Implementation::PreprocessorPair(aName, aValue));
+	_impl->preprocessorList.pushBack(Impl::PreprocessorPair(aName, aValue));
 }
 
 void OShaderObject::ForEachPreprocessorMacro(PreprocessorIteratorCb aCallback)

@@ -25,6 +25,14 @@ OOpenGLCommandBuffer::~OOpenGLCommandBuffer()
 	if (_impl != nullptr) delete _impl;
 }
 
+OOpenGLCommandBuffer & OOpenGLCommandBuffer::operator=(OOpenGLCommandBuffer && aOther)
+{
+	if (_impl != nullptr) delete _impl;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+	return *this;
+}
+
 OGraphicsRenderCommandEncoder * OOpenGLCommandBuffer::createRenderCommandEncoder()
 {
 	return new OOpenGLRenderCommandEncoder(this);

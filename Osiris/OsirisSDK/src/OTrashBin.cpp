@@ -18,6 +18,14 @@ OTrashBin::~OTrashBin()
 	if (_impl != nullptr) delete _impl;
 }
 
+OTrashBin& OTrashBin::operator=(OTrashBin&& aOther)
+{
+	if (_impl != nullptr) delete _impl;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+	return *this;
+}
+
 void OTrashBin::addToTrash(BaseItem* aItem)
 {
 	_impl->itemList.pushBack(aItem);

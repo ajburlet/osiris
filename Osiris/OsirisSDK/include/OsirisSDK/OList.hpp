@@ -148,9 +148,41 @@ public:
 	OList() = default;
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OList(const OList& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OList(OList&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	~OList();
+
+	/**
+	 @brief Deleted assignment operator.
+	 */
+	OList& operator=(const OList& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OList& operator=(OList&& aOther);
+
+	/**
+	 @brief Clones the list into another one.
+	 @param aTarget The destination list.
+	 */
+	void cloneTo(OList& aTarget) const;
+
+	/**
+	 @brief Clones the contents of the list to a newly allocated one.
+	 @return The newly allocated list.
+	 */
+	OList* clone() const;
 
 	/**
 	 @brief Returns the list size.
@@ -235,7 +267,7 @@ public:
 	void pushBack(const T& aItem);
 
 	/**
-	 @copydoc pushBack(comnst T&)
+	 @copydoc pushBack(const T&)
 	 */
 	void pushBack(T&& aItem);
 
@@ -327,15 +359,47 @@ public:
 	const T& tail() const;
 
 private:
+	void moveFrom(OList&& aOther);
+
 	Node*		_head	= nullptr;
 	Node*		_tail	= nullptr;
 	uint32_t	_count	= 0;
 };
 
 template<typename T, class Allocator>
+inline OList<T, Allocator>::OList(OList && aOther)
+{
+	moveFrom(std::move(aOther));
+}
+
+template<typename T, class Allocator>
 inline OList<T, Allocator>::~OList()
 {
 	clear();
+}
+
+template<typename T, class Allocator>
+inline OList<T, Allocator>& OList<T, Allocator>::operator=(OList && aOther)
+{
+	clear();
+	moveFrom(aOther);
+	return *this;
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::cloneTo(OList & aTarget) const
+{
+	aTarget.clear();
+	for (auto& item : *this) aTarget.pushBack(item);
+}
+
+template<typename T, class Allocator>
+inline OList<T, Allocator> * OList<T, Allocator>::clone() const
+{
+	OList* newClone = new OList;
+	OExceptionPointerCheck(newClone);
+	cloneTo(newClone);
+	return newClone;
 }
 
 template<typename T, class Allocator>
@@ -588,5 +652,17 @@ template<typename T, class Allocator>
 inline const T & OList<T, Allocator>::tail() const
 {
 	return _tail->_value;
+}
+
+template<typename T, class Allocator>
+inline void OList<T, Allocator>::moveFrom(OList && aOther)
+{
+	_head = aOther._head;
+	_tail = aOther._tail;
+	_count = aOther._count;
+
+	aOther._head = nullptr;
+	aOther._tail = nullptr;
+	aOther._count = 0;
 }
 

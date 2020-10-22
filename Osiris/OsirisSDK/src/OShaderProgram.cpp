@@ -3,16 +3,14 @@
 #include "OsirisSDK/OShaderObject.h"
 #include "OsirisSDK/OShaderProgram.h"
 
-using namespace std;
-
-struct OShaderProgram::Implementation {
+struct OShaderProgram::Impl {
 	using ShaderObjectList = OList<OShaderObject*, OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>>;
 	ShaderObjectList objects;
 };
 
 OShaderProgram::OShaderProgram()
 {
-	OExceptionPointerCheck(_impl = new Implementation);
+	OExceptionPointerCheck(_impl = new Impl);
 }
 
 OShaderProgram::~OShaderProgram()
@@ -22,6 +20,16 @@ OShaderProgram::~OShaderProgram()
 	}
 
 	if (_impl) delete _impl;
+}
+
+OShaderProgram & OShaderProgram::operator=(OShaderProgram && aOther)
+{
+	if (_impl != nullptr) delete _impl;
+
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+
+	return *this;
 }
 
 void OShaderProgram::addObject(OShaderObject * aObject)

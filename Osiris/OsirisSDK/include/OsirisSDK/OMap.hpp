@@ -107,6 +107,28 @@ public:
 	OMap() = default;
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OMap(const OMap& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OMap(OMap&& aOther);
+
+	/**
+	 @brief Clones the map into another one.
+	 @param aTarget The destination map.
+	 */
+	void cloneTo(OMap& aTarget) const;
+
+	/**
+	 @brief Clones the contents of the map to a newly allocated one.
+	 @return The newly allocated map.
+	 */
+	OMap* clone() const;
+
+	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OMap() = default;
@@ -161,6 +183,11 @@ public:
 	 */
 	bool insert(const TKey& aKey, const TValue& aValue, Iterator* aItemAtMap = nullptr);
 
+	/** 
+	 @copydoc insert(const TKey&, const TValue&, Iterator*)
+	 */
+	bool insert(const TKey& aKey, TValue&& aValue, Iterator* aItemAtMap = nullptr);
+
 	/**
 	 @brief Removes an item pointer to by an iterator.
 	 */
@@ -170,6 +197,16 @@ public:
 	 @brief Removes an item by it's key.
 	 */
 	void remove(const TKey& aKey);
+
+	/**
+	 @brief Deleted assignment operator.
+	 */
+	OMap& operator=(const OMap& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OMap& operator=(OMap&& aOther);
 
 	/**
 	 @brief Subscript operators, gives access to the value given by a key.
@@ -186,6 +223,27 @@ protected:
 // ------------------------------------------------------------------------------------------
 // INLINE IMPLEMENTATION - OMap
 // ------------------------------------------------------------------------------------------
+template<class TKey, class TValue, class Allocator, class Compare>
+inline OMap<TKey, TValue, Allocator, Compare>::OMap(OMap && aOther) :
+	_map(std::move(aOther._map))
+{
+}
+
+template<class TKey, class TValue, class Allocator, class Compare>
+inline void OMap<TKey, TValue, Allocator, Compare>::cloneTo(OMap & aTarget) const
+{
+	aTarget._map = _map;
+}
+
+template<class TKey, class TValue, class Allocator, class Compare>
+inline OMap<TKey, TValue, Allocator, Compare>* OMap<TKey, TValue, Allocator, Compare>::clone() const
+{
+	auto newClone = new OMap;
+	OExceptionPointerCheck(newClone);
+	cloneTo(*newClone);
+	return newClone;
+}
+
 template<typename TKey, typename TValue, class Allocator, class Compare>
 inline typename OMap<TKey, TValue, Allocator, Compare>::Iterator OMap<TKey, TValue, Allocator, Compare>::begin()
 {
@@ -239,6 +297,16 @@ inline bool OMap<TKey, TValue, Allocator, Compare>::insert(const TKey & aKey, co
 }
 
 template<class TKey, class TValue, class Allocator, class Compare>
+inline bool OMap<TKey, TValue, Allocator, Compare>::insert(const TKey & aKey, TValue && aValue, Iterator * aItemAtMap)
+{
+	std::pair<MapIterator,bool> pair = _map.insert(std::pair<TKey,TValue>(aKey, std::move(aValue)));
+	if (aItemAtMap != nullptr) {
+		*aItemAtMap = pair.first;
+	}
+	return pair.second;
+}
+
+template<class TKey, class TValue, class Allocator, class Compare>
 inline void OMap<TKey, TValue, Allocator, Compare>::remove(Iterator & aIterator)
 {
 	_map.erase(aIterator._it);
@@ -248,6 +316,13 @@ template<class TKey, class TValue, class Allocator, class Compare>
 inline void OMap<TKey, TValue, Allocator, Compare>::remove(const TKey & aKey)
 {
 	_map.erase(aKey);
+}
+
+template<class TKey, class TValue, class Allocator, class Compare>
+inline OMap<TKey, TValue, Allocator, Compare>& OMap<TKey, TValue, Allocator, Compare>::operator=(OMap && aOther)
+{
+	_map = std::move(aOther._map);
+	return *this;
 }
 
 template<typename TKey, typename TValue, class Allocator, class Compare>

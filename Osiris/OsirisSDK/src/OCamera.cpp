@@ -58,6 +58,16 @@ OCamera::~OCamera()
 	if (_impl != nullptr) delete _impl;
 }
 
+OCamera & OCamera::operator=(OCamera && aOther)
+{
+	if (_impl != nullptr) {
+		delete _impl;
+	}
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+	return *this;
+}
+
 void OCamera::setFieldOfView(float aValueDeg)
 {
 	_impl->perspectiveChanged = true;
@@ -112,9 +122,14 @@ float OCamera::farLimit() const
 	return _impl->zFar;
 }
 
-OVector3F& OCamera::position()
+const OVector3F& OCamera::position() const
 {
 	return _impl->state.position();
+}
+
+const OVector3F & OCamera::orientation() const
+{
+	return _impl->state.orientation().toEulerAngles();
 }
 
 OState * OCamera::state()

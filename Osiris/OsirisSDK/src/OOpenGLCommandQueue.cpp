@@ -17,6 +17,15 @@ OOpenGLCommandQueue::~OOpenGLCommandQueue()
 	if (_impl != nullptr) delete _impl;
 }
 
+OOpenGLCommandQueue & OOpenGLCommandQueue::operator=(OOpenGLCommandQueue && aOther)
+{
+	if (_impl != nullptr) delete _impl;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+
+	return *this;
+}
+
 OGraphicsCommandBuffer * OOpenGLCommandQueue::createCommandBuffer()
 {
 	return new OOpenGLCommandBuffer(this);

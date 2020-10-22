@@ -6,7 +6,6 @@ OTEST_START(OArray, Init) {
 	OArray<int> arr(10, 1);
 	ASSERT_EQ(arr.size(), 10) << "Wrong size.";
 	ASSERT_EQ(arr.capacity(), 10) << "Wrong capacity.";
-	EXPECT_EQ(memoryMgr->usageAt(OMemoryManager::Scope::Default), 40) << "Incoherent heap usage.";
 	for (auto& item : arr) EXPECT_EQ(item, 1) << "All array items were supposed to be initialized.";
 
 	OArray<int> arr2;
@@ -17,7 +16,6 @@ OTEST_START(OArray, Init) {
 	OArray<int> arr3(std::move(arr));
 	ASSERT_EQ(arr3.size(), 10) << "Wrong size (for move construction).";
 	ASSERT_EQ(arr3.capacity(), 10) << "Wrong capacity (for move construction).";
-	EXPECT_EQ(memoryMgr->usageAt(OMemoryManager::Scope::Default), 80) << "Incoherent heap usage.";
 	for (auto& item : arr3) EXPECT_EQ(item, 1) << "All array items were supposed to be initialized.";
 }
 OTEST_END
@@ -58,7 +56,6 @@ OTEST_START(OArray, Resize) {
 	arr.resize(5);
 	ASSERT_EQ(arr.capacity(), 5) << "Invalid capacity.";
 	ASSERT_EQ(arr.size(), 5) << "Invalid size.";
-	EXPECT_EQ(memoryMgr->usageAt(OMemoryManager::Scope::Default), 20) << "Incoherent heap usage.";
 	int expectedValues[] = { 0,1,2,3,4,5,6,7,8,9 };
 	int idx = 0;
 	for (const auto& item : arr) {
@@ -68,7 +65,6 @@ OTEST_START(OArray, Resize) {
 	arr.resize(10);
 	ASSERT_EQ(arr.capacity(), 10) << "Invalid capacity.";
 	ASSERT_EQ(arr.size(), 5) << "Invalid size.";
-	EXPECT_EQ(memoryMgr->usageAt(OMemoryManager::Scope::Default), 40) << "Incoherent heap usage.";
 	arr.append(5);
 	arr.append(6);
 	idx = 0;
@@ -93,5 +89,33 @@ OTEST_START(OArray, Remove) {
 	for (const auto& item : arr) {
 		EXPECT_EQ(item, expectedValues[idx++]) << "Unexpected array value at index " << idx - 1 << ".";
 	}
+}
+OTEST_END
+
+OTEST_START(OArray, Clone) {
+	OArray<int> a(10);
+	for (uint32_t i = 0; i < 10; i++) a[i] = i;
+	OArray<int> b;
+	a.cloneTo(b);
+	EXPECT_EQ(b.size(), a.size());
+	for (uint32_t i = 0; i < 10; i++) EXPECT_EQ(a[i], b[i]);
+}
+OTEST_END
+
+OTEST_START(OArray, Move) {
+	OArray<int> a(10);
+	for (uint32_t i = 0; i < 10; i++) a[i] = i;
+	OArray<int> b(std::move(a));
+	EXPECT_EQ(a.size(), 0);
+	EXPECT_EQ(a.capacity(), 0);
+	EXPECT_EQ(b.size(), 10);
+	EXPECT_EQ(b.capacity(), 10);
+	for (uint32_t i = 0; i < 10; i++) EXPECT_EQ(b[i], i);
+	OArray<int> c = std::move(b);
+	EXPECT_EQ(b.size(), 0);
+	EXPECT_EQ(b.capacity(), 0);
+	EXPECT_EQ(c.size(), 10);
+	EXPECT_EQ(c.capacity(), 10);
+	for (uint32_t i = 0; i < 10; i++) EXPECT_EQ(c[i], i);
 }
 OTEST_END

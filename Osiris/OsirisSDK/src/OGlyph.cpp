@@ -26,6 +26,20 @@ OGlyph::~OGlyph()
 	if (_impl != nullptr) delete _impl;
 }
 
+OGlyph & OGlyph::operator=(OGlyph && aOther)
+{
+	_charCode = aOther._charCode;
+	_advanceX = aOther._advanceX;
+	_advanceY = aOther._advanceY;
+
+	if (_impl != nullptr) delete _impl;
+
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+
+	return *this;
+}
+
 void OGlyph::setPositionOffset(const OVector2F & aOffset)
 {
 	_impl->positionOffset = aOffset;

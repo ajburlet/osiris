@@ -25,14 +25,34 @@ public:
 	       directory (%WINDIR%/fonts).
 	 */
 	OFont(ORenderingEngine* aRenderingEngine, const char *aFontName);
-	
+
+	/**
+	 @brief Deleted copy constructor.
+	 */
+	OFont(const OFont& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OFont(OFont&& aOther);
+
 	/**
 	 @brief Class destructor.
 	 */
 	~OFont();
+	
+	/**
+	 @brief Deleted copy assignment.
+	 */
+	OFont& operator=(const OFont& aOther) = delete;
 
 	/**
-	 \brief Clean font cache: texture data and dimensions for each character and size.
+	 @brief Move assignment.
+	 */
+	OFont& operator=(OFont&& aOther);
+
+	/**
+	 @brief Clean font cache: texture data and dimensions for each character and size.
 	 */
 	void cleanCache();
 
@@ -73,4 +93,9 @@ private:
 	void loadToCache(uint8_t aSize);
 };
 
+inline OFont::OFont(OFont&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}
 

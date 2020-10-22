@@ -21,9 +21,29 @@ protected:
 
 public:
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OOpenGLCommandBuffer(const OOpenGLCommandBuffer& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OOpenGLCommandBuffer(OOpenGLCommandBuffer&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OOpenGLCommandBuffer();
+
+	/**
+	 @bried Deleted copy assignment operator.
+	 */
+	OOpenGLCommandBuffer& operator=(const OOpenGLCommandBuffer& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OOpenGLCommandBuffer& operator=(OOpenGLCommandBuffer&& aOther);
 
 	virtual OGraphicsRenderCommandEncoder * createRenderCommandEncoder() override;
 
@@ -63,3 +83,9 @@ private:
 	friend class OOpenGLCommandQueue;
 	friend class OOpenGLCommandEncoder;
 };
+
+inline OOpenGLCommandBuffer::OOpenGLCommandBuffer(OOpenGLCommandBuffer&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}

@@ -18,12 +18,16 @@ using namespace std;
 // OText2D concealed members & methods
 // ****************************************************************************
 struct OText2D::Impl {
+	OFont*		font		= nullptr;
+	uint8_t		fontSize	= 0;
+	int		lineSpacing	= 0;
+
 	OVector2I32	position;
 	OVector4FL	fontColor;
 	OVector2F	scale;
 	std::string	content;
 	OList<OGlyph*>	glyph_list;
-	bool		redraw = false;
+	bool		redraw		= false;
 
 	void UpdateViewportConversion(uint32_t aViewportWidth, uint32_t aViewportHeight);
 	OVector2F ConvertToNDC(const OVector2I32& a_viewport_coordinate);
@@ -44,13 +48,12 @@ OVector2F OText2D::Impl::ConvertToNDC(const OVector2I32 & aViewportCoordinate)
 // OText2D class methods
 // ****************************************************************************
 OText2D::OText2D(OFont* aFont, uint8_t aFontSize, const OVector2I32& aPosition, const OVector4FL& aColor,
-		 const char* aContent) :
-	_font(aFont),
-	_fontSize(aFontSize),
-	_lineSpacing(0)
+		 const char* aContent) 
 {
 	OExceptionPointerCheck(_impl = new Impl);
 
+	_impl->font = aFont;
+	_impl->fontSize = aFontSize;
 	if (aContent != NULL) _impl->content = aContent;
 	_impl->position = aPosition;
 	_impl->fontColor = aColor;
@@ -68,24 +71,32 @@ OText2D::~OText2D()
 	}
 }
 
+OText2D & OText2D::operator=(OText2D && aOther)
+{
+	if (_impl != nullptr) delete _impl;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+	return *this;
+}
+
 void OText2D::setFont(OFont * font)
 {
-	_font = font;
+	_impl->font = font;
 }
 
 void OText2D::setFontSize(uint8_t aSize)
 {
-	_fontSize = aSize;
+	_impl->fontSize = aSize;
 }
 
 OFont * OText2D::font() const
 {
-	return _font;
+	return _impl->font;
 }
 
 uint8_t OText2D::fontSize() const
 {
-	return _fontSize;
+	return _impl->fontSize;
 }
 
 void OText2D::setFontColor(const OVector4FL & aColor)
@@ -100,12 +111,12 @@ const OVector4FL& OText2D::fontColor() const
 
 void OText2D::setLineSpacing(int spacing)
 {
-	_lineSpacing = spacing;
+	_impl->lineSpacing = spacing;
 }
 
 int OText2D::lineSpacing() const
 {
-	return _lineSpacing;
+	return _impl->lineSpacing;
 }
 
 void OText2D::setPosition(const OVector2I32& aPosition)
@@ -158,12 +169,12 @@ void OText2D::render(ORenderingEngine* aRenderingEngine, OMatrixStack*)
 			/* if char is new line */
 			if (*p == '\n') {
 				currPos.setX(initialPos.x());
-				currPos.setY(currPos.y() - (_font->lineSpacing() + _lineSpacing) * _impl->scale.y());
+				currPos.setY(currPos.y() - (_impl->font->lineSpacing() + _impl->lineSpacing) * _impl->scale.y());
 				continue;
 			}
 
 			/* Get font data */
-			auto glyph = _font->createGlyph(*p, _fontSize, currPos, _impl->fontColor, _impl->scale);
+			auto glyph = _impl->font->createGlyph(*p, _impl->fontSize, currPos, _impl->fontColor, _impl->scale);
 			_impl->glyph_list.pushBack(glyph);
 
 			/* move the cursor */

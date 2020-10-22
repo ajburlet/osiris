@@ -19,9 +19,29 @@ public:
 	OVertexBufferDescriptor();
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OVertexBufferDescriptor(const OVertexBufferDescriptor& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OVertexBufferDescriptor(OVertexBufferDescriptor&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OVertexBufferDescriptor();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OVertexBufferDescriptor& operator=(const OVertexBufferDescriptor& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OVertexBufferDescriptor& operator=(OVertexBufferDescriptor&& aOther);
 
 	/**
 	 @brief Adds a vertex buffer component.
@@ -65,6 +85,12 @@ protected:
 	 */
 };
 
+inline OVertexBufferDescriptor::OVertexBufferDescriptor(OVertexBufferDescriptor&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}
+
 /**
  @brief Vertex buffer class.
  */
@@ -79,9 +105,29 @@ public:
 	OVertexBuffer(OVertexBufferDescriptor& aDescriptor, uint32_t aVertexCount=0);
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OVertexBuffer(const OVertexBuffer& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OVertexBuffer(OVertexBuffer&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OVertexBuffer();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OVertexBuffer& operator=(const OVertexBuffer& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OVertexBuffer& operator=(OVertexBuffer&& aOther);
 
 	/**
 	 @brief Returns the vertex count.
@@ -141,6 +187,12 @@ private:
 	uint32_t			_vertexCount	= 0;
 	uint8_t*			_buffer		= nullptr;
 };
+
+inline OVertexBuffer::OVertexBuffer(OVertexBuffer&& aOther)
+{
+	_buffer = aOther._buffer;
+	aOther._buffer = nullptr;
+}
 
 inline uint32_t OVertexBuffer::vertexCount() const
 {

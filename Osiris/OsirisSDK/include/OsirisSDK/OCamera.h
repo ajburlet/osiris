@@ -52,9 +52,29 @@ public:
 		float aZNear = DefaultZNear, float aZFar = DefaultZFar);
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OCamera(const OCamera& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OCamera(OCamera&& aOther);
+
+	/**
 	 @brief Class destructor.
 	*/
 	virtual ~OCamera();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OCamera& operator=(const OCamera& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OCamera& operator=(OCamera&& aOther);
 
 	/**
 	 @brief Sets the camera field of view.
@@ -118,13 +138,13 @@ public:
 	 @brief Retrieves the camera position from the state object. 
 	 @return Camera position coordinates.
 	*/
-	OVector3F& position();
+	const OVector3F& position() const;
 	
 	/**
 	 @brief Retrieves the camera orientation from the state object.
 	 @return Camera orientation vector in terms of Euler angles.
 	*/
-	OVector3F orientation() const;
+	const OVector3F& orientation() const;
 
 	/**
 	 @brief Direct access to the camera state object.
@@ -147,4 +167,10 @@ private:
 	 @endcond
 	 */
 };
+
+inline OCamera::OCamera(OCamera&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}
 

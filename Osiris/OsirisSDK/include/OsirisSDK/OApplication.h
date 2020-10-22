@@ -72,12 +72,30 @@ public:
 		int aWindowWidth=OAPPLICATION_DEFAULT_WIDTH, int aWindowHeight=OAPPLICATION_DEFAULT_HEIGHT,
 		int aTargetFPS=OAPPLICATION_DEFAULT_TARGETFPS, int aSimulationStep_us=OAPPLICATION_DEFAULT_SIMULATIONSTEP);
 	
-	
+	/**
+	 @brief Deleted copy constructor.
+	 */
+	OApplication(const OApplication& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OApplication(OApplication&& aOther);
+
 	/**
 	 @brief Class destructor.
 	*/
 	virtual ~OApplication();
 
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OApplication& operator=(const OApplication& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OApplication& operator=(OApplication&& aOther);
 
 	/**
 	 @brief Returns the application camera object.
@@ -245,3 +263,8 @@ private:
 	static void displayCallback();
 };
 
+inline OApplication::OApplication(OApplication&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}

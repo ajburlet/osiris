@@ -79,6 +79,16 @@ OFont::~OFont()
 	if (_impl != nullptr) delete _impl;
 }
 
+OFont& OFont::operator=(OFont&& aOther)
+{
+	if (_impl != nullptr) {
+		delete _impl;
+	}
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+	return *this;
+}
+
 void OFont::cleanCache()
 {
 	for (auto& entry : _impl->cache) {

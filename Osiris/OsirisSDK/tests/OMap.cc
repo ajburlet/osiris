@@ -18,7 +18,8 @@ namespace OTest {
 	OTEST_F_START(OMap, Insertions) {
 		ASSERT_EQ(_map.size(), 4);
 		int key = 0;
-		for (::OMap<int, float>::Iterator it = _map.begin(); it != _map.end(); ++it) {
+		for (auto it = _map.begin(); it != _map.end(); ++it) {
+			EXPECT_EQ(it.key(), key);
 			EXPECT_EQ(_map[key], _expectedValues[key]);
 			key++;
 		}
@@ -41,6 +42,37 @@ namespace OTest {
 		EXPECT_EQ(_map.size(), 2);
 		EXPECT_EQ(_map[0], 5.0f);
 		EXPECT_EQ(_map[3], 30.0f);
+	}
+	OTEST_F_END
+
+	OTEST_F_START(OMap, Clone) {
+		::OMap<int, float> clone;
+		_map.cloneTo(clone);
+		
+		EXPECT_EQ(clone.size(), 4);
+
+		int key = 0;
+		for (auto it = clone.begin(); it != clone.end(); ++it) {
+			EXPECT_EQ(it.key(), key);
+			EXPECT_EQ(clone[key], _expectedValues[key]);
+			key++;
+		}
+	}
+	OTEST_F_END
+
+	OTEST_F_START(OMap, Move) {
+		::OMap<int, float> newMap(std::move(_map));
+		
+		EXPECT_EQ(_map.size(), 0);
+		EXPECT_EQ(newMap.size(), 4);
+
+		int key = 0;
+		for (auto it = newMap.begin(); it != newMap .end(); ++it) {
+			EXPECT_EQ(it.key(), key);
+			EXPECT_EQ(newMap[key], _expectedValues[key]);
+			key++;
+		}
+		
 	}
 	OTEST_F_END
 }

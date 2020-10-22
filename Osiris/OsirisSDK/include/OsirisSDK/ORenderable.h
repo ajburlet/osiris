@@ -35,11 +35,32 @@ protected:
 	ORenderable(Type aType);
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	ORenderable(const ORenderable& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	ORenderable(ORenderable&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	virtual ~ORenderable();
 	
 public:
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	ORenderable& operator=(const ORenderable& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 @note If the uniforms are loaded on the target object, an exception will be thrown. These must be unloaded.
+	 */
+	ORenderable& operator=(ORenderable&& aOther);
+
 	/**
 	 @brief Renderable type.
 	 */
@@ -82,6 +103,16 @@ private:
 	UniformList*		_uniforms		= nullptr;
 	bool			_uniformsLoaded		= false;
 };
+
+inline ORenderable::ORenderable(ORenderable&& aOther) :
+	_type(aOther._type),
+	_renderComponents(aOther._renderComponents),
+	_uniforms(aOther._uniforms),
+	_uniformsLoaded(aOther._uniformsLoaded)
+{
+	aOther._uniforms = nullptr;
+	aOther._uniformsLoaded = false;
+}
 
 inline ORenderable::Type ORenderable::type() const
 {

@@ -21,9 +21,29 @@ public:
 	ORenderingEngine(OGraphicsAPI* aGraphicsAPI);
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	ORenderingEngine(const ORenderingEngine& aOther) = default;
+
+	/**
+	 @brief Move constructor.
+	 */
+	ORenderingEngine(ORenderingEngine&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	~ORenderingEngine();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	ORenderingEngine& operator=(const ORenderingEngine& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	ORenderingEngine& operator=(ORenderingEngine&& aOther);
 
 	/**
 	 @brief Loads vertices, textures and shaders to the GPU (if needed).
@@ -121,3 +141,10 @@ protected:
 	 @endcond
 	 */
 };
+
+inline ORenderingEngine::ORenderingEngine(ORenderingEngine && aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}
+

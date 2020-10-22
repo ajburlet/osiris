@@ -17,9 +17,29 @@ public:
 	OOpenGLCommandQueue();
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OOpenGLCommandQueue(const OOpenGLCommandQueue& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OOpenGLCommandQueue(OOpenGLCommandQueue&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	~OOpenGLCommandQueue();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OOpenGLCommandQueue& operator=(const OOpenGLCommandQueue& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OOpenGLCommandQueue& operator=(OOpenGLCommandQueue&& aOther);
 
 	virtual OGraphicsCommandBuffer * createCommandBuffer() override;
 
@@ -43,3 +63,9 @@ private:
 
 	friend class OOpenGLCommandBuffer;
 };
+
+inline OOpenGLCommandQueue::OOpenGLCommandQueue(OOpenGLCommandQueue&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}

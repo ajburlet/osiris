@@ -38,9 +38,29 @@ public:
 	OTrashBin();
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OTrashBin(const OTrashBin& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OTrashBin(OTrashBin&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OTrashBin();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OTrashBin& operator=(const OTrashBin& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OTrashBin& operator=(OTrashBin&& aOther);
 
 	/**
 	 @brief Add item to be deleted at later time.
@@ -65,6 +85,12 @@ private:
 	 @endcond
 	 */
 };
+
+inline OTrashBin::OTrashBin(OTrashBin&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}
 
 template<class T>
 inline void OTrashBin::trash(T * aObject)

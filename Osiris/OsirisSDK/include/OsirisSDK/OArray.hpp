@@ -150,15 +150,22 @@ public:
 	/**
 	 @brief Class constructor.
 	 @param aCapacity Array capacity, to be allocated right away.
+	 @param aSizeToCapacity The array size is set to capacity.
 	 */
-	OArray(uint32_t aCapacity=0);
+	OArray(uint32_t aCapacity=0, bool aSizeToCapacity=false);
 
 	/**
 	 @brief Class constructor, sets array size to capacity and initializes members.
 	 @param aCapacity Array capacity, to be allocated right away.
 	 @param aInitValue Initial value of the items.
+	 @param aSizeToCapacity The array size is set to capacity.
 	 */
-	OArray(uint32_t aCapacity, const T& aInitValue);
+	OArray(uint32_t aCapacity, const T& aInitValue, bool aSizeToCapacity=false);
+
+	/**
+	 @brief Deleted copy constructor.
+	 */
+	OArray(const OArray& aOther) = delete;
 
 	/**
 	 @brief Move constructor.
@@ -169,6 +176,18 @@ public:
 	 @brief Class destructor.
 	 */
 	virtual ~OArray();
+
+	/**
+	 @brief Clones the array into another one.
+	 @param aTarget The destination array.
+	 */
+	void cloneTo(OArray& aTarget) const;
+
+	/**
+	 @brief Clones the contents of the array to a newly allocated one.
+	 @return The newly allocated array.
+	 */
+	OArray* clone() const;
 
 	/**
 	 @brief Returns the array capacity.
@@ -183,8 +202,9 @@ public:
 	/**
 	 @brief Change the capacity of the array.
 	 @param aNewCapacity New array capacity.
+	 @param aSizeToCapacity The array size is set to capacity.
 	 */
-	virtual void resize(uint32_t aNewCapacity);
+	virtual void resize(uint32_t aNewCapacity, bool aSizeToCapacity=false);
 
 	/**
 	 @brief Add item to the end of the array.
@@ -220,6 +240,16 @@ public:
 	 @brief Clears the array, maintaining the allocated memory.
 	 */
 	virtual void clear();
+
+	/**
+	 @brief Deleted assignment operator.
+	 */
+	OArray& operator=(const OArray& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OArray& operator=(OArray&& aOther);
 
 	/**
 	 @brief Subscript operator override.
@@ -270,15 +300,15 @@ protected:
 };
 
 template<typename T, class Allocator>
-inline OArray<T, Allocator>::OArray(uint32_t aCapacity)
+inline OArray<T, Allocator>::OArray(uint32_t aCapacity, bool aSizeToCapacity)
 {
-	if (aCapacity > 0) resize(aCapacity);
+	if (aCapacity > 0) resize(aCapacity, aSizeToCapacity);
 }
 
 template<typename T, class Allocator>
-inline OArray<T, Allocator>::OArray(uint32_t aCapacity, const T & aInitValue)
+inline OArray<T, Allocator>::OArray(uint32_t aCapacity, const T & aInitValue, bool aSizeToCapacity)
 {
-	resize(aCapacity);
+	resize(aCapacity, aSizeToCapacity);
 	_size = aCapacity;
 	for (auto& item : *this) item = aInitValue;
 }
@@ -298,7 +328,23 @@ inline OArray<T, Allocator>::OArray(OArray && aOther)
 template<typename T, class Allocator>
 inline OArray<T, Allocator>::~OArray()
 {
-	if (_array != nullptr) Allocator().deallocate(_array, _capacity*sizeof(T));
+	if (_array != nullptr) delete[] _array;
+}
+
+template<typename T, class Allocator>
+inline void OArray<T, Allocator>::cloneTo(OArray & aTarget) const
+{
+	aTarget.resize(_size);
+	for (uint32_t i = 0; i < _size; i++) aTarget[i] = get(i);
+}
+
+template<typename T, class Allocator>
+inline OArray<T, Allocator> * OArray<T, Allocator>::clone() const
+{
+	OArray *newClone = new OArray();
+	OExceptionPointerCheck(newClone);
+	cloneTo(*newClone);
+	return newClone;
 }
 
 template<typename T, class Allocator>
@@ -314,24 +360,27 @@ inline uint32_t OArray<T, Allocator>::size() const
 }
 
 template<typename T, class Allocator>
-inline void OArray<T, Allocator>::resize(uint32_t aNewCapacity)
+inline void OArray<T, Allocator>::resize(uint32_t aNewCapacity, bool aSizeToCapacity)
 {
+	if (aNewCapacity == _capacity) return;
+
 	T* new_array = nullptr;
 	if (aNewCapacity > 0) {
-		new_array = static_cast<T*>(Allocator().allocate(aNewCapacity*sizeof(T)));
+		new_array = new T[aNewCapacity];
 		OExceptionPointerCheck(new_array);
 	} 
+
 	uint32_t itemCount = (aNewCapacity > _size) ? _size : aNewCapacity;
 	if (_array) {
 		for (uint32_t i = 0; i < itemCount; i++) {
 			new_array[i] = _array[i];
 		}
-		Allocator().deallocate(_array, _capacity*sizeof(T));
+		delete[] _array;
 	}
 
 	_array = new_array;
 	_capacity = aNewCapacity;
-	if (aNewCapacity < _size) {
+	if (aSizeToCapacity || aNewCapacity < _size) {
 		_size = aNewCapacity;
 	}
 }
@@ -391,6 +440,23 @@ inline void OArray<T, Allocator>::clear()
 }
 
 template<typename T, class Allocator>
+inline OArray<T, Allocator>& OArray<T, Allocator>::operator=(OArray && aOther)
+{
+	if (_array != nullptr) {
+		delete[] _array;
+	}
+	_array = aOther._array;
+	_capacity = aOther._capacity;
+	_size = aOther._size;
+
+	aOther._array = nullptr;
+	aOther._capacity = 0;
+	aOther._size = 0;
+
+	return *this;
+}
+
+template<typename T, class Allocator>
 inline T & OArray<T, Allocator>::operator[](uint32_t aIndex)
 {
 	return get(aIndex);
@@ -442,14 +508,14 @@ private:
 
 public:
 	/**
-	 @copydoc OArray(uint32_t)
+	 @copydoc OArray(uint32_t,bool)
 	 */
-	ODynArray(uint32_t aCapacity=0);
+	ODynArray(uint32_t aCapacity=0, bool aSizeToCapacity=false);
 	
 	/**
-	 @copydoc OArray(uint32_t, const T&)
+	 @copydoc OArray(uint32_t, const T&, bool)
 	 */
-	ODynArray(uint32_t aCapacity, const T& aInitValue);
+	ODynArray(uint32_t aCapacity, const T& aInitValue, bool aSizeToCapacity=false);
 
 	/**
 	 @copydoc OArray(OArray&&)
@@ -461,7 +527,7 @@ public:
 	 */
 	~ODynArray() = default;
 
-	virtual void resize(uint32_t aNewCapacity) override;
+	virtual void resize(uint32_t aNewCapacity, bool aSizeToCapacity=false) override;
 
 	virtual void append(const T& aItemValue) override;
 	
@@ -471,16 +537,16 @@ public:
 };
 
 template<typename T, class Allocator, size_t BlockSize>
-inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity)
+inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, bool aSizeToCapacity)
 {
-	if (aCapacity > 0) resize(aCapacity);
+	if (aCapacity > 0) resize(aCapacity, aSizeToCapacity);
 }
 
 template<typename T, class Allocator, size_t BlockSize>
-inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, const T & aInitValue)
+inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, const T & aInitValue, bool aSizeToCapacity)
 {
 	if (aCapacity > 0) {
-		resize(aCapacity);
+		resize(aCapacity, aSizeToCapacity);
 		_size = aCapacity;
 		for (auto& item : *this) item = aInitValue;
 	}
@@ -493,10 +559,10 @@ inline ODynArray<T, Allocator, BlockSize>::ODynArray(ODynArray && aOther) :
 }
 
 template<typename T, class Allocator, size_t BlockSize>
-inline void ODynArray<T, Allocator, BlockSize>::resize(uint32_t aNewCapacity)
+inline void ODynArray<T, Allocator, BlockSize>::resize(uint32_t aNewCapacity, bool aSizeToCapacity)
 {
 	auto originalSize = _size;
-	Super::resize(aNewCapacity + (BlockSize - (aNewCapacity % BlockSize)));
+	Super::resize(aNewCapacity + (BlockSize - (aNewCapacity % BlockSize)), aSizeToCapacity);
 	if (aNewCapacity < originalSize) _size = aNewCapacity;
 }
 

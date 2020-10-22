@@ -122,6 +122,14 @@ OApplication::~OApplication()
 	delete _impl;
 }
 
+OApplication & OApplication::operator=(OApplication && aOther)
+{
+	if (_impl != nullptr) delete _impl;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+	return *this;
+}
+
 OCamera * OApplication::camera()
 {
 	return &_impl->cam;

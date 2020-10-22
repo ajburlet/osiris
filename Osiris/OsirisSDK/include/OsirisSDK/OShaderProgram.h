@@ -1,17 +1,10 @@
 #pragma once
 
-#include <string>
-#include <list>
-
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/GLdefs.h"
 #include "OsirisSDK/OGPUObject.h"
-#include "OsirisSDK/OShaderObject.h" /* replace by a forward declaration */
 
-/* REPLACE BY A CONCEALED IMPLEMENTATION */
-#ifdef WIN32
-#	pragma warning (disable : 4251) /* STL is restricted for class internal usage only */
-#endif
+class OShaderObject;
 
 /**
  \brief Class that represents a shader program.
@@ -25,9 +18,29 @@ public:
 	OShaderProgram();
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OShaderProgram(const OShaderProgram& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OShaderProgram(OShaderProgram&& aOther);
+
+	/**
 	 @brief Class destructor.
 	*/
 	virtual ~OShaderProgram();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OShaderProgram& operator=(const OShaderProgram& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OShaderProgram& operator=(OShaderProgram&& aOther);
 
 	/**
 	 @brief Adds a new shader object.
@@ -57,10 +70,15 @@ private:
 	/**
 	 @cond HIDDEN
 	 */
-	struct Implementation;
-	Implementation* _impl	= nullptr;
+	struct Impl;
+	Impl* _impl = nullptr;
 	/**
 	 @endcond
 	 */
 };
 
+inline OShaderProgram::OShaderProgram(OShaderProgram&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}

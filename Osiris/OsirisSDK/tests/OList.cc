@@ -121,3 +121,35 @@ OTEST_START(OList, Insertions) {
 	for (const auto& item : list) EXPECT_EQ(item, expectedValues[idx++]);
 }
 OTEST_END
+
+OTEST_START(OList, Clone) {
+	OList<int> list;
+	int testContent[] = { 1,2,3,4,5,6,7,8,9,10 };
+	for (auto item : testContent) list.pushBack(item);
+
+	OList<int> clone;
+	list.cloneTo(clone);
+	EXPECT_EQ(clone.size(), 10);
+	int i = 0;
+	for (auto item : testContent) EXPECT_EQ(item, testContent[i++]);
+}
+OTEST_END
+
+OTEST_START(OList, Move) {
+	OList<int> a;
+	int testContent[] = { 1,2,3,4,5,6,7,8,9,10 };
+	for (auto item : testContent) a.pushBack(item);
+
+	OList<int> b(std::move(a));
+	EXPECT_EQ(a.size(), 0);
+	EXPECT_EQ(b.size(), 10);
+	int i = 0;
+	for (auto item : b) EXPECT_EQ(item, testContent[i++]);
+
+	OList<int> c = std::move(b);
+	EXPECT_EQ(b.size(), 0);
+	EXPECT_EQ(c.size(), 10);
+	i = 0;
+	for (auto item : c) EXPECT_EQ(item, testContent[i++]);
+}
+OTEST_END

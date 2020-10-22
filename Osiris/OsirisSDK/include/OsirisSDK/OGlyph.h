@@ -23,9 +23,29 @@ public:
 		const OVector4FL& aColor, const OVector2F& aScale);
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OGlyph(const OGlyph& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OGlyph(OGlyph&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	~OGlyph();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OGlyph& operator=(const OGlyph& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OGlyph& operator=(OGlyph&& aOther);
 
 	/**
 	 @brief Charecter code byte.
@@ -86,6 +106,16 @@ private:
 	 @endcond
 	 */
 };
+
+inline OGlyph::OGlyph(OGlyph&& aOther) : ORenderable(std::move(aOther))
+{
+	_charCode = aOther._charCode;
+	_advanceX = aOther._advanceX;
+	_advanceY = aOther._advanceY;
+
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}
 
 inline char OGlyph::charCode() const
 {

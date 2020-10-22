@@ -32,9 +32,29 @@ public:
 		const char* aContent=NULL);
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OText2D(const OText2D& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OText2D(OText2D&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OText2D();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OText2D& operator=(const OText2D& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OText2D& operator=(OText2D&& aOther);
 
 	/**
 	 @brief Sets font class.
@@ -134,11 +154,6 @@ public:
 	void onScreenResize(const OResizeEvent* evt);
 
 private:
-	OFont* _font;
-	uint8_t _fontSize;
-	int _lineSpacing;
-
-
 	/**
 	 @cond HIDDEN
 	 */
@@ -149,3 +164,8 @@ private:
 	 */
 };
 
+inline OText2D::OText2D(OText2D&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}

@@ -110,6 +110,15 @@ ORenderingEngine::~ORenderingEngine()
 	if (_impl) delete _impl;
 }
 
+ORenderingEngine & ORenderingEngine::operator=(ORenderingEngine && aOther)
+{
+	if (_impl != nullptr) delete _impl;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+
+	return *this;
+}
+
 void ORenderingEngine::load(ORenderable* aRenderable)
 {
 	_impl->load(aRenderable);

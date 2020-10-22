@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OMemoryManager.h"
 
@@ -37,6 +39,16 @@ public:
 
 	void construct(T* aPtr, const T& aValue);
 	void destroy(T* aPtr);
+
+	template <class OtherAllocator, class OtherT>
+	bool operator==(const OSTLAllocator<OtherAllocator, OtherT>&) {
+		return (std::is_same<Allocator, OtherAllocator>::value && std::is_same<T, OtherT>::value);
+	}
+	template <class OtherAllocator, class OtherT>
+	bool operator!=(const OSTLAllocator<OtherAllocator, OtherT>& aOther) {
+		return !operator==(aOther);
+	}
+
 };
 
 template<class Allocator, typename T>

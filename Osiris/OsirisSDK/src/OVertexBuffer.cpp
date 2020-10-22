@@ -30,6 +30,14 @@ OVertexBufferDescriptor::~OVertexBufferDescriptor()
 	}
 }
 
+OVertexBufferDescriptor & OVertexBufferDescriptor::operator=(OVertexBufferDescriptor && aOther)
+{
+	if (_impl != nullptr) delete _impl;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+	return *this;
+}
+
 uint8_t OVertexBufferDescriptor::addAttribute(const OShaderVertexArgument & aAttribute)
 {
 	auto idx = static_cast<uint8_t>(_impl->attributes.size());
@@ -74,6 +82,16 @@ OVertexBuffer::~OVertexBuffer()
 	if (_buffer != nullptr) {
 		OVertexBufferAllocator().deallocate(_buffer, _vertexCount * _descriptor->stride());
 	}
+}
+
+OVertexBuffer& OVertexBuffer::operator=(OVertexBuffer&& aOther)
+{
+	if (_buffer != nullptr) {
+		OVertexBufferAllocator().deallocate(_buffer, _vertexCount * _descriptor->stride());
+	}
+	_buffer = aOther._buffer;
+	aOther._buffer = nullptr;
+	return *this;
 }
 
 void OVertexBuffer::resize(uint32_t aNewVertexCount)

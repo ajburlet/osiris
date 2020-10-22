@@ -106,9 +106,41 @@ public:
 	OSet() = default;
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OSet(const OSet& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OSet(OSet&& aOther) : Super(std::move(aOther)) {}
+
+	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OSet() = default;
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OSet& operator=(const OSet& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OSet& operator=(OSet&& aOther) { return Super::operator=(std::move(aOther)); }
+
+	/**
+	 @brief Clones the set into another one.
+	 @param aTarget The destination set.
+	 */
+	void cloneTo(OSet& aTarget) const { return Super::cloneTo(aTarget); }
+
+	/**
+	 @brief Clones the contents of the set to a newly allocated one.
+	 @return The newly allocated set.
+	 */
+	OSet* clone() const;
 
 	/**
 	 @brief Returns an iterator that points to the beginning of the collection.
@@ -153,3 +185,11 @@ public:
 	bool has(const T& aKey) const { return Super::find(aKey);  }
 };
 
+template<typename T, class Allocator, class Compare>
+inline OSet<T, Allocator, Compare> * OSet<T, Allocator, Compare>::clone() const
+{
+	auto newClone = new OSet;
+	OExceptionPointerCheck(newClone);
+	cloneTo(newClone);
+	return newClone;
+}

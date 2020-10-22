@@ -23,6 +23,16 @@ public:
 	OMatrixStack();
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OMatrixStack(const OMatrixStack& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OMatrixStack(OMatrixStack&& aOther);
+
+	/**
 	 @brief Class destructor.
 	*/
 	virtual ~OMatrixStack();
@@ -53,9 +63,14 @@ public:
 	void clear();
 
 	/**
-	 @brief Assignment operator.
+	 @brief Deleted assignment operator.
 	 */
-	OMatrixStack& operator=(const OMatrixStack& in);
+	OMatrixStack& operator=(const OMatrixStack& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OMatrixStack& operator=(OMatrixStack&& aOther);
  
 	/**
 	 @see product(const OMatrixStack&)
@@ -191,4 +206,10 @@ private:
 	 @endcond
 	 */
 };
+
+inline OMatrixStack::OMatrixStack(OMatrixStack && aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}
 

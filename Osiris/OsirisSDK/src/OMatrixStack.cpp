@@ -61,12 +61,13 @@ void OMatrixStack::clear()
 	_impl->currMtx = OMatrix4x4F(1);
 }
 
-OMatrixStack & OMatrixStack::operator=(const OMatrixStack & in)
- {
-	_impl->currMtx = in._impl->currMtx;
-	_impl->stack = in._impl->stack;
+OMatrixStack & OMatrixStack::operator=(OMatrixStack && aOther)
+{
+	if (_impl != nullptr) delete _impl;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
 	return *this;
- }
+}
 
 OMatrixStack & OMatrixStack::operator*=(const OMatrixStack & in)
 {

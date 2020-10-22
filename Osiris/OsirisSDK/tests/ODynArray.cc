@@ -8,7 +8,6 @@ OTEST_START(ODynArray, Init) {
 	ODynArrayTest<int> arr(10, 1);
 	ASSERT_EQ(arr.size(), 10) << "Wrong size.";
 	ASSERT_EQ(arr.capacity(), 16) << "Wrong capacity.";
-	EXPECT_EQ(memoryMgr->usageAt(OMemoryManager::Scope::Default), 16*4) << "Incoherent heap usage.";
 	for (auto& item : arr) EXPECT_EQ(item, 1) << "All array items were supposed to be initialized.";
 
 	ODynArrayTest<int> arr2;
@@ -19,7 +18,6 @@ OTEST_START(ODynArray, Init) {
 	ODynArrayTest<int> arr3(std::move(arr));
 	ASSERT_EQ(arr3.size(), 10) << "Wrong size (for move construction).";
 	ASSERT_EQ(arr3.capacity(), 16) << "Wrong capacity (for move construction).";
-	EXPECT_EQ(memoryMgr->usageAt(OMemoryManager::Scope::Default), 32*4) << "Incoherent heap usage.";
 	for (auto& item : arr3) EXPECT_EQ(item, 1) << "All array items were supposed to be initialized.";
 }
 OTEST_END
@@ -54,7 +52,6 @@ OTEST_START(ODynArray, Resize) {
 	arr.resize(5);
 	ASSERT_EQ(arr.capacity(), 8) << "Invalid capacity.";
 	ASSERT_EQ(arr.size(), 5) << "Invalid size.";
-	EXPECT_EQ(memoryMgr->usageAt(OMemoryManager::Scope::Default), 8*4) << "Incoherent heap usage.";
 	int expectedValues[] = { 0,1,2,3,4,5,6,7,8,9,10,11 };
 	int idx = 0;
 	for (const auto& item : arr) {
@@ -64,7 +61,6 @@ OTEST_START(ODynArray, Resize) {
 	arr.resize(10);
 	ASSERT_EQ(arr.capacity(), 16) << "Invalid capacity.";
 	ASSERT_EQ(arr.size(), 5) << "Invalid size.";
-	EXPECT_EQ(memoryMgr->usageAt(OMemoryManager::Scope::Default), 16*4) << "Incoherent heap usage.";
 	for (auto i = 5; i < 12; i++) arr.append(i);
 	ASSERT_EQ(arr.capacity(), 16) << "Invalid capacity.";
 	ASSERT_EQ(arr.size(), 12) << "Invalid size.";

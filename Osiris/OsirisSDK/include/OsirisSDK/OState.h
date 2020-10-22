@@ -5,7 +5,8 @@
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OVectorDefs.h"
 #include "OsirisSDK/OQuaternionDefs.h"
-#include "OsirisSDK/OTimeIndex.h"
+
+class OTimeIndex;
 
 /**
  @brief State engine class, controls orientation and motion state.
@@ -107,14 +108,39 @@ public:
 	OState(OrientationReferencial ref=Scene);
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OState(const OState& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OState(OState&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	virtual ~OState();
 
 	/**
-	 @brief Assignment operator.
+	 @brief Deleted copy assignment operator.
 	 */
-	OState& operator=(const OState& in);
+	OState& operator=(const OState& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OState& operator=(OState&& aOther);
+
+	/**
+	 @brief Clones the state to another object. 
+	 */
+	void cloneTo(OState& aOther) const;
+
+	/**
+	 @brief Clones the state to a newly allocated object.
+	 */
+	OState* clone() const;
 
 	/**
 	 @brief Sets the orientation referencial used on the motion equation components.
@@ -239,3 +265,8 @@ private:
 	 */
 };
 
+inline OState::OState(OState&& aOther)
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}

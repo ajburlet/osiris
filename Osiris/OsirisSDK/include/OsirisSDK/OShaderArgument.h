@@ -78,6 +78,11 @@ public:
 	static constexpr uint32_t DefaultIndex = 0;
 
 	/**
+	 @brief Default class constructor.
+	 */
+	OShaderVertexArgument() = default;
+
+	/**
 	 @brief Class constructor.
 	 @param aType Attribute type.
 	 @param aIndex The attribute index.

@@ -41,7 +41,7 @@ public:
 	 */
 	void equalize()
 	{
-		_buffers[!_currIdx] = _buffers[_currIdx];
+		_buffers[_currIdx].cloneTo(_buffers[!_currIdx]);
 	}
 
 private:

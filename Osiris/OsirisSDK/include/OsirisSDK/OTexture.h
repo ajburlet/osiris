@@ -16,9 +16,29 @@ public:
 	OTexture();
 
 	/**
+	 @brief Deleted copy constructor.
+	 */
+	OTexture(const OTexture& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OTexture(OTexture&& aOther);
+
+	/**
 	 @brief Class destructor.
 	 */
 	~OTexture();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OTexture& operator=(const OTexture& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OTexture& operator=(OTexture&& aOther);
 
 	/**
 	 @brief Filter type, to determine fragment color value between texture pixels.
@@ -228,102 +248,14 @@ private:
 	 @cond HIDDEN
 	 */
 	struct Impl;
-	Impl*			_impl			= nullptr;
+	Impl* _impl = nullptr;
 	/**
 	 @endcond
 	 */
-
-	FilterType		_minFilter		= FilterType::Default;
-	FilterType		_magFilter		= FilterType::Default;
-	WrapMode		_wrapTypeS		= WrapMode::Default;
-	WrapMode		_wrapTypeT		= WrapMode::Default;
-	WrapMode		_wrapTypeR		= WrapMode::Default;
-	PixelFormat		_srcPixelFormat		= PixelFormat::Undefined;
-	PixelFormat		_dstPixelFormat		= PixelFormat::Undefined;
-	PixelDataType		_pixelDataType		= PixelDataType::Undefined;
-	RowAlignment		_packAlignment		= RowAlignment::Default;
-	RowAlignment		_unpackAlignment	= RowAlignment::Default;
 };
 
-inline void OTexture::setMinFilter(OTexture::FilterType aFilter)
+inline OTexture::OTexture(OTexture&& aOther)
 {
-	_minFilter = aFilter;
-}
-
-inline void OTexture::setMagFilter(OTexture::FilterType aFilter)
-{
-	_magFilter = aFilter;
-}
-
-inline OTexture::FilterType OTexture::minFilter() const
-{
-	return _minFilter;
-}
-
-inline OTexture::FilterType OTexture::magFilter() const
-{
-	return _magFilter;
-}
-
-inline void OTexture::setWrapType(Coordinate aCoordinate, OTexture::WrapMode aWrapType)
-{
-	switch (aCoordinate) {
-	case Coordinate::S:	_wrapTypeS = aWrapType;		break;
-	case Coordinate::R:	_wrapTypeR = aWrapType;		break;
-	case Coordinate::T:	_wrapTypeT = aWrapType;		break;
-	default:		throw OException("Invalid coordinate.");
-	}
-}
-
-inline OTexture::WrapMode OTexture::wrapType(Coordinate aCoordinate) const
-{
-	switch (aCoordinate) {
-	case Coordinate::S:	return _wrapTypeS;
-	case Coordinate::R:	return _wrapTypeR;
-	case Coordinate::T:	return _wrapTypeT;
-	default:		throw OException("Invalid coordinate.");
-	}
-}
-
-inline void OTexture::setPixelFormat(OTexture::PixelFormat aSrcPixelFormat, OTexture::PixelDataType aPixelDataType,
-				     OTexture::PixelFormat aDstPixelFormat)
-{
-	_srcPixelFormat = aSrcPixelFormat;
-	_pixelDataType = aPixelDataType;
-	_dstPixelFormat = (aDstPixelFormat == PixelFormat::Undefined) ? aSrcPixelFormat : aDstPixelFormat;
-}
-
-inline OTexture::PixelFormat OTexture::sourcePixelFormat() const
-{
-	return _srcPixelFormat;
-}
-
-inline OTexture::PixelFormat OTexture::destinationPixelFormat() const
-{
-	return _dstPixelFormat;
-}
-
-inline OTexture::PixelDataType OTexture::pixelDataType() const
-{
-	return _pixelDataType;
-}
-
-inline void OTexture::setPackAlignment(OTexture::RowAlignment aAlignment)
-{
-	_packAlignment = aAlignment;
-}
-
-inline void OTexture::setUnpackAlignment(RowAlignment aAlignment)
-{
-	_unpackAlignment = aAlignment;
-}
-
-inline OTexture::RowAlignment OTexture::packAlignment() const
-{
-	return _packAlignment;
-}
-
-inline OTexture::RowAlignment OTexture::unpackAlignment() const
-{
-	return _unpackAlignment;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
 }

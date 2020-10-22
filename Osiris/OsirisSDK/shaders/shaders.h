@@ -7,15 +7,15 @@
 constexpr char glsl_OGlyph_fragment[] = R"(
 #version 330 
 
-varying mediump vec2 aTexcoord;
-out vec4 oOutColor;
+varying mediump vec2 voTexcoord;
+out lowp vec4 foOutColor;
 
 uniform sampler2D uTexture;
-uniform lowp vec4 uColor;
+uniform vec4 uColor;
 
 void main(void) 
 {
-	oOutColor = vec4(1, 1, 1, texture2D(uTexture, aTexcoord).r) * uColor;
+	foOutColor = vec4(1, 1, 1, texture2D(uTexture, voTexcoord).r) * uColor;
 }
 )";
 
@@ -23,14 +23,14 @@ constexpr char glsl_OGlyph_vertex[] = R"(
 #version 330 
 
 layout (location = 0) in vec4 aPosition;
-varying mediump vec2 oTexcoord;
+varying mediump vec2 voTexcoord;
 uniform vec2 uPosOffset;
 uniform vec2 uScale;
 
 void main(void) 
 {
 	gl_Position = vec4(aPosition.xy * uScale.xy + uPosOffset.xy, 0.0f, 1.0f);
-	oTexcoord = aPosition.zw;
+	voTexcoord = aPosition.zw;
 }
 )";
 
