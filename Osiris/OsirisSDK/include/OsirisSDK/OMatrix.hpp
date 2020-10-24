@@ -77,7 +77,7 @@ public:
 	 @brief Class constructor that creates a diagonal matrix with values defined by the input parameter.
 	 @param aIdentValue Values of the matrix main diagonal elements.
 	*/
-	OMatrix4x4(float aIdentValue);
+	OMatrix4x4(T aIdentValue);
 
 	/**
 	 @brief Class destructor.
@@ -115,7 +115,7 @@ inline OMatrix4x4<T, Q>::OMatrix4x4(const Super & aOther) :
 }
 
 template<typename T, glm::qualifier Q>
-inline OMatrix4x4<T, Q>::OMatrix4x4(float aIdentValue) :
+inline OMatrix4x4<T, Q>::OMatrix4x4(T aIdentValue) :
 	OMatrix(GLMType(aIdentValue))
 {
 }

@@ -118,12 +118,12 @@ public:
 	 @brief Class constructor, creates a vector with all components with the same value.
 	 @param aValue The value to be used by all of the three components.
 	*/
-	OVector2(float aValue);
+	OVector2(T aValue);
 	
 	/**
 	 @brief Class constructor, creates a vector taking in the values for each component (cartesian or polar). 
 	*/
-	OVector2(float aX, float aY);
+	OVector2(T aX, T aY);
 
 	/**
 	 @brief Class destructor.
@@ -169,13 +169,13 @@ inline OVector2<T, Q>::OVector2(const Super & aOther) :
 }
 
 template<typename T, glm::qualifier Q>
-inline OVector2<T, Q>::OVector2(float aValue) :
+inline OVector2<T, Q>::OVector2(T aValue) :
 	OVector(GLMType(aValue))
 {
 }
 
 template<typename T, glm::qualifier Q>
-inline OVector2<T, Q>::OVector2(float aX, float aY) :
+inline OVector2<T, Q>::OVector2(T aX, T aY) :
 	OVector(GLMType(aX, aY))
 {
 }
@@ -243,14 +243,14 @@ public:
 	 
 	 @param aValue The value to be used by all of the three components.
 	*/
-	OVector3(float aValue);
+	OVector3(T aValue);
 	
 	/**
 	 @brief Class constructor.
 
 	 Creates a OVector3 taking in the values for each component (cartesian or spherical). 
 	*/
-	OVector3(float aX, float aY, float aZ);
+	OVector3(T aX, T aY, T aZ);
 
 	/**
 	 @copydoc OVector::getComponent(OVectorAxis)
@@ -376,13 +376,13 @@ inline OVector3<T, Q>::OVector3(const Super & aOther) :
 }
 
 template<typename T, glm::qualifier Q>
-inline OVector3<T, Q>::OVector3(float aValue) :
+inline OVector3<T, Q>::OVector3(T aValue) :
 	OVector(GLMType(aValue))
 {
 }
 
 template<typename T, glm::qualifier Q>
-inline OVector3<T, Q>::OVector3(float aX, float aY, float aZ) :
+inline OVector3<T, Q>::OVector3(T aX, T aY, T aZ) :
 	OVector(GLMType(aX, aY, aZ))
 {
 }
@@ -545,14 +545,14 @@ public:
 
 	 @param aValue The value to be used by all of the three components.
 	*/
-	OVector4(float aValue);
+	OVector4(T aValue);
 
 	/**
 	 @brief Class constructor.
 
 	 Creates a OVector4 taking in the values for each component.
 	*/
-	OVector4(float aX, float aY, float aZ, float aW);
+	OVector4(T aX, T aY, T aZ, T aW);
 
 	/**
 	 @brief Class constructor.
@@ -626,13 +626,13 @@ inline OVector4<T, Q>::OVector4(const Super & aOther) :
 }
 
 template<typename T, glm::qualifier Q>
-inline OVector4<T, Q>::OVector4(float aValue) :
+inline OVector4<T, Q>::OVector4(T aValue) :
 	OVector(GLMType(aValue))
 {
 }
 
 template<typename T, glm::qualifier Q>
-inline OVector4<T, Q>::OVector4(float aX, float aY, float aZ, float aW) :
+inline OVector4<T, Q>::OVector4(T aX, T aY, T aZ, T aW) :
 	OVector(GLMType(aX, aY, aZ, aW))
 {
 }
