@@ -35,7 +35,7 @@ OIndexBuffer & OIndexBuffer::operator=(OIndexBuffer && aOther)
 
 void OIndexBuffer::setFaceCount(uint32_t aNewFaceCount)
 {
-	_impl->array.resize(aNewFaceCount);
+	_impl->array.changeCapacity(aNewFaceCount);
 }
 
 void OIndexBuffer::setFace(uint32_t aFaceIndex, uint32_t aVertexIndex1, uint32_t aVertexIndex2, uint32_t aVertexIndex3)

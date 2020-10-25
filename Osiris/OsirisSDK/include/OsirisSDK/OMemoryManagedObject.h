@@ -6,7 +6,7 @@
  @brief Memory managed object.
  */
 template <class Allocator>
-class OAPI OMemoryManagedObject
+class OMemoryManagedObject
 {
 public:
 	/**

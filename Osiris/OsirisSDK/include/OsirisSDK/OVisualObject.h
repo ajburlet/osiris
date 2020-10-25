@@ -1,6 +1,8 @@
 #pragma once
 
-#include "defs.h"
+#include "OsirisSDK/defs.h"
+#include "OsirisSDK/OMemoryManagedObject.h"
+#include "OsirisSDK/OSystemMemoryAllocator.h"
 
 class ORenderingEngine;
 class OMatrixStack;
@@ -8,7 +10,7 @@ class OMatrixStack;
 /**
  @brief Common interface for objects capable of rendering.
  */
-class OAPI OVisualObject
+class OAPI OVisualObject : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>>
 {
 public:
 	/**

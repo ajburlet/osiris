@@ -11,6 +11,11 @@ class OAPI OGlyph : public ORenderable
 {
 public:
 	/**
+	 @brief Default class constructor.
+	 */
+	OGlyph();
+
+	/**
 	 @brief Class constructor.
 	 @param aCharCode Charecter code byte.
 	 @param aAdvanceX Font horizontal advance space to the next character.
@@ -48,14 +53,29 @@ public:
 	OGlyph& operator=(OGlyph&& aOther);
 
 	/**
+	 @brief Sets the character code byte.
+	 */
+	void setCharCode(char aCharCode);
+
+	/**
 	 @brief Charecter code byte.
 	 */
 	char charCode() const;
 
 	/**
+	 @brief Sets the font horizontal advance space to the next character.
+	 */
+	void setAdvanceX(uint16_t aValue);
+
+	/**
 	 @brief Provides the font horizontal advance space to the next character.
 	 */
 	uint16_t advanceX() const;
+
+	/**
+	 @brief Sets the font vertical advance space to the next character.
+	 */
+	void setAdvanceY(uint16_t aValue);
 
 	/**
 	 @brief Provides the font vertical advance space to the next character.
@@ -117,14 +137,29 @@ inline OGlyph::OGlyph(OGlyph&& aOther) : ORenderable(std::move(aOther))
 	aOther._impl = nullptr;
 }
 
+inline void OGlyph::setCharCode(char aCharCode)
+{
+	_charCode = aCharCode;
+}
+
 inline char OGlyph::charCode() const
 {
 	return _charCode;
 }
 
+inline void OGlyph::setAdvanceX(uint16_t aValue)
+{
+	_advanceX = aValue;
+}
+
 inline uint16_t OGlyph::advanceX() const
 {
 	return _advanceX;
+}
+
+inline void OGlyph::setAdvanceY(uint16_t aValue)
+{
+	_advanceY = aValue;
 }
 
 inline uint16_t OGlyph::advanceY() const

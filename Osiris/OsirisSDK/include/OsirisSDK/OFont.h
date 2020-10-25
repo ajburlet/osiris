@@ -58,15 +58,12 @@ public:
 
 	/**
 	 @brief Creates a new glyph object for a given character.
+	 @param aGlyph Glyph to be loaded.
 	 @param aCharCode Charecter code byte.
 	 @param aSize Font size.
-	 @param aPositionOffset Position offset (NDC).
 	 @param aColor Font color.
-	 @param aScale Scale vector.
-
 	 */
-	OGlyph* createGlyph(char aCharCode, uint8_t aSize, const OVector2F& aPosition, const OVector4FL& aColor,
-			    const OVector2F& aScale);
+	void loadGlyph(OGlyph& aGlyph, char aCharCode, uint8_t aSize, const OVector4FL& aColor);
 
 	/**
 	 @brief Default line spacing (baseline-to-baseline distance).

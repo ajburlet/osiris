@@ -8,7 +8,6 @@
 #include "OsirisSDK/OVectorDefs.h"
 #include "OsirisSDK/defs.h"
 
-
 class ORenderingEngine;
 class OFont;
 

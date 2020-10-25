@@ -46,7 +46,7 @@ OVertexBufferDescriptor* OFont::Impl::vertexBufferDescriptor = nullptr;
 OFont::OFont(ORenderingEngine* aRenderingEngine, const char* aFontName)
 {
 	OExceptionPointerCheck(_impl = new Impl);
-	_impl->cache.resize(Impl::maxFontSize - Impl::minFontSize);
+	_impl->cache.changeCapacity(Impl::maxFontSize - Impl::minFontSize);
 	for (uint32_t i = 0; i < _impl->cache.capacity(); i++) _impl->cache[i] = nullptr;
 	_impl->renderingEngine = aRenderingEngine;
 	init();
@@ -105,8 +105,7 @@ void OFont::cleanCache()
 	_impl->cache.clear();
 }
 
-OGlyph * OFont::createGlyph(char aCharCode, uint8_t aSize, const OVector2F& aPosition, const OVector4FL& aColor,
-			    const OVector2F& aScale)
+void OFont::loadGlyph(OGlyph& aGlyph, char aCharCode, uint8_t aSize, const OVector4FL& aColor)
 {
 	if (aSize < Impl::minFontSize || aSize > Impl::maxFontSize) throw OException("Invalid font size.");
 
@@ -117,17 +116,12 @@ OGlyph * OFont::createGlyph(char aCharCode, uint8_t aSize, const OVector2F& aPos
 	auto cacheEntry = _impl->cache[fontIdx]->get(aCharCode);
 	if (cacheEntry.renderComponents == nullptr) throw OException("No corresponding font glyph for char code.");
 
-	auto glyph = new OGlyph(aCharCode, cacheEntry.advanceX, cacheEntry.advanceY, aPosition, aColor, aScale);
-	OExceptionPointerCheck(glyph);
-	try {
-		glyph->setRenderComponents(cacheEntry.renderComponents);
-		_impl->renderingEngine->load(glyph);
-	} catch (OException& e) {
-		delete glyph;
-		throw e;
-	}
-
-	return glyph;
+	aGlyph.setRenderComponents(cacheEntry.renderComponents);
+	aGlyph.setCharCode(aCharCode);
+	aGlyph.setColor(aColor);
+	aGlyph.setAdvanceX(cacheEntry.advanceX);
+	aGlyph.setAdvanceY(cacheEntry.advanceY);
+	_impl->renderingEngine->load(&aGlyph);
 }
 
 int OFont::lineSpacing() const

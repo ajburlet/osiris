@@ -3,14 +3,15 @@
 #include <stdlib.h>
 #endif
 
+#include "OsirisSDK/OException.h"
 #include "OsirisSDK/OText2D.h"
 #include "OsirisSDK/OApplication.h"
 #include "OsirisSDK/OList.hpp"
 #include "OsirisSDK/OVector.hpp"
-#include "OsirisSDK/OGlyph.h"
+#include "OsirisSDK/OArray.hpp"
 #include "OsirisSDK/ORenderingEngine.h"
+#include "OsirisSDK/OGlyph.h"
 #include "OsirisSDK/OFont.h"
-#include "OsirisSDK/OException.h"
 
 using namespace std;
 
@@ -18,31 +19,58 @@ using namespace std;
 // OText2D concealed members & methods
 // ****************************************************************************
 struct OText2D::Impl {
-	OFont*		font		= nullptr;
-	uint8_t		fontSize	= 0;
-	int		lineSpacing	= 0;
+	OFont*			font		= nullptr;
+	uint8_t			fontSize	= 0;
+	int			lineSpacing	= 0;
 
-	OVector2I32	position;
-	OVector4FL	fontColor;
-	OVector2F	scale;
-	std::string	content;
-	OList<OGlyph*>	glyph_list;
-	bool		redraw		= false;
+	OVector2I32		position;
+	OVector4FL		fontColor;
+	OVector2F		scale;
+	std::string		content;
+	OArrayNC<OGlyph>	glyphs;
+	bool			redraw		= false;
 
-	void UpdateViewportConversion(uint32_t aViewportWidth, uint32_t aViewportHeight);
-	OVector2F ConvertToNDC(const OVector2I32& a_viewport_coordinate);
+	void updateViewportConversion(uint32_t aViewportWidth, uint32_t aViewportHeight);
+	OVector2F convertToNDC(const OVector2I32& a_viewport_coordinate);
+	void updateGlyphPositions();
 };
 
-void OText2D::Impl::UpdateViewportConversion(uint32_t aViewportWidth, uint32_t aViewportHeight)
+void OText2D::Impl::updateViewportConversion(uint32_t aViewportWidth, uint32_t aViewportHeight)
 {
 	// NDC space goes from -1.0 to 1.0 on X and Y axes
 	scale = OVector2F(2.0f / aViewportWidth, 2.0f / aViewportHeight);
 }
 
-OVector2F OText2D::Impl::ConvertToNDC(const OVector2I32 & aViewportCoordinate)
+OVector2F OText2D::Impl::convertToNDC(const OVector2I32 & aViewportCoordinate)
 {
 	return OVector2F(aViewportCoordinate.x() * scale.x() - 1.0f, - aViewportCoordinate.y() * scale.y() + 1.0f);
 }
+
+void OText2D::Impl::updateGlyphPositions()
+{
+	if (redraw) return;
+
+	auto initialPos = convertToNDC(position);
+	auto currPos = initialPos;
+	uint32_t idx = 0;
+	for (const char *p = content.c_str(); *p != '\0'; p++) {
+		/* if char is new line */
+		if (*p == '\n') {
+			currPos.setX(initialPos.x());
+			currPos.setY(currPos.y() - (font->lineSpacing() + lineSpacing) * scale.y());
+			continue;
+		}
+
+		auto& glyph = glyphs[idx++];
+		glyph.setPositionOffset(currPos);
+		glyph.setScale(scale);
+
+		/* move the cursor */
+		currPos += OVector2F((glyph.advanceX() >> 6) * scale.x(), 
+				     (glyph.advanceY() >> 6) * scale.y());
+	}
+}
+
 
 // ****************************************************************************
 // OText2D class methods
@@ -57,7 +85,7 @@ OText2D::OText2D(OFont* aFont, uint8_t aFontSize, const OVector2I32& aPosition, 
 	if (aContent != NULL) _impl->content = aContent;
 	_impl->position = aPosition;
 	_impl->fontColor = aColor;
-	_impl->UpdateViewportConversion(OApplication::activeInstance()->windowWidth(),
+	_impl->updateViewportConversion(OApplication::activeInstance()->windowWidth(),
 					OApplication::activeInstance()->windowHeight());
 	
 	OApplication::activeInstance()->addEventRecipient(OEventType::ResizeEvent, this);
@@ -65,10 +93,7 @@ OText2D::OText2D(OFont* aFont, uint8_t aFontSize, const OVector2I32& aPosition, 
 
 OText2D::~OText2D()
 {
-	if (_impl != nullptr) {
-		for (auto glyph : _impl->glyph_list) delete glyph;
-		delete _impl;
-	}
+	if (_impl != nullptr) delete _impl;
 }
 
 OText2D & OText2D::operator=(OText2D && aOther)
@@ -160,39 +185,33 @@ void OText2D::render(ORenderingEngine* aRenderingEngine, OMatrixStack*)
 {
 	/* now we iterate through every character and render */
 	if (_impl->redraw) {
-		for (auto glyph : _impl->glyph_list) delete glyph;
-		_impl->glyph_list.clear();
+		_impl->glyphs.resize(_impl->content.size());
 
-		auto initialPos = _impl->ConvertToNDC(_impl->position);
-		auto currPos = initialPos;
+		uint32_t idx = 0;
 		for (const char *p = _impl->content.c_str(); *p != '\0'; p++) {
 			/* if char is new line */
 			if (*p == '\n') {
-				currPos.setX(initialPos.x());
-				currPos.setY(currPos.y() - (_impl->font->lineSpacing() + _impl->lineSpacing) * _impl->scale.y());
+				_impl->glyphs.resize(_impl->glyphs.size() - 1); // this doesnt require a glyph
 				continue;
 			}
 
 			/* Get font data */
-			auto glyph = _impl->font->createGlyph(*p, _impl->fontSize, currPos, _impl->fontColor, _impl->scale);
-			_impl->glyph_list.pushBack(glyph);
-
-			/* move the cursor */
-			currPos += OVector2F((glyph->advanceX() >> 6) * _impl->scale.x(), 
-					     (glyph->advanceY() >> 6) * _impl->scale.y());
+			auto& glyph = _impl->glyphs[idx++];
+			_impl->font->loadGlyph(glyph, *p, _impl->fontSize, _impl->fontColor);
 		}
 
 		_impl->redraw = false;
+		_impl->updateGlyphPositions();
 	}
 
-	for (auto glyph : _impl->glyph_list) {
-		aRenderingEngine->render(glyph);
+	for (auto& glyph : _impl->glyphs) {
+		aRenderingEngine->render(&glyph);
 	}
 }
 
 void OText2D::onScreenResize(const OResizeEvent * evt)
 {
-	_impl->UpdateViewportConversion(evt->width(), evt->height());
-	_impl->redraw = true;
+	_impl->updateViewportConversion(evt->width(), evt->height());
+	_impl->updateGlyphPositions();
 }
 
