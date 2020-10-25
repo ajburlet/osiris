@@ -4,16 +4,21 @@
 
 OTEST_START(OArray, Init) {
 	OArray<int> arr(10, 1);
-	ASSERT_EQ(arr.size(), 10) << "Wrong size.";
+	ASSERT_EQ(arr.size(), 0) << "Wrong size.";
 	ASSERT_EQ(arr.capacity(), 10) << "Wrong capacity.";
-	for (auto& item : arr) EXPECT_EQ(item, 1) << "All array items were supposed to be initialized.";
+
+	OArray<int> arr1(10, 1, true);
+	ASSERT_EQ(arr1.size(), 10) << "Wrong size.";
+	ASSERT_EQ(arr1.capacity(), 10) << "Wrong capacity.";
+	for (auto& item : arr1) EXPECT_EQ(item, 1) << "All array items were supposed to be initialized.";
 
 	OArray<int> arr2;
-	arr2.resize(10);
+	arr2.changeCapacity(10);
 	ASSERT_EQ(arr2.size(), 0) << "Size should be zero.";
 	ASSERT_EQ(arr2.capacity(), 10) << "Wrong capacity.";
 
-	OArray<int> arr3(std::move(arr));
+	OArray<int> arr3;
+	arr3.resizeInit(10, 1);
 	ASSERT_EQ(arr3.size(), 10) << "Wrong size (for move construction).";
 	ASSERT_EQ(arr3.capacity(), 10) << "Wrong capacity (for move construction).";
 	for (auto& item : arr3) EXPECT_EQ(item, 1) << "All array items were supposed to be initialized.";
@@ -22,7 +27,7 @@ OTEST_END
 
 OTEST_START(OArray, Insertions) {
 	OArray<int> arr;
-	arr.resize(10);
+	arr.changeCapacity(10);
 	arr.append(1);
 	ASSERT_EQ(arr.size(), 1) << "Wrong size.";
 	ASSERT_EQ(arr[0], 1) << "Wrong added value.";
@@ -49,27 +54,52 @@ OTEST_START(OArray, Insertions) {
 OTEST_END
 
 OTEST_START(OArray, Resize) {
-	OArray<int> arr(10, 999);
+	OArray<int> arr(10, 999, true);
 	int val = 0;
-	for (auto& item : arr) item = val++;
+	for (auto& item : arr) {
+		EXPECT_EQ(item, 999) << "Wrong initial value.";
+		item = val++;
+	}
 
 	arr.resize(5);
-	ASSERT_EQ(arr.capacity(), 5) << "Invalid capacity.";
+	ASSERT_EQ(arr.capacity(), 10) << "Invalid capacity.";
 	ASSERT_EQ(arr.size(), 5) << "Invalid size.";
 	int expectedValues[] = { 0,1,2,3,4,5,6,7,8,9 };
 	int idx = 0;
 	for (const auto& item : arr) {
 		EXPECT_EQ(item, expectedValues[idx++]) << "Unexpected array value at index " << idx - 1 << ".";
 	}
-
 	arr.resize(10);
+	idx = 0;
+	for (const auto& item : arr) {
+		EXPECT_EQ(item, expectedValues[idx++]) << "Unexpected array value at index " << idx - 1 << ".";
+	}
+
+	arr.changeCapacity(5);
+	ASSERT_EQ(arr.capacity(), 5) << "Invalid capacity.";
+	ASSERT_EQ(arr.size(), 5) << "Invalid size.";
+
+	arr.changeCapacity(10);
 	ASSERT_EQ(arr.capacity(), 10) << "Invalid capacity.";
 	ASSERT_EQ(arr.size(), 5) << "Invalid size.";
 	arr.append(5);
 	arr.append(6);
+	ASSERT_EQ(arr.capacity(), 10) << "Invalid capacity.";
+	ASSERT_EQ(arr.size(), 7) << "Invalid size.";
 	idx = 0;
 	for (const auto& item : arr) {
 		EXPECT_EQ(item, expectedValues[idx++]) << "Unexpected array value at index " << idx - 1 << ".";
+	}
+
+	arr.resizeInit(10, 999);
+	idx = 0;
+	for (const auto& item : arr) {
+		if (idx < 7) {
+			EXPECT_EQ(item, expectedValues[idx]) << "Unexpected array value at index " << idx - 1 << ".";
+		} else {
+			EXPECT_EQ(item, 999);
+		}
+		idx++;
 	}
 }
 OTEST_END
