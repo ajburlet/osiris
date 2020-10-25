@@ -50,7 +50,7 @@ OTexture & OTexture::operator=(OTexture && aOther)
 
 void OTexture::setMipmapLevelCount(uint32_t aMipmapLevelCount)
 {
-	_impl->mipmap.resize(aMipmapLevelCount);
+	_impl->mipmap.changeCapacity(aMipmapLevelCount);
 }
 
 uint32_t OTexture::mipmapLevelCount() const

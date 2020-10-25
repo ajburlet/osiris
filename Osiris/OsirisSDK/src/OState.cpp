@@ -280,9 +280,9 @@ void OState::checkDegree(int degree)
 {
 	int currComponentsSize = _impl->components.size();
 	if ( currComponentsSize < degree + 1  ) {
-		_impl->components.resize(degree + 1, true);
-		_impl->minConstraint.resize(degree + 1, true);
-		_impl->maxConstraint.resize(degree + 1, true);
+		_impl->components.resize(degree + 1);
+		_impl->minConstraint.resize(degree + 1);
+		_impl->maxConstraint.resize(degree + 1);
 		for (int i = currComponentsSize; i <= degree; i++) _impl->components[i] = OVector3F(0.0f);
 	}
 

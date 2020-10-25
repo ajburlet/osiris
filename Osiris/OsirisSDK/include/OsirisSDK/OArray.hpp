@@ -200,17 +200,35 @@ public:
 	virtual uint32_t size() const;
 
 	/**
+	 @brief Changes the array item count.
+	 @param aSize The new array item count.
+	 */
+	virtual void resize(uint32_t aSize);
+
+	/**
+	 @brief Changes the array item count and initializes any new items.
+	 @param aSize The new array item count.
+	 @param aInitValue The initial value of the new items.
+	 */
+	virtual void resizeInit(uint32_t aSize, const T& aInitValue);
+
+	/**
 	 @brief Change the capacity of the array.
 	 @param aNewCapacity New array capacity.
 	 @param aSizeToCapacity The array size is set to capacity.
 	 */
-	virtual void resize(uint32_t aNewCapacity, bool aSizeToCapacity=false);
+	virtual void changeCapacity(uint32_t aNewCapacity);
 
 	/**
 	 @brief Add item to the end of the array.
 	 @param aItemValue of the item to be added.
 	 */
 	virtual void append(const T& aItemValue);
+
+	/**
+	 @copydoc append(const T&)
+	 */
+	virtual void append(T&& aItemValue);
 
 	/**
 	 @brief Set item value.
@@ -302,15 +320,22 @@ protected:
 template<typename T, class Allocator>
 inline OArray<T, Allocator>::OArray(uint32_t aCapacity, bool aSizeToCapacity)
 {
-	if (aCapacity > 0) resize(aCapacity, aSizeToCapacity);
+	if (aSizeToCapacity) {
+		resize(aCapacity);
+	} else {
+		changeCapacity(aCapacity);
+	}
 }
 
 template<typename T, class Allocator>
 inline OArray<T, Allocator>::OArray(uint32_t aCapacity, const T & aInitValue, bool aSizeToCapacity)
 {
-	resize(aCapacity, aSizeToCapacity);
-	_size = aCapacity;
-	for (auto& item : *this) item = aInitValue;
+	if (aSizeToCapacity) {
+		resize(aCapacity);
+	} else {
+		changeCapacity(aCapacity);
+		for (auto& item : *this) item = aInitValue;
+	}
 }
 
 template<typename T, class Allocator>
@@ -334,7 +359,7 @@ inline OArray<T, Allocator>::~OArray()
 template<typename T, class Allocator>
 inline void OArray<T, Allocator>::cloneTo(OArray & aTarget) const
 {
-	aTarget.resize(_size);
+	aTarget.changeCapacity(_size);
 	for (uint32_t i = 0; i < _size; i++) aTarget[i] = get(i);
 }
 
@@ -360,7 +385,22 @@ inline uint32_t OArray<T, Allocator>::size() const
 }
 
 template<typename T, class Allocator>
-inline void OArray<T, Allocator>::resize(uint32_t aNewCapacity, bool aSizeToCapacity)
+inline void OArray<T, Allocator>::resize(uint32_t aSize)
+{
+	if (aSize > _capacity) changeCapacity(aSize);
+	_size = aSize;
+}
+
+template<typename T, class Allocator>
+inline void OArray<T, Allocator>::resizeInit(uint32_t aSize, const T & aInitValue)
+{
+	auto currSize = _size;
+	resize(aSize);
+	for (uint32_t i = currSize; i < _size; i++) _array[i] = aInitValue;
+}
+
+template<typename T, class Allocator>
+inline void OArray<T, Allocator>::changeCapacity(uint32_t aNewCapacity)
 {
 	if (aNewCapacity == _capacity) return;
 
@@ -373,16 +413,13 @@ inline void OArray<T, Allocator>::resize(uint32_t aNewCapacity, bool aSizeToCapa
 	uint32_t itemCount = (aNewCapacity > _size) ? _size : aNewCapacity;
 	if (_array) {
 		for (uint32_t i = 0; i < itemCount; i++) {
-			new_array[i] = _array[i];
+			new_array[i] = std::move(_array[i]);
 		}
 		delete[] _array;
 	}
 
 	_array = new_array;
 	_capacity = aNewCapacity;
-	if (aSizeToCapacity || aNewCapacity < _size) {
-		_size = aNewCapacity;
-	}
 }
 
 template<typename T, class Allocator>
@@ -392,6 +429,15 @@ inline void OArray<T, Allocator>::append(const T& aItemValue)
 		throw OException("Array overflow.");
 	}
 	_array[_size++] = aItemValue;
+}
+
+template<typename T, class Allocator>
+inline void OArray<T, Allocator>::append(T && aItemValue)
+{
+	if (_size == _capacity) {
+		throw OException("Array overflow.");
+	}
+	_array[_size++] = std::move(aItemValue);
 }
 
 template<typename T, class Allocator>
@@ -527,7 +573,7 @@ public:
 	 */
 	~ODynArray() = default;
 
-	virtual void resize(uint32_t aNewCapacity, bool aSizeToCapacity=false) override;
+	virtual void changeCapacity(uint32_t aNewCapacity) override;
 
 	virtual void append(const T& aItemValue) override;
 	
@@ -537,19 +583,15 @@ public:
 };
 
 template<typename T, class Allocator, size_t BlockSize>
-inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, bool aSizeToCapacity)
+inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, bool aSizeToCapacity) :
+	OArray(aCapacity, aSizeToCapacity)
 {
-	if (aCapacity > 0) resize(aCapacity, aSizeToCapacity);
 }
 
 template<typename T, class Allocator, size_t BlockSize>
-inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, const T & aInitValue, bool aSizeToCapacity)
+inline ODynArray<T, Allocator, BlockSize>::ODynArray(uint32_t aCapacity, const T & aInitValue, bool aSizeToCapacity) :
+	OArray(aCapacity, aInitValue, aSizeToCapacity)
 {
-	if (aCapacity > 0) {
-		resize(aCapacity, aSizeToCapacity);
-		_size = aCapacity;
-		for (auto& item : *this) item = aInitValue;
-	}
 }
 
 template<typename T, class Allocator, size_t BlockSize>
@@ -559,10 +601,10 @@ inline ODynArray<T, Allocator, BlockSize>::ODynArray(ODynArray && aOther) :
 }
 
 template<typename T, class Allocator, size_t BlockSize>
-inline void ODynArray<T, Allocator, BlockSize>::resize(uint32_t aNewCapacity, bool aSizeToCapacity)
+inline void ODynArray<T, Allocator, BlockSize>::changeCapacity(uint32_t aNewCapacity)
 {
 	auto originalSize = _size;
-	Super::resize(aNewCapacity + (BlockSize - (aNewCapacity % BlockSize)), aSizeToCapacity);
+	Super::changeCapacity(aNewCapacity + (BlockSize - (aNewCapacity % BlockSize)));
 	if (aNewCapacity < originalSize) _size = aNewCapacity;
 }
 
@@ -570,7 +612,7 @@ template<typename T, class Allocator, size_t BlockSize>
 inline void ODynArray<T, Allocator, BlockSize>::append(const T & aItemValue)
 {
 	if (_capacity == _size) {
-		resize(_capacity + 1);
+		changeCapacity(_capacity + 1);
 	}
 	Super::append(aItemValue);
 }
@@ -578,7 +620,7 @@ inline void ODynArray<T, Allocator, BlockSize>::append(const T & aItemValue)
 template<typename T, class Allocator, size_t BlockSize>
 inline T & ODynArray<T, Allocator, BlockSize>::operator[](uint32_t aIndex)
 {
-	if (aIndex >= _capacity) resize(aIndex + 1);
+	if (aIndex >= _capacity) changeCapacity(aIndex + 1);
 	return Super::operator[](aIndex);
 }
 
