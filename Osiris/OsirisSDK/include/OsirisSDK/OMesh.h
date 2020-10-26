@@ -6,13 +6,13 @@
 #include "OsirisSDK/ORenderable.h"
 #include "OsirisSDK/OVisualObject.h"
 #include "OsirisSDK/OVectorDefs.h"
-#include "OsirisSDK/OMeshBuffer.hpp"
 #include "OsirisSDK/OCamera.h"
 
-class OVertexIndex;
-class OVertexBuffer;
 class OMatrixStack;
 class ORenderingEngine;
+template <class RefCountT> class ORefCountPtr;
+class OMeshGeometry;
+class OTexture;
 
 /**
  @brief Base class that represents a group of vertices that together make a geometrical shape.
@@ -27,12 +27,32 @@ public:
 	 @brief Class constructor.
 	 @param program Pointer to the shader program that will be used to render the object.
 	*/
-	OMesh() = default;
+	OMesh();
+
+	/**
+	 @brief Deleted copy constructor.
+	 */
+	OMesh(const OMesh& aOther) = delete;
+
+	/**
+	 @brief Move constructor.
+	 */
+	OMesh(OMesh&& aOther);
 
 	/**
 	 @brief Class destructor.
 	*/
-	virtual ~OMesh() = default;
+	virtual ~OMesh();
+
+	/**
+	 @brief Deleted copy assignment operator.
+	 */
+	OMesh& operator=(const OMesh& aOther) = delete;
+
+	/**
+	 @brief Move assignment operator.
+	 */
+	OMesh& operator=(OMesh&& aOther);
 
 	/**
 	 @brief Sets the pointer to the matrix stack. 
@@ -45,6 +65,17 @@ public:
 	OMatrixStack* matrixStack() const;
 
 	/**
+	 @brief Sets the mesh geometry.
+	 @param aGeometry The reference countable pointer to the mesh geometry.
+	 */
+	void setGeometry(ORefCountPtr<OMeshGeometry>& aGeometry);
+
+	/**
+	 @brief Sets the mesh texture.
+	 */
+	void setTexture(ORefCountPtr<OTexture>& aTexture);
+
+	/**
 	 @brief Starts the rendering process for the object.
 	 @param aRenderingEngine The rendering engine.
 	 @param aMatrixStack Pointer to the matrix stack that contains all the transformations.
@@ -52,16 +83,19 @@ public:
 	virtual void render(ORenderingEngine* aRenderingEngine, OMatrixStack *aMatrixStack = nullptr) override;
 
 private:
-	OMatrixStack* _matrixStack = nullptr;
+	/**
+	 @cond HIDDEN
+	 */
+	struct Impl;
+	Impl* _impl = nullptr;
+	/**
+	 @endcond
+	 */
+
 };
 
-inline void OMesh::setMatrixStack(OMatrixStack* aMatrixStack)
+inline OMesh::OMesh(OMesh && aOther) : ORenderable(std::move(aOther))
 {
-	_matrixStack = aMatrixStack;
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
 }
-
-inline OMatrixStack* OMesh::matrixStack() const
-{
-	return _matrixStack;
-}
-

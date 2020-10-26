@@ -1,5 +1,7 @@
 #pragma once
 
+#include "OsirisSDK/OVectorDefs.h"
+
 class OGraphicsAPI;
 class ORenderable;
 class ORenderComponents;

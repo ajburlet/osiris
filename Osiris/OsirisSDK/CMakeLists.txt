@@ -11,6 +11,8 @@ set (BASE_SOURCES
 	${HDR_DIR}/OEventDefs.h
 	${SRC_DIR}/OObject.cpp
 	${HDR_DIR}/OObject.h
+	${HDR_DIR}/ORefCountObject.hpp
+	${HDR_DIR}/OResourceManagerInterface.h
 	${HDR_DIR}/OSingleton.hpp
 	${SRC_DIR}/OTimeIndex.cpp
 	${HDR_DIR}/OTimeIndex.h
@@ -42,7 +44,7 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OIndexBuffer.h
 	${SRC_DIR}/OMesh.cpp
 	${HDR_DIR}/OMesh.h
-	${HDR_DIR}/OMeshBuffer.hpp
+	${HDR_DIR}/OMeshGeometry.h
 	${SRC_DIR}/ORenderable.cpp
 	${HDR_DIR}/ORenderable.h
 	${SRC_DIR}/ORenderComponents.cpp

@@ -3,11 +3,12 @@
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OGraphicsDefinitions.h"
 #include "OsirisSDK/OGPUObject.h"
+#include "OsirisSDK/ORefCountObject.hpp"
 
 /**
  @brief Represents the texture entity in GPUs. 
  */
-class OTexture : public OGPUObject
+class OTexture : public OGPUObject, public ORefCountObject<>
 {
 public:
 	/**
