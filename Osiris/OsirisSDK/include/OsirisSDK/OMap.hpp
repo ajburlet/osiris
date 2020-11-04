@@ -21,7 +21,10 @@ protected:
 	using MapConstIterator = typename MapType::const_iterator;
 
 public:
-	template <class MapIteratorType>
+	/**
+	 @brief Base map iterator.
+	 */
+	template <class MapIteratorType, typename ItValueType>
 	class BaseIterator : public OMemoryManagedObject<Allocator>
 	{
 	public:
@@ -55,7 +58,7 @@ public:
 		/**
 		 @brief Returns the value.
 		 */
-		TValue& value() { return _it->second; }
+		ItValueType& value() { return _it->second; }
 
 		/**
 		 @brief Moves the iterator forward.
@@ -98,8 +101,8 @@ public:
 		friend class OMap;
 	};
 
-	using Iterator = BaseIterator<MapIterator>;
-	using ConstIterator = BaseIterator<MapConstIterator>;
+	using Iterator = BaseIterator<MapIterator, TValue>;
+	using ConstIterator = BaseIterator<MapConstIterator, const TValue>;
 
 	/**
 	 @brief Class default constructor.
@@ -197,6 +200,11 @@ public:
 	 @brief Removes an item by it's key.
 	 */
 	void remove(const TKey& aKey);
+
+	/**
+	 @brief Removes all items from the map.
+	 */
+	void clear();
 
 	/**
 	 @brief Deleted assignment operator.
@@ -316,6 +324,12 @@ template<class TKey, class TValue, class Allocator, class Compare>
 inline void OMap<TKey, TValue, Allocator, Compare>::remove(const TKey & aKey)
 {
 	_map.erase(aKey);
+}
+
+template<class TKey, class TValue, class Allocator, class Compare>
+inline void OMap<TKey, TValue, Allocator, Compare>::clear()
+{
+	_map.clear();
 }
 
 template<class TKey, class TValue, class Allocator, class Compare>

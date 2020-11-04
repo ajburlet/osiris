@@ -292,6 +292,26 @@ public:
 	 */
 	ConstIterator end() const;
 
+	/**
+	 @brief Returns a reference to the first element.
+	 */
+	T& front();
+	
+	/**
+	 @brief Returns a reference to the first element.
+	 */
+	const T& front() const;
+	
+	/**
+	 @brief Returns a reference to the last element.
+	 */
+	T& tail();
+	
+	/**
+	 @brief Returns a reference to the last element.
+	 */
+	const T& tail() const;
+
 protected:
 	T*		_array		= nullptr;
 	uint32_t	_capacity	= 0;
@@ -490,6 +510,30 @@ template<typename T, class Allocator>
 inline typename OArrayNC<T, Allocator>::ConstIterator OArrayNC<T, Allocator>::end() const
 {
 	return ConstIterator(_size, _array);
+}
+
+template<typename T, class Allocator>
+inline T & OArrayNC<T, Allocator>::front()
+{
+	return _array[0];
+}
+
+template<typename T, class Allocator>
+inline const T & OArrayNC<T, Allocator>::front() const
+{
+	return _array[0];
+}
+
+template<typename T, class Allocator>
+inline T & OArrayNC<T, Allocator>::tail()
+{
+	return _array[_size - 1];
+}
+
+template<typename T, class Allocator>
+inline const T & OArrayNC<T, Allocator>::tail() const
+{
+	return _array[_size - 1];
 }
 
 /**
