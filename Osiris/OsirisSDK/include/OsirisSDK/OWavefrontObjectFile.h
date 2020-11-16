@@ -1,85 +1,89 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <map>
-#include <stdio.h>
+#include "OsirisSDK/defs.h"
+#include "OsirisSDK/OMeshFile.h"
 
-#include "defs.h"
-#include "OMesh.h"
-
-#ifndef OWAVEFRONTOBJECTFILE_LINEBUFFER
-#define OWAVEFRONTOBJECTFILE_LINEBUFFER		256
-#endif
-
-#ifndef OWAVEFRONTOBJECTFILE_WORDBUFFER
-#define OWAVEFRONTOBJECTFILE_WORDBUFFER		64
-#endif
+class OMeshGeometry;
 
 /**
- \brief Class that parses an Waveffront Object file and loads vertex information on a OMesh
+ @brief Class that parses an Waveffront Object file and loads vertex information on a OMesh
         class object.
  */
-class OAPI OWavefrontObjectFile
+class OAPI OWavefrontObjectFile : public OMeshFile
 {
 public:
 	/**
-	 \brief Class constructor.
-	 \param filename Object file name.
+	 @brief Class constructor.
+	 @param filename Object file name.
 	 */
-	OWavefrontObjectFile(const char *filename);
+	OWavefrontObjectFile(const char* aFilename);
+
+	/**
+	 @brief Class copy constructor.
+	 */
+	OWavefrontObjectFile(const OWavefrontObjectFile& aOther);
+
+	/**
+	 @brief Move constructor.
+	 */
+	OWavefrontObjectFile(OWavefrontObjectFile&& aOther);
 	
 	/**
-	 \brief Class destructor.
+	 @brief Class destructor.
 	 */
 	virtual ~OWavefrontObjectFile();
 
 	/**
-	 \brief Provides the object list from the file.
-	 \param count Pointer to an integer where the object count will be written.
-	 \return Vector with object names that can be used to load meshes.
+	 @brief Copy assignment operator.
 	 */
-	const char** objectList(int *count);
-	
+	OWavefrontObjectFile& operator=(const OWavefrontObjectFile& aOther);
+
 	/**
-	 \brief Loads a given object into an OMesh class object, previously created.
-	 \param objName Object name.
-	 \param mesh OMesh class object in which the vertex data will be loaded.
+	 @brief Move assignment operator.
 	 */
-	void loadMesh(const char* objName, OMesh* mesh);
+	OWavefrontObjectFile& operator=(OWavefrontObjectFile&& aOther);
+
+	// OMeshFile interface overrides
+	virtual void loadMesh(const char* aObjName, RawData& aRawData) override;
+
+	virtual const ObjectNameArray & objectArray() const override;
 
 protected:
 	/**
-	 \brief Scans the file for objecs.
+	 @brief Scans the file for objecs.
 	 */
 	void loadObjectList();
-	
+
 	/**
-	 \brief Reads the next line into the class internal buffer
+	 @brief Reads the next line into the class internal buffer
 	 */
 	int readNextLine();
 	
 	/**
-	 \brief Reads the next word on the line.
-	 \return Returns the next word. If the end of line has been reached or the buffer overflowed, returns NULL.
+	 @brief Reads the next word on the line.
+	 @return Returns the next word. If the end of line has been reached or the buffer overflowed, returns NULL.
 	 */
-	const char* readNextWord();
+	char* readNextWord();
 	
 	/**
-	 \brief Returns the current line of the file that is being processed.
+	 @brief Returns the current line of the file that is being processed.
 	 */
 	unsigned int currLine();
 
 private:
-	std::string _filename;
-	FILE *_fp;
-	std::vector<const char*> _objVec;
-	std::map<std::string, long> _objMap;
-
-	unsigned int _currLine;
-	char _lineBuffer[OWAVEFRONTOBJECTFILE_LINEBUFFER];
-	char _wordBuffer[OWAVEFRONTOBJECTFILE_WORDBUFFER];
-	char* _wordptr;
-	bool _endOfLine;
+	/**
+	 @cond HIDDEN
+	 */
+	struct Impl;
+	Impl* _impl = nullptr;
+	/**
+	 @endcond
+	 */
 };
+
+inline OWavefrontObjectFile::OWavefrontObjectFile(OWavefrontObjectFile && aOther) : OMeshFile(std::move(aOther))
+{
+	_impl = aOther._impl;
+	aOther._impl = nullptr;
+}
 

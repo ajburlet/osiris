@@ -1,12 +1,14 @@
 #pragma once
 
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/OMemoryManagedObject.h"
+#include "OsirisSDK/OSystemMemoryAllocator.h"
 #include "OsirisSDK/OException.h"
 
 /**
  @brief Maintains pointers to objects that must be removed at a given time.
  */
-class OAPI OTrashBin
+class OAPI OTrashBin : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
 {
 protected:
 	/**

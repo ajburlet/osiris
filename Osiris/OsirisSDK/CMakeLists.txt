@@ -9,6 +9,8 @@ set (BASE_SOURCES
 	${SRC_DIR}/OEvent.cpp
 	${HDR_DIR}/OEvent.h
 	${HDR_DIR}/OEventDefs.h
+	${SRC_DIR}/OFile.cpp
+	${HDR_DIR}/OFile.h
 	${SRC_DIR}/OObject.cpp
 	${HDR_DIR}/OObject.h
 	${HDR_DIR}/ORefCountObject.hpp
@@ -36,14 +38,19 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OCameraController.h
 	${SRC_DIR}/OFont.cpp
 	${HDR_DIR}/OFont.h
+	${HDR_DIR}/OGeometryManager.h
+	${SRC_DIR}/OGeometryManager.cpp
 	${SRC_DIR}/OGlyph.cpp
 	${HDR_DIR}/OGlyph.h
 	${HDR_DIR}/OGPUObject.h
+	${HDR_DIR}/OGraphicsAllocators.h
 	${HDR_DIR}/OGraphicsDefinitions.h
 	${SRC_DIR}/OIndexBuffer.cpp
 	${HDR_DIR}/OIndexBuffer.h
 	${SRC_DIR}/OMesh.cpp
 	${HDR_DIR}/OMesh.h
+	${SRC_DIR}/OMeshFile.cpp
+	${HDR_DIR}/OMeshFile.h
 	${HDR_DIR}/OMeshGeometry.h
 	${SRC_DIR}/ORenderable.cpp
 	${HDR_DIR}/ORenderable.h
@@ -137,6 +144,8 @@ set (MEMORY_SOURCES
 	${HDR_DIR}/OSystemMemoryAllocator.h
 	${SRC_DIR}/OTrashBin.cpp
 	${HDR_DIR}/OTrashBin.h
+	${SRC_DIR}/OTrashBinOwner.cpp
+	${HDR_DIR}/OTrashBinOwner.h
 )
 source_group("Memory" FILES ${MEMORY_SOURCES})
 

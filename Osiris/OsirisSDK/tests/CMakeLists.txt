@@ -13,7 +13,10 @@ set (TEST_FILES
 	OStack.cc
 	OMap.cc
 	OSet.cc
+	OWavefrontObjectFile.cc
 )
+
+add_definitions(-DOSIRISTEST_BASEDIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_executable(OsirisTests ${TEST_FILES})
 target_link_libraries(OsirisTests OsirisSDK gtest_main)
