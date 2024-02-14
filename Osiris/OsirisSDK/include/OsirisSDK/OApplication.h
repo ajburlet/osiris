@@ -9,6 +9,7 @@ class OTrashBin;
 template <typename T> class OStats;
 class OCamera;
 class ORenderingEngine;
+class OGeometryManager;
 class OEvent;
 
 #ifndef OAPPLICATION_DEFAULT_POSX
@@ -167,7 +168,12 @@ public:
 	/**
 	 @brief Application's rendering engine.
 	 */
-	ORenderingEngine* renderingEngine();
+	ORenderingEngine& renderingEngine();
+
+	/**
+	 @brief Geometry manager. 
+	 */
+	OGeometryManager& geometryManager();
 
 	/**
 	 @brief Frames-per-second statistics.

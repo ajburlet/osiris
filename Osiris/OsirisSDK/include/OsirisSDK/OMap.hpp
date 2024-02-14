@@ -1,8 +1,10 @@
 #pragma once
 
 #include <map>
+#include <type_traits>
 
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/ONonCopiable.h"
 #include "OsirisSDK/OSystemMemoryAllocator.h"
 #include "OsirisSDK/OMemoryManagedObject.h"
 
@@ -13,7 +15,7 @@ template<class TKey,
 	 class TValue, 
 	 class Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Default>,
 	 class Compare = std::less<TKey>>
-class OMap : public OMemoryManagedObject<Allocator>
+class OMap : public OMemoryManagedObject<Allocator>, ONonCopiableT<OMap<TKey, TValue, Allocator, Compare>>
 {
 protected:
 	using MapType = std::map<TKey, TValue, Compare, OSTLAllocator<Allocator, std::pair<const TKey, TValue>>>;
@@ -110,26 +112,11 @@ public:
 	OMap() = default;
 
 	/**
-	 @brief Deleted copy constructor.
-	 */
-	OMap(const OMap& aOther) = delete;
-
-	/**
 	 @brief Move constructor.
 	 */
 	OMap(OMap&& aOther);
 
-	/**
-	 @brief Clones the map into another one.
-	 @param aTarget The destination map.
-	 */
-	void cloneTo(OMap& aTarget) const;
-
-	/**
-	 @brief Clones the contents of the map to a newly allocated one.
-	 @return The newly allocated map.
-	 */
-	OMap* clone() const;
+	void cloneTo(OMap& aTarget) const override;
 
 	/**
 	 @brief Class destructor.
@@ -149,12 +136,12 @@ public:
 	/**
 	 @brief Returns a constant iterator that points to the beginning of the collection.
 	 */
-	ConstIterator cbegin() const;
+	ConstIterator begin() const;
 
 	/**
 	 @brief Returns a constant iterator to the end of the collection. 
 	 */
-	ConstIterator cend() const;
+	ConstIterator end() const;
 	
 	/**
 	 @brief Returns the number of items in the collection.
@@ -207,11 +194,6 @@ public:
 	void clear();
 
 	/**
-	 @brief Deleted assignment operator.
-	 */
-	OMap& operator=(const OMap& aOther) = delete;
-
-	/**
 	 @brief Move assignment operator.
 	 */
 	OMap& operator=(OMap&& aOther);
@@ -240,16 +222,15 @@ inline OMap<TKey, TValue, Allocator, Compare>::OMap(OMap && aOther) :
 template<class TKey, class TValue, class Allocator, class Compare>
 inline void OMap<TKey, TValue, Allocator, Compare>::cloneTo(OMap & aTarget) const
 {
-	aTarget._map = _map;
-}
-
-template<class TKey, class TValue, class Allocator, class Compare>
-inline OMap<TKey, TValue, Allocator, Compare>* OMap<TKey, TValue, Allocator, Compare>::clone() const
-{
-	auto newClone = new OMap;
-	OExceptionPointerCheck(newClone);
-	cloneTo(*newClone);
-	return newClone;
+	if constexpr(std::is_base_of<ONonCopiable, TValue>::value) {
+		for (auto it=begin(); it != end(); ++it) {
+			Iterator it_insert;
+			aTarget.insert(it.key(), TValue(), &it_insert);
+			it.value().cloneTo(it_insert.value());
+		}
+	} else {
+		aTarget._map = _map;
+	}
 }
 
 template<typename TKey, typename TValue, class Allocator, class Compare>
@@ -265,13 +246,13 @@ inline typename OMap<TKey, TValue, Allocator, Compare>::Iterator OMap<TKey, TVal
 }
 
 template<typename TKey, typename TValue, class Allocator, class Compare>
-inline typename OMap<TKey, TValue, Allocator, Compare>::ConstIterator OMap<TKey, TValue, Allocator, Compare>::cbegin() const
+inline typename OMap<TKey, TValue, Allocator, Compare>::ConstIterator OMap<TKey, TValue, Allocator, Compare>::begin() const
 {
 	return ConstIterator(_map.cbegin());
 }
 
 template<typename TKey, typename TValue, class Allocator, class Compare>
-inline typename OMap<TKey, TValue, Allocator, Compare>::ConstIterator OMap<TKey, TValue, Allocator, Compare>::cend() const
+inline typename OMap<TKey, TValue, Allocator, Compare>::ConstIterator OMap<TKey, TValue, Allocator, Compare>::end() const
 {
 	return ConstIterator(_map.cend());
 }
@@ -295,9 +276,9 @@ inline typename OMap<TKey, TValue, Allocator, Compare>::ConstIterator OMap<TKey,
 }
 
 template<typename TKey, typename TValue, class Allocator, class Compare>
-inline bool OMap<TKey, TValue, Allocator, Compare>::insert(const TKey & aKey, const TValue & aValue, Iterator * aItemAtMap)
+bool OMap<TKey, TValue, Allocator, Compare>::insert(const TKey & aKey, const TValue & aValue, Iterator * aItemAtMap)
 {
-	std::pair<MapIterator,bool> pair = _map.insert(std::pair<TKey,TValue>(aKey, aValue));
+	std::pair<MapIterator,bool> pair = _map.emplace(aKey, aValue);
 	if (aItemAtMap != nullptr) {
 		*aItemAtMap = pair.first;
 	}
@@ -307,7 +288,7 @@ inline bool OMap<TKey, TValue, Allocator, Compare>::insert(const TKey & aKey, co
 template<class TKey, class TValue, class Allocator, class Compare>
 inline bool OMap<TKey, TValue, Allocator, Compare>::insert(const TKey & aKey, TValue && aValue, Iterator * aItemAtMap)
 {
-	std::pair<MapIterator,bool> pair = _map.insert(std::pair<TKey,TValue>(aKey, std::move(aValue)));
+	std::pair<MapIterator,bool> pair = _map.emplace(aKey, std::forward<TValue>(aValue));
 	if (aItemAtMap != nullptr) {
 		*aItemAtMap = pair.first;
 	}

@@ -1,9 +1,12 @@
+#include <OsirisSDK/OMesh.h>
 #include <OsirisSDK/OVector.hpp>
 #include <OsirisSDK/OQuaternion.hpp>
-#include <OsirisSDK/OVertexColorMesh.h>
 #include <OsirisSDK/OWavefrontObjectFile.h>
 #include <OsirisSDK/OParameterList.h>
 #include <OsirisSDK/OStats.hpp>
+#include <OsirisSDK/OMeshGeometry.h>
+#include <OsirisSDK/ORenderingEngine.h>
+#include <OsirisSDK/OGeometryManager.h>
 
 #include "DemoSimulation.h"
 #include "PieceBehavior.h"
@@ -48,6 +51,16 @@ void DemoSimulation::init()
 	
 	/* subscribe to keyboard event */
 	addEventRecipient(OEventType::KeyboardPressEvent, this);
+
+	geometryManager().registerFile(OGeometryManager::FileType::WavefrontObjectFile,
+					OSIRIS_DEMO_BASEDIR "/Meshes/Cube.mesh.obj",
+					"TestTorus");
+	auto torus_geometry = geometryManager().loadFromFile("TestTorus", "Cube", "TestTorus");
+
+	auto torus = new OMesh;
+	OExceptionPointerCheck(torus);
+	torus->setGeometry(torus_geometry);
+	renderingEngine().load(torus);
 
 	/* setting up the cube */
 	//OVertexColorMesh *cube = new OVertexColorMesh();
@@ -107,29 +120,29 @@ void DemoSimulation::init()
 	//entities()->add(_table);
 
 	/* creating moving piece */
-	//PieceBehavior *behavior = new PieceBehavior();
-	//OParameterList *attributeList = new OParameterList(4);
-	//(*attributeList)[PieceBehavior::attrMinX] = -1.5f;
-	//(*attributeList)[PieceBehavior::attrMinZ] = -3.5f;
-	//(*attributeList)[PieceBehavior::attrMaxX] = 1.5f;
-	//(*attributeList)[PieceBehavior::attrMaxZ] = 3.5f;
-	//_movingPiece = new OEntity(attributeList, behavior, torus);
-	//_movingPiece->state()->curr()->position() = OVector3F(0.0f, 0.0f, 0.0f);
-	//_movingPiece->state()->curr()->setMotionComponent(1, OVector3F(0.3f, 0.0f, 0.3f) / 1e6, OState::Object);
-	//_movingPiece->state()->curr()->scale() = OVector3F(0.25);
-	//entities()->add(_movingPiece);
+	PieceBehavior *behavior = new PieceBehavior();
+	OParameterList *attributeList = new OParameterList(4);
+	(*attributeList)[PieceBehavior::attrMinX] = -1.5f;
+	(*attributeList)[PieceBehavior::attrMinZ] = -3.5f;
+	(*attributeList)[PieceBehavior::attrMaxX] = 1.5f;
+	(*attributeList)[PieceBehavior::attrMaxZ] = 3.5f;
+	_movingPiece = new OEntity(attributeList, behavior, torus);
+	_movingPiece->state()->curr()->position() = OVector3F(0.0f, 0.0f, 0.0f);
+	_movingPiece->state()->curr()->setMotionComponent(1, OVector3F(0.3f, 0.0f, 0.3f) / 1e6, OState::Object);
+	_movingPiece->state()->curr()->scale() = OVector3F(0.25);
+	addEntity(_movingPiece);
 
 	/* creating text */
-	_fontCourier = new OFont(renderingEngine(), "cour.ttf");
-	_title = new OText2D(_fontCourier, 12, -1.0f, 0.95f, OVector4F(0.0f, 1.0f, 0.0f, 1.0f));
+	_fontCourier = new OFont(&renderingEngine(), "cour.ttf");
+	_title = new OText2D(_fontCourier, 12, OVector2I32(10, 12), OVector4FL(0.0f, 1.0f, 0.0f, 1.0f));
 	_title->setContent("Osiris Framework\nDemo Application");
-	_infoText = new OText2D(_fontCourier, 12, 0.45f, 0.95f, OVector4F(0.0f, 1.0f, 0.0f, 1.0f));
-	_motionText = new OText2D(_fontCourier, 12, -1.0f, 0.50f, OVector4F(0.0f, 1.0f, 0.0f, 1.0f));
-	_cameraText = new OText2D(_fontCourier, 12, -1.0f, -0.90f, OVector4F(0.0f, 1.0f, 0.0f, 1.0f));
-	renderObjects()->add(_title);
-	renderObjects()->add(_infoText);
-	renderObjects()->add(_motionText);
-	renderObjects()->add(_cameraText);
+	_infoText = new OText2D(_fontCourier, 12, OVector2I32(400, 12), OVector4FL(0.0f, 1.0f, 0.0f, 1.0f));
+	_motionText = new OText2D(_fontCourier, 12, OVector2I32(10, 600), OVector4FL(0.0f, 1.0f, 0.0f, 1.0f));
+	_cameraText = new OText2D(_fontCourier, 12, OVector2I32(10, 620), OVector4FL(0.0f, 1.0f, 0.0f, 1.0f));
+	addVisualObject(_title);
+	addVisualObject(_infoText);
+	addVisualObject(_motionText);
+	addVisualObject(_cameraText);
 }
 
 void DemoSimulation::update(const OTimeIndex & idx, int step_us)
@@ -156,11 +169,13 @@ void DemoSimulation::update(const OTimeIndex & idx, int step_us)
 	_infoText->setContent(buff);
 
 	/* motion info */
+	/*
 	OVector3F movPos = _movingPiece->state()->curr()->position();
 	OVector3F movSpd = _movingPiece->state()->curr()->motionComponent(1) * 1e6;
 	snprintf(buff, 256, "Moving piece\nPos: (%.02f, %.02f, %.02f)\nSpd: (%.02f, %.02f, %.02f)",
 		movPos.x(), movPos.y(), movPos.z(), movSpd.x(), movSpd.y(), movSpd.z());
 	_motionText->setContent(buff);
+	*/
 
 	/* camera speed and position */
 	OVector3F camSpeed = camera()->state()->motionComponent(1, OState::Scene) * 1e6;

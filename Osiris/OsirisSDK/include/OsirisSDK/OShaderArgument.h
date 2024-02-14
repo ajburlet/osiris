@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/ONonCopiable.h"
 #include "OsirisSDK/OGPUObject.h"
 #include "OsirisSDK/OGraphicsDefinitions.h"
 
@@ -100,13 +101,13 @@ public:
 	 */
 	uint32_t index() const;
 
-
 protected:
 	uint32_t _index = DefaultIndex;
 };
 
 inline OShaderVertexArgument::OShaderVertexArgument(OVarType aType, uint32_t aIndex, uint8_t aArrayLength) :
-	OShaderArgument(aType, aArrayLength)
+	OShaderArgument(aType, aArrayLength),
+	_index(aIndex)
 {}
 
 inline uint32_t OShaderVertexArgument::index() const
@@ -118,7 +119,7 @@ inline uint32_t OShaderVertexArgument::index() const
 /**
  @brief A shader argument instance on the GPU.
  */
-class OAPI OShaderUniformArgument : public OShaderArgument, public OGPUObject
+class OAPI OShaderUniformArgument : public OShaderArgument, public OGPUObject, public ONonCopiableT<OShaderUniformArgument>
 {
 public:
 	/**
@@ -129,16 +130,16 @@ public:
 	using UpdateCallbackFn = std::function<void(OShaderUniformArgument&, const ORenderable*)>;
 
 	/**
+	 @brief Default class constructor.
+	 */
+	OShaderUniformArgument() = default;
+
+	/**
 	 @brief Class constructor.
 	 @param aType Attribute type.
 	 @param aArrayLength Array length (if not an array, value must be 1).
 	 */
 	OShaderUniformArgument(OVarType aType, uint8_t aArrayLength=1);
-
-	/**
-	 @brief Deleted copy constructor.
-	 */
-	OShaderUniformArgument(const OShaderUniformArgument&) = delete;
 
 	/**
 	 @brief Move constructor.

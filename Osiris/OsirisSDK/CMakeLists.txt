@@ -11,6 +11,7 @@ set (BASE_SOURCES
 	${HDR_DIR}/OEventDefs.h
 	${SRC_DIR}/OFile.cpp
 	${HDR_DIR}/OFile.h
+	${HDR_DIR}/ONonCopiable.h
 	${SRC_DIR}/OObject.cpp
 	${HDR_DIR}/OObject.h
 	${HDR_DIR}/ORefCountObject.hpp
@@ -49,6 +50,10 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OGraphicsDefinitions.h
 	${SRC_DIR}/OIndexBuffer.cpp
 	${HDR_DIR}/OIndexBuffer.h
+	${SRC_DIR}/OIndexedDrawInfo.cpp
+	${HDR_DIR}/OIndexedDrawInfo.h
+	${SRC_DIR}/OMaterial.cpp
+	${HDR_DIR}/OMaterial.h
 	${SRC_DIR}/OMesh.cpp
 	${HDR_DIR}/OMesh.h
 	${SRC_DIR}/OMeshFile.cpp
@@ -73,8 +78,12 @@ set (GRAPHICS_SOURCES
 	${SRC_DIR}/OVertexBuffer.cpp
 	${HDR_DIR}/OVertexBuffer.h
 	${HDR_DIR}/OVisualObject.h
+	${SRC_DIR}/OWavefrontMaterialFile.cpp
+	${HDR_DIR}/OWavefrontMaterialFile.h
 	${SRC_DIR}/OWavefrontObjectFile.cpp
 	${HDR_DIR}/OWavefrontObjectFile.h
+	${SRC_DIR}/OWavefrontParser.cpp
+	${HDR_DIR}/OWavefrontParser.h
 )
 source_group("Graphics" FILES ${GRAPHICS_SOURCES})
 
@@ -200,6 +209,7 @@ include_directories(./include
 add_definitions(-DOSIRISSDK_EXPORTS -DOSIRIS_DLL_NAME="OsirisSDK.dll")
 
 add_library(OsirisSDK SHARED ${SOURCES})
+set_property(TARGET OsirisSDK PROPERTY CXX_STANDARD 17)
 
 # debug/release
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")

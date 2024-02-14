@@ -67,8 +67,9 @@ public:
 	/**
 	 @brief Sets the mesh geometry.
 	 @param aGeometry The reference countable pointer to the mesh geometry.
+	 @param aIndex The index of the couple material x index buffer to be used for this geometry.
 	 */
-	void setGeometry(ORefCountPtr<OMeshGeometry>& aGeometry);
+	void setGeometry(ORefCountPtr<OMeshGeometry>& aGeometry, uint32_t aIndex=0);
 
 	/**
 	 @brief Sets the mesh texture.

@@ -185,9 +185,15 @@ public:
 	const RefCountT* getPtr() const;
 
 	/**
-	 brief Sets the internal pointer value-
+	 brief Sets the internal pointer value.
 	 */
 	void setPtr(RefCountT* aPtr);
+
+	/**
+	 @brief Allocates new object and wraps.
+	 */
+	template <typename... Args>
+	static ORefCountPtr create(Args&&... aArgs);
 
 private:
 	RefCountT*	_ptr = nullptr;
@@ -202,7 +208,7 @@ inline ORefCountPtr<RefCountT>::ORefCountPtr(RefCountT * aPtr) : _ptr(aPtr)
 template<class RefCountT>
 inline ORefCountPtr<RefCountT>::ORefCountPtr(const ORefCountPtr & aOther) : _ptr(aOther._ptr)
 {
-	if (aPtr != nullptr) aPtr->retain();
+	if (aOther._ptr != nullptr) aOther._ptr->retain();
 }
 
 template<class RefCountT>
@@ -312,4 +318,11 @@ inline void ORefCountPtr<RefCountT>::setPtr(RefCountT * aPtr)
 	if (_ptr != nullptr) _ptr->release();
 	_ptr = aPtr;
 	if (_ptr != nullptr) _ptr->retain();
+}
+
+template<class RefCountT>
+template<typename ...Args>
+inline ORefCountPtr<RefCountT> ORefCountPtr<RefCountT>::create(Args && ...aArgs)
+{
+	return ORefCountPtr(new RefCountT(std::move(aArgs)...));
 }

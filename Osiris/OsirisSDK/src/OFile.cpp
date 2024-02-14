@@ -1,4 +1,3 @@
-#include <string>
 #include <stdio.h>
 #ifdef WIN32
 #include <io.h>
@@ -6,6 +5,7 @@
 #include <unistd.h>
 #endif
 
+#include "OsirisSDK/OString.hpp"
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OFile.h"
 
@@ -17,7 +17,7 @@ struct OFile::Impl : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryM
 	void copyFrom(const Impl& aOther);
 
 	FILE*		fp		= nullptr;
-	std::string	filename;
+	OString		filename;
 	Mode		mode;
 };
 
@@ -49,7 +49,7 @@ void OFile::Impl::copyFrom(const OFile::Impl& aOther)
 // ----------------------------------------------------------------------------
 // OFile 
 // ----------------------------------------------------------------------------
-OFile::OFile(const char * aFilename, Mode aMode)
+OFile::OFile(const OString& aFilename, Mode aMode)
 {
 	OExceptionPointerCheck(_impl = new Impl);
 	_impl->filename = aFilename;
@@ -96,7 +96,7 @@ void OFile::open()
 {
 	if (_impl->fp != nullptr) return;
 
-	std::string modestr;
+	OString modestr;
 	switch (_impl->mode) {
 	case Mode::Read:	modestr = "rb";		break;
 	case Mode::Write:	modestr = "wb";		break;
@@ -106,13 +106,13 @@ void OFile::open()
 	}
 
 #ifdef WIN32
-	fopen_s(&_impl->fp, _impl->filename.c_str(), modestr.c_str());
+	fopen_s(&_impl->fp, _impl->filename.cString(), modestr.cString());
 #else
-	_impl->fp = fopen(_impl->filename.c_str(), modestr.c_str());
+	_impl->fp = fopen(_impl->filename.cString(), modestr.cString());
 #endif
 	if (_impl->fp == nullptr) {
-		std::string errStr = std::string("Error opening file: ") + _impl->filename;
-		throw OException(errStr.c_str());
+		auto errStr = OString::Fmt("Error opening file: %s", _impl->filename.cString());
+		throw OException(errStr.cString());
 	}
 }
 
@@ -133,9 +133,9 @@ bool OFile::eof() const
 	return feof(_impl->fp);
 }
 
-const char * OFile::filename() const
+const OString& OFile::filename() const
 {
-	return _impl->filename.c_str();
+	return _impl->filename;
 }
 
 uint32_t OFile::read(char * aBuffer, uint32_t aBufferSize)

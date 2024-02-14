@@ -6,17 +6,6 @@ using namespace std;
 
 #undef OException
 
-OException::OException(const char* file, int line, const char* what) :
-	_file(file),
-	_line(line),
-	_what(what)
-{
-}
-
-OException::~OException()
-{
-}
-
 const char* OException::what()
 {
 	char strLineNbr[16];

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/OStringDefs.h"
 #include "OsirisSDK/OTrashBin.h"
 #include "OsirisSDK/OResourceManagerInterface.h"
 
@@ -9,7 +10,7 @@ class OMeshGeometry;
 /**
  @brief Geometry manager for meshes.
  */
-class OGeometryManager : public OResouceManagerInterface<OMeshGeometry>
+class OAPI OGeometryManager : public OResouceManagerInterface<OMeshGeometry>
 {
 public:
 	/**
@@ -55,28 +56,28 @@ public:
 	 @param aFileName Full or relative path of the mesh file.
 	 @param aFileID File ID.
 	 */
-	void registerFile(FileType aFileType, const char* aFilename, const char* aFileID);
+	void registerFile(FileType aFileType, const OString& aFilename, const OString& aFileID);
 
 	/**
 	 @brief Unregister mesh file.
 	 @param aFileID File ID.
 	 */
-	void unRegisterFile(const char* aFileID);
+	void unRegisterFile(const OString& aFileID);
 
 	/**
 	 @brief Loads mesh geometry from file.
 	 @param aFileID File ID.
 	 @param aObjectName The object name in the mesh file.
 	 @param aKey The geometry search key.
-	 @return A reference countable pointer to the resource.
+	 @return A pointer to the mesh geometry resource. 
 	 */
-	ResourcePtr& loadFromFile(const char* aFileID, const char* aObjectName, const char* aKey);
+	ResourcePtr loadFromFile(const OString& aFileID, const OString& aObjectName, const OString& aKey);
 
 
 	// OResourceManagerInterface
 	virtual void forEach(IterationCallbackFn aCallbackFn) override;
 	virtual void forEach(IterationConstCallbackFn aCallbackFn) const override;
-	virtual ResourcePtr& fetchResource(const char* aKey) override;
+	virtual ResourcePtr& fetchResource(const OString& aKey) override;
 	virtual void purge() override;
 
 private:

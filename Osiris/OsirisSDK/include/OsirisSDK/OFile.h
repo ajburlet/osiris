@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/OStringDefs.h"
 #include "OsirisSDK/OSystemMemoryAllocator.h"
 #include "OsirisSDK/OMemoryManagedObject.h"
 
@@ -26,7 +27,7 @@ public:
 	 @param aFilename File name.
 	 @param aMode File operating mode. 
 	 */
-	OFile(const char* aFilename, Mode aMode);
+	OFile(const OString& aFilename, Mode aMode);
 
 	/**
 	 @brief Copy constructor.
@@ -66,7 +67,7 @@ public:
 	/**
 	 @brief Returns the file name.
 	 */
-	const char* filename() const;
+	const OString& filename() const;
 
 	/**
 	 @brief Returns the file operation mode.

@@ -98,6 +98,11 @@ class OAPI OVertexBuffer : public OGPUObject
 {
 public:
 	/**
+	 @brief Default class constructor. 
+	 */
+	OVertexBuffer() = default;
+
+	/**
 	 @brief Class constructor.
 	 @param aDescriptor Vertex buffer descriptor.
 	 @param aVertexCount Vertex count.

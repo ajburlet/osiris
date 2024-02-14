@@ -13,6 +13,12 @@
 template <uint8_t L, uint8_t C, typename T, glm::qualifier Q>
 class OMatrix : public OMathPrimitive<glm::mat<L, C, T, Q>>
 {
+private:
+	using Super = OMathPrimitive<glm::mat<L, C, T, Q>>;
+
+public:
+	using Super::GLMType;
+
 public:
 	/**
 	 @brief Default class constructor.
@@ -27,7 +33,7 @@ public:
 	/**
 	 @brief Constructor for the base GLM type.
 	 */
-	OMatrix(const GLMType& aGLM);
+	OMatrix(const typename Super::GLMType& aGLM);
 
 	/**
 	 @brief Class destructor.
@@ -36,20 +42,32 @@ public:
 	
 	/**
 	 @brief Set the value of a specific matrix element.
-	 @param row Row index number.
-	 @param col Column index number.
-	 @param value New element value.
+	 @param aRow Row index number.
+	 @param aCol Column index number.
+	 @param aValue New element value.
 	*/
 	virtual void setValue(uint8_t aRow, uint8_t aCol, T aValue) = 0;
 	
 	/**
 	 @brief Returns the value of a specific matrix element.
-	 @param row Row index number.
-	 @param col Column index number.
+	 @param aRow Row index number.
+	 @param aCol Column index number.
 	 @return Element value.
 	*/
 	virtual T value(uint8_t aRow, uint8_t aCol) const = 0;
 };
+
+template<uint8_t L, uint8_t C, typename T, glm::qualifier Q>
+inline OMatrix<L, C, T, Q>::OMatrix(const Super & aOther) :
+	Super(aOther)
+{
+}
+
+template<uint8_t L, uint8_t C, typename T, glm::qualifier Q>
+inline OMatrix<L, C, T, Q>::OMatrix(const typename Super::GLMType & aGLM) :
+	Super(aGLM)
+{
+}
 
 /**
  @brief Represents 4x4 matrices.
@@ -57,6 +75,9 @@ public:
 template <typename T, glm::qualifier Q>
 class OMatrix4x4 : public OMatrix<4, 4, T, Q> 
 {
+private:
+	using Super = OMatrix<4, 4, T, Q>; 
+
 public:
 	/**
 	 @brief Class constructor.
@@ -69,9 +90,9 @@ public:
 	OMatrix4x4(const OMatrix4x4& aOther);
 	
 	/**
-	 @brief Class copy constructor for the base template class
+	 @brief Constructor for the base GLM type.
 	 */
-	OMatrix4x4(const Super& in);
+	OMatrix4x4(const typename Super::GLMType& aGLM);
 	
 	/**
 	 @brief Class constructor that creates a diagonal matrix with values defined by the input parameter.
@@ -109,15 +130,16 @@ inline OMatrix4x4<T, Q>::OMatrix4x4(const OMatrix4x4 & aOther) :
 }
 
 template<typename T, glm::qualifier Q>
-inline OMatrix4x4<T, Q>::OMatrix4x4(const Super & aOther) :
-	OMatrix(aOther)
+inline OMatrix4x4<T, Q>::OMatrix4x4(T aIdentValue) :
+	OMatrix(GLMType(aIdentValue))
 {
 }
 
 template<typename T, glm::qualifier Q>
-inline OMatrix4x4<T, Q>::OMatrix4x4(T aIdentValue) :
-	OMatrix(GLMType(aIdentValue))
+inline OMatrix4x4<T, Q>::OMatrix4x4(const typename Super::GLMType& aGLM) :
+	Super(aGLM)
 {
+
 }
 
 template<typename T, glm::qualifier Q>
@@ -152,16 +174,4 @@ inline T OMatrix4x4<T, Q>::value(uint8_t aRow, uint8_t aCol) const
 	case 3: return _glmInternal[aCol].w;
 	default: throw OException("Invalid row index for 4x4 matrix.");
 	}
-}
-
-template<uint8_t L, uint8_t C, typename T, glm::qualifier Q>
-inline OMatrix<L, C, T, Q>::OMatrix(const Super & aOther) :
-	Super(aOther)
-{
-}
-
-template<uint8_t L, uint8_t C, typename T, glm::qualifier Q>
-inline OMatrix<L, C, T, Q>::OMatrix(const GLMType & aGLM) :
-	Super(aGLM)
-{
 }

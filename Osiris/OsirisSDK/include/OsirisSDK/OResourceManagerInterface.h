@@ -5,6 +5,9 @@
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OTrashBinOwner.h"
 #include "OsirisSDK/ORefCountObject.hpp"
+#include "OsirisSDK/OMap.hpp"
+#include "OsirisSDK/OStringDefs.h"
+#include "OsirisSDK/OGraphicsAllocators.h"
 
 /**
  @brief Resource manager interface.
@@ -24,13 +27,13 @@ public:
 	 @param aKey The resource search key.
 	 @return A reference countable pointer to the resource.
 	 */
-	virtual ResourcePtr& fetchResource(const char* aKey) = 0;
+	virtual ResourcePtr& fetchResource(const OString& aKey) = 0;
 
 	/**
 	 @brief Iteration callback function type.
-	 The callback function is in the form: <code>void callbackFn(const char* aKey, ResourceType& aValue)</code>.
+	 The callback function is in the form: <code>void callbackFn(const OString& aKey, ResourceType& aValue)</code>.
 	 */
-	using IterationCallbackFn = std::function<void(const char*, ResourceType&)>;
+	using IterationCallbackFn = std::function<void(const OString&, ResourceType&)>;
 
 	/**
 	 @brief Iterate through all items.
@@ -40,9 +43,9 @@ public:
 	
 	/**
 	 @brief Iteration callback function type (const).
-	 The callback function is in the form: <code>void callbackFn(const char* aKey, const ResourceType& aValue)</code>.
+	 The callback function is in the form: <code>void callbackFn(const OString& aKey, const ResourceType& aValue)</code>.
 	 */
-	using IterationConstCallbackFn = std::function<void(const char*, const ResourceType&)>;
+	using IterationConstCallbackFn = std::function<void(const OString&, const ResourceType&)>;
 
 	/**
 	 @brief Iterate through all items.

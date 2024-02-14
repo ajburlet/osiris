@@ -13,7 +13,7 @@ public:
 	/**
 	 @brief Primitive supertype alias.
 	 */
-	using Super = typename OMathPrimitive<MType>;
+	//using Super = typename OMathPrimitive<MType>;
 
 	/**
 	 @brief The underlying GLM object type alias.

@@ -14,6 +14,7 @@
 #include "OsirisSDK/OCamera.h"
 #include "OsirisSDK/ORenderingEngine.h"
 #include "OsirisSDK/OOpenGL.h"
+#include "OsirisSDK/OGeometryManager.h"
 
 #include "OsirisSDK/OApplication.h"
 
@@ -47,6 +48,7 @@ struct OApplication::Impl {
 	uint32_t		targetFPS;
 	uint32_t		simulationStep_us;
 	ORenderingEngine*	engine				= nullptr;
+	OGeometryManager*	geometryManager			= nullptr;
 	OCamera			cam;
 	OTrashBin		trashBin;
 	EventRecipientMap	eventRecipients;
@@ -100,6 +102,9 @@ OApplication::OApplication(const char* aTitle, int aArgc, char **aArgv, Graphics
 		throw OException("Unknow graphics API.");
 	}
 	OExceptionPointerCheckCb(_impl->engine = new ORenderingEngine(graphics_api), error_cb);
+
+	/* resource managers */
+	OExceptionPointerCheck(_impl->geometryManager = new OGeometryManager);
 
 	/* setup callbacks */
 	glutDisplayFunc(displayCallback);
@@ -193,9 +198,14 @@ OTrashBin & OApplication::trashBin()
 	return _impl->trashBin;
 }
 
-ORenderingEngine * OApplication::renderingEngine()
+ORenderingEngine& OApplication::renderingEngine()
 {
-	return _impl->engine;
+	return *(_impl->engine);
+}
+
+OGeometryManager& OApplication::geometryManager()
+{
+	return *(_impl->geometryManager);
 }
 
 const OStats<float>& OApplication::fpsStats() const
@@ -264,7 +274,7 @@ void OApplication::loopIteration()
 	/* running the simulation */
 	cron.partial();
 	int stepCount = 0;
-	while ((cron.lastPartialTime() - _impl->simulationTimeIndex).toInt() > _impl->simulationStep_us) {
+	while ((cron.lastPartialTime() - _impl->simulationTimeIndex).toInt() > static_cast<int>(_impl->simulationStep_us)) {
 		_impl->simulationTimeIndex += _impl->simulationStep_us;
 		update(_impl->simulationTimeIndex, _impl->simulationStep_us);
 		stepCount++;

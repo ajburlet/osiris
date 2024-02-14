@@ -97,8 +97,8 @@ public:
 		friend class OSet;
 	};
 
-	using Iterator = BaseIterator<Super::Iterator, T*, const T&>;
-	using ConstIterator = BaseIterator<Super::ConstIterator, const T&, const T*>;
+	using Iterator = BaseIterator<typename Super::Iterator, T*, const T&>;
+	using ConstIterator = BaseIterator<typename Super::ConstIterator, const T&, const T*>;
 
 	/**
 	 @brief Class default constructor.

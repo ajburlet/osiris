@@ -1,6 +1,9 @@
 #pragma once
 
+#include <type_traits>
+
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/ONonCopiable.h"
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OMemoryManager.h"
 #include "OsirisSDK/OAbstractMemoryAllocator.hpp"
@@ -145,7 +148,7 @@ inline bool OBaseArrayIterator<Ptr_t, Ref_t>::operator!=(const OBaseArrayIterato
  This array implementation avoids all object copy operations. Insertions must be done via r-value references.
  */
 template <typename T, class Allocator=OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
-class OArrayNC : public OMemoryManagedObject<Allocator>
+class OArrayNC : public OMemoryManagedObject<Allocator>, public ONonCopiableT<OArrayNC<T,Allocator>>
 {
 public:
 	/**
@@ -154,11 +157,6 @@ public:
 	 @param aSizeToCapacity The array size is set to capacity.
 	 */
 	OArrayNC(uint32_t aCapacity=0, bool aSizeToCapacity=false);
-
-	/**
-	 @brief Deleted copy constructor.
-	 */
-	OArrayNC(const OArrayNC& aOther) = delete;
 
 	/**
 	 @brief Move constructor.
@@ -174,13 +172,7 @@ public:
 	 @brief Clones the array into another one.
 	 @param aTarget The destination array.
 	 */
-	void cloneTo(OArrayNC& aTarget) const;
-
-	/**
-	 @brief Clones the contents of the array to a newly allocated one.
-	 @return The newly allocated array.
-	 */
-	OArrayNC* clone() const;
+	void cloneTo(OArrayNC& aTarget) const override;
 
 	/**
 	 @brief Returns the array capacity.
@@ -350,16 +342,13 @@ template<typename T, class Allocator>
 inline void OArrayNC<T, Allocator>::cloneTo(OArrayNC & aTarget) const
 {
 	aTarget.changeCapacity(_size);
-	for (uint32_t i = 0; i < _size; i++) aTarget[i] = get(i);
-}
-
-template<typename T, class Allocator>
-inline OArrayNC<T, Allocator> * OArrayNC<T, Allocator>::clone() const
-{
-	OArrayNC *newClone = new OArrayNC();
-	OExceptionPointerCheck(newClone);
-	cloneTo(*newClone);
-	return newClone;
+	if constexpr(std::is_base_of<ONonCopiable,T>::value) {
+		for (uint32_t i=0; i<_size;i++) {
+			get(i).cloneTo(aTarget[i]);
+		}
+	} else {
+		for (uint32_t i = 0; i < _size; i++) aTarget[i] = get(i);
+	}
 }
 
 template<typename T, class Allocator>
@@ -578,7 +567,7 @@ public:
 	/**
 	 @brief Move assignment operator.
 	 */
-	OArray& operator=(OArray&& aOther) { return Super::operator=(std::move(aOther)); }
+	OArray& operator=(OArray&& aOther) { Super::operator=(std::move(aOther)); return *this; }
 	
 	/**
 	 @brief Changes the array item count and initializes any new items.

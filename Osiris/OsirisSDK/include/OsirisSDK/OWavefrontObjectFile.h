@@ -1,22 +1,23 @@
 #pragma once
 
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/OList.hpp"
 #include "OsirisSDK/OMeshFile.h"
+#include "OsirisSDK/OWavefrontParser.h"
 
 class OMeshGeometry;
 
 /**
- @brief Class that parses an Waveffront Object file and loads vertex information on a OMesh
-        class object.
+ @brief Mesh file handler for Wavefront object files. 
  */
-class OAPI OWavefrontObjectFile : public OMeshFile
+class OAPI OWavefrontObjectFile : public OMeshFile, protected OWavefrontParser
 {
 public:
 	/**
 	 @brief Class constructor.
 	 @param filename Object file name.
 	 */
-	OWavefrontObjectFile(const char* aFilename);
+	OWavefrontObjectFile(const OString& aFilename);
 
 	/**
 	 @brief Class copy constructor.
@@ -44,9 +45,7 @@ public:
 	OWavefrontObjectFile& operator=(OWavefrontObjectFile&& aOther);
 
 	// OMeshFile interface overrides
-	virtual void loadMesh(const char* aObjName, RawData& aRawData) override;
-
-	virtual const ObjectNameArray & objectArray() const override;
+	virtual void loadMesh(const OString& aObjName, RawData& aRawData) override;
 
 protected:
 	/**
@@ -55,20 +54,9 @@ protected:
 	void loadObjectList();
 
 	/**
-	 @brief Reads the next line into the class internal buffer
+	 @brief Loads materials.
 	 */
-	int readNextLine();
-	
-	/**
-	 @brief Reads the next word on the line.
-	 @return Returns the next word. If the end of line has been reached or the buffer overflowed, returns NULL.
-	 */
-	char* readNextWord();
-	
-	/**
-	 @brief Returns the current line of the file that is being processed.
-	 */
-	unsigned int currLine();
+	void loadMaterial(const OString& aFilename);
 
 private:
 	/**
@@ -81,7 +69,9 @@ private:
 	 */
 };
 
-inline OWavefrontObjectFile::OWavefrontObjectFile(OWavefrontObjectFile && aOther) : OMeshFile(std::move(aOther))
+inline OWavefrontObjectFile::OWavefrontObjectFile(OWavefrontObjectFile && aOther) : 
+	OMeshFile(std::move(aOther)),
+	OWavefrontParser(this)
 {
 	_impl = aOther._impl;
 	aOther._impl = nullptr;

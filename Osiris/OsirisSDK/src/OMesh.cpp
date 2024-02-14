@@ -18,6 +18,9 @@ struct OMesh::Impl {
 OMesh::OMesh() : ORenderable(ORenderable::Type::Mesh)
 {
 	OExceptionPointerCheck(_impl = new Impl);
+	auto renderComponents = new ORenderComponents;
+	OExceptionPointerCheck(renderComponents);
+	setRenderComponents(renderComponents);
 }
 
 OMesh::~OMesh()
@@ -27,6 +30,11 @@ OMesh::~OMesh()
 
 OMesh & OMesh::operator=(OMesh && aOther)
 {
+	if (renderComponents() != nullptr) {
+		delete renderComponents();
+		setRenderComponents(nullptr);
+	}
+
 	if (_impl) delete _impl;
 	_impl = aOther._impl;
 	aOther._impl = nullptr;
@@ -43,12 +51,12 @@ OMatrixStack* OMesh::matrixStack() const
 	return _impl->matrixStack;
 }
 
-void OMesh::setGeometry(ORefCountPtr<OMeshGeometry>& aGeometry)
+void OMesh::setGeometry(ORefCountPtr<OMeshGeometry>& aGeometry, uint32_t aIndex)
 {
 	if (!aGeometry.isNull()) {
 		renderComponents()->setRenderMode(aGeometry->drawMode());
-		renderComponents()->setVertexBuffer(aGeometry->vertexBuffer());
-		renderComponents()->setIndexBuffer(aGeometry->indexBuffer());
+		renderComponents()->setVertexBuffer(&aGeometry->vertexBuffer());
+		renderComponents()->setIndexBuffer(aGeometry->indexedDrawInfoArray()[aIndex].indexBuffer());
 	} else {
 		renderComponents()->setRenderMode(ORenderMode::Undefined);
 		renderComponents()->setVertexBuffer(nullptr);

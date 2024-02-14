@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/ONonCopiable.h"
 #include "OsirisSDK/OSystemMemoryAllocator.h"
 
 class ORenderComponents;
@@ -11,7 +12,7 @@ template <typename T, class Allocator> class OList;
 /**
  @brief Renderable object base class.
  */
-class OAPI ORenderable
+class OAPI ORenderable : public ONonCopiableT<ORenderable>
 {
 public:
 	/**
@@ -35,11 +36,6 @@ protected:
 	ORenderable(Type aType);
 
 	/**
-	 @brief Deleted copy constructor.
-	 */
-	ORenderable(const ORenderable& aOther) = delete;
-
-	/**
 	 @brief Move constructor.
 	 */
 	ORenderable(ORenderable&& aOther);
@@ -50,10 +46,6 @@ protected:
 	virtual ~ORenderable();
 	
 public:
-	/**
-	 @brief Deleted copy assignment operator.
-	 */
-	ORenderable& operator=(const ORenderable& aOther) = delete;
 
 	/**
 	 @brief Move assignment operator.

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 #ifdef WIN32
 #include <io.h>
 #else
@@ -8,42 +9,62 @@
 
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OArray.hpp"
+#include "OsirisSDK/OList.hpp"
 #include "OsirisSDK/OMap.hpp"
+#include "OsirisSDK/OString.hpp"
+#include "OsirisSDK/OMaterial.h"
+#include "OsirisSDK/OWavefrontMaterialFile.h"
 #include "OsirisSDK/OWavefrontObjectFile.h"
 
 #ifdef WIN32
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#ifndef OWAVEFRONTOBJECTFILE_LINEBUFFER
-#define OWAVEFRONTOBJECTFILE_LINEBUFFER		128
-#endif
-
-#ifndef OWAVEFRONTOBJECTFILE_WORDBUFFER
-#define OWAVEFRONTOBJECTFILE_WORDBUFFER		64
-#endif
-
-#ifndef OWAVEFRONTOBJECTFILE_ERRSTR_LENGTH
-#define OWAVEFRONTOBJECTFILE_ERRSTR_LENGTH	128
-#endif
+#define THROW_PARSE_EXCEPTION(aErrStr) throw OException(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", filename(), currLine()).cString());
+#define THROW_PARSE_EXCEPTION_FMT(aErrStr, ...) throw OException(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", __VA_ARGS__, filename(), currLine()).cString());
 
 using namespace std;
 
 struct OWavefrontObjectFile::Impl : public OMemoryManagedObject<OMeshFile::Allocator> {
 	Impl() = default;
 	Impl(const Impl& aOther);
-	~Impl();
+	~Impl() = default;
 
+	using MaterialMap = OWavefrontMaterialFile::MaterialMap;
+	
 	void copyFrom(const Impl& aOther);
 
-	OMap<std::string, uint32_t>	objIndex;
-	ObjectNameArray			objNames;
+	struct ObjectSection {
+		uint32_t offset = 0;
+		uint32_t triangleCount = 0;
+		OMaterial* material = nullptr;
+	};
+	using ObjectSectionList = OList<ObjectSection, OMeshFile::Allocator>;
 
-	uint32_t	currLine	= 0;
-	char*		wordptr		= nullptr;
-	bool		endOfLine	= false;
-	char lineBuffer[OWAVEFRONTOBJECTFILE_LINEBUFFER];
-	char wordBuffer[OWAVEFRONTOBJECTFILE_WORDBUFFER];
+	struct ObjectData : public ONonCopiableT<ObjectData> {
+		ObjectData (uint32_t aOffset=0) : offset(aOffset) {}
+		ObjectData(ObjectData&& aOther) : 
+			offset(aOther.offset), 
+			vertexCount(aOther.vertexCount),
+			sections(std::move(aOther.sections))
+		{}
+		~ObjectData () = default;
+
+		ObjectData& operator= (ObjectData&& aOther) {
+			offset = aOther.offset;
+			vertexCount = aOther.vertexCount;
+			sections = std::move(aOther.sections);
+			return *this;
+		}
+
+		uint32_t			offset;
+		uint32_t			vertexCount = 0;
+		ObjectSectionList	sections;
+	};
+	using ObjectIndex = OMap<OString, ObjectData, OMeshFile::Allocator>;
+
+	ObjectIndex	objIndex;
+	MaterialMap	matMap;
 };
 
 OWavefrontObjectFile::Impl::Impl(const Impl & aOther)
@@ -51,31 +72,22 @@ OWavefrontObjectFile::Impl::Impl(const Impl & aOther)
 	copyFrom(aOther);
 }
 
-OWavefrontObjectFile::Impl::~Impl()
-{
-	for (auto& name : objNames) {
-		if (name != nullptr) delete name;
-	}
-}
-
 void OWavefrontObjectFile::Impl::copyFrom(const Impl & aOther)
 {
 	aOther.objIndex.cloneTo(objIndex);
-	aOther.objNames.cloneTo(objNames);
-	currLine = 0;
-	wordptr = nullptr;
-	endOfLine = false;
 }
 
-OWavefrontObjectFile::OWavefrontObjectFile(const char* aFilename) : OMeshFile(aFilename)
+OWavefrontObjectFile::OWavefrontObjectFile(const OString& aFilename) : 
+	OMeshFile(aFilename), 
+	OWavefrontParser(this)
 {
 	OExceptionPointerCheck(_impl = new Impl);
-	memset(_impl->lineBuffer, 0, OWAVEFRONTOBJECTFILE_LINEBUFFER);
 	loadObjectList();
 }
 
 OWavefrontObjectFile::OWavefrontObjectFile(const OWavefrontObjectFile & aOther) :
 	OMeshFile(aOther),
+	OWavefrontParser(this),
 	_impl(aOther._impl)
 {
 }
@@ -101,20 +113,15 @@ OWavefrontObjectFile & OWavefrontObjectFile::operator=(OWavefrontObjectFile && a
 	return *this;
 }
 
-void OWavefrontObjectFile::loadMesh(const char* aObjName, RawData& aRawData)
+void OWavefrontObjectFile::loadMesh(const OString& aObjName, RawData& aRawData)
 {
-	char errString[OWAVEFRONTOBJECTFILE_ERRSTR_LENGTH];
-
 	// try and find the object 
 	auto it = _impl->objIndex.find(aObjName);
 	if (it == _impl->objIndex.end()) {
-		snprintf(errString, OWAVEFRONTOBJECTFILE_ERRSTR_LENGTH, 
-			 "Unable to locate object '%s' in file '%s'.", 
-			 aObjName, filename());
-		throw OException(errString);
+		THROW_PARSE_EXCEPTION_FMT("Unable to locate object '%s' in file '%s'", aObjName, filename());
 	}
 
-	seekTo(it.value());
+	seekTo(it.value().offset);
 	while (readNextLine() == 0) {
 		auto firstWord = readNextWord();
 		if (!firstWord || !strcmp(firstWord, "#")) {
@@ -127,71 +134,62 @@ void OWavefrontObjectFile::loadMesh(const char* aObjName, RawData& aRawData)
 		}
 		else if (!strcmp(firstWord, "v")) {
 			// reading vertices
-			aRawData.vertexArray().append(RawData::Vertex());
-			auto& newVertex = aRawData.vertexArray().tail();
+			RawData::Position newPos;
 			for (uint32_t i = 0; i < 4; i++) {
 				auto value = readNextWord();
 				if (value == nullptr) break;
 				switch (i) {
-				case 0: newVertex.x = atof(value);	break;
-				case 1:	newVertex.y = atof(value);	break;
-				case 2:	newVertex.z = atof(value);	break;
-				case 3:	newVertex.w = atof(value);	break;
+				case 0:	newPos.x = static_cast<float>(atof(value));	break;
+				case 1:	newPos.y = static_cast<float>(atof(value));	break;
+				case 2: newPos.z = static_cast<float>(atof(value));	break;
 				}
-				if (i + 1 > aRawData.vertexComponents()) {
-					aRawData.setVertexComponents(i + 1);
+				if (i + 1 > aRawData.positionComponents()) {
+					aRawData.setPositionComponents(i + 1);
 				}
 			}
+			aRawData.addPosition(newPos);
 		}
 		else if (!strcmp(firstWord, "vn")) {
 			// reading normals
-			aRawData.normalArray().append(RawData::Normal());
-			auto& newNormal = aRawData.normalArray().tail();
+			RawData::Normal newNormal;
 			for (uint32_t i = 0; i < 3; i++) {
 				auto value = readNextWord();
 				if (value == nullptr) {
-					snprintf(errString, OWAVEFRONTOBJECTFILE_ERRSTR_LENGTH, 
-						 "Normal vector must be three-dimensional, at %s:%d",
-						 filename(), currLine());
-					throw OException(errString);
+					THROW_PARSE_EXCEPTION("Normal vector must be three-dimensional");
 				}
-				switch (i) {
-				case 0:	newNormal.x = atof(value);	break;
-				case 1:	newNormal.y = atof(value);	break;
-				case 2:	newNormal.z = atof(value);	break;
+				switch(i) {
+				case 0:	newNormal.x = static_cast<float>(atof(value));	break;
+				case 1:	newNormal.y = static_cast<float>(atof(value));	break;
+				case 2:	newNormal.z = static_cast<float>(atof(value));	break;
 				}
 			}
+			aRawData.addNormal(newNormal);
 		}
 		else if (!strcmp(firstWord, "vt")) {
 			// reading textures
-			aRawData.texCoordArray().append(RawData::TexCoord());
-			auto& newTexCoord = aRawData.texCoordArray().tail();
+			RawData::TexCoord newTexCoord;
 			for (uint32_t i = 0; i < 3; i++) {
 				auto value = readNextWord();
 				if (value == nullptr) break;
-				switch (i) {
-				case 0:	newTexCoord.u = atof(value);	break;
-				case 1:	newTexCoord.v = atof(value);	break;
-				case 2:	newTexCoord.w = atof(value);	break;
+				switch(i) {
+				case 0:	newTexCoord.u = static_cast<float>(atof(value));	break;
+				case 1:	newTexCoord.v = static_cast<float>(atof(value));	break;
+				case 2:	newTexCoord.w = static_cast<float>(atof(value));	break;
 				}
 				if (i + 1 > aRawData.textureComponents()) {
 					aRawData.setTextureComponents(i + 1);
 				}
 			}
+			aRawData.addTexCoordinate(newTexCoord);
 		}
 		else if (!strcmp(firstWord, "f")) {
 			// reading indexes, finalizing the vertex array compositio, finalizing 
 			// the vertex array compositionn
 			uint32_t i = 0;
-			ODynArray<uint32_t> faceIndexes;
-			while (_impl->endOfLine == false) {
+			ODynArray<RawData::Index> faceIndexes;
+			while (endOfLine() == false) {
 				auto value = readNextWord();
-				if (value == nullptr) {
-					snprintf(errString, OWAVEFRONTOBJECTFILE_ERRSTR_LENGTH, 
-						 "Missing index values on %s:%d",
-						 filename(), currLine());
-					throw OException(errString);
-				}
+				if (value == nullptr) THROW_PARSE_EXCEPTION("Missing index values");
 
 				char* pVertex = value;
 				char* pTex = strchr(pVertex, '/');
@@ -204,138 +202,122 @@ void OWavefrontObjectFile::loadMesh(const char* aObjName, RawData& aRawData)
 					}
 				}
 
-				auto iVertex = static_cast<uint32_t>(atoi(pVertex))-1;
+				uint32_t iVertex = static_cast<uint32_t>(atoi(pVertex))-1;
+				uint32_t iTex = 0;
+				uint32_t iNormal = 0;
+				if (pTex != nullptr && *pTex != '\0') {
+					iTex = static_cast<uint32_t>(atoi(pTex))-1;
+				}
+				if (pNormal != nullptr && *pNormal != '\0') {
+					iNormal = static_cast<uint32_t>(atoi(pNormal))-1;
+				}
 				
-				if (aRawData.hasTexCoords()) {
-					uint32_t iTex;
-					if (pTex == nullptr || *pTex == '\0') {
-						// if it doesnt have a specific index, follows the same as the
-						// vertex index
-						iTex = iVertex;
-					} else {
-						iTex = static_cast<uint32_t>(atoi(pTex))-1;
-					}
-
-					if (iTex >= aRawData.texCoordArray().size()) {
-						snprintf(errString, OWAVEFRONTOBJECTFILE_ERRSTR_LENGTH, 
-							 "Invalid texture index %lu (%s:%d)",
-							 iTex, filename(), currLine());
-						throw OException(errString);
-					}
-					if (aRawData.vertexArray()[iVertex].texCoord != nullptr) {
-						aRawData.vertexArray().append(RawData::Vertex());
-						iVertex = aRawData.vertexArray().size() - 1;
-					}
-					aRawData.vertexArray()[iVertex].texCoord = &aRawData.texCoordArray()[iTex];
-				}
-
-				if (aRawData.hasNormals()) {
-					uint32_t iNormal;
-					if (pNormal == nullptr || *pNormal == '\0') {
-						// if it doesnt have a specific index, follows the same as the
-						// vertex index
-						iNormal = iVertex;
-					} else {
-						iNormal = static_cast<uint32_t>(atoi(pNormal))-1;
-					}
-
-					if (iNormal >= aRawData.normalArray().size()) {
-						snprintf(errString, OWAVEFRONTOBJECTFILE_ERRSTR_LENGTH, 
-							 "Invalid normal index %lu (%s:%d)",
-							 iNormal, filename(), currLine());
-						throw OException(errString);
-					}
-
-					if (aRawData.vertexArray()[iVertex].normal != nullptr) {
-						aRawData.vertexArray().append(RawData::Vertex());
-						iVertex = aRawData.vertexArray().size() - 1;
-					}
-					aRawData.vertexArray()[iVertex].normal = &aRawData.normalArray()[iNormal];
-				}
-				faceIndexes.append(iVertex);
+				faceIndexes.append({iVertex, iNormal, iTex});
 			}
-			if (faceIndexes.size() < 3) throw OException("Face must have at least 3 vertices.");
+			
+			if (faceIndexes.size() < 3) THROW_PARSE_EXCEPTION("Face must have at least 3 vertices.");
 			// transforming into triangles
 			for (uint32_t i = 1; i < faceIndexes.size() - 1; ++i) {
-				RawData::Index idx;
-				idx.i = faceIndexes[0];
-				idx.j = faceIndexes[i];
-				idx.k = faceIndexes[i + 1];
-				aRawData.indexArray().append(idx);
+				aRawData.addFace({faceIndexes[0], faceIndexes[i], faceIndexes[i+1]});
 			}
 		}
 	}
-}
-
-const OMeshFile::ObjectNameArray & OWavefrontObjectFile::objectArray() const
-{
-	return _impl->objNames;
 }
 
 void OWavefrontObjectFile::loadObjectList()
 {
-	const char *firstWord, *objectName;
-	char errString[OWAVEFRONTOBJECTFILE_ERRSTR_LENGTH];
-
 	_impl->objIndex.clear();
 
-	while (!eof() && readNextLine() == 0) {
-		firstWord = readNextWord();
-		if (strcmp(firstWord, "o") != 0) continue;
-
-		if ((objectName = readNextWord()) == NULL) {
-			snprintf(errString, OWAVEFRONTOBJECTFILE_ERRSTR_LENGTH, 
-				"Parse error at line %u.", currLine());
-			throw OException(errString);
+	auto remove_line_end = [](char* aStr) -> void {
+		char* p;
+		while ((p = strchr(aStr, '\r')) != nullptr || (p = strchr(aStr, '\n')) != nullptr) {
+			*p = '\0';
 		}
+	};
 
-		_impl->objIndex[objectName] = currentPosition();
-		_impl->objNames.append(strdup(objectName));
+	Impl::ObjectData* curr_object = nullptr;
+	Impl::ObjectSection* curr_section = nullptr;
+	while (!eof() && readNextLine() == 0) {
+		auto firstWord = readNextWord();
+		if (!strcmp(firstWord, "o") != 0) {
+			auto objectName = readNextWord();
+			if (objectName == NULL) THROW_PARSE_EXCEPTION("Expected object name");
+
+			remove_line_end(objectName);
+
+			char* p;
+			while ((p = strchr(objectName, '\r')) != nullptr || (p = strchr(objectName, '\n')) != nullptr) {
+				*p = '\0';
+			}
+
+			Impl::ObjectIndex::Iterator itPos;
+			_impl->objIndex.insert(objectName, Impl::ObjectData(currentPosition()), &itPos);
+			curr_object = &itPos.value();
+			curr_section = nullptr;
+		}
+		else if (!strcmp(firstWord, "mtllib")) {
+			auto matfile_name = readNextWord();
+			if (matfile_name == nullptr) THROW_PARSE_EXCEPTION("Expected material filename");
+			
+			remove_line_end(matfile_name);
+
+			auto matfile_path = OString(filename());
+			auto it = matfile_path.findLastOf("\\/");
+			if (it == matfile_path.end()) {
+				it = matfile_path.begin();
+			} else {
+				it++;
+			}
+			matfile_path.insert(matfile_name, it);
+
+			OWavefrontMaterialFile matfile(matfile_path.cString());
+			matfile.loadMaterials(_impl->matMap);
+		}
+		else if (!strcmp(firstWord, "v")) {
+			if (curr_object == nullptr) THROW_PARSE_EXCEPTION("Vertex defined with no active object");
+			
+			curr_object->vertexCount++;
+		}
+		else if (!strcmp(firstWord, "f")) {
+			if (curr_object == nullptr) THROW_PARSE_EXCEPTION("Face defined with no active object");
+			
+			if (curr_section == nullptr) {
+				curr_object->sections.pushBack(Impl::ObjectSection());
+				curr_section = &curr_object->sections.tail();
+			}
+
+			uint32_t faceSegments = 0;
+			while (readNextWord() != nullptr) ++faceSegments;
+			if (faceSegments < 3) THROW_PARSE_EXCEPTION("Face defined with less than three segments");
+			curr_section->triangleCount += faceSegments - 2;
+		}
+		else if (!strcmp(firstWord, "usemtl")) {
+			if (curr_object == nullptr) THROW_PARSE_EXCEPTION("Material assignment with no active object");
+
+			auto material_name = readNextWord();
+			if (material_name == nullptr) THROW_PARSE_EXCEPTION("Expected material name");
+			
+			auto it = curr_object->sections.find([material_name] (const Impl::ObjectSection& a_sec) {
+				return strcmp(a_sec.material->name(), material_name) == 0;
+			});
+
+			if (it != curr_object->sections.end()) {
+				curr_section = &(*it);				
+			} else {
+				auto matIt = _impl->matMap.find(material_name);
+				if (matIt == _impl->matMap.end()) THROW_PARSE_EXCEPTION_FMT("Material '%s' not found", material_name);
+
+				curr_object->sections.pushBack(Impl::ObjectSection());
+				curr_section = &curr_object->sections.tail();
+				curr_section->material = &matIt.value();
+			}
+		}
 	}
 }
 
-int OWavefrontObjectFile::readNextLine()
+void OWavefrontObjectFile::loadMaterial(const OString& aFilename)
 {
-	if (readLine(_impl->lineBuffer, OWAVEFRONTOBJECTFILE_LINEBUFFER) == 0) {
-		_impl->wordptr = NULL;
-		return 1;
-	}
-	_impl->wordptr = _impl->lineBuffer;
-	_impl->endOfLine = false;
-	_impl->currLine++;
-	return 0;
-}
-
-char * OWavefrontObjectFile::readNextWord()
-{
-	char *p = _impl->wordptr;
-
-	/* if end of line has been reached, point to the beginning of the line and return NULL. */
-	if (_impl->endOfLine) {
-		_impl->wordptr = _impl->lineBuffer;
-		_impl->endOfLine = false;
-		return NULL;
-	}
-
-	/* if no space is found or end of line chars, means end of line */
-	if ((p = strchr(_impl->wordptr, ' ')) == NULL && ((p = strchr(_impl->wordptr, '\n')) != NULL || 
-	    (p = strchr(_impl->wordptr, '\r')) != NULL || (p = strchr(_impl->wordptr, '\0')) != NULL) ) {
-		_impl->endOfLine = true;
-	}
-
-	*_impl->wordBuffer = '\0';
-
-#ifdef WIN32
-	strncpy_s(_impl->wordBuffer, (rsize_t)OWAVEFRONTOBJECTFILE_WORDBUFFER, _impl->wordptr, (size_t)(p-_impl->wordptr));
-#else
-	strncpy(_impl->wordBuffer, _impl->wordptr, (size_t)(p - _impl->wordptr));
-#endif
-	if (!_impl->endOfLine) _impl->wordptr = p + 1;
-	return _impl->wordBuffer;
-}
-
-unsigned int OWavefrontObjectFile::currLine()
-{
-	return _impl->currLine;
+	OWavefrontMaterialFile matFile(aFilename);
+	matFile.loadMaterials(_impl->matMap);
 }
 

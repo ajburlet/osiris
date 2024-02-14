@@ -16,16 +16,20 @@ class OAPI OException
 public:
 	/**
 	 @brief Class constructor.
-	 @param aFle Source file name.
+	 @param aFile Source file name.
 	 @param aLine Source file line number.
 	 @param aWhat Exception message.
 	*/
-	OException(const char* aFile, int aLine, const char* aWhat);
+	OException(const char* aFile, int aLine, const char* aWhat) :
+		_file(aFile),
+		_line(aLine),
+		_what(aWhat)
+	{}
 	
 	/**
 	 @brief Class destructor.
 	*/
-	virtual ~OException();
+	virtual ~OException() = default;
 
 	/**
 	 @brief Returns the exception message.

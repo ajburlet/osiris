@@ -12,6 +12,12 @@
 template <typename T = float, glm::qualifier Q = glm::defaultp>
 class OBaseQuaternion : public OMathPrimitive<glm::qua<T, Q>>
 {
+private:
+	using Super = OMathPrimitive<glm::qua<T, Q>>;
+
+public:
+	using Super::GLMType;
+
 public:
 	/**
 	 @brief Class constructor.

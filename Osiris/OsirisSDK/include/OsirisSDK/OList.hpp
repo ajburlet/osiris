@@ -1,8 +1,11 @@
 #pragma once
 
 #include <stdint.h>
+#include <functional>
+#include <type_traits>
 
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/ONonCopiable.h"
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OMemoryManagedObject.h"
 #include "OsirisSDK/OSystemMemoryAllocator.h"
@@ -139,7 +142,7 @@ inline Node_t* OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::node()
  @brief Linked list class.
  */
 template <typename T, class Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
-class OAPI OList : public OMemoryManagedObject<Allocator> 
+class OAPI OList : public OMemoryManagedObject<Allocator>, ONonCopiableT<OList<T,Allocator>> 
 {
 public:
 	/**
@@ -176,13 +179,7 @@ public:
 	 @brief Clones the list into another one.
 	 @param aTarget The destination list.
 	 */
-	void cloneTo(OList& aTarget) const;
-
-	/**
-	 @brief Clones the contents of the list to a newly allocated one.
-	 @return The newly allocated list.
-	 */
-	OList* clone() const;
+	void cloneTo(OList& aTarget) const override;
 
 	/**
 	 @brief Returns the list size.
@@ -203,8 +200,16 @@ public:
 	 @brief List node struct.
 	 */
 	struct Node : public OMemoryManagedObject<Allocator> {
-		Node(const T& aValue, Node* aPrev = nullptr, Node* aNext=nullptr) : 
-			_value(aValue), _prev(aPrev), _next(aNext) {}
+		Node(const T& aValue, Node* aPrev = nullptr, Node* aNext=nullptr)  
+		{
+			if constexpr(std::is_base_of<T, ONonCopiable>::value) {
+				OException("Attempted to copy a non-copiable item. Use move semantics instead.");
+			} else {
+				_value = aValue;
+			}
+			_prev = aPrev;
+			_next = aNext;
+		}
 		Node(T&& aValue, Node* aPrev=nullptr, Node* aNext=nullptr) : 
 			_value(std::move(aValue)), _prev(aPrev), _next(aNext) {}
 
@@ -358,6 +363,25 @@ public:
 	 */
 	const T& tail() const;
 
+	/**
+	 @brief Comparison function to be used in find operation.
+	 */
+	using FindComparisonFn = std::function<bool(const T&)>;
+
+	/**
+	 @brief Constant find operation.
+	 @param aFn Comparison function.
+	 @return A constant iterator to the element found, or end() if none is found.
+	 */
+	ConstIterator find (FindComparisonFn aFn) const;
+	
+	/**
+	 @brief Find operation.
+	 @param aFn Comparison function.
+	 @return A constant iterator to the element found, or end() if none is found.
+	 */
+	Iterator find (FindComparisonFn aFn);
+
 private:
 	void moveFrom(OList&& aOther);
 
@@ -367,7 +391,7 @@ private:
 };
 
 template<typename T, class Allocator>
-inline OList<T, Allocator>::OList(OList && aOther)
+inline OList<T, Allocator>::OList(OList<T,Allocator>&& aOther)
 {
 	moveFrom(std::move(aOther));
 }
@@ -379,10 +403,10 @@ inline OList<T, Allocator>::~OList()
 }
 
 template<typename T, class Allocator>
-inline OList<T, Allocator>& OList<T, Allocator>::operator=(OList && aOther)
+inline OList<T, Allocator>& OList<T, Allocator>::operator=(OList<T,Allocator>&& aOther)
 {
 	clear();
-	moveFrom(aOther);
+	moveFrom(std::move(aOther));
 	return *this;
 }
 
@@ -390,16 +414,14 @@ template<typename T, class Allocator>
 inline void OList<T, Allocator>::cloneTo(OList & aTarget) const
 {
 	aTarget.clear();
-	for (auto& item : *this) aTarget.pushBack(item);
-}
-
-template<typename T, class Allocator>
-inline OList<T, Allocator> * OList<T, Allocator>::clone() const
-{
-	OList* newClone = new OList;
-	OExceptionPointerCheck(newClone);
-	cloneTo(newClone);
-	return newClone;
+	if constexpr(std::is_base_of<ONonCopiable, T>::value) {
+		for (auto& item : *this) {
+			aTarget.pushBack(T());
+			item.cloneTo(aTarget.tail());
+		}
+	} else {
+		for (auto& item : *this) aTarget.pushBack(item);
+	}
 }
 
 template<typename T, class Allocator>
@@ -652,6 +674,32 @@ template<typename T, class Allocator>
 inline const T & OList<T, Allocator>::tail() const
 {
 	return _tail->_value;
+}
+
+template<typename T, class Allocator>
+inline typename OList<T, Allocator>::ConstIterator OList<T, Allocator>::find(OList<T, Allocator>::FindComparisonFn aFn) const
+{
+	auto res = end();
+	for (auto it=begin(); it != end(); ++it) {
+		if (aFn(*it)) {
+			res = it;
+			break;
+		}
+	}
+	return res;
+}
+
+template<typename T, class Allocator>
+inline typename OList<T, Allocator>::Iterator OList<T, Allocator>::find(OList<T, Allocator>::FindComparisonFn aFn)
+{
+	auto res = end();
+	for (auto it=begin(); it != end(); ++it) {
+		if (aFn(*it)) {
+			res = it;
+			break;
+		}
+	}
+	return res;
 }
 
 template<typename T, class Allocator>
