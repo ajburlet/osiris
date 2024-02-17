@@ -330,6 +330,18 @@ public:
 	OVector3& operator- (const OVector3& aOther);
 
 	/**
+	 @brief Multiplies the vector components by a factor.
+	 @param aFactor The factor the components are to be multiplied by. 
+	 */
+	OVector3& operator*(double aFactor);
+
+	/**
+	 @brief Divides the vector components by a factor.
+	 @param aFactor The factor the components are to be divided by. 
+	 */
+	OVector3& operator/ (double aFactor);
+
+	/**
 	 @copydoc OVector::getComponent(OVectorAxis)
 	 */
 	T& getComponent(OVectorAxis aComponent) override;
@@ -477,6 +489,20 @@ template<typename T, glm::qualifier Q>
 inline OVector3<T, Q>& OVector3<T, Q>::operator-(const OVector3& aOther)
 {
 	Super::operator-(aOther);
+	return *this;
+}
+
+template<typename T, glm::qualifier Q>
+inline OVector3<T, Q>& OVector3<T, Q>::operator*(double aFactor)
+{
+	Super::operator*(aFactor);
+	return *this;
+}
+
+template<typename T, glm::qualifier Q>
+inline OVector3<T, Q>& OVector3<T, Q>::operator/(double aFactor)
+{
+	Super::operator/(aFactor);
 	return *this;
 }
 

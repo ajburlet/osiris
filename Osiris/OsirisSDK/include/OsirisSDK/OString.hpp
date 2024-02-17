@@ -201,6 +201,20 @@ public:
 	void insert(const OBaseString<CharT,Allocator>& aString, Iterator aPosition);
 
 	/**
+	 @brief Erases part of the string.
+	 @param aPos Position of the first character to be erased.
+	 @param aLength Number of characters to be erased, if NoPosition all characters will be erased until the end of the string.
+	 */
+	void erase(uint32_t aPos, uint32_t aLength=NoPosition);
+
+	/**
+	 @brief Erases part of the string.
+	 @param aPos Iterator pointing to the first character to be erased. 
+	 @param aLength Number of characters to be erased, if NoPosition all characters will be erased until the end of the string.
+	 */
+	void erase(Iterator aPos, uint32_t aLength=NoPosition);
+
+	/**
 	 @brief Finds the first occurrence of a substring after a given position.
 	 @param aString The substring to be found.
 	 @param aPosition The position from which the search must start.
@@ -413,12 +427,12 @@ public:
 	 @return An iterator pointing to the position where one of the characters was found, or <code>end</code>,
 		 if nothing is found.
 	 */
-	Iterator findFirstOf(const CharT* aCharacters, uint32_t aStart=0);
+	Iterator findFirstOf(const CharT* aCharacters, uint32_t aStart=NoPosition);
 
 	/**
 	 @copydoc findFirstOf(const CharT, uint32_t)
 	 */
-	Iterator findFirstOf(const OBaseString<CharT, Allocator>& aCharacters, uint32_t aStart=0);
+	Iterator findFirstOf(const OBaseString<CharT, Allocator>& aCharacters, uint32_t aStart=NoPosition);
 
 	/**
 	 @copydoc findFirstOf(const CharT*, Iterator&)
@@ -433,12 +447,12 @@ public:
 	/**
 	 @copydoc findFirstOf(const CharT, uint32_t)
 	 */
-	ConstIterator findFirstOf(const CharT* aCharacters, uint32_t aStart=0) const;
+	ConstIterator findFirstOf(const CharT* aCharacters, uint32_t aStart=NoPosition) const;
 	
 	/**
 	 @copydoc findFirstOf(const CharT, uint32_t)
 	 */
-	ConstIterator findFirstOf(const OBaseString<CharT, Allocator>& aCharacters, uint32_t aStart=0) const;
+	ConstIterator findFirstOf(const OBaseString<CharT, Allocator>& aCharacters, uint32_t aStart=NoPosition) const;
 
 	/**
 	 @brief Finds last occurence of one of the characters.
@@ -461,12 +475,12 @@ public:
 	 @return An iterator pointing to the position where one of the characters was found, or <code>end</code>,
 		 if nothing is found.
 	 */
-	Iterator findLastOf(const CharT* aCharacters, uint32_t aStart=0);
+	Iterator findLastOf(const CharT* aCharacters, uint32_t aStart=NoPosition);
 
 	/**
 	 @copydoc findFirstOf(const CharT, uint32_t)
 	 */
-	Iterator findLastOf(const OBaseString<CharT, Allocator>& aCharacters, uint32_t aStart=0);
+	Iterator findLastOf(const OBaseString<CharT, Allocator>& aCharacters, uint32_t aStart=NoPosition);
 
 	/**
 	 @copydoc findLastOf(const CharT*, Iterator)
@@ -481,12 +495,12 @@ public:
 	/**
 	 @copydoc findLastOf(const CharT, uint32_t)
 	 */
-	ConstIterator findLastOf(const CharT* aCharacters, uint32_t aStart=0) const;
+	ConstIterator findLastOf(const CharT* aCharacters, uint32_t aStart=NoPosition) const;
 	
 	/**
 	 @copydoc findLastOf(const CharT, uint32_t)
 	 */
-	ConstIterator findLastOf(const OBaseString<CharT, Allocator>& aCharacters, uint32_t aStart=0) const;
+	ConstIterator findLastOf(const OBaseString<CharT, Allocator>& aCharacters, uint32_t aStart=NoPosition) const;
 
 	/**
 	 @brief Creates an OString object base on a format.
@@ -628,6 +642,18 @@ template<typename CharT, typename Allocator>
 inline void OBaseString<CharT, Allocator>::insert(const CharT * aString, Iterator aPosition)
 {
 	Super::insert(aPosition-begin(), aString);
+}
+
+template<typename CharT, typename Allocator>
+inline void OBaseString<CharT, Allocator>::erase(uint32_t aPos, uint32_t aLength)
+{
+	Super::erase(aPos, aLength);
+}
+
+template<typename CharT, typename Allocator>
+inline void OBaseString<CharT, Allocator>::erase(Iterator aPos, uint32_t aLength)
+{
+	Super::erase(aPos-begin(), aLength);
 }
 
 template <typename CharT, typename Allocator>

@@ -14,7 +14,7 @@
  @brief Base template iterator class for lists.
  */
 template <typename Node_t, typename Ptr_t, typename Ref_t, class Allocator >
-class OAPI OBaseListIterator : public OMemoryManagedObject<Allocator>
+class OBaseListIterator : public OMemoryManagedObject<Allocator>
 {
 public:
 	/**
@@ -142,7 +142,7 @@ inline Node_t* OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::node()
  @brief Linked list class.
  */
 template <typename T, class Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
-class OAPI OList : public OMemoryManagedObject<Allocator>, ONonCopiableT<OList<T,Allocator>> 
+class OList : public OMemoryManagedObject<Allocator>, ONonCopiableT<OList<T,Allocator>> 
 {
 public:
 	/**

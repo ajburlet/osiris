@@ -268,7 +268,8 @@ void OWavefrontObjectFile::loadObjectList()
 			} else {
 				it++;
 			}
-			matfile_path.insert(matfile_name, it);
+			matfile_path.erase(it);
+			matfile_path += matfile_name;
 
 			OWavefrontMaterialFile matfile(matfile_path.cString());
 			matfile.loadMaterials(_impl->matMap);

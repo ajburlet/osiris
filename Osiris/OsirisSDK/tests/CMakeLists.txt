@@ -19,5 +19,6 @@ set (TEST_FILES
 add_definitions(-DOSIRISTEST_BASEDIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_executable(OsirisTests ${TEST_FILES})
+set_property(TARGET OsirisSDK PROPERTY CXX_STANDARD 17)
 target_link_libraries(OsirisTests OsirisSDK gtest_main)
 add_test(OsirisTests OsirisTests)

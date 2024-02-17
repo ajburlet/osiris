@@ -1,5 +1,6 @@
-#include <OsirisSDK/OMesh.h>
+#include <OsirisSDK/OString.hpp>
 #include <OsirisSDK/OVector.hpp>
+#include <OsirisSDK/OMesh.h>
 #include <OsirisSDK/OQuaternion.hpp>
 #include <OsirisSDK/OWavefrontObjectFile.h>
 #include <OsirisSDK/OParameterList.h>
