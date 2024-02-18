@@ -17,6 +17,8 @@ set (BASE_SOURCES
 	${HDR_DIR}/ORefCountObject.hpp
 	${HDR_DIR}/OResourceManagerInterface.h
 	${HDR_DIR}/OSingleton.hpp
+	${SRC_DIR}/OStat.cpp
+	${HDR_DIR}/OStat.h
 	${HDR_DIR}/OString.hpp
     ${HDR_DIR}/OStringDefs.h
 	${SRC_DIR}/OTimeIndex.cpp
