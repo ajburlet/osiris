@@ -6,7 +6,7 @@
 ORenderable::ORenderable(Type aType) :
 	_type(aType)
 {
-	OExceptionPointerCheck(_uniforms = new UniformList);
+	OExPointerCheck(_uniforms = new UniformList);
 }
 
 ORenderable::~ORenderable()
@@ -16,7 +16,7 @@ ORenderable::~ORenderable()
 
 ORenderable & ORenderable::operator=(ORenderable && aOther)
 {
-	if (_uniformsLoaded) throw OException("Cannot overwrite, since the uniforms must be unloaded first.");
+	if (_uniformsLoaded) throw OEx("Cannot overwrite, since the uniforms must be unloaded first.");
 	if (_uniforms != nullptr) delete _uniforms;
 
 	_type = aOther._type;

@@ -14,7 +14,7 @@
 #define STAT stat
 #endif
 
-bool OStat::FileExists(const OString& aFilePath)
+bool OStat::FileExists(const OString& aFilePath) noexcept
 {
     struct STAT st;
     return (STAT(aFilePath.cString(), &st) == 0);
@@ -24,7 +24,7 @@ OStat OStat::Get(const OString& aFilePath)
 {
     struct STAT st;
     if (STAT(aFilePath.cString(), &st) != 0) {
-        throw OException(OString::Fmt("Unable to fetch file info: %s.", aFilePath.cString()));
+        throw OEx(OString::Fmt("Unable to fetch file info: %s.", aFilePath.cString()));
     }
 }
 

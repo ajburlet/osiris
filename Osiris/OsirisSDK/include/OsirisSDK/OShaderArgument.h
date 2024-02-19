@@ -224,7 +224,7 @@ template<typename T>
 inline OShaderUniformArgument * OShaderUniformArgument::create(OVarType aType, uint8_t aArrayLength, const T & aValue)
 {
 	auto var = new OShaderUniformArgument(aType, aArrayLength);
-	OExceptionPointerCheck(var);
+	OExPointerCheck(var);
 	var->castTo<T>() = aValue;
 	return var;
 }

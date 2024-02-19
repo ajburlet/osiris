@@ -59,7 +59,7 @@ void DemoSimulation::init()
 	auto torus_geometry = geometryManager().loadFromFile("TestTorus", "Cube", "TestTorus");
 
 	auto torus = new OMesh;
-	OExceptionPointerCheck(torus);
+	OExPointerCheck(torus);
 	torus->setGeometry(torus_geometry);
 	renderingEngine().load(torus);
 

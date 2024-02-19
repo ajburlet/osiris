@@ -78,7 +78,7 @@ void OText2D::Impl::updateGlyphPositions()
 OText2D::OText2D(OFont* aFont, uint8_t aFontSize, const OVector2I32& aPosition, const OVector4FL& aColor,
 		 const char* aContent) 
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 
 	_impl->font = aFont;
 	_impl->fontSize = aFontSize;

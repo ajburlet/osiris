@@ -10,7 +10,7 @@
 /**
  @brief Provides information about files or directories.
  */
-class OAPI OStat : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManager::Scope::Default>> {
+class OAPI OStat : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManagerScope::Default>> {
 public:
     /**
      @brief Checks if file exists.

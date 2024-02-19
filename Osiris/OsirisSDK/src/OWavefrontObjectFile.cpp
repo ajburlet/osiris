@@ -20,8 +20,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#define THROW_PARSE_EXCEPTION(aErrStr) throw OException(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", filename(), currLine()).cString());
-#define THROW_PARSE_EXCEPTION_FMT(aErrStr, ...) throw OException(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", __VA_ARGS__, filename(), currLine()).cString());
+#define THROW_PARSE_EXCEPTION(aErrStr) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", filename(), currLine()));
+#define THROW_PARSE_EXCEPTION_FMT(aErrStr, ...) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", __VA_ARGS__, filename(), currLine()));
 
 using namespace std;
 
@@ -81,7 +81,7 @@ OWavefrontObjectFile::OWavefrontObjectFile(const OString& aFilename) :
 	OMeshFile(aFilename), 
 	OWavefrontParser(this)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	loadObjectList();
 }
 

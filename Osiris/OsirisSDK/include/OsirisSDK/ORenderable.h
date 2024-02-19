@@ -18,7 +18,7 @@ public:
 	/**
 	 @brief Shader uniform argument list.
 	 */
-	using UniformList = OList<OShaderUniformArgument, OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>>;
+	using UniformList = OList<OShaderUniformArgument, OSystemMemoryAllocator<OMemoryManagerScope::Graphics>>;
 
 	/**
 	 @brief Renderable type.

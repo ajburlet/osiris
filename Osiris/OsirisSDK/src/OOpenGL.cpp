@@ -13,7 +13,7 @@ OOpenGL::OOpenGL() : OGraphicsAPI(Type::OpenGL)
 {
 	glload::LoadFunctions();
 	if (!glload::IsVersionGEQ(OSIRIS_GL_VERSION)) {
-		throw OException("Incorrect OpenGL version.");
+		throw OEx("Incorrect OpenGL version.");
 	}
 	
 	/* z-buffer -- TODO: this must be set on the rendering encoders somehow!! */
@@ -41,12 +41,12 @@ void OOpenGL::compile(OShaderProgram * aProgram)
 	};
 
 	auto programHandle = new GLuint(glCreateProgram());
-	OExceptionPointerCheck(programHandle);
+	OExPointerCheck(programHandle);
 	aProgram->setGpuHandle(programHandle);
 
 	aProgram->ForEachObject([&](OShaderObject* aObj) {
 		auto objHandle = new GLuint(glCreateShader(GetGlShaderType(aObj)));
-		OExceptionPointerCheck(objHandle);
+		OExPointerCheck(objHandle);
 		aObj->setGpuHandle(objHandle);
 
 		std::string source;
@@ -73,7 +73,7 @@ void OOpenGL::compile(OShaderProgram * aProgram)
 			delete[] infoLog;
 
 			std::string errMsg = "Shader compilation error: " + strInfoLog;
-			throw OException(errMsg.c_str());
+			throw OEx(errMsg.c_str());
 		}
 
 		glAttachShader(*programHandle, *objHandle);
@@ -95,6 +95,6 @@ void OOpenGL::compile(OShaderProgram * aProgram)
 		delete[] infoLog;
 
 		std::string errMsg = "Shader link error: " + strInfoLog;
-		throw OException(errMsg.c_str());
+		throw OEx(errMsg.c_str());
 	}
 }

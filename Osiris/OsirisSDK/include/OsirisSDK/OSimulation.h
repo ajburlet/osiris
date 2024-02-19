@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OApplication.h"
 

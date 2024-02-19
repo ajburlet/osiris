@@ -21,7 +21,7 @@ struct OMatrixStack::Impl {
 
 OMatrixStack::OMatrixStack()
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	push();
 }
 

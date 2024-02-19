@@ -2,7 +2,7 @@
 
 #include "OsirisTests.h"
 
-template <class T> using ODynArrayTest = ODynArray <T, OSystemMemoryAllocator<OMemoryManager::Scope::Default>, 8>;
+template <class T> using ODynArrayTest = ODynArray <T, OSystemMemoryAllocator<OMemoryManagerScope::Default>, 8>;
 
 OTEST_START(ODynArray, Init) {
 	ODynArrayTest<int> arr(10, 1, true);

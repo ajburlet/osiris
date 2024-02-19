@@ -18,13 +18,13 @@ struct OMaterial::Impl : public OMemoryManagedObject<Allocator> {
 
 OMaterial::OMaterial(const char* aName)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	_impl->name = aName;
 }
 
 OMaterial::OMaterial(const OMaterial & aOther)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	*_impl = *aOther._impl;
 }
 

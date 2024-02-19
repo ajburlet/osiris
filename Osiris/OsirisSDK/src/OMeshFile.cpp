@@ -41,7 +41,7 @@ uint32_t OMeshFile::RawData::Impl::getIndex(const Index& aIndex)
 	if (it == indexMap.end()) {
 		auto index = vertexDataArray.size();
 		if (aIndex.vert >= positionArray.size()) {
-			throw OException("Invalid position index.");
+			throw OEx("Invalid position index.");
 		}
 
 		Position* position = &(positionArray[aIndex.vert]);
@@ -49,7 +49,7 @@ uint32_t OMeshFile::RawData::Impl::getIndex(const Index& aIndex)
 		Normal* normal = nullptr;
 		if (normalArray.size() > 0) {
 			if (aIndex.norm >= normalArray.size()) {
-				throw OException("Invalid normal index.");
+				throw OEx("Invalid normal index.");
 			}
 			normal = &(normalArray[aIndex.norm]);
 		}
@@ -57,7 +57,7 @@ uint32_t OMeshFile::RawData::Impl::getIndex(const Index& aIndex)
 		TexCoord* texCoord = nullptr;
 		if (texCoordArray.size() > 0) {
 			if (aIndex.tex >= texCoordArray.size()) {
-				throw OException("Invalid tex coordinate.");
+				throw OEx("Invalid tex coordinate.");
 			}
 			texCoord = &(texCoordArray[aIndex.tex]);
 		}
@@ -74,7 +74,7 @@ uint32_t OMeshFile::RawData::Impl::getIndex(const Index& aIndex)
 // ****************************************************************************
 OMeshFile::RawData::RawData()
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 }
 
 OMeshFile::RawData::~RawData()
@@ -141,10 +141,10 @@ OMeshFile::RawData::Position& OMeshFile::RawData::position(uint32_t aIndex)
 OMeshFile::RawData::VertexData OMeshFile::RawData::vertexData(uint32_t aIndex) const
 {
 	if (hasIndices()) {
-		if (aIndex >= _impl->vertexDataArray.size()) throw OException("Indexed array member out of range.");
+		if (aIndex >= _impl->vertexDataArray.size()) throw OEx("Indexed array member out of range.");
 		return _impl->vertexDataArray[aIndex];
 	}
-	if (aIndex >= _impl->positionArray.size()) throw OException("Array member of out range.");
+	if (aIndex >= _impl->positionArray.size()) throw OEx("Array member of out range.");
 	return { &_impl->positionArray[aIndex],
 		 (hasNormals()) ? &_impl->normalArray[aIndex] : nullptr,
 		 (hasTexCoords()) ? &_impl->texCoordArray[aIndex] : nullptr};

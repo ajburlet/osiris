@@ -23,7 +23,7 @@ struct OShaderObject::Impl
 
 OShaderObject::OShaderObject(Type aType, const char * aSource)
 {
-	OExceptionPointerCheck(_impl = new Impl(aType, aSource));
+	OExPointerCheck(_impl = new Impl(aType, aSource));
 }
 
 OShaderObject::~OShaderObject()

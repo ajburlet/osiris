@@ -8,7 +8,7 @@
 /**
  @brief Maintains pointers to objects that must be removed at a given time.
  */
-class OAPI OTrashBin : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
+class OAPI OTrashBin : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManagerScope::Default>>
 {
 protected:
 	/**
@@ -98,6 +98,6 @@ template<class T>
 inline void OTrashBin::trash(T * aObject)
 {
 	auto newItem = new Item<T>(aObject);
-	OExceptionPointerCheck(newItem);
+	OExPointerCheck(newItem);
 	addToTrash(newItem);
 }

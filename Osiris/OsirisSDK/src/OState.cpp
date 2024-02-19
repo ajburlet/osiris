@@ -90,7 +90,7 @@ struct OState::Impl {
 
 OState::OState(OrientationReferencial ref) 
 {
-	OExceptionPointerCheck(_impl = new Impl(ref));
+	OExPointerCheck(_impl = new Impl(ref));
 }
 
 OState::~OState()
@@ -120,7 +120,7 @@ void OState::cloneTo(OState & aOther) const
 OState * OState::clone() const
 {
 	auto newClone = new OState;
-	OExceptionPointerCheck(newClone);
+	OExPointerCheck(newClone);
 	cloneTo(*newClone);
 	return newClone;
 }
@@ -138,7 +138,7 @@ OState::OrientationReferencial OState::orientationReferencial() const
 void OState::setMotionComponent(int degree, const OVector3F& component, OrientationReferencial orRef)
 {
 	if (degree == 0) {
-		if (orRef == Object) throw OException("Cannot set object position in it's frame of reference.");
+		if (orRef == Object) throw OEx("Cannot set object position in it's frame of reference.");
 		_impl->position = component;
 	} else {
 		checkDegree(degree-1);
@@ -149,7 +149,7 @@ void OState::setMotionComponent(int degree, const OVector3F& component, Orientat
 void OState::addMotionComponent(int degree, const OVector3F & component, OrientationReferencial orRef)
 {
 	if (degree == 0) {
-		if (orRef == Object) throw OException("Cannot set object position in it's frame of reference.");
+		if (orRef == Object) throw OEx("Cannot set object position in it's frame of reference.");
 		_impl->position += component;
 	} else {
 		checkDegree(degree-1);
@@ -160,10 +160,10 @@ void OState::addMotionComponent(int degree, const OVector3F & component, Orienta
 OVector3F OState::motionComponent(int degree, OrientationReferencial orRef) const
 {
 	if (degree == 0) {
-		if (orRef == Object) throw OException("Cannot retrieve object position in it's frame of reference.");
+		if (orRef == Object) throw OEx("Cannot retrieve object position in it's frame of reference.");
 		return _impl->position;
 	} else {
-		if ((size_t)degree > _impl->minConstraint.size()) throw OException("Invalid degree on motion component access.");
+		if ((size_t)degree > _impl->minConstraint.size()) throw OEx("Invalid degree on motion component access.");
 		return checkReferencial(_impl->components[degree-1], orRef);
 	}
 }
@@ -173,7 +173,7 @@ OVector3F& OState::motionComponent(int degree)
 	if (degree == 0) {
 		return _impl->position;
 	} else {
-		if ((size_t)degree > _impl->minConstraint.size()) throw OException("Invalid degree on motion component access.");
+		if ((size_t)degree > _impl->minConstraint.size()) throw OEx("Invalid degree on motion component access.");
 		return _impl->components[degree-1];
 	}
 }

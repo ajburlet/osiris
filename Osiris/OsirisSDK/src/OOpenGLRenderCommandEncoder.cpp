@@ -103,7 +103,7 @@ void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents * aRende
 		case OBlendFactor::Source1Alpha:		return GL_SRC1_ALPHA;
 		case OBlendFactor::OneMinusSource1Alpha:	return GL_ONE_MINUS_SRC1_ALPHA;
 		default:
-			throw OException("Invalid color blending setting.");
+			throw OEx("Invalid color blending setting.");
 		}
 		return GL_ONE;
 	};
@@ -196,7 +196,7 @@ void OOpenGLRenderCommandEncoder::setUniformArgument(OShaderUniformArgument * aU
 			break;
 
 		default:
-			throw OException("Unsupported shader uniform argument type.");
+			throw OEx("Unsupported shader uniform argument type.");
 		}
 	});
 }
@@ -243,7 +243,7 @@ void OOpenGLRenderCommandEncoder::draw(ORenderMode aRenderType)
 		encode(Bind(glDrawArrays, GL_TRIANGLE_STRIP, 0, _vertexBuffer->vertexCount()));
 		break;
 	default:
-		throw OException("Invalid draw mode.");
+		throw OEx("Invalid draw mode.");
 	}
 }
 

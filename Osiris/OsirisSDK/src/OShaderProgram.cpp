@@ -4,13 +4,13 @@
 #include "OsirisSDK/OShaderProgram.h"
 
 struct OShaderProgram::Impl {
-	using ShaderObjectList = OList<OShaderObject*, OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>>;
+	using ShaderObjectList = OList<OShaderObject*, OSystemMemoryAllocator<OMemoryManagerScope::Graphics>>;
 	ShaderObjectList objects;
 };
 
 OShaderProgram::OShaderProgram()
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 }
 
 OShaderProgram::~OShaderProgram()

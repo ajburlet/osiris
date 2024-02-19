@@ -10,7 +10,7 @@ class OMatrixStack;
 /**
  @brief Common interface for objects capable of rendering.
  */
-class OAPI OVisualObject : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>>
+class OAPI OVisualObject : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManagerScope::Graphics>>
 {
 public:
 	/**

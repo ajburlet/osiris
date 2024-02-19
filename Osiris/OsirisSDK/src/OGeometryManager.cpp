@@ -31,7 +31,7 @@ struct OGeometryManager::Impl {
 
 OGeometryManager::OGeometryManager()
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	for (uint32_t type = 0; type < Impl::VertexDescrTypeCount; type++) {
 		auto& descr = _impl->vertexDescr[type];
 		descr.addAttribute(OShaderVertexArgument(OVarType::Float3, 0));
@@ -67,7 +67,7 @@ OGeometryManager & OGeometryManager::operator=(OGeometryManager && aOther)
 void OGeometryManager::registerFile(FileType aFileType, const OString& aFilename, const OString& aFileID)
 {
 	if (_impl->meshFileMap.find(aFileID) != _impl->meshFileMap.end()) {
-		throw OException("File ID already exists");
+		throw OEx("File ID already exists");
 	}
 
 	OMeshFile* file = nullptr;
@@ -76,7 +76,7 @@ void OGeometryManager::registerFile(FileType aFileType, const OString& aFilename
 		file = new OWavefrontObjectFile(aFilename);
 		break;
 	}
-	OExceptionPointerCheck(file);
+	OExPointerCheck(file);
 
 	try {
 		_impl->meshFileMap.insert(aFileID, file);
@@ -90,7 +90,7 @@ void OGeometryManager::unRegisterFile(const OString& aFileID)
 {
 	auto it = _impl->meshFileMap.find(aFileID);
 	if (it == _impl->meshFileMap.end()) {
-		throw OException("File ID not found.");
+		throw OEx("File ID not found.");
 	}
 	trashBin().trash(it.value());
 	_impl->meshFileMap.remove(it);
@@ -102,13 +102,13 @@ OGeometryManager::ResourcePtr OGeometryManager::loadFromFile(const OString& aFil
 
 	auto file_it = _impl->meshFileMap.find(aFileID);
 	if (file_it == _impl->meshFileMap.end()) {
-		throw OException("File ID not found.");
+		throw OEx("File ID not found.");
 	}
 
 	file_it.value()->loadMesh(aObjectName, rawData);
 
 	if (rawData.positionComponents() != 3) {
-		throw OException("Only three position components are currently supported by the geometry manager.");
+		throw OEx("Only three position components are currently supported by the geometry manager.");
 	}
 
 	uint32_t type = static_cast<uint32_t>(Impl::VertexDescrType::PositionsOnly);
@@ -117,7 +117,7 @@ OGeometryManager::ResourcePtr OGeometryManager::loadFromFile(const OString& aFil
 	}
 	if (rawData.hasTexCoords()) {
 		if (rawData.textureComponents() != 2) {
-			throw OException("Only 2D textures are currently supported by the geometry manager");
+			throw OEx("Only 2D textures are currently supported by the geometry manager");
 		}
 		type |= static_cast<uint32_t>(Impl::VertexDescrType::Texture);
 	}

@@ -10,7 +10,7 @@ struct OGlyph::Impl {
 
 OGlyph::OGlyph() : ORenderable(Type::Glyph)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 }
 
 OGlyph::OGlyph(char aCharCode, uint16_t aAdvanceX, uint16_t aAdvanceY, const OVector2F& aPositionOffset,
@@ -20,7 +20,7 @@ OGlyph::OGlyph(char aCharCode, uint16_t aAdvanceX, uint16_t aAdvanceY, const OVe
 	_advanceX(aAdvanceX),
 	_advanceY(aAdvanceY)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	setPositionOffset(aPositionOffset);
 	setColor(aColor);
 	setScale(aScale);

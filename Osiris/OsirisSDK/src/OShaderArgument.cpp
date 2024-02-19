@@ -54,7 +54,7 @@ OShaderArgument::OShaderArgument(OVarType aType, uint8_t aDim) :
 		break;
 
 	default:
-		throw OException("Invalid vertex attribute type.");
+		throw OEx("Invalid vertex attribute type.");
 	}
 	
 	_size = unit_size * multiplier * _arrayLength;
@@ -64,12 +64,12 @@ OShaderArgument::OShaderArgument(OVarType aType, uint8_t aDim) :
 // ****************************************************************************
 // OShaderUniformArgument
 // ****************************************************************************
-using Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>;
+using Allocator = OSystemMemoryAllocator<OMemoryManagerScope::Graphics>;
 
 OShaderUniformArgument::OShaderUniformArgument(OVarType aType, uint8_t aDim) :
 	OShaderArgument(aType, aDim)
 {
-	OExceptionPointerCheck(_buffer = static_cast<uint8_t*>(Allocator().allocate(size())));
+	OExPointerCheck(_buffer = static_cast<uint8_t*>(Allocator().allocate(size())));
 }
 
 OShaderUniformArgument::OShaderUniformArgument(OShaderUniformArgument && aOther) :
@@ -87,6 +87,6 @@ OShaderUniformArgument::~OShaderUniformArgument()
 void OShaderUniformArgument::copyFrom(const void* aSrc, uint32_t aOffset, uint32_t aBytes)
 {
 	uint32_t len = (aBytes == 0) ? _size - aOffset : aBytes;
-	if (len > _size) throw new OException("Argument instance buffer overflow.");
+	if (len > _size) throw new OEx("Argument instance buffer overflow.");
 	memcpy(_buffer + aOffset, aSrc, len);
 }

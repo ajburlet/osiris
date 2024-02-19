@@ -783,7 +783,7 @@ inline typename OBaseString<CharT,Allocator>::ConstIterator OBaseString<CharT, A
 template<typename CharT, typename Allocator>
 inline OBaseString<CharT,Allocator> OBaseString<CharT, Allocator>::substring(size_t aPosition, size_t aLength) const
 {
-	if (aPosition > length()) throw OException("String position out of bounds.");
+	if (aPosition > length()) throw OEx("String position out of bounds.");
 	return OBaseString<CharT,Allocator>(Super::substr(aPosition, aLength));
 }
 
@@ -947,22 +947,22 @@ inline OBaseString<CharT,Allocator> OBaseString<CharT, Allocator>::Fmt(const cha
 	}
 	if (needed < 0) {
 		va_end(args);
-		throw OException("Error processing formatted string.");
+		throw OEx("Error processing formatted string.");
 	}
-	else if (needed > 0) {
+	else if (needed > OSTRING_TEMP_BUFFER_SIZE) {
 		auto* tmp_buffer = reinterpret_cast<CharT*>(malloc(sizeof(CharT)*(needed+1)));
-		OExceptionPointerCheckCb(tmp_buffer, [&args]() { va_end(args); });
+		OExPointerCheckCb(tmp_buffer, [&args]() { va_end(args); });
 		if (std::is_same<CharT, char>::value) {
-			needed = vsnprintf(reinterpret_cast<char*>(buffer), 
-					      OSTRING_TEMP_BUFFER_SIZE, aFmt, args);
+			needed = vsnprintf(reinterpret_cast<char*>(tmp_buffer), 
+					      needed, aFmt, args);
 		}
 		else if (std::is_same<CharT, wchar_t>::value) {
-			needed = vswprintf(reinterpret_cast<wchar_t*>(buffer),
-					      OSTRING_TEMP_BUFFER_SIZE, reinterpret_cast<const wchar_t*>(aFmt), args);
+			needed = vswprintf(reinterpret_cast<wchar_t*>(tmp_buffer),
+					      needed, reinterpret_cast<const wchar_t*>(aFmt), args);
 		}
 		if (needed < 0) {
 			va_end(args);
-			throw OException("Error processing formatted string.");
+			throw OEx("Error processing formatted string.");
 		}
 		ret = tmp_buffer;
 		free(tmp_buffer);

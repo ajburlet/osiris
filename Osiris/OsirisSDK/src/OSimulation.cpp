@@ -39,7 +39,7 @@ OSimulation::OSimulation(const char * aTitle, int aArgc, char ** aArgv, Graphics
 	OApplication(aTitle, aArgc, aArgv, aGraphicsAPI, aWindowPosX, aWindowPosY, aWindowWidth, aWindowHeight, 
 		     aTargetFPS, aSimulationStep_us)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 }
 
 OSimulation::~OSimulation()

@@ -25,7 +25,7 @@ GLenum getUsageType(OGPUObject* aObject)
 		usage = GL_DYNAMIC_DRAW;
 		break;
 	default:
-		throw OException("Invalid buffer usage value.");
+		throw OEx("Invalid buffer usage value.");
 	}
 
 	return usage;
@@ -40,7 +40,7 @@ GLenum wrapModeConvert(OTexture::WrapMode aWrapMode)
 	case OTexture::WrapMode::Repeat:		return GL_REPEAT;
 	case OTexture::WrapMode::MirroredClampedToEdge:	return GL_MIRROR_CLAMP_TO_EDGE;
 	default:
-		throw OException("Invalid texture wrap mode.");
+		throw OEx("Invalid texture wrap mode.");
 	}
 
 	return 0;
@@ -56,7 +56,7 @@ GLenum filterConvert(OTexture::FilterType aFilterType)
 	case OTexture::FilterType::LinearMipmapNearest:		return GL_LINEAR_MIPMAP_NEAREST;
 	case OTexture::FilterType::LinearMipmapLinear:		return GL_LINEAR_MIPMAP_LINEAR;
 	default:
-		throw OException("Invalid texture filter type.");
+		throw OEx("Invalid texture filter type.");
 	}
 
 	return 0;
@@ -82,7 +82,7 @@ GLenum pixelFormatConvert(OTexture::PixelFormat aPixelFormat, bool& aIsCompresse
 	case OTexture::PixelFormat::CompressedRGB:	aIsCompressed = true;	return GL_COMPRESSED_RGB;
 	case OTexture::PixelFormat::CompressedRGBA:	aIsCompressed = true;	return GL_COMPRESSED_RGBA;
 	default:
-		throw OException("Unsupported pixel format.");
+		throw OEx("Unsupported pixel format.");
 	}
 	return 0;
 }
@@ -117,7 +117,7 @@ GLenum pixelDataTypeConvert(OTexture::PixelDataType aDataType)
 	case OTexture::PixelDataType::UnsignedInteger1010102:		return GL_UNSIGNED_INT_10_10_10_2;
 	case OTexture::PixelDataType::UnsignedInteger2101010Reversed:	return GL_UNSIGNED_INT_2_10_10_10_REV;
 	default:
-		throw OException("Unsupported pixel data type.");
+		throw OEx("Unsupported pixel data type.");
 	}
 
 	return 0;
@@ -200,7 +200,7 @@ void OOpenGLResourceCommandEncoder::load(ORenderComponents* aRenderComponents)
 			type = GL_UNSIGNED_INT;
 			break;
 		default:
-			throw OException("Invalid variable type.");
+			throw OEx("Invalid variable type.");
 		}
 		encode(Bind(glEnableVertexAttribArray, attr.index()));
 		encode(Bind(glVertexAttribPointer, attr.index(), size, type, GL_FALSE, 

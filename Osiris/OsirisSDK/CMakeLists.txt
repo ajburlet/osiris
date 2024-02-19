@@ -150,6 +150,7 @@ set (MEMORY_SOURCES
 	${HDR_DIR}/OMemoryManagedObject.h
 	${SRC_DIR}/OMemoryManager.cpp
 	${HDR_DIR}/OMemoryManager.h
+	${HDR_DIR}/OMemoryManagerScope.h
 	${SRC_DIR}/OMemoryPool.cpp
 	${HDR_DIR}/OMemoryPool.h
 	${HDR_DIR}/OMemoryPoolObject.hpp

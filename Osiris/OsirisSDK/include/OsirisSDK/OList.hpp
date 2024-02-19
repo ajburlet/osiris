@@ -141,7 +141,7 @@ inline Node_t* OBaseListIterator<Node_t, Ptr_t, Ref_t, Allocator>::node()
 /**
  @brief Linked list class.
  */
-template <typename T, class Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
+template <typename T, class Allocator = OSystemMemoryAllocator<OMemoryManagerScope::Default>>
 class OList : public OMemoryManagedObject<Allocator>, ONonCopiableT<OList<T,Allocator>> 
 {
 public:
@@ -203,7 +203,7 @@ public:
 		Node(const T& aValue, Node* aPrev = nullptr, Node* aNext=nullptr)  
 		{
 			if constexpr(std::is_base_of<T, ONonCopiable>::value) {
-				OException("Attempted to copy a non-copiable item. Use move semantics instead.");
+				OEx("Attempted to copy a non-copiable item. Use move semantics instead.");
 			} else {
 				_value = aValue;
 			}
@@ -478,7 +478,7 @@ template<typename T, class Allocator>
 inline void OList<T, Allocator>::pushFront(const T & aItem)
 {
 	auto node = new Node{ aItem, nullptr, _head };
-	OExceptionPointerCheck(node);
+	OExPointerCheck(node);
 	pushFront(node);
 }
 
@@ -486,7 +486,7 @@ template<typename T, class Allocator>
 inline void OList<T, Allocator>::pushFront(T && aItem)
 {
 	auto node = new Node{ std::move(aItem), nullptr, _head };
-	OExceptionPointerCheck(node);
+	OExPointerCheck(node);
 	pushFront(node);
 }
 
@@ -503,7 +503,7 @@ template<typename T, class Allocator>
 inline void OList<T, Allocator>::pushBack(const T & aItem)
 {
 	auto node = new Node{ aItem, _tail, nullptr };
-	OExceptionPointerCheck(node);
+	OExPointerCheck(node);
 	pushBack(node);
 }
 
@@ -511,7 +511,7 @@ template<typename T, class Allocator>
 inline void OList<T, Allocator>::pushBack(T && aItem)
 {
 	auto node = new Node{ std::move(aItem), _tail, nullptr };
-	OExceptionPointerCheck(node);
+	OExPointerCheck(node);
 	pushBack(node);
 }
 
@@ -531,7 +531,7 @@ template<typename T, class Allocator>
 inline void OList<T, Allocator>::insertAfter(const T & aItem, Iterator & aPositionIt)
 {
 	auto node = new Node{ aItem };
-	OExceptionPointerCheck(node);
+	OExPointerCheck(node);
 	insertAfter(node, aPositionIt);
 }
 
@@ -539,7 +539,7 @@ template<typename T, class Allocator>
 inline void OList<T, Allocator>::insertAfter(T && aItem, Iterator & aPositionIt)
 {
 	auto node = new Node{ std::move(aItem) };
-	OExceptionPointerCheck(node);
+	OExPointerCheck(node);
 	insertAfter(node, aPositionIt);
 }
 
@@ -562,7 +562,7 @@ template<typename T, class Allocator>
 inline void OList<T, Allocator>::insertBefore(const T & aItem, Iterator & aPositionIt)
 {
 	auto node = new Node{ aItem, aPositionIt.node()->_prev, aPositionIt.node() };
-	OExceptionPointerCheck(node);
+	OExPointerCheck(node);
 	insertBefore(node, aPositionIt);
 }
 
@@ -570,7 +570,7 @@ template<typename T, class Allocator>
 inline void OList<T, Allocator>::insertBefore(T && aItem, Iterator & aPositionIt)
 {
 	auto node = new Node{ std::move(aItem) };
-	OExceptionPointerCheck(node);
+	OExPointerCheck(node);
 	insertBefore(node, aPositionIt);
 }
 
@@ -595,7 +595,7 @@ inline void OList<T, Allocator>::insertBefore(Node * aNode, Iterator & aPosition
 template<typename T, class Allocator>
 inline void OList<T, Allocator>::popFront()
 {
-	if (_head == nullptr) throw OException("Removing item from an empty list.");
+	if (_head == nullptr) throw OEx("Removing item from an empty list.");
 	auto node = _head;
 	_head = _head->_next;
 	if (_head != nullptr) _head->_prev = nullptr;
@@ -607,7 +607,7 @@ inline void OList<T, Allocator>::popFront()
 template<typename T, class Allocator>
 inline void OList<T, Allocator>::popBack()
 {
-	if (_tail == nullptr) throw OException("Removing item from an empty list.");
+	if (_tail == nullptr) throw OEx("Removing item from an empty list.");
 	auto node = _tail;
 	if (_head == _tail) {
 		_head = nullptr;

@@ -9,14 +9,14 @@ struct Point {
 struct OIndexBuffer::Impl 
 {
 	Impl(uint32_t aVertexCount) : array(aVertexCount, {0,0,0}) {}
-	OArray<Point,OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>> array;
+	OArray<Point,OSystemMemoryAllocator<OMemoryManagerScope::Graphics>> array;
 };
 
 OIndexBuffer::OIndexBuffer(uint32_t aVertexCount)
 {
 	_impl = new Impl(aVertexCount);
 	if (!_impl) {
-		throw OException("Unable to allocate memory for internal implementation.");
+		throw OEx("Unable to allocate memory for internal implementation.");
 	}
 }
 

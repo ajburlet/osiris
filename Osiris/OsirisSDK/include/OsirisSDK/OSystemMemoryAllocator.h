@@ -18,7 +18,7 @@ public:
 /**
  @brief Allocator that uses system <code>malloc()</code> and <code>free()</code> calls. 
  */
-template <OMemoryManager::Scope Scope = OMemoryManager::Scope::Default>
+template <OMemoryManagerScope Scope = OMemoryManagerScope::Default>
 class OSystemMemoryAllocator : public OAbstractMemoryAllocator<Scope>
 {
 public:
@@ -49,19 +49,19 @@ protected:
 	virtual void* impl_reallocate(void* aPtr, size_t aCurrSize, size_t aNewSize) override;
 };
 
-template<OMemoryManager::Scope Scope>
+template<OMemoryManagerScope Scope>
 inline void* OSystemMemoryAllocator<Scope>::impl_allocate(size_t aSize, const void *)
 {
 	return OSystemMemoryAllocatorImpl::alloc(static_cast<uint32_t>(aSize));
 }
 
-template<OMemoryManager::Scope Scope>
+template<OMemoryManagerScope Scope>
 inline void OSystemMemoryAllocator<Scope>::impl_deallocate(void* aPtr, size_t aBytes)
 {
 	OSystemMemoryAllocatorImpl::dealloc(aPtr, aBytes);
 }
 
-template<OMemoryManager::Scope Scope>
+template<OMemoryManagerScope Scope>
 inline void* OSystemMemoryAllocator<Scope>::impl_reallocate(void* aPtr, size_t aCurrSize, size_t aNewSize)
 {
 	return OSystemMemoryAllocatorImpl::realloc(aPtr, static_cast<uint32_t>(aNewSize));

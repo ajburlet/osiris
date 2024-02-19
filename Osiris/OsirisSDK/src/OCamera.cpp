@@ -40,7 +40,7 @@ struct OCamera::Impl {
 
 OCamera::OCamera(float aFieldOfViewDeg, float aAspectRatio, float aZNear, float aZFar)
 {
-	OExceptionPointerCheck(_impl = new Impl(aFieldOfViewDeg, aAspectRatio, aZNear, aZFar));
+	OExPointerCheck(_impl = new Impl(aFieldOfViewDeg, aAspectRatio, aZNear, aZFar));
 	setPosition(DefaultPosition);
 	setOrientation(DefaultOrientation);
 }
@@ -48,7 +48,7 @@ OCamera::OCamera(float aFieldOfViewDeg, float aAspectRatio, float aZNear, float 
 OCamera::OCamera(const OVector3F & aPosition, const OVector3F & aOrientation, float aFieldOfViewDeg,
 		 float aAspectRatio, float aZNear, float aZFar) 
 {
-	OExceptionPointerCheck(_impl = new Impl(aFieldOfViewDeg, aAspectRatio, aZNear, aZFar));
+	OExPointerCheck(_impl = new Impl(aFieldOfViewDeg, aAspectRatio, aZNear, aZFar));
 	setPosition(aPosition);
 	setOrientation(aOrientation);
 }

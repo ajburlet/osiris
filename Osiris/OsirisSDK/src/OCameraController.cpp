@@ -210,7 +210,7 @@ OCameraController::CameraMoveDir OCameraController::inverseDir(CameraMoveDir dir
 	case MoveForward:	return MoveBack;
 	case MoveBack:		return MoveForward;
 	}
-	throw OException("Invalid camera movement direction.");
+	throw OEx("Invalid camera movement direction.");
 }
 
 OVectorAxis OCameraController::directionToAxis(CameraMoveDir dir, float * sign)

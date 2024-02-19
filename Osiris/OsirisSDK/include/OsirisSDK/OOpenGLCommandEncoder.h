@@ -59,7 +59,7 @@ inline OOpenGLCommandEncoder::OOpenGLCommandEncoder(OOpenGLCommandBuffer* aComma
 
 inline void OOpenGLCommandEncoder::encode(OOpenGLCommandBuffer::CommandItem aCommandItem)
 {
-	if (!aCommandItem) throw OException("Added non-callable command.");
+	if (!aCommandItem) throw OEx("Added non-callable command.");
 	_commandBuffer->addCommandItem(aCommandItem);
 }
 
@@ -71,7 +71,7 @@ inline uint32_t& OOpenGLCommandEncoder::handle(OGPUObject* aGPUObject)
 inline uint32_t & OOpenGLCommandEncoder::createHandle(OGPUObject * aGPUObject)
 {
 	uint32_t *newHandle = nullptr;
-	OExceptionPointerCheck(newHandle = new uint32_t);
+	OExPointerCheck(newHandle = new uint32_t);
 	aGPUObject->setGpuHandle(newHandle);
 	return *newHandle;
 }

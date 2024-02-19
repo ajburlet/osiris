@@ -11,5 +11,5 @@ public:
 	/**
 	 @brief Default graphics allocator.
 	 */
-	using Default = OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>;
+	using Default = OSystemMemoryAllocator<OMemoryManagerScope::Graphics>;
 };

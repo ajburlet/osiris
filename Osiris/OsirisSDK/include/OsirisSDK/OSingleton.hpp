@@ -62,7 +62,7 @@ inline void OSingleton<T>::CheckInstance()
 {
 	if (!_instance) {
 		if ((_instance = new T()) == nullptr) {
-			throw OException("Unable to create singleton object.");
+			throw OEx("Unable to create singleton object.");
 		}
 	}
 }

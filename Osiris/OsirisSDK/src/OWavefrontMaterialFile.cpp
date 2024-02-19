@@ -7,8 +7,8 @@
 #include "OsirisSDK/OMaterial.h"
 #include "OsirisSDK/OWavefrontMaterialFile.h"
 
-#define THROW_PARSE_EXCEPTION(aErrStr) throw OException(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", filename(), currLine()).cString());
-#define THROW_PARSE_EXCEPTION_FMT(aErrStr, ...) throw OException(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", __VA_ARGS__, filename(), currLine()).cString());
+#define THROW_PARSE_EXCEPTION(aErrStr) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", filename(), currLine()));
+#define THROW_PARSE_EXCEPTION_FMT(aErrStr, ...) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", __VA_ARGS__, filename(), currLine()));
 
 void OWavefrontMaterialFile::loadMaterials(MaterialMap & aMaterialList)
 {

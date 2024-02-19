@@ -45,7 +45,7 @@ OVertexBufferDescriptor* OFont::Impl::vertexBufferDescriptor = nullptr;
 
 OFont::OFont(ORenderingEngine* aRenderingEngine, const char* aFontName)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	_impl->cache.changeCapacity(Impl::maxFontSize - Impl::minFontSize);
 	for (uint32_t i = 0; i < _impl->cache.capacity(); i++) _impl->cache[i] = nullptr;
 	_impl->renderingEngine = aRenderingEngine;
@@ -68,7 +68,7 @@ OFont::OFont(ORenderingEngine* aRenderingEngine, const char* aFontName)
 #endif
 	
 	if (FT_New_Face(Impl::library, _impl->fontName.c_str(), 0, &_impl->face) != 0) {
-		throw OException("Unable to open font.");
+		throw OEx("Unable to open font.");
 	}
 }
 
@@ -107,14 +107,14 @@ void OFont::cleanCache()
 
 void OFont::loadGlyph(OGlyph& aGlyph, char aCharCode, uint8_t aSize, const OVector4FL& aColor)
 {
-	if (aSize < Impl::minFontSize || aSize > Impl::maxFontSize) throw OException("Invalid font size.");
+	if (aSize < Impl::minFontSize || aSize > Impl::maxFontSize) throw OEx("Invalid font size.");
 
 	uint8_t fontIdx = aSize - Impl::minFontSize;
 
 	if (_impl->cache[fontIdx] == nullptr) loadToCache(aSize);
 
 	auto cacheEntry = _impl->cache[fontIdx]->get(aCharCode);
-	if (cacheEntry.renderComponents == nullptr) throw OException("No corresponding font glyph for char code.");
+	if (cacheEntry.renderComponents == nullptr) throw OEx("No corresponding font glyph for char code.");
 
 	aGlyph.setRenderComponents(cacheEntry.renderComponents);
 	aGlyph.setCharCode(aCharCode);
@@ -131,12 +131,12 @@ int OFont::lineSpacing() const
 
 void OFont::loadToCache(uint8_t aSize)
 {
-	if (FT_Set_Pixel_Sizes(_impl->face, 0, aSize) != 0) throw OException("Unable to set font size.");
+	if (FT_Set_Pixel_Sizes(_impl->face, 0, aSize) != 0) throw OEx("Unable to set font size.");
 
 	auto& sizeCache = _impl->cache[aSize-Impl::minFontSize];
-	if (sizeCache != nullptr) throw OException("Font size already loaded.");
+	if (sizeCache != nullptr) throw OEx("Font size already loaded.");
 
-	OExceptionPointerCheck(sizeCache = new Impl::GlyphArray(UINT8_MAX+1));
+	OExPointerCheck(sizeCache = new Impl::GlyphArray(UINT8_MAX+1));
 	ORenderComponents* renderComponents = nullptr;
 	OVertexBuffer* vertexBuffer = nullptr;
 	OTexture* texture = nullptr;
@@ -146,7 +146,7 @@ void OFont::loadToCache(uint8_t aSize)
 			if (FT_Load_Char(_impl->face, charCode, FT_LOAD_RENDER) != 0) continue;
 
 			auto& cacheEntry = (*sizeCache)[charCode];
-			OExceptionPointerCheck(cacheEntry.renderComponents = new ORenderComponents);
+			OExPointerCheck(cacheEntry.renderComponents = new ORenderComponents);
 			cacheEntry.renderComponents->setRenderMode(ORenderMode::TriangleStrip);
 			cacheEntry.renderComponents->setColorBlending(true, OBlendFactor::SourceAlpha,
 								      OBlendFactor::OneMinusSourceAlpha);
@@ -155,7 +155,7 @@ void OFont::loadToCache(uint8_t aSize)
 			cacheEntry.advanceX = static_cast<uint16_t>(_impl->face->glyph->advance.x);
 			cacheEntry.advanceY = static_cast<uint16_t>(_impl->face->glyph->advance.y);
 
-			OExceptionPointerCheck(vertexBuffer = new OVertexBuffer(*Impl::vertexBufferDescriptor, 4));
+			OExPointerCheck(vertexBuffer = new OVertexBuffer(*Impl::vertexBufferDescriptor, 4));
 			float x2 = (float)_impl->face->glyph->bitmap_left;
 			float y2 = (float)-_impl->face->glyph->bitmap_top;
 			float w = (float)_impl->face->glyph->bitmap.width;
@@ -171,7 +171,7 @@ void OFont::loadToCache(uint8_t aSize)
 			vertexBuffer->setAttributeValue(0, 2, data[2]);
 			vertexBuffer->setAttributeValue(0, 3, data[3]);
 
-			OExceptionPointerCheck(texture = new OTexture);
+			OExPointerCheck(texture = new OTexture);
 			texture->setMipmapLevelCount(1);
 			texture->setMinFilter(OTexture::FilterType::Linear);
 			texture->setMagFilter(OTexture::FilterType::Linear);
@@ -201,10 +201,10 @@ void OFont::loadToCache(uint8_t aSize)
 void OFont::init()
 {
 	if (Impl::library == nullptr && FT_Init_FreeType(&Impl::library) != 0) {
-		throw OException("Failed to load FreeType library.");
+		throw OEx("Failed to load FreeType library.");
 	}
 	if (Impl::vertexBufferDescriptor == nullptr) {
-		OExceptionPointerCheck(Impl::vertexBufferDescriptor = new OVertexBufferDescriptor);
+		OExPointerCheck(Impl::vertexBufferDescriptor = new OVertexBufferDescriptor);
 		Impl::vertexBufferDescriptor->addAttribute(OShaderVertexArgument(OVarType::Float4, 0));
 	}
 }

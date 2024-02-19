@@ -12,7 +12,7 @@
 // ----------------------------------------------------------------------------
 // Internal implementation
 // ----------------------------------------------------------------------------
-struct OFile::Impl : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManager::Scope::Default>> 
+struct OFile::Impl : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManagerScope::Default>> 
 {
 	void copyFrom(const Impl& aOther);
 
@@ -39,7 +39,7 @@ void OFile::Impl::copyFrom(const OFile::Impl& aOther)
 #else
 		if (newfd < 0 || (fp = fdopen(newfd, "r")) == nullptr) {
 #endif
-			throw OException("Unable to duplicate file descriptor.");
+			throw OEx("Unable to duplicate file descriptor.");
 		}
 	}
 	filename = aOther.filename;
@@ -51,7 +51,7 @@ void OFile::Impl::copyFrom(const OFile::Impl& aOther)
 // ----------------------------------------------------------------------------
 OFile::OFile(const OString& aFilename, Mode aMode)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	_impl->filename = aFilename;
 	_impl->mode = aMode;
 
@@ -60,7 +60,7 @@ OFile::OFile(const OString& aFilename, Mode aMode)
 
 OFile::OFile(const OFile & aOther)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	_impl->copyFrom(*aOther._impl);
 }
 
@@ -112,7 +112,7 @@ void OFile::open()
 #endif
 	if (_impl->fp == nullptr) {
 		auto errStr = OString::Fmt("Error opening file: %s", _impl->filename.cString());
-		throw OException(errStr.cString());
+		throw OEx(errStr.cString());
 	}
 }
 
@@ -146,7 +146,7 @@ uint32_t OFile::read(char * aBuffer, uint32_t aBufferSize)
 	case Mode::ReadAppend:
 		break;
 	default:
-		throw OException("Wrong file mode.");
+		throw OEx("Wrong file mode.");
 	}
 	return fread(aBuffer, aBufferSize, 1, _impl->fp);
 }
@@ -158,7 +158,7 @@ uint32_t OFile::write(char * aBuffer, uint32_t aSize)
 	case Mode::Append:
 		break;
 	default:
-		throw OException("Wrong file mode.");
+		throw OEx("Wrong file mode.");
 	}
 	return fwrite(aBuffer, aSize, 1, _impl->fp);
 }
@@ -171,10 +171,10 @@ uint32_t OFile::readLine(char * aBuffer, uint32_t aBufferSize)
 	case Mode::ReadAppend:
 		break;
 	default:
-		throw OException("Wrong file mode.");
+		throw OEx("Wrong file mode.");
 	}
 	if (fgets(aBuffer, aBufferSize, _impl->fp) == nullptr) {
-		if (!eof()) throw OException("Unable to read line.");
+		if (!eof()) throw OEx("Unable to read line.");
 		return 0;
 	}
 	return strlen(aBuffer);
@@ -189,14 +189,14 @@ void OFile::seekTo(int32_t aOffset, SeekReference aRef)
 	case SeekReference::End:	whence = SEEK_END;	break;
 	}
 	if (fseek(_impl->fp, aOffset, whence) != 0) {
-		throw OException("Failed to move the file position indicator to the given value.");
+		throw OEx("Failed to move the file position indicator to the given value.");
 	}
 }
 
 uint32_t OFile::currentPosition() const
 {
 	auto rv = ftell(_impl->fp);
-	if (rv == -1) throw OException("Failed to determine current file position.");
+	if (rv == -1) throw OEx("Failed to determine current file position.");
 	return static_cast<uint32_t>(rv);
 }
 

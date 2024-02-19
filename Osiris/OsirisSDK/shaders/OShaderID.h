@@ -17,7 +17,7 @@ struct OShaderID {
 };
 using OShaderSourceTable = OMap<OShaderID,
 				std::string,
-				OSystemMemoryAllocator<OMemoryManager::Scope::Default>>;
+				OSystemMemoryAllocator<OMemoryManagerScope::Default>>;
 
 inline uint32_t OShaderID::value() const
 {

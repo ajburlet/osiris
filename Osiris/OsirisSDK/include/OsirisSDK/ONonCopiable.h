@@ -62,7 +62,7 @@ template <class T, bool Clonable>
 inline void ONonCopiableT<T,Clonable>::cloneTo (T& aDestination) const
 {
     if constexpr(!Clonable) {
-        throw OException("Attempted to clone an unclonable object");
+        throw OEx("Attempted to clone an unclonable object");
     }
 }
 
@@ -71,11 +71,11 @@ inline T* ONonCopiableT<T,Clonable>::clone() const
 {
     if constexpr(Clonable) {
         auto obj = new T();
-        OExceptionPointerCheck(obj);
+        OExPointerCheck(obj);
         cloneTo(*obj);
         return obj;
     } else {
-        throw OException("Attempted to clone an unclonable object.");
+        throw OEx("Attempted to clone an unclonable object.");
         return nullptr;
     }
 }

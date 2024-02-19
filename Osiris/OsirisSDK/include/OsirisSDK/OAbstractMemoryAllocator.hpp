@@ -99,7 +99,7 @@ inline void OSTLAllocator<Allocator, T>::destroy(T* aPtr)
  @param T The type to be allocated.
  @param Scope Allocation scope.
  */
-template <OMemoryManager::Scope Scope>
+template <OMemoryManagerScope Scope>
 class OAbstractMemoryAllocator
 {
 public:
@@ -154,7 +154,7 @@ protected:
 
 };
 
-template<OMemoryManager::Scope Scope>
+template<OMemoryManagerScope Scope>
 inline void* OAbstractMemoryAllocator<Scope>::allocate(size_t aSize, const void * aHint)
 {
 	void* ptr = impl_allocate(aSize, aHint);
@@ -162,14 +162,14 @@ inline void* OAbstractMemoryAllocator<Scope>::allocate(size_t aSize, const void 
 	return ptr;
 }
 
-template<OMemoryManager::Scope Scope>
+template<OMemoryManagerScope Scope>
 inline void OAbstractMemoryAllocator<Scope>::deallocate(void* aPtr, size_t aBytes)
 {
 	impl_deallocate(aPtr, aBytes);
 	OMemoryManagerSingleton()->decrease(Scope, static_cast<uint64_t>(aBytes));
 }
 
-template<OMemoryManager::Scope Scope>
+template<OMemoryManagerScope Scope>
 inline void* OAbstractMemoryAllocator<Scope>::reallocate(void* aPtr, size_t aCurrSize, size_t aNewSize)
 {
 	auto new_ptr = impl_reallocate(aPtr, aCurrSize, aNewSize);

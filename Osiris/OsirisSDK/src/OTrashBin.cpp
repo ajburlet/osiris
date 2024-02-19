@@ -10,7 +10,7 @@ struct OTrashBin::Impl {
 
 OTrashBin::OTrashBin()
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 }
 
 OTrashBin::~OTrashBin()

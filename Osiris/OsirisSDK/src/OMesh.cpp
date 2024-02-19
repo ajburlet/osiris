@@ -17,9 +17,9 @@ struct OMesh::Impl {
 
 OMesh::OMesh() : ORenderable(ORenderable::Type::Mesh)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	auto renderComponents = new ORenderComponents;
-	OExceptionPointerCheck(renderComponents);
+	OExPointerCheck(renderComponents);
 	setRenderComponents(renderComponents);
 }
 

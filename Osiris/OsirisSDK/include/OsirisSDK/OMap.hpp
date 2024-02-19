@@ -13,7 +13,7 @@
  */
 template<class TKey, 
 	 class TValue, 
-	 class Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Default>,
+	 class Allocator = OSystemMemoryAllocator<OMemoryManagerScope::Default>,
 	 class Compare = std::less<TKey>>
 class OMap : public OMemoryManagedObject<Allocator>, ONonCopiableT<OMap<TKey, TValue, Allocator, Compare>>
 {

@@ -7,7 +7,7 @@
 #include "OsirisSDK/OMap.hpp"
 
 template <typename T, 
-	  class Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Default>, 
+	  class Allocator = OSystemMemoryAllocator<OMemoryManagerScope::Default>, 
 	  class Compare = std::less<T>>
 class OSet : protected OMap<T, bool, Allocator, Compare>
 {
@@ -189,7 +189,7 @@ template<typename T, class Allocator, class Compare>
 inline OSet<T, Allocator, Compare> * OSet<T, Allocator, Compare>::clone() const
 {
 	auto newClone = new OSet;
-	OExceptionPointerCheck(newClone);
+	OExPointerCheck(newClone);
 	cloneTo(newClone);
 	return newClone;
 }

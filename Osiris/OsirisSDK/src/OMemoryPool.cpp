@@ -49,7 +49,7 @@ void * OMemoryPool::alloc(size_t sz)
 		stringstream ss;
 		ss << "Requested alloc size (" << sz << " bytes) is larger than the segment size (" 
 		   << _segmentSize*_blockSize << " bytes).";
-		throw OException(ss.str().c_str());
+		throw OEx(ss.str().c_str());
 	}
 
 	int neededBlocks = (int)ceil((float)sz / _blockSize);
@@ -76,7 +76,7 @@ void OMemoryPool::free(void * ptr)
 	if (it == _usedBlocks.end()) {
 		stringstream ss;
 		ss << "Unable to free pointer " << ptr << " since it does not belong to this memory pool.";
-		throw OException(ss.str().c_str());
+		throw OEx(ss.str().c_str());
 	}
 
 	for (int i = 0; i < it->second; i++) _availableBlocks.push_back((char*)ptr + i * _blockSize);

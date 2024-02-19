@@ -147,7 +147,7 @@ inline bool OBaseArrayIterator<Ptr_t, Ref_t>::operator!=(const OBaseArrayIterato
 
  This array implementation avoids all object copy operations. Insertions must be done via r-value references.
  */
-template <typename T, class Allocator=OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
+template <typename T, class Allocator=OSystemMemoryAllocator<OMemoryManagerScope::Default>>
 class OArrayNC : public OMemoryManagedObject<Allocator>, public ONonCopiableT<OArrayNC<T,Allocator>>
 {
 public:
@@ -378,7 +378,7 @@ inline void OArrayNC<T, Allocator>::changeCapacity(uint32_t aNewCapacity)
 	T* new_array = nullptr;
 	if (aNewCapacity > 0) {
 		new_array = new T[aNewCapacity];
-		OExceptionPointerCheck(new_array);
+		OExPointerCheck(new_array);
 	} 
 
 	uint32_t itemCount = (aNewCapacity > _size) ? _size : aNewCapacity;
@@ -398,7 +398,7 @@ template<typename T, class Allocator>
 inline void OArrayNC<T, Allocator>::append(T && aItemValue)
 {
 	if (_size == _capacity) {
-		throw OException("Array overflow.");
+		throw OEx("Array overflow.");
 	}
 	_array[_size++] = std::move(aItemValue);
 }
@@ -413,7 +413,7 @@ template<typename T, class Allocator>
 inline T& OArrayNC<T, Allocator>::get(uint32_t aIndex)
 {
 	if (aIndex >= _capacity) {
-		throw OException("Invalid array index.");
+		throw OException(__FILE__, __LINE__, "Invalid array index.");
 	}
 	if (aIndex >= _size) {
 		_size = aIndex + 1;
@@ -425,7 +425,7 @@ template<typename T, class Allocator>
 inline const T & OArrayNC<T, Allocator>::get(uint32_t aIndex) const
 {
 	if (aIndex >= _size) {
-		throw OException("Invalid array index.");
+		throw OEx("Invalid array index.");
 	}
 	return _array[aIndex];
 }
@@ -434,7 +434,7 @@ template<typename T, class Allocator>
 inline void OArrayNC<T, Allocator>::remove(uint32_t aIndex)
 {
 	if (aIndex >= _size) {
-		throw OException("Invalid array index.");
+		throw OEx("Invalid array index.");
 	}
 	for (uint32_t i = aIndex + 1; i < _size; i++) {
 		_array[i - 1] = std::move(_array[i]);
@@ -528,7 +528,7 @@ inline const T & OArrayNC<T, Allocator>::tail() const
 /**
  @brief Array of copyable items.
  */
-template <typename T, class Allocator=OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
+template <typename T, class Allocator=OSystemMemoryAllocator<OMemoryManagerScope::Default>>
 class OArray : public OArrayNC<T, Allocator>
 {
 private:
@@ -614,7 +614,7 @@ template<typename T, class Allocator>
 inline void OArray<T, Allocator>::append(const T& aItemValue)
 {
 	if (_size == _capacity) {
-		throw OException("Array overflow.");
+		throw OEx("Array overflow.");
 	}
 	_array[_size++] = aItemValue;
 }
@@ -633,7 +633,7 @@ inline void OArray<T, Allocator>::set(uint32_t aIndex, const T & aValue)
  in size if necessary. The same wont apply to <code>get()</code> or <code>set()</code> methods.
  */
 template<typename T, 
-	 class Allocator=OSystemMemoryAllocator<OMemoryManager::Scope::Default>, 
+	 class Allocator=OSystemMemoryAllocator<OMemoryManagerScope::Default>, 
 	 size_t BlockSize=1>
 class ODynArray : public OArray<T, Allocator>
 {

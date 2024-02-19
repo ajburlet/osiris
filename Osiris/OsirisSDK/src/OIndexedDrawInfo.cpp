@@ -7,7 +7,7 @@ struct OIndexedDrawInfo::Impl : public OMemoryManagedObject<Allocator>
 	Impl(const OMaterial* aMaterial) 
 	{ 
 		if (material != nullptr) {
-			OExceptionPointerCheck(material = new OMaterial(*aMaterial)); 
+			OExPointerCheck(material = new OMaterial(*aMaterial)); 
 		}
 	}
 	~Impl() 
@@ -23,7 +23,7 @@ struct OIndexedDrawInfo::Impl : public OMemoryManagedObject<Allocator>
 
 OIndexedDrawInfo::OIndexedDrawInfo(const OMaterial * aMaterial)
 {
-	OExceptionPointerCheck(_impl = new Impl(aMaterial));
+	OExPointerCheck(_impl = new Impl(aMaterial));
 }
 
 OIndexedDrawInfo::OIndexedDrawInfo(OIndexedDrawInfo && aOther)

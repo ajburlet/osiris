@@ -69,10 +69,10 @@ OApplication::OApplication(const char* aTitle, int aArgc, char **aArgv, Graphics
 			   int aWindowPosX, int aWindowPosY, int aWindowWidth, int aWindowHeight, 
 			   int aTargetFPS, int aSimulationStep_us) 
 {
-	if (_activeInstance != NULL) throw OException("There is already an OApplication instance created.");
+	if (_activeInstance != NULL) throw OEx("There is already an OApplication instance created.");
 	_activeInstance = this;
 
-	OExceptionPointerCheck(_impl = new Impl(aTargetFPS, aSimulationStep_us));
+	OExPointerCheck(_impl = new Impl(aTargetFPS, aSimulationStep_us));
 
 	/* GLUT init */
 	glutInit(&aArgc, aArgv);
@@ -95,16 +95,16 @@ OApplication::OApplication(const char* aTitle, int aArgc, char **aArgv, Graphics
 
 	switch (aGraphicsAPI) {
 	case GraphicsAPI::OpenGL:
-		OExceptionPointerCheckCb(graphics_api = new OOpenGL, error_cb);
+		OExPointerCheckCb(graphics_api = new OOpenGL, error_cb);
 		break;
 	default:
 		error_cb();
-		throw OException("Unknow graphics API.");
+		throw OEx("Unknow graphics API.");
 	}
-	OExceptionPointerCheckCb(_impl->engine = new ORenderingEngine(graphics_api), error_cb);
+	OExPointerCheckCb(_impl->engine = new ORenderingEngine(graphics_api), error_cb);
 
 	/* resource managers */
-	OExceptionPointerCheck(_impl->geometryManager = new OGeometryManager);
+	OExPointerCheck(_impl->geometryManager = new OGeometryManager);
 
 	/* setup callbacks */
 	glutDisplayFunc(displayCallback);

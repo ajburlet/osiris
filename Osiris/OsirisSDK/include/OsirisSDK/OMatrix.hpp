@@ -151,27 +151,27 @@ inline OVector4<T, Q> OMatrix4x4<T, Q>::operator*(const OVector4<T, Q>& aOther) 
 template<typename T, glm::qualifier Q>
 inline void OMatrix4x4<T, Q>::setValue(uint8_t aRow, uint8_t aCol, T aValue)
 {
-	if (aCol < 0 || aCol > 3) throw OException("Invalid column index for 4x4 matrix.");
+	if (aCol < 0 || aCol > 3) throw OEx("Invalid column index for 4x4 matrix.");
 
 	switch (aRow) {
 	case 0: _glmInternal[aCol].x = aValue; break;
 	case 1: _glmInternal[aCol].y = aValue; break;
 	case 2: _glmInternal[aCol].z = aValue; break;
 	case 3: _glmInternal[aCol].w = aValue; break;
-	default: throw OException("Invalid row index for 4x4 matrix.");
+	default: throw OEx("Invalid row index for 4x4 matrix.");
 	}
 }
 
 template<typename T, glm::qualifier Q>
 inline T OMatrix4x4<T, Q>::value(uint8_t aRow, uint8_t aCol) const
 {
-	if (aCol < 0 || aCol > 3) throw OException("Invalid column index for 4x4 matrix.");
+	if (aCol < 0 || aCol > 3) throw OEx("Invalid column index for 4x4 matrix.");
 
 	switch (aRow) {
 	case 0: return _glmInternal[aCol].x;
 	case 1: return _glmInternal[aCol].y;
 	case 2: return _glmInternal[aCol].z;
 	case 3: return _glmInternal[aCol].w;
-	default: throw OException("Invalid row index for 4x4 matrix.");
+	default: throw OEx("Invalid row index for 4x4 matrix.");
 	}
 }

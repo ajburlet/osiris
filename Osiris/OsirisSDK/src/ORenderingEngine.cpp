@@ -102,7 +102,7 @@ struct ORenderingEngine::Impl {
 // ----------------------------------------------------------------------------------------------
 ORenderingEngine::ORenderingEngine(OGraphicsAPI* aGraphicsAPI)
 {
-	OExceptionPointerCheck(_impl = new Impl(aGraphicsAPI));
+	OExPointerCheck(_impl = new Impl(aGraphicsAPI));
 }
 
 ORenderingEngine::~ORenderingEngine()
@@ -242,7 +242,7 @@ uint32_t ORenderingEngine::Impl::shaderKey(ORenderable* aRenderable)
 		// no special option
 		break;
 	default:
-		throw OException("Invalid renderable.");
+		throw OEx("Invalid renderable.");
 	}
 	return key;
 }
@@ -262,19 +262,19 @@ OShaderProgram * ORenderingEngine::Impl::createProgram(ORenderable* aRenderable,
 		}
 	};
 
-	OExceptionForwardCb(error_handler, 
+	OExForwardCb(error_handler, 
 		program = new OShaderProgram();
-		OExceptionPointerCheck(program);
+		OExPointerCheck(program);
 
 		if (aVertexSrc != nullptr) {
 			vertex = new OShaderObject(OShaderObject::Type::Vertex, aVertexSrc);
-			OExceptionPointerCheck(vertex);
+			OExPointerCheck(vertex);
 			program->addObject(vertex);
 		}
 
 		if (aFragmentSrc != nullptr) {
 			fragment = new OShaderObject(OShaderObject::Type::Fragment, aFragmentSrc);
-			OExceptionPointerCheck(fragment);
+			OExPointerCheck(fragment);
 			program->addObject(fragment);
 		}
 		
@@ -305,12 +305,12 @@ void ORenderingEngine::Impl::endEncoder()
 OGraphicsRenderCommandEncoder * ORenderingEngine::Impl::getRenderEncoder()
 {
 	if (!_currentBuffer) {
-		OExceptionPointerCheck(_currentBuffer = _currentQueue->createCommandBuffer());
+		OExPointerCheck(_currentBuffer = _currentQueue->createCommandBuffer());
 	}
 
 	if (!_currentEncoder || _currentEncoder->type() != OGraphicsCommandEncoder::Type::Render) {
 		endEncoder();
-		OExceptionPointerCheck(_currentEncoder = _currentBuffer->createRenderCommandEncoder());
+		OExPointerCheck(_currentEncoder = _currentBuffer->createRenderCommandEncoder());
 	}
 
 	return reinterpret_cast<OGraphicsRenderCommandEncoder*>(_currentEncoder);
@@ -319,12 +319,12 @@ OGraphicsRenderCommandEncoder * ORenderingEngine::Impl::getRenderEncoder()
 OGraphicsResourceCommandEncoder * ORenderingEngine::Impl::getResourceEncoder()
 {
 	if (!_currentBuffer) {
-		OExceptionPointerCheck(_currentBuffer = _currentQueue->createCommandBuffer());
+		OExPointerCheck(_currentBuffer = _currentQueue->createCommandBuffer());
 	}
 
 	if (!_currentEncoder || _currentEncoder->type() != OGraphicsCommandEncoder::Type::Resource) {
 		endEncoder();
-		OExceptionPointerCheck(_currentEncoder = _currentBuffer->createResourceCommandEncoder());
+		OExPointerCheck(_currentEncoder = _currentBuffer->createResourceCommandEncoder());
 	}
 
 	return reinterpret_cast<OGraphicsResourceCommandEncoder*>(_currentEncoder);
@@ -353,7 +353,7 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 								 OShaderObject::Type::Fragment, 
 								 aRenderable->type() });
 		shader = createProgram(aRenderable, vertSrcIt.value().c_str(), fragSrcIt.value().c_str());
-		OExceptionForwardCb([&]() { delete shader; }, 
+		OExForwardCb([&]() { delete shader; }, 
 			_shaderProgramCache.insert({ aRenderable->type(), shader_key }, shader);
 			_api->compile(shader);
 		);
@@ -374,7 +374,7 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 			loadGlyphUniforms(reinterpret_cast<OGlyph*>(aRenderable));
 			break;
 		default:
-			throw OException("Invalid renderable.");
+			throw OEx("Invalid renderable.");
 		}
 		aRenderable->setUniformsLoaded(true);
 	}
@@ -503,7 +503,7 @@ void ORenderingEngine::Impl::render(ORenderable * aRenderable)
 	auto renderEncoder = getRenderEncoder();
 
 	if (aRenderable->renderComponents()->shaderProgram() == nullptr) {
-		throw OException("Unable to find shader program.");
+		throw OEx("Unable to find shader program.");
 	}
 
 	// shader & arguments

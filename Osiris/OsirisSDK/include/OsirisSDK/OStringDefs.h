@@ -1,9 +1,11 @@
 #pragma once
 
-#include "OsirisSDK/OSystemMemoryAllocator.h"
-#include "OsirisSDK/OMemoryManagedObject.h"
+#include "OsirisSDK/OMemoryManagerScope.h"
 
-template <typename CharT, typename Allocator=OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
+template <OMemoryManagerScope Scope>
+class OSystemMemoryAllocator;
+
+template <typename CharT, typename Allocator=OSystemMemoryAllocator<OMemoryManagerScope::Default>>
 class OBaseString;
 
 /**

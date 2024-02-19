@@ -1,6 +1,7 @@
 #include <string.h>
-#include "OsirisSDK/OException.h"
+#include <stdlib.h>
 
+#include "OsirisSDK/OException.h"
 #include "OsirisSDK/OParameterList.h"
 
 
@@ -26,7 +27,7 @@ int OParameterList::count() const
 
 OParameterList::Parameter & OParameterList::get(int idx)
 {
-	if (idx >= _attrCount) throw OException("Invalid access to parameter list.");
+	if (idx >= _attrCount) throw OEx("Invalid access to parameter list.");
 	return _attrs[idx];
 }
 
@@ -84,49 +85,49 @@ OParameterList::Parameter::Type OParameterList::Parameter::type() const
 
 bool OParameterList::Parameter::boolVal() const
 {
-	if (_type != Uninitialized && _type != Boolean) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Boolean) throw OEx("Parameter type mismatch.");
 	return _value._bool;
 }
 
 int OParameterList::Parameter::intVal() const
 {
-	if (_type != Uninitialized && _type != Integer) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Integer) throw OEx("Parameter type mismatch.");
 	return _value._int;
 }
 
 float OParameterList::Parameter::floatVal() const
 {
-	if (_type != Uninitialized && _type != Float) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Float) throw OEx("Parameter type mismatch.");
 	return _value._float;
 }
 
 const char * OParameterList::Parameter::strVal() const
 {
-	if (_type != Uninitialized && _type != String) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != String) throw OEx("Parameter type mismatch.");
 	return _value._str;
 }
 
 void OParameterList::Parameter::setVal(bool val)
 {
-	if (_type != Uninitialized && _type != Boolean) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Boolean) throw OEx("Parameter type mismatch.");
 	_value._bool = val;
 }
 
 void OParameterList::Parameter::setVal(int val)
 {
-	if (_type != Uninitialized && _type != Integer) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Integer) throw OEx("Parameter type mismatch.");
 	_value._int = val;
 }
 
 void OParameterList::Parameter::setVal(float val)
 {
-	if (_type != Uninitialized && _type != Float) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != Float) throw OEx("Parameter type mismatch.");
 	_value._float = val;
 }
 
 void OParameterList::Parameter::setVal(const char * val)
 {
-	if (_type != Uninitialized && _type != String) throw OException("Parameter type mismatch.");
+	if (_type != Uninitialized && _type != String) throw OEx("Parameter type mismatch.");
 	if (_value._str != NULL) free(_value._str);
 	_value._str = _strdup(val);
 }
@@ -134,7 +135,7 @@ void OParameterList::Parameter::setVal(const char * val)
 OParameterList::Parameter & OParameterList::Parameter::operator=(const Parameter & in)
 {
 	if (_type == Uninitialized) _type = in._type;
-	else if (_type != in._type) throw OException("Parameter type mismatch.");
+	else if (_type != in._type) throw OEx("Parameter type mismatch.");
 	_value = in._value;
 	return *this;
 }

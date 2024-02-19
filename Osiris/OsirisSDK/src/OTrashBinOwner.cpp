@@ -4,7 +4,7 @@
 
 OTrashBinOwner::OTrashBinOwner()
 {
-	OExceptionPointerCheck(_trashBin = new OTrashBin);
+	OExPointerCheck(_trashBin = new OTrashBin);
 }
 
 OTrashBinOwner::~OTrashBinOwner()

@@ -236,7 +236,7 @@ inline T & OVector2<T, Q>::getComponent(OVectorAxis aComponent)
 	switch (aComponent) {
 	case OVectorAxis::X:	return _glmInternal.x;
 	case OVectorAxis::Y:	return _glmInternal.y;
-	default:		throw OException("Invalid vector component.");
+	default:		throw OEx("Invalid vector component.");
 	}
 }
 
@@ -513,7 +513,7 @@ inline T & OVector3<T, Q>::getComponent(OVectorAxis aComponent)
 	case OVectorAxis::X:	return _glmInternal.x;
 	case OVectorAxis::Y:	return _glmInternal.y;
 	case OVectorAxis::Z:	return _glmInternal.z;
-	default:		throw OException("Invalid vector component.");
+	default:		throw OEx("Invalid vector component.");
 	}
 }
 
@@ -814,7 +814,7 @@ inline T & OVector4<T, Q>::getComponent(OVectorAxis aComponent)
 	case OVectorAxis::Y:	return _glmInternal.y;
 	case OVectorAxis::Z:	return _glmInternal.z;
 	case OVectorAxis::W:	return _glmInternal.w;
-	default:		throw OException("Invalid vector component.");
+	default:		throw OEx("Invalid vector component.");
 	}
 }
 

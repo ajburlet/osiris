@@ -1,3 +1,6 @@
+#include <string.h>
+#include <stdlib.h>
+
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OFile.h"
 #include "OsirisSDK/OMemoryManagedObject.h"
@@ -25,7 +28,7 @@ struct OWavefrontParser::Impl : public OMemoryManagedObject<OGraphicsAllocators:
 
 OWavefrontParser::OWavefrontParser(OFile * aFile)
 {
-	OExceptionPointerCheck(_impl = new Impl(aFile));
+	OExPointerCheck(_impl = new Impl(aFile));
 	memset(_impl->lineBuffer, 0, OWAVEFRONTPARSER_LINEBUFFER);
 }
 
@@ -77,21 +80,21 @@ char * OWavefrontParser::readNextWord()
 float OWavefrontParser::readNextFloat()
 {
 	auto word = readNextWord();
-	if (word == nullptr) throw OException("Expected float to be read not found.");
+	if (word == nullptr) throw OEx("Expected float to be read not found.");
 	return static_cast<float>(atof(word));
 }
 
 int32_t OWavefrontParser::readNextInt()
 {
 	auto word = readNextWord();
-	if (word == nullptr) throw OException("Expected integer to be read not found.");
+	if (word == nullptr) throw OEx("Expected integer to be read not found.");
 	return atoi(word);
 }
 
 uint32_t OWavefrontParser::readNextUint()
 {
 	auto word = readNextWord();
-	if (word == nullptr) throw OException("Expected integer to be read not found.");
+	if (word == nullptr) throw OEx("Expected integer to be read not found.");
 	return static_cast<uint32_t>(atoi(word));
 }
 

@@ -8,7 +8,7 @@
 /**
  @brief Base file class.
  */
-class OAPI OFile : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
+class OAPI OFile : public OMemoryManagedObject<OSystemMemoryAllocator<OMemoryManagerScope::Default>>
 {
 public:
 	/**

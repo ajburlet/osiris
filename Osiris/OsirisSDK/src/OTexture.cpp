@@ -1,9 +1,11 @@
+#include <string.h>
+
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OSystemMemoryAllocator.h"
 #include "OsirisSDK/OArray.hpp"
 #include "OsirisSDK/OTexture.h"
 
-using Allocator = OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>;
+using Allocator = OSystemMemoryAllocator<OMemoryManagerScope::Graphics>;
 
 struct OTexture::Impl {
 	struct MipmapEntry {
@@ -29,7 +31,7 @@ struct OTexture::Impl {
 
 OTexture::OTexture()
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 }
 
 OTexture::~OTexture()
@@ -84,7 +86,7 @@ void OTexture::setWrapType(Coordinate aCoordinate, OTexture::WrapMode aWrapType)
 	case Coordinate::S:	_impl->wrapTypeS = aWrapType;		break;
 	case Coordinate::R:	_impl->wrapTypeR = aWrapType;		break;
 	case Coordinate::T:	_impl->wrapTypeT = aWrapType;		break;
-	default:		throw OException("Invalid coordinate.");
+	default:		throw OEx("Invalid coordinate.");
 	}
 }
 
@@ -94,7 +96,7 @@ OTexture::WrapMode OTexture::wrapType(Coordinate aCoordinate) const
 	case Coordinate::S:	return _impl->wrapTypeS;
 	case Coordinate::R:	return _impl->wrapTypeR;
 	case Coordinate::T:	return _impl->wrapTypeT;
-	default:		throw OException("Invalid coordinate.");
+	default:		throw OEx("Invalid coordinate.");
 	}
 }
 
@@ -154,7 +156,7 @@ void OTexture::setContent(uint32_t aMipmapLevel, uint32_t aWidth, uint32_t aHeig
 
 uint8_t * OTexture::content(uint32_t aMipmapLevel, uint32_t & aWidth, uint32_t & aHeight, uint32_t& aSize) const
 {
-	if (aMipmapLevel >= _impl->mipmap.size()) throw OException("Invalid mipmap level.");
+	if (aMipmapLevel >= _impl->mipmap.size()) throw OEx("Invalid mipmap level.");
 	auto& mipmap = _impl->mipmap[aMipmapLevel];
 	aWidth = mipmap.width;
 	aHeight = mipmap.height;

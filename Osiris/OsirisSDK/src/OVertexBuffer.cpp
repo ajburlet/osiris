@@ -19,7 +19,7 @@ OVertexBufferDescriptor::OVertexBufferDescriptor()
 {
 	_impl = new Impl;
 	if (_impl == nullptr) {
-		throw OException("Unable to allocate implementation structure.");
+		throw OEx("Unable to allocate implementation structure.");
 	}
 }
 
@@ -69,7 +69,7 @@ uint32_t OVertexBufferDescriptor::stride() const
 // ****************************************************************************
 // OVertexBuffer
 // ****************************************************************************
-using OVertexBufferAllocator = OSystemMemoryAllocator<OMemoryManager::Scope::Graphics>;
+using OVertexBufferAllocator = OSystemMemoryAllocator<OMemoryManagerScope::Graphics>;
 
 OVertexBuffer::OVertexBuffer(OVertexBufferDescriptor & aDescriptor, uint32_t aVertexCount) :
 	_descriptor(&aDescriptor)
@@ -100,7 +100,7 @@ void OVertexBuffer::resize(uint32_t aNewVertexCount)
 	size_t newSize = aNewVertexCount * _descriptor->stride();
 	auto new_buffer = static_cast<uint8_t*>(OVertexBufferAllocator().reallocate(_buffer, currSize, newSize));
 	if (new_buffer == nullptr) {
-		throw OException("Unable to reallocate vertex buffer.");
+		throw OEx("Unable to reallocate vertex buffer.");
 	}
 	_buffer = new_buffer;
 	_vertexCount = aNewVertexCount;

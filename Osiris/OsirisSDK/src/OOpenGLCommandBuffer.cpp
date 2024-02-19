@@ -16,7 +16,7 @@ struct OOpenGLCommandBuffer::Impl {
 
 OOpenGLCommandBuffer::OOpenGLCommandBuffer(OOpenGLCommandQueue * aCommandQueue)
 {
-	OExceptionPointerCheck(_impl = new Impl);
+	OExPointerCheck(_impl = new Impl);
 	_impl->commandQueue = aCommandQueue;
 }
 

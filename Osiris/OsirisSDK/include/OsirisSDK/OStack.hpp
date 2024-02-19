@@ -4,7 +4,7 @@
 #include "OsirisSDK/OMemoryManagedObject.h"
 #include "OsirisSDK/OSystemMemoryAllocator.h"
 
-template <typename T, class Allocator=OSystemMemoryAllocator<OMemoryManager::Scope::Default>>
+template <typename T, class Allocator=OSystemMemoryAllocator<OMemoryManagerScope::Default>>
 class OStack : OMemoryManagedObject<Allocator>
 {
 public:
@@ -106,7 +106,7 @@ template<typename T, class Allocator>
 inline void OStack<T, Allocator>::push(const T & aItem)
 {
 	auto node = new Node{ aItem, _top };
-	OExceptionPointerCheck(node);
+	OExPointerCheck(node);
 	_top = node;
 }
 
@@ -114,28 +114,28 @@ template<typename T, class Allocator>
 inline void OStack<T, Allocator>::push(T && aOther)
 {
 	auto node = new Node{ std::move(aOther), _top };
-	OExceptionPointerCheck(node);
+	OExPointerCheck(node);
 	_top = node;
 }
 
 template<typename T, class Allocator>
 inline T & OStack<T, Allocator>::top()
 {
-	if (empty()) throw OException("Attempted to access the top element of an empty stack.");
+	if (empty()) throw OEx("Attempted to access the top element of an empty stack.");
 	return _top->_value;
 }
 
 template<typename T, class Allocator>
 inline const T & OStack<T, Allocator>::top() const
 {
-	if (empty()) throw OException("Attempted to access the top element of an empty stack.");
+	if (empty()) throw OEx("Attempted to access the top element of an empty stack.");
 	return _top->_value;
 }
 
 template<typename T, class Allocator>
 inline void OStack<T, Allocator>::pop()
 {
-	if (empty()) throw OException("Attempted to pop an element of an empty stack.");
+	if (empty()) throw OEx("Attempted to pop an element of an empty stack.");
 	auto node = _top;
 	_top = node->_next;
 	delete node;
