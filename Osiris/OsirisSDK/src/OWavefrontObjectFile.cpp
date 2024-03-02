@@ -20,8 +20,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#define THROW_PARSE_EXCEPTION(aErrStr) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", filename(), currLine()));
-#define THROW_PARSE_EXCEPTION_FMT(aErrStr, ...) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", __VA_ARGS__, filename(), currLine()));
+#define THROW_PARSE_EXCEPTION(aErrStr) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", filename().cString(), currLine()));
+#define THROW_PARSE_EXCEPTION_FMT(aErrStr, ...) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", __VA_ARGS__, filename().cString(), currLine()));
 
 using namespace std;
 

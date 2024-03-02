@@ -7,15 +7,15 @@
 #include "OsirisSDK/OMaterial.h"
 #include "OsirisSDK/OWavefrontMaterialFile.h"
 
-#define THROW_PARSE_EXCEPTION(aErrStr) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", filename(), currLine()));
-#define THROW_PARSE_EXCEPTION_FMT(aErrStr, ...) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", __VA_ARGS__, filename(), currLine()));
+#define THROW_PARSE_EXCEPTION(aErrStr) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", filename().cString(), currLine()));
+#define THROW_PARSE_EXCEPTION_FMT(aErrStr, ...) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", __VA_ARGS__, filename().cString(), currLine()));
 
 void OWavefrontMaterialFile::loadMaterials(MaterialMap & aMaterialList)
 {
 	OMaterial* current_mat = nullptr;
 	while (readNextLine() == 0) {
 		auto firstWord = readNextWord();
-		if (!firstWord || !strcmp(firstWord, "#")) {
+		if (!firstWord || !strcmp(firstWord, "#") || *firstWord == 0) {
 			// ignore empty lines or comments
 			continue;
 		}
@@ -26,7 +26,9 @@ void OWavefrontMaterialFile::loadMaterials(MaterialMap & aMaterialList)
 			current_mat = &(it.value());
 		}
 		else {
-			if (current_mat == nullptr) THROW_PARSE_EXCEPTION("No material instanced");
+			if (current_mat == nullptr) {
+				THROW_PARSE_EXCEPTION("No material instanced");
+			}
 			if (!strcmp(firstWord, "Ka")) {
 				current_mat->setAmbientColor(OVector3F(readNextFloat(), readNextFloat(), readNextFloat()));
 			}
