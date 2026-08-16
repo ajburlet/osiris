@@ -124,31 +124,31 @@ inline OBaseQuaternion<T, Q>::OBaseQuaternion(const OVector3<T, Q>& aEulerAngles
 template<typename T, glm::qualifier Q>
 inline OVector3<T, Q> OBaseQuaternion<T, Q>::operator*(const OVector3<T, Q>& aOther) const
 {
-	return OVector3<T, Q>(_glmInternal * aOther.glm());
+	return OVector3<T, Q>(this->_glmInternal * aOther.glm());
 }
 
 template<typename T, glm::qualifier Q>
 inline OQuaternion OBaseQuaternion<T, Q>::operator*(const OQuaternion & aOther) const
 {
-	return _glmInternal * aOther._glmInternal;
+	return OQuaternion(this->_glmInternal * aOther._glmInternal);
 }
 
 template<typename T, glm::qualifier Q>
 inline OMatrix4x4<T, Q> OBaseQuaternion<T, Q>::toMatrix4() const
 {
-	return OMatrix4x4<T, Q>(glm::toMat4(_glmInternal));
+	return OMatrix4x4<T, Q>(glm::toMat4(this->_glmInternal));
 }
 
 template<typename T, glm::qualifier Q>
 inline OVector3<T, Q> OBaseQuaternion<T, Q>::toEulerAngles() const
 {
-	return OVector3<T, Q>(glm::eulerAngles(_glmInternal) * (360.0f / (2 * OMath::PI)));
+	return OVector3<T, Q>(glm::eulerAngles(this->_glmInternal) * (360.0f / (2 * OMath::PI)));
 }
 
 template<typename T, glm::qualifier Q>
 inline OBaseQuaternion<T, Q> OBaseQuaternion<T, Q>::inverse() const
 {
-	return OBaseQuaternion(glm::inverse(_glmInternal));
+	return OBaseQuaternion(glm::inverse(this->_glmInternal));
 }
 
 template<typename T, glm::qualifier Q>

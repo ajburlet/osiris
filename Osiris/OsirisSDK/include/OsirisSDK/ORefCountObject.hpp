@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <utility>
 
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OException.h"

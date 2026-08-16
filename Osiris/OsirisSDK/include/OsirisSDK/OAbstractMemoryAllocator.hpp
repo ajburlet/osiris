@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <limits>
 
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OMemoryManager.h"

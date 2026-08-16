@@ -124,7 +124,7 @@ OGeometryManager::ResourcePtr OGeometryManager::loadFromFile(const OString& aFil
 
 	OVertexBuffer vertexBuffer(_impl->vertexDescr[type], rawData.vertexCount());
 	for (uint32_t i = 0; i < rawData.vertexCount(); i++) {
-		auto& vertexData = rawData.vertexData(i);
+		auto vertexData = rawData.vertexData(i);
 
 		uint8_t attrIndex = 0;
 		vertexBuffer.setAttributeValue(attrIndex++, i, vertexData.pos);
@@ -144,7 +144,7 @@ OGeometryManager::ResourcePtr OGeometryManager::loadFromFile(const OString& aFil
 	return ResourcePtr(&it.value());
 }
 
-OGeometryManager::ResourcePtr& OGeometryManager::fetchResource(const OString& aKey)
+OGeometryManager::ResourcePtr OGeometryManager::fetchResource(const OString& aKey)
 {
 	OMeshGeometry* geometry = nullptr;
 	auto it = _impl->geometryMap.find(aKey);

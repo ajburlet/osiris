@@ -194,9 +194,9 @@ public:
 
 	/**
 	 @brief Set orientation in terms of Euler angles.
-	 @param or Vector containing Euler angles representing rotation for each axis.
+	 @param aOrientation Vector containing Euler angles representing rotation for each axis.
 	 */
-	void setOrientation(const OVector3F& or);
+	void setOrientation(const OVector3F& aOrientation);
 
 	/**
 	 @brief Retrieves the reference to the quaternion used for orientation transform.

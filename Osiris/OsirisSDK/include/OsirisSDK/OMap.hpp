@@ -39,7 +39,7 @@ public:
 		 @brief Class constructor.
 		 @param aOrigIterator The original iterator.
 		 */
-		BaseIterator(MapIteratorType& aOrigIterator) : _it(aOrigIterator) {}
+		BaseIterator(const MapIteratorType& aOrigIterator) : _it(aOrigIterator) {}
 
 		/**
 		 @brief Class copy constructor.

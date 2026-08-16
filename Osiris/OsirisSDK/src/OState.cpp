@@ -183,9 +183,9 @@ OVector3F& OState::position()
 	return _impl->position;
 }
 
-void OState::setOrientation(const OVector3F& or)
+void OState::setOrientation(const OVector3F& aOrientation)
 {
-	_impl->orientation = OQuaternion(or);
+	_impl->orientation = OQuaternion(aOrientation);
 }
 
 OQuaternion& OState::orientation()

@@ -125,13 +125,13 @@ public:
 
 template<typename T, glm::qualifier Q>
 inline OMatrix4x4<T, Q>::OMatrix4x4(const OMatrix4x4 & aOther) :
-	OMatrix(aOther)
+	Super(aOther)
 {
 }
 
 template<typename T, glm::qualifier Q>
 inline OMatrix4x4<T, Q>::OMatrix4x4(T aIdentValue) :
-	OMatrix(GLMType(aIdentValue))
+	Super(Super::GLMType(aIdentValue))
 {
 }
 
@@ -145,7 +145,7 @@ inline OMatrix4x4<T, Q>::OMatrix4x4(const typename Super::GLMType& aGLM) :
 template<typename T, glm::qualifier Q>
 inline OVector4<T, Q> OMatrix4x4<T, Q>::operator*(const OVector4<T, Q>& aOther) const
 {
-	return Super(_glmInternal * aOther._glmInternal);
+	return Super(this->_glmInternal * aOther._glmInternal);
 }
 
 template<typename T, glm::qualifier Q>
@@ -154,10 +154,10 @@ inline void OMatrix4x4<T, Q>::setValue(uint8_t aRow, uint8_t aCol, T aValue)
 	if (aCol < 0 || aCol > 3) throw OEx("Invalid column index for 4x4 matrix.");
 
 	switch (aRow) {
-	case 0: _glmInternal[aCol].x = aValue; break;
-	case 1: _glmInternal[aCol].y = aValue; break;
-	case 2: _glmInternal[aCol].z = aValue; break;
-	case 3: _glmInternal[aCol].w = aValue; break;
+	case 0: this->_glmInternal[aCol].x = aValue; break;
+	case 1: this->_glmInternal[aCol].y = aValue; break;
+	case 2: this->_glmInternal[aCol].z = aValue; break;
+	case 3: this->_glmInternal[aCol].w = aValue; break;
 	default: throw OEx("Invalid row index for 4x4 matrix.");
 	}
 }
@@ -168,10 +168,10 @@ inline T OMatrix4x4<T, Q>::value(uint8_t aRow, uint8_t aCol) const
 	if (aCol < 0 || aCol > 3) throw OEx("Invalid column index for 4x4 matrix.");
 
 	switch (aRow) {
-	case 0: return _glmInternal[aCol].x;
-	case 1: return _glmInternal[aCol].y;
-	case 2: return _glmInternal[aCol].z;
-	case 3: return _glmInternal[aCol].w;
+	case 0: return this->_glmInternal[aCol].x;
+	case 1: return this->_glmInternal[aCol].y;
+	case 2: return this->_glmInternal[aCol].z;
+	case 3: return this->_glmInternal[aCol].w;
 	default: throw OEx("Invalid row index for 4x4 matrix.");
 	}
 }

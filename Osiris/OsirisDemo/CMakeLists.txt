@@ -18,7 +18,8 @@ source_group("Headers" FILES ${HEADERS})
 add_definitions(-DOSIRIS_DEMO_BASEDIR="${PROJECT_SOURCE_DIR}/OsirisDemo")
 
 add_executable(OsirisDemo ${SOURCES} ${HEADERS})
-set_property(TARGET OsirisDemo PROPERTY CXX_STANDARD 17)
+target_compile_features(OsirisDemo PRIVATE cxx_std_23)
+#set_property(TARGET OsirisDemo PROPERTY CXX_STANDARD 23)
 
 target_link_libraries(OsirisDemo OsirisSDK)
 

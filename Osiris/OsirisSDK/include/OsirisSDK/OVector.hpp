@@ -186,25 +186,25 @@ public:
 
 template<typename T, glm::qualifier Q>
 inline OVector2<T, Q>::OVector2(const OVector2 & aOther) :
-	OVector(aOther)
+	Super(aOther)
 {
 }
 
 template<typename T, glm::qualifier Q>
 inline OVector2<T, Q>::OVector2(const typename Super::GLMType & aOther) :
-	OVector(aOther)
+	Super(aOther)
 {
 }
 
 template<typename T, glm::qualifier Q>
 inline OVector2<T, Q>::OVector2(T aValue) :
-	OVector(GLMType(aValue))
+	Super(GLMType(aValue))
 {
 }
 
 template<typename T, glm::qualifier Q>
 inline OVector2<T, Q>::OVector2(T aX, T aY) :
-	OVector(GLMType(aX, aY))
+	Super(Super::GLMType(aX, aY))
 {
 }
 
@@ -234,8 +234,8 @@ template<typename T, glm::qualifier Q>
 inline T & OVector2<T, Q>::getComponent(OVectorAxis aComponent)
 {
 	switch (aComponent) {
-	case OVectorAxis::X:	return _glmInternal.x;
-	case OVectorAxis::Y:	return _glmInternal.y;
+	case OVectorAxis::X:	return this->_glmInternal.x;
+	case OVectorAxis::Y:	return this->_glmInternal.y;
 	default:		throw OEx("Invalid vector component.");
 	}
 }
@@ -243,25 +243,25 @@ inline T & OVector2<T, Q>::getComponent(OVectorAxis aComponent)
 template<typename T, glm::qualifier Q>
 inline void OVector2<T, Q>::setX(T aValue)
 {
-	_glmInternal.x = aValue;
+	this->_glmInternal.x = aValue;
 }
 
 template<typename T, glm::qualifier Q>
 inline void OVector2<T, Q>::setY(T aValue)
 {
-	_glmInternal.y = aValue;
+	this->_glmInternal.y = aValue;
 }
 
 template<typename T, glm::qualifier Q>
 inline T OVector2<T, Q>::x() const
 {
-	return _glmInternal.x;
+	return this->_glmInternal.x;
 }
 
 template<typename T, glm::qualifier Q>
 inline T OVector2<T, Q>::y() const
 {
-	return _glmInternal.y;
+	return this->_glmInternal.y;
 }
 
 /**
@@ -449,25 +449,25 @@ public:
 
 template<typename T, glm::qualifier Q>
 inline OVector3<T, Q>::OVector3(const OVector3& aOther) :
-	OVector(aOther)
+	Super(aOther)
 {
 }
 
 template<typename T, glm::qualifier Q>
 inline OVector3<T, Q>::OVector3(const typename Super::GLMType & aOther) :
-	OVector(aOther)
+	Super(aOther)
 {
 }
 
 template<typename T, glm::qualifier Q>
 inline OVector3<T, Q>::OVector3(T aValue) :
-	OVector(GLMType(aValue))
+	Super(GLMType(aValue))
 {
 }
 
 template<typename T, glm::qualifier Q>
 inline OVector3<T, Q>::OVector3(T aX, T aY, T aZ) :
-	OVector(GLMType(aX, aY, aZ))
+	Super(GLMType(aX, aY, aZ))
 {
 }
 
@@ -510,9 +510,9 @@ template<typename T, glm::qualifier Q>
 inline T & OVector3<T, Q>::getComponent(OVectorAxis aComponent)
 {
 	switch (aComponent) {
-	case OVectorAxis::X:	return _glmInternal.x;
-	case OVectorAxis::Y:	return _glmInternal.y;
-	case OVectorAxis::Z:	return _glmInternal.z;
+	case OVectorAxis::X:	return this->_glmInternal.x;
+	case OVectorAxis::Y:	return this->_glmInternal.y;
+	case OVectorAxis::Z:	return this->_glmInternal.z;
 	default:		throw OEx("Invalid vector component.");
 	}
 }
@@ -521,7 +521,7 @@ template<typename T, glm::qualifier Q>
 inline OVector3<T,Q> OVector3<T, Q>::cross(const OVector3 & aOther) const
 {
 	OVector3 res;
-	res._glmInternal = glm::cross(_glmInternal, aOther._glmInternal);
+	res._glmInternal = glm::cross(this->_glmInternal, aOther._glmInternal);
 	return res;
 }
 
@@ -534,7 +534,7 @@ inline OVector3<T, Q> OVector3<T, Q>::cross(const OVector3 & aLeft, const OVecto
 template<typename T, glm::qualifier Q>
 inline float OVector3<T, Q>::dot(const OVector3 & aOther) const
 {
-	return glm::dot(_glmInternal, aOther._glmInternal);
+	return glm::dot(this->_glmInternal, aOther._glmInternal);
 }
 
 template<typename T, glm::qualifier Q>
@@ -546,37 +546,37 @@ inline float OVector3<T, Q>::dot(const OVector3 & aLeft, const OVector3 & aRight
 template<typename T, glm::qualifier Q>
 inline void OVector3<T, Q>::setX(T aValue)
 {
-	_glmInternal.x = aValue;
+	this->_glmInternal.x = aValue;
 }
 
 template<typename T, glm::qualifier Q>
 inline void OVector3<T, Q>::setY(T aValue)
 {
-	_glmInternal.y = aValue;
+	this->_glmInternal.y = aValue;
 }
 
 template<typename T, glm::qualifier Q>
 inline void OVector3<T, Q>::setZ(T aValue)
 {
-	_glmInternal.z = aValue;
+	this->_glmInternal.z = aValue;
 }
 
 template<typename T, glm::qualifier Q>
 inline T OVector3<T, Q>::x() const
 {
-	return _glmInternal.x;
+	return this->_glmInternal.x;
 }
 
 template<typename T, glm::qualifier Q>
 inline T OVector3<T, Q>::y() const
 {
-	return _glmInternal.y;
+	return this->_glmInternal.y;
 }
 
 template<typename T, glm::qualifier Q>
 inline T OVector3<T, Q>::z() const
 {
-	return _glmInternal.z;
+	return this->_glmInternal.z;
 }
 
 template<typename T, glm::qualifier Q>
@@ -775,13 +775,13 @@ inline OVector4<T, Q>::OVector4(T aValue) :
 
 template<typename T, glm::qualifier Q>
 inline OVector4<T, Q>::OVector4(T aX, T aY, T aZ, T aW) :
-	OVector(GLMType(aX, aY, aZ, aW))
+	Super(GLMType(aX, aY, aZ, aW))
 {
 }
 
 template<typename T, glm::qualifier Q>
 inline OVector4<T, Q>::OVector4(const OVector3<T, Q>& aVec3, float aW) :
-	OVector(GLMType(aVec3.x(), aVec3.y(), aVec3.z(), aW))
+	Super(GLMType(aVec3.x(), aVec3.y(), aVec3.z(), aW))
 {
 }
 
@@ -810,10 +810,10 @@ template<typename T, glm::qualifier Q>
 inline T & OVector4<T, Q>::getComponent(OVectorAxis aComponent)
 {
 	switch (aComponent) {
-	case OVectorAxis::X:	return _glmInternal.x;
-	case OVectorAxis::Y:	return _glmInternal.y;
-	case OVectorAxis::Z:	return _glmInternal.z;
-	case OVectorAxis::W:	return _glmInternal.w;
+	case OVectorAxis::X:	return this->_glmInternal.x;
+	case OVectorAxis::Y:	return this->_glmInternal.y;
+	case OVectorAxis::Z:	return this->_glmInternal.z;
+	case OVectorAxis::W:	return this->_glmInternal.w;
 	default:		throw OEx("Invalid vector component.");
 	}
 }
@@ -821,48 +821,48 @@ inline T & OVector4<T, Q>::getComponent(OVectorAxis aComponent)
 template<typename T, glm::qualifier Q>
 inline void OVector4<T, Q>::setX(T aValue)
 {
-	_glmInternal.x = aValue;
+	this->_glmInternal.x = aValue;
 }
 
 template<typename T, glm::qualifier Q>
 inline void OVector4<T, Q>::setY(T aValue)
 {
-	_glmInternal.y = aValue;
+	this->_glmInternal.y = aValue;
 }
 
 template<typename T, glm::qualifier Q>
 inline void OVector4<T, Q>::setZ(T aValue)
 {
-	_glmInternal.z = aValue;
+	this->_glmInternal.z = aValue;
 }
 
 template<typename T, glm::qualifier Q>
 inline void OVector4<T, Q>::setW(T aValue)
 {
-	_glmInternal.w = aValue;
+	this->_glmInternal.w = aValue;
 }
 
 template<typename T, glm::qualifier Q>
 inline T OVector4<T, Q>::x() const
 {
-	return _glmInternal.x;
+	return this->_glmInternal.x;
 }
 
 template<typename T, glm::qualifier Q>
 inline T OVector4<T, Q>::y() const
 {
-	return _glmInternal.y;
+	return this->_glmInternal.y;
 }
 
 template<typename T, glm::qualifier Q>
 inline T OVector4<T, Q>::z() const
 {
-	return _glmInternal.z;
+	return this->_glmInternal.z;
 }
 
 template<typename T, glm::qualifier Q>
 inline T OVector4<T, Q>::w() const
 {
-	return _glmInternal.w;
+	return this->_glmInternal.w;
 }
 

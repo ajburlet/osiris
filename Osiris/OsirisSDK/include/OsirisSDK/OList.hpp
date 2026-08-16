@@ -287,38 +287,38 @@ public:
 	 @param aItem The item to be added to the list.
 	 @param aPositionIt The iterator used as reference to the insertion point.
 	 */
-	void insertAfter(const T& aItem, Iterator& aPositionIt);
+	void insertAfter(const T& aItem, Iterator aPositionIt);
 
 	/**
 	 @copydoc insertAfter(const T&, Iterator&)
 	 */
-	void insertAfter(T&& aItem, Iterator& aPositionIt);
+	void insertAfter(T&& aItem, Iterator aPositionIt);
 
 	/**
 	 @brief Inserts a node after a given iterator marking position.
 	 @param aNode The node to be added to the list.
 	 @param aPositionIt The iterator used as reference to the insertion point.
 	 */
-	void insertAfter(Node* aNode, Iterator& aPositionIt);
+	void insertAfter(Node* aNode, Iterator aPositionIt);
 
 	/**
 	 @brief Inserts an item before a given iterator marking position.
 	 @param aItem The item to be added to the list.
 	 @param aPositionIt The iterator used as reference to the insertion point.
 	 */
-	void insertBefore(const T& aItem, Iterator& aPositionIt);
+	void insertBefore(const T& aItem, Iterator aPositionIt);
 
 	/**
 	 @copydoc insertBefore(const T&, Iterator&)
 	 */
-	void insertBefore(T&& aItem, Iterator& aPositionIt);
+	void insertBefore(T&& aItem, Iterator aPositionIt);
 
 	/**
 	 @brief Inserts a node before a given iterator marking position.
 	 @param aNode The node to be added to the list.
 	 @param aPositionIt The iterator used as reference to the insertion point.
 	 */
-	void insertBefore(Node* aNode, Iterator& aPositionIt);
+	void insertBefore(Node* aNode, Iterator aPositionIt);
 
 	/**
 	 @brief Removes first element from the list.
@@ -528,7 +528,7 @@ inline void OList<T, Allocator>::pushBack(Node * aNode)
 }
 
 template<typename T, class Allocator>
-inline void OList<T, Allocator>::insertAfter(const T & aItem, Iterator & aPositionIt)
+inline void OList<T, Allocator>::insertAfter(const T & aItem, Iterator aPositionIt)
 {
 	auto node = new Node{ aItem };
 	OExPointerCheck(node);
@@ -536,7 +536,7 @@ inline void OList<T, Allocator>::insertAfter(const T & aItem, Iterator & aPositi
 }
 
 template<typename T, class Allocator>
-inline void OList<T, Allocator>::insertAfter(T && aItem, Iterator & aPositionIt)
+inline void OList<T, Allocator>::insertAfter(T && aItem, Iterator aPositionIt)
 {
 	auto node = new Node{ std::move(aItem) };
 	OExPointerCheck(node);
@@ -544,7 +544,7 @@ inline void OList<T, Allocator>::insertAfter(T && aItem, Iterator & aPositionIt)
 }
 
 template<typename T, class Allocator>
-inline void OList<T, Allocator>::insertAfter(Node * aNode, Iterator & aPositionIt)
+inline void OList<T, Allocator>::insertAfter(Node * aNode, Iterator aPositionIt)
 {
 	aNode->_prev = aPositionIt.node();
 	if (aPositionIt.node() == nullptr || _count == 0) {
@@ -559,7 +559,7 @@ inline void OList<T, Allocator>::insertAfter(Node * aNode, Iterator & aPositionI
 }
 
 template<typename T, class Allocator>
-inline void OList<T, Allocator>::insertBefore(const T & aItem, Iterator & aPositionIt)
+inline void OList<T, Allocator>::insertBefore(const T & aItem, Iterator aPositionIt)
 {
 	auto node = new Node{ aItem, aPositionIt.node()->_prev, aPositionIt.node() };
 	OExPointerCheck(node);
@@ -567,7 +567,7 @@ inline void OList<T, Allocator>::insertBefore(const T & aItem, Iterator & aPosit
 }
 
 template<typename T, class Allocator>
-inline void OList<T, Allocator>::insertBefore(T && aItem, Iterator & aPositionIt)
+inline void OList<T, Allocator>::insertBefore(T && aItem, Iterator aPositionIt)
 {
 	auto node = new Node{ std::move(aItem) };
 	OExPointerCheck(node);
@@ -575,7 +575,7 @@ inline void OList<T, Allocator>::insertBefore(T && aItem, Iterator & aPositionIt
 }
 
 template<typename T, class Allocator>
-inline void OList<T, Allocator>::insertBefore(Node * aNode, Iterator & aPositionIt)
+inline void OList<T, Allocator>::insertBefore(Node * aNode, Iterator aPositionIt)
 {
 	aNode->_next = aPositionIt.node();
 	if (aPositionIt.node() == nullptr || _count == 0) {
@@ -620,7 +620,7 @@ inline void OList<T, Allocator>::popBack()
 }
 
 template<typename T, class Allocator>
-inline void OList<T, Allocator>::remove(Iterator & aIterator)
+inline void OList<T, Allocator>::remove(Iterator& aIterator)
 {
 	auto node = aIterator.node();
 	++aIterator;

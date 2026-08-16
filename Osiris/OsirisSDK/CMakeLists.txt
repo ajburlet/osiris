@@ -172,8 +172,6 @@ set (SIM_SOURCES
 	${HDR_DIR}/OParameterList.h
 	${SRC_DIR}/OSimulation.cpp
 	${HDR_DIR}/OSimulation.h
-	${SRC_DIR}/OSpatialGrid.cpp
-	${HDR_DIR}/OSpatialGrid.h
 	${SRC_DIR}/OState.cpp
 	${HDR_DIR}/OState.h
 )
@@ -182,7 +180,6 @@ source_group("Simulation" FILES ${SIM_SOURCES})
 set (UTIL_SOURCES
 	${SRC_DIR}/OChronometer.cpp
 	${HDR_DIR}/OChronometer.h
-	${HDR_DIR}/OCollection.hpp
 	${HDR_DIR}/ODoubleBuffer.hpp
 	${SRC_DIR}/OException.cpp
 	${HDR_DIR}/OException.h
@@ -212,7 +209,8 @@ include_directories(./include
 add_definitions(-DOSIRISSDK_EXPORTS -DOSIRIS_DLL_NAME="OsirisSDK.dll")
 
 add_library(OsirisSDK SHARED ${SOURCES})
-set_property(TARGET OsirisSDK PROPERTY CXX_STANDARD 17)
+target_compile_features(OsirisSDK PRIVATE cxx_std_23)
+#set_property(TARGET OsirisSDK PROPERTY CXX_STANDARD 23)
 
 # debug/release
 if(CMAKE_BUILD_TYPE EQUAL "DEBUG")

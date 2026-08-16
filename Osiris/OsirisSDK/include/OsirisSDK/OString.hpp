@@ -35,7 +35,7 @@ public:
 	/**
 	 @brief Constant integer to denote no position.
 	 */
-	static constexpr auto NoPosition = basic_string::npos;
+	static constexpr auto NoPosition = Super::npos;
 
 	/**
 	 @brief Default class constructor.
@@ -525,13 +525,13 @@ inline OBaseString<CharT,Allocator>& OBaseString<CharT, Allocator>::operator=(co
 template<typename CharT, typename Allocator>
 inline bool OBaseString<CharT,Allocator>::operator==(const OBaseString & aOther) const
 {
-	return (compare(aOther) == 0);
+	return (Super::compare(aOther) == 0);
 }
 
 template<typename CharT, typename Allocator>
 inline bool OBaseString<CharT,Allocator>::operator==(const CharT * aOther) const
 {
-	return (compare(aOther) == 0);
+	return (Super::compare(aOther) == 0);
 }
 
 template<typename CharT, typename Allocator>
@@ -549,7 +549,7 @@ inline bool OBaseString<CharT,Allocator>::operator!=(const CharT * aOther) const
 template<typename CharT, typename Allocator>
 inline bool OBaseString<CharT,Allocator>::operator<(const OBaseString & aOther) const
 {
-	return (compare(aOther) < 0);
+	return (Super::compare(aOther) < 0);
 }
 
 template<typename CharT, typename Allocator>
@@ -569,7 +569,7 @@ inline OBaseString<CharT,Allocator>& OBaseString<CharT, Allocator>::operator+=(c
 template<typename CharT, typename Allocator>
 inline bool OBaseString<CharT,Allocator>::operator<(const CharT * aOther) const
 {
-	return (compare(aOther) < 0);
+	return (Super::compare(aOther) < 0);
 }
 
 template<typename CharT, typename Allocator>
@@ -587,7 +587,7 @@ inline const CharT & OBaseString<CharT, Allocator>::operator[](uint32_t aIndex) 
 template<typename CharT, typename Allocator>
 inline const CharT * OBaseString<CharT,Allocator>::cString() const
 {
-	return c_str();
+	return Super::c_str();
 }
 
 template<typename CharT, typename Allocator>
@@ -937,11 +937,11 @@ inline OBaseString<CharT,Allocator> OBaseString<CharT, Allocator>::Fmt(const cha
 	va_list args;
 	va_start(args, aFmt);
 	int needed;
-	if (std::is_same<CharT, char>::value) {
+	if constexpr (std::is_same<CharT, char>::value) {
 		needed = vsnprintf(reinterpret_cast<char*>(buffer), 
 				      OSTRING_TEMP_BUFFER_SIZE, aFmt, args);
 	}
-	else if (std::is_same<CharT, wchar_t>::value) {
+	else if constexpr (std::is_same<CharT, wchar_t>::value) {
 		needed = vswprintf(reinterpret_cast<wchar_t*>(buffer),
 				      OSTRING_TEMP_BUFFER_SIZE, reinterpret_cast<const wchar_t*>(aFmt), args);
 	}

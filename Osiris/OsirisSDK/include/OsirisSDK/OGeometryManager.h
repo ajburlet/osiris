@@ -77,7 +77,7 @@ public:
 	// OResourceManagerInterface
 	virtual void forEach(IterationCallbackFn aCallbackFn) override;
 	virtual void forEach(IterationConstCallbackFn aCallbackFn) const override;
-	virtual ResourcePtr& fetchResource(const OString& aKey) override;
+	virtual ResourcePtr fetchResource(const OString& aKey) override;
 	virtual void purge() override;
 
 private:

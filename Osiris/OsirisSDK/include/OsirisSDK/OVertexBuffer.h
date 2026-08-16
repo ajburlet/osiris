@@ -229,5 +229,5 @@ inline uint32_t OVertexBuffer::size() const
 template<typename T>
 inline void OVertexBuffer::putValue(uint32_t aOffset, const T & aValue)
 {
-	putValue(aOffset, &avalue, sizeof(T));
+	putValue(aOffset, &aValue, sizeof(T));
 }

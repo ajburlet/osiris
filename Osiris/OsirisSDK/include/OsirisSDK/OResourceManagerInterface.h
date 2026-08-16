@@ -27,7 +27,7 @@ public:
 	 @param aKey The resource search key.
 	 @return A reference countable pointer to the resource.
 	 */
-	virtual ResourcePtr& fetchResource(const OString& aKey) = 0;
+	virtual ResourcePtr fetchResource(const OString& aKey) = 0;
 
 	/**
 	 @brief Iteration callback function type.
