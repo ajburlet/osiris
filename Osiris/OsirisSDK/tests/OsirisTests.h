@@ -25,3 +25,14 @@ TEST_F(aTestSuite, aTestName) { \
 		ASSERT_TRUE(false) << "Exception caught: " << e.what(); \
 	} \
 }
+
+#define OTEST_CATCH_EXCEPTION(aExpr)  \
+{ \
+	bool _exceptionCaught = false; \
+	try { \
+		aExpr; \
+	} catch(OException& e) { \
+		_exceptionCaught = true; \
+	} \
+	ASSERT_TRUE(_exceptionCaught) << "Exception not caught"; \
+}

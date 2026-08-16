@@ -27,29 +27,22 @@ OTEST_END
 
 OTEST_START(OArray, Insertions) {
 	OArray<int> arr;
-	arr.changeCapacity(10);
+	arr.changeCapacity(5);
+	ASSERT_EQ(arr.capacity(), 5);
 	arr.append(1);
 	ASSERT_EQ(arr.size(), 1) << "Wrong size.";
 	ASSERT_EQ(arr[0], 1) << "Wrong added value.";
 
-	arr[2] = 3;
-	arr[1] = 2;
-	ASSERT_EQ(arr.size(), 3) << "Wrong size after implicit increase.";
-	int expectedValues[] = { 1,2,3 };
-	int idx = 0;
-	for (const auto& item : arr) {
-		EXPECT_EQ(item, expectedValues[idx++]) << "Unexpected array value at index " << idx - 1 << ".";
-	}
+	OTEST_CATCH_EXCEPTION(arr[2] = 3);
 
-	bool exceptionCaught = false;
-	try {
-		arr[11] = 10;
-	} catch (OException&) {
-		exceptionCaught = true;
-	}
-	EXPECT_TRUE(exceptionCaught) << "An exception should be thrown when overflowing the array.";
-	ASSERT_EQ(arr.size(), 3);
-	ASSERT_EQ(arr.capacity(), 10);
+	arr.append(2);
+	arr.append(3);
+	arr.append(4);
+	arr.append(5);
+
+	ASSERT_EQ(arr.size(), 5);
+
+	OTEST_CATCH_EXCEPTION(arr.append(6));
 }
 OTEST_END
 
@@ -106,7 +99,7 @@ OTEST_END
 
 OTEST_START(OArray, Remove) {
 	OArray<int> arr(10);
-	for (uint32_t i = 0; i < 10; i++) arr[i] = i;
+	for (uint32_t i = 0; i < 10; i++) arr.append(i);
 	arr.remove(9);
 	arr.remove(0);
 	arr.remove(4);
@@ -124,7 +117,7 @@ OTEST_END
 
 OTEST_START(OArray, Clone) {
 	OArray<int> a(10);
-	for (uint32_t i = 0; i < 10; i++) a[i] = i;
+	for (uint32_t i = 0; i < 10; i++) a.append(i);
 	OArray<int> b;
 	a.cloneTo(b);
 	EXPECT_EQ(b.size(), a.size());
@@ -134,7 +127,7 @@ OTEST_END
 
 OTEST_START(OArray, Move) {
 	OArray<int> a(10);
-	for (uint32_t i = 0; i < 10; i++) a[i] = i;
+	for (uint32_t i = 0; i < 10; i++) a.append(i);
 	OArray<int> b(std::move(a));
 	EXPECT_EQ(a.size(), 0);
 	EXPECT_EQ(a.capacity(), 0);

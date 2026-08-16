@@ -1,6 +1,7 @@
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OArray.hpp"
 #include "OsirisSDK/OIndexBuffer.h"
+#include "OsirisSDK/OGraphicsAllocators.h"
 
 struct Point {
 	uint32_t i, j, k;
@@ -8,8 +9,12 @@ struct Point {
 
 struct OIndexBuffer::Impl 
 {
+	using PointArray = OArray<Point,
+							  OArrayLinearResizingPolicy<16>,
+							  OGraphicsAllocators::Default>;
+
 	Impl(uint32_t aVertexCount) : array(aVertexCount, {0,0,0}) {}
-	OArray<Point,OSystemMemoryAllocator<OMemoryManagerScope::Graphics>> array;
+	PointArray array;
 };
 
 OIndexBuffer::OIndexBuffer(uint32_t aVertexCount)
@@ -25,7 +30,7 @@ OIndexBuffer::~OIndexBuffer()
 	delete _impl;
 }
 
-OIndexBuffer & OIndexBuffer::operator=(OIndexBuffer && aOther)
+OIndexBuffer& OIndexBuffer::operator=(OIndexBuffer && aOther)
 {
 	if (_impl != nullptr) delete _impl;
 	_impl = aOther._impl;

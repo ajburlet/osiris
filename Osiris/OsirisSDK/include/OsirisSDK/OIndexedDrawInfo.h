@@ -19,7 +19,7 @@ class OAPI OIndexedDrawInfo : public OMemoryManagedObject<OGraphicsAllocators::D
 {
 public:
 	using Allocator = OGraphicsAllocators::Default;
-	using Array = OArrayNC<OIndexedDrawInfo,Allocator>;
+	using Array = OArray<OIndexedDrawInfo, OArrayLinearResizingPolicy<16>, Allocator>;
 
 	/**
 	 @brief Class constructor.

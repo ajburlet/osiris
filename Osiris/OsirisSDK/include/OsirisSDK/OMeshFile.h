@@ -10,9 +10,7 @@
 #define OMESHFILE_OBJNAMEARRAY_BLOCKSIZE	4
 #endif
 
-template <typename T, class Allocator> class OArray;
 template <typename T, class Allocator> class OList;
-template <typename T, class Allocator, size_t BlockSize> class ODynArray;
 class OMaterial;
 class OIndexedDrawInfo;
 

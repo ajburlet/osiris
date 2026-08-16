@@ -1,5 +1,7 @@
 #pragma once
 
+#include <concepts>
+
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OException.h"
 
@@ -79,3 +81,12 @@ inline T* ONonCopiableT<T,Clonable>::clone() const
         return nullptr;
     }
 }
+
+template <typename T>
+concept OClonable = requires(const T& source, T& destination) {
+    { source.cloneTo(destination) } -> std::same_as<void>;
+    { source.clone() } -> std::same_as<T*>;
+};
+
+template <typename T>
+concept OCopiable = std::copyable<T>;

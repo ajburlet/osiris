@@ -17,7 +17,9 @@
 // ****************************************************************************
 struct OMeshFile::RawData::Impl {
 	template <typename T>
-	using Array = ODynArray<T, Allocator, OMESHFILE_BLOCKSIZE>;
+	using Array = OArray<T, 
+						 OArrayLinearResizingPolicy<OMESHFILE_BLOCKSIZE>, 
+						 Allocator>;
 
 	using TexCoordArray = Array<TexCoord>;
 	using NormalArray = Array<Normal>;

@@ -12,6 +12,7 @@
 #include "OsirisSDK/ORenderingEngine.h"
 #include "OsirisSDK/OGlyph.h"
 #include "OsirisSDK/OFont.h"
+#include "OsirisSDK/OGraphicsAllocators.h"
 
 using namespace std;
 
@@ -19,6 +20,8 @@ using namespace std;
 // OText2D concealed members & methods
 // ****************************************************************************
 struct OText2D::Impl {
+	using GlyphArray = OArray<OGlyph, OArrayExponentialResizingPolicy, OGraphicsAllocators::Default>; 
+
 	OFont*			font		= nullptr;
 	uint8_t			fontSize	= 0;
 	int			lineSpacing	= 0;
@@ -27,7 +30,7 @@ struct OText2D::Impl {
 	OVector4FL		fontColor;
 	OVector2F		scale;
 	std::string		content;
-	OArrayNC<OGlyph>	glyphs;
+	GlyphArray		glyphs;
 	bool			redraw		= false;
 
 	void updateViewportConversion(uint32_t aViewportWidth, uint32_t aViewportHeight);
