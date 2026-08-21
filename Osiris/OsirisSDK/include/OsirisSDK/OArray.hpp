@@ -1,5 +1,6 @@
 #pragma once
 
+#include <initializer_list>
 #include <type_traits>
 
 #include "OsirisSDK/defs.h"
@@ -197,6 +198,13 @@ public:
 	OArray(std::size_t aCapacity = 0, bool aSizeToCapacity = false); 
 
 	/**
+	 @brief Class constructor from an initialization list.
+	 @param aItems Items to initialize the array with.
+	 */
+	OArray(std::initializer_list<T> aItems)
+	requires OCopiable<T>;
+
+	/**
 	 @brief Class constructor, sets array size to capacity and all allocated initializes members.
 	 @param aCapacity Array capacity, to be allocated right away.
 	 @param aInitValue Initial value of the items.
@@ -390,6 +398,17 @@ inline OArray<T, ReallocPolicy, Allocator>::OArray(std::size_t aCapacity, bool a
 		resize(aCapacity);
 	} else {
 		changeCapacity(aCapacity);
+	}
+}
+
+template <typename T, OArrayReallocPolicy ReallocPolicy, class Allocator>
+inline OArray<T, ReallocPolicy, Allocator>::OArray(std::initializer_list<T> aItems)
+requires OCopiable<T>
+{
+	resize(aItems.size());
+	std::size_t index = 0;
+	for (const auto& item : aItems) {
+		_array[index++] = item;
 	}
 }
 

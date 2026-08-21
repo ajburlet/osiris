@@ -3,6 +3,13 @@
 #include "OsirisTests.h"
 
 OTEST_START(OArray, Init) {
+	OArray<int> listArr{ 1, 2, 3 };
+	ASSERT_EQ(listArr.size(), 3) << "Wrong size.";
+	ASSERT_EQ(listArr.capacity(), 3) << "Wrong capacity.";
+	EXPECT_EQ(listArr[0], 1);
+	EXPECT_EQ(listArr[1], 2);
+	EXPECT_EQ(listArr[2], 3);
+
 	OArray<int> arr(10, 1);
 	ASSERT_EQ(arr.size(), 0) << "Wrong size.";
 	ASSERT_EQ(arr.capacity(), 10) << "Wrong capacity.";
