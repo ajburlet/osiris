@@ -86,11 +86,21 @@ OVertexBuffer::~OVertexBuffer()
 
 OVertexBuffer& OVertexBuffer::operator=(OVertexBuffer&& aOther)
 {
+	if (_descriptor != nullptr)
+	{
+		delete _descriptor;
+	}
 	if (_buffer != nullptr) {
 		OVertexBufferAllocator().deallocate(_buffer, _vertexCount * _descriptor->stride());
 	}
+	
+	_descriptor = aOther._descriptor;
 	_buffer = aOther._buffer;
+	_vertexCount = aOther._vertexCount;
+
+	aOther._descriptor = nullptr;
 	aOther._buffer = nullptr;
+	
 	return *this;
 }
 

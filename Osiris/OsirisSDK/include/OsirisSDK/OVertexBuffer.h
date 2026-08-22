@@ -194,8 +194,11 @@ private:
 };
 
 inline OVertexBuffer::OVertexBuffer(OVertexBuffer&& aOther)
+	: _descriptor(aOther._descriptor)
+	, _vertexCount(aOther._vertexCount)
+	, _buffer(aOther._buffer)
 {
-	_buffer = aOther._buffer;
+	aOther._descriptor =  nullptr;
 	aOther._buffer = nullptr;
 }
 
