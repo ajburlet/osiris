@@ -225,6 +225,11 @@ public:
 	RowAlignment unpackAlignment() const;
 
 	/**
+	 * @brief Sets the mipmap level count.
+	 */
+	void setMipMapLevelCount(std::size_t aLevelCount);
+
+	/**
 	 @brief Sets the texture content for a given mipmap level.
 	 @param aMipmapLevel Mipmap level.
 	 @param aWidth Texture width (number of rows).

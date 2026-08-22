@@ -16,7 +16,7 @@ struct OTexture::Impl {
 	};
 	using MipmapArray = ODynArray<MipmapEntry, Allocator>;
 
-	MipmapArray	mipmap;
+	MipmapArray	mipmap			= {{}};
 	FilterType	minFilter		= FilterType::Default;
 	FilterType	magFilter		= FilterType::Default;
 	WrapMode	wrapTypeS		= WrapMode::Default;
@@ -141,6 +141,11 @@ OTexture::RowAlignment OTexture::packAlignment() const
 OTexture::RowAlignment OTexture::unpackAlignment() const
 {
 	return _impl->unpackAlignment;
+}
+
+void OTexture::setMipMapLevelCount(std::size_t aLevelCount)
+{
+	_impl->mipmap.resize(aLevelCount);
 }
 
 void OTexture::setContent(uint32_t aMipmapLevel, uint32_t aWidth, uint32_t aHeight, uint8_t* aData, uint32_t aSize)
