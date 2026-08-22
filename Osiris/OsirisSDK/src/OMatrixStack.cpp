@@ -225,8 +225,7 @@ void OMatrixStack::camera(const OVector3F &position, const OVector3F &direction,
 	_impl->currMtx *= glm::lookAt(position.glm(), direction.glm(), up.glm());
 }
 
-void OMatrixStack::camera(const OVector3F & position, const OVector3F & direction)
+void OMatrixStack::camera(const OVector3F& position, const OVector3F& direction)
 {
 	camera(position, direction, OVector3F(0, 1, 0));
 }
-

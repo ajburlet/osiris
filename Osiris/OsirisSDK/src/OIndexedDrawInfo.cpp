@@ -6,7 +6,7 @@ struct OIndexedDrawInfo::Impl : public OMemoryManagedObject<Allocator>
 {
 	Impl(const OMaterial* aMaterial) 
 	{ 
-		if (material != nullptr) {
+		if (aMaterial != nullptr) {
 			OExPointerCheck(material = new OMaterial(*aMaterial)); 
 		}
 	}

@@ -22,9 +22,9 @@ public:
 	 @brief Class constructor.
 	 @param aDrawMode Mesh draw mode.
 	 @param aVertexBuffer Vertex buffer.
-	 @param aIndexedDrawInfoList Array of possible materials, with corresponding index buffers.
+	 @param aIndexedDrawInfoArray Array of possible materials, with corresponding index buffers.
 	 */
-	OMeshGeometry(ORenderMode aDrawMode, OVertexBuffer&& aVertexBuffer, OIndexedDrawInfo::Array&& aIndexedDrawInfoList);
+	OMeshGeometry(ORenderMode aDrawMode, OVertexBuffer&& aVertexBuffer, OIndexedDrawInfo::Array&& aIndexedDrawInfoArray);
 
 	/**
 	 @brief Move constructor. 
@@ -68,10 +68,10 @@ private:
 	OIndexedDrawInfo::Array	_indexedDrawInfoArray;
 };
 
-inline OMeshGeometry::OMeshGeometry (ORenderMode aDrawMode, OVertexBuffer&& aVertexBuffer, OIndexedDrawInfo::Array&& aIndexedDrawInfoList) :
+inline OMeshGeometry::OMeshGeometry (ORenderMode aDrawMode, OVertexBuffer&& aVertexBuffer, OIndexedDrawInfo::Array&& aIndexedDrawInfoArray) :
 	_drawMode(aDrawMode),
 	_vertexBuffer(std::move(aVertexBuffer)),
-	_indexedDrawInfoArray(std::move(_indexedDrawInfoArray))
+	_indexedDrawInfoArray(std::move(aIndexedDrawInfoArray))
 {
 }
 
