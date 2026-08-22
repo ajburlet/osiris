@@ -44,7 +44,7 @@ out vec4 outputColor;
 void main()
 {
 	outputColor = vec4(0.0f, 0.0f, 1.0f, 0.5f);
-	//outputColor = smoothColor;
+	outputColor = smoothColor;
 }
 
 
@@ -54,7 +54,7 @@ constexpr char glsl_OMesh_vertex[] = R"(
 #version 330
 
 layout (location = 0) in vec4 position;
-//layout (location = 1) in vec4 color;
+layout (location = 1) in vec4 color;
 
 smooth out vec4 smoothColor;
 
@@ -63,7 +63,7 @@ uniform mat4 uMvpTransform;
 void main()
 {
 	gl_Position = uMvpTransform * position;
-	//smoothColor = color;
+	smoothColor = color;
 }
 
 
