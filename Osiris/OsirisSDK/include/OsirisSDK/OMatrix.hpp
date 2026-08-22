@@ -10,11 +10,11 @@
 /**
  @brief Base template matrix class.
  */
-template <uint8_t L, uint8_t C, typename T, glm::qualifier Q>
-class OMatrix : public OMathPrimitive<glm::mat<L, C, T, Q>>
+template <class DerivedType, uint8_t L, uint8_t C, typename T, glm::qualifier Q>
+class OMatrix : public OMathPrimitive<DerivedType, glm::mat<L, C, T, Q>>
 {
 private:
-	using Super = OMathPrimitive<glm::mat<L, C, T, Q>>;
+	using Super = OMathPrimitive<DerivedType, glm::mat<L, C, T, Q>>;
 
 public:
 	using Super::GLMType;
@@ -57,14 +57,14 @@ public:
 	virtual T value(uint8_t aRow, uint8_t aCol) const = 0;
 };
 
-template<uint8_t L, uint8_t C, typename T, glm::qualifier Q>
-inline OMatrix<L, C, T, Q>::OMatrix(const Super & aOther) :
+template<class DerivedType, uint8_t L, uint8_t C, typename T, glm::qualifier Q>
+inline OMatrix<DerivedType, L, C, T, Q>::OMatrix(const Super & aOther) :
 	Super(aOther)
 {
 }
 
-template<uint8_t L, uint8_t C, typename T, glm::qualifier Q>
-inline OMatrix<L, C, T, Q>::OMatrix(const typename Super::GLMType & aGLM) :
+template<class DerivedType, uint8_t L, uint8_t C, typename T, glm::qualifier Q>
+inline OMatrix<DerivedType, L, C, T, Q>::OMatrix(const typename Super::GLMType & aGLM) :
 	Super(aGLM)
 {
 }
@@ -73,10 +73,10 @@ inline OMatrix<L, C, T, Q>::OMatrix(const typename Super::GLMType & aGLM) :
  @brief Represents 4x4 matrices.
 */
 template <typename T, glm::qualifier Q>
-class OMatrix4x4 : public OMatrix<4, 4, T, Q> 
+class OMatrix4x4 : public OMatrix<OMatrix4x4<T, Q>, 4, 4, T, Q> 
 {
 private:
-	using Super = OMatrix<4, 4, T, Q>; 
+	using Super = OMatrix<OMatrix4x4<T, Q>, 4, 4, T, Q>; 
 
 public:
 	/**

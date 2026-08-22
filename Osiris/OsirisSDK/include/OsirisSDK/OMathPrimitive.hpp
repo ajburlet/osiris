@@ -10,15 +10,10 @@
 /**
  \brief Template class for the GLM-based classes in OMath.
  */
-template <class MType> 
+template <class DerivedType, class MType> 
 class OMathPrimitive
 {
 public:
-	/**
-	 @brief Primitive supertype alias.
-	 */
-	//using Super = typename OMathPrimitive<MType>;
-
 	/**
 	 @brief The underlying GLM object type alias.
 	 */
@@ -37,7 +32,7 @@ public:
 	/**
 	 \brief Copy constructor.
 	 */
-	OMathPrimitive(const OMathPrimitive<MType>& in);
+	OMathPrimitive(const OMathPrimitive<DerivedType, MType>& in);
 
 	/**
 	 \brief Class constructor from GLM object (for internal usage only).
@@ -53,32 +48,32 @@ public:
 	/**
 	 \brief Creates a normalized object out of the current one.
 	*/
-	OMathPrimitive<MType> normalize();
+	DerivedType normalize() const;
 
 	/**
 	 \brief Size of the object.
 	 */
 	float magnitude() const;
 
-	OMathPrimitive<MType>& operator=(const OMathPrimitive<MType>& in);
-	OMathPrimitive<MType>& operator*=(const OMathPrimitive<MType>& in);
-	OMathPrimitive<MType> operator*(const OMathPrimitive<MType>& in) const;
-	OMathPrimitive<MType>& operator+=(const OMathPrimitive<MType>& in);
-	OMathPrimitive<MType> operator+(const OMathPrimitive<MType>& in) const;
-	OMathPrimitive<MType>& operator-=(const OMathPrimitive<MType>& in);
-	OMathPrimitive<MType> operator-(const OMathPrimitive<MType>& in) const;
+	DerivedType& operator=(const DerivedType& in);
+	DerivedType& operator*=(const DerivedType& in);
+	DerivedType operator*(const DerivedType& in) const;
+	DerivedType& operator+=(const DerivedType& in);
+	DerivedType operator+(const DerivedType& in) const;
+	DerivedType& operator-=(const DerivedType& in);
+	DerivedType operator-(const DerivedType& in) const;
 
-	OMathPrimitive<MType>& operator*=(ValueType x);
-	virtual OMathPrimitive<MType> operator*(ValueType x) const;
-	OMathPrimitive<MType>& operator/=(ValueType x);
-	virtual OMathPrimitive<MType> operator/(ValueType x) const;
+	DerivedType& operator*=(ValueType x);
+	virtual DerivedType operator*(ValueType x) const;
+	DerivedType& operator/=(ValueType x);
+	virtual DerivedType operator/(ValueType x) const;
 	
-	bool operator==(const OMathPrimitive<MType>& in) const;
-	bool operator!=(const OMathPrimitive<MType>& in) const;
+	bool operator==(const DerivedType& in) const;
+	bool operator!=(const DerivedType& in) const;
 
-	OMathPrimitive<MType>& operator=(const MType& in);
-	OMathPrimitive<MType>& operator*=(const MType& in);
-	OMathPrimitive<MType> operator*(const MType& in);
+	DerivedType& operator=(const MType& in);
+	DerivedType& operator*=(const MType& in);
+	DerivedType operator*(const MType& in);
 	bool operator==(const MType& in) const;
 	bool operator!=(const MType& in) const;
 
@@ -104,176 +99,188 @@ protected:
 };
 
 
-template<class MType>
-inline OMathPrimitive<MType>::OMathPrimitive()
+template<class DerivedType, class MType>
+inline OMathPrimitive<DerivedType, MType>::OMathPrimitive()
 {
 }
 
-template<class MType>
-inline OMathPrimitive<MType>::OMathPrimitive(const OMathPrimitive<MType>& in) :
+template<class DerivedType, class MType>
+inline OMathPrimitive<DerivedType, MType>::OMathPrimitive(const OMathPrimitive<DerivedType, MType>& in) :
 	_glmInternal(in._glmInternal)
 {
 }
 
-template<class MType>
-inline OMathPrimitive<MType>::OMathPrimitive(const MType & in) : 
+template<class DerivedType, class MType>
+inline OMathPrimitive<DerivedType, MType>::OMathPrimitive(const MType & in) : 
 	_glmInternal(in)
 {
 }
 
-template<class MType>
-inline OMathPrimitive<MType>::~OMathPrimitive()
+template<class DerivedType, class MType>
+inline OMathPrimitive<DerivedType, MType>::~OMathPrimitive()
 {
 }
 
-template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::normalize()
+template<class DerivedType, class MType>
+inline DerivedType 
+OMathPrimitive<DerivedType, MType>::normalize() const
 {
-	return OMathPrimitive<MType>(glm::normalize(_glmInternal));
+	return DerivedType(glm::normalize(_glmInternal));
 }
 
-template<class MType>
-inline float OMathPrimitive<MType>::magnitude() const
+template<class DerivedType, class MType>
+inline float OMathPrimitive<DerivedType, MType>::magnitude() const
 {
 	return glm::length(_glmInternal);
 }
 
-template<class MType>
-inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator=(const OMathPrimitive<MType>& in)
+template<class DerivedType, class MType>
+inline DerivedType& 
+OMathPrimitive<DerivedType, MType>::operator=(const DerivedType& in)
 {
 	_glmInternal = in._glmInternal;
 	return *this;
 }
 
-template<class MType>
-inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator*=(const OMathPrimitive<MType>& in)
+template<class DerivedType, class MType>
+inline DerivedType& 
+OMathPrimitive<DerivedType, MType>::operator*=(const DerivedType& in)
 {
 	_glmInternal *= in._glmInternal;
-	return *this;
+	return *reinterpret_cast<DerivedType*>(this);
 }
 
-template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(const OMathPrimitive<MType>& in) const
+template<class DerivedType, class MType>
+inline DerivedType 
+OMathPrimitive<DerivedType, MType>::operator*(const DerivedType& in) const
 {
-	OMathPrimitive<MType> res;
+	DerivedType res;
 	res._glmInternal = this->_glmInternal * in._glmInternal;
 	return res;
 }
 
-template<class MType>
-inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator+=(const OMathPrimitive<MType>& in)
+template<class DerivedType, class MType>
+inline DerivedType& 
+OMathPrimitive<DerivedType, MType>::operator+=(const DerivedType& in)
 {
 	_glmInternal += in._glmInternal;
-	return *this;
+	return *reinterpret_cast<DerivedType>(this);
 }
 
-template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator+(const OMathPrimitive<MType>& in) const
+template<class DerivedType, class MType>
+inline DerivedType 
+OMathPrimitive<DerivedType, MType>::operator+(const DerivedType& in) const
 {
-	OMathPrimitive<MType> res;
+	DerivedType res;
 	res._glmInternal = this->_glmInternal + in._glmInternal;
 	return res;
 }
 
-template<class MType>
-inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator-=(const OMathPrimitive<MType>& in)
+template<class DerivedType, class MType>
+inline DerivedType& 
+OMathPrimitive<DerivedType, MType>::operator-=(const DerivedType& in)
 {
 	_glmInternal -= in._glmInternal;
-	return *this;
+	return *reinterpret_cast<DerivedType*>(this);
 }
 
-template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator-(const OMathPrimitive<MType>& in) const
+template<class DerivedType, class MType>
+inline DerivedType 
+OMathPrimitive<DerivedType, MType>::operator-(const DerivedType& in) const
 {
-	OMathPrimitive<MType> res;
+	DerivedType res;
 	res._glmInternal = this->_glmInternal - in._glmInternal;
 	return res;
 }
 
-template<class MType>
-inline OMathPrimitive<MType>& OMathPrimitive<MType>::operator*=(ValueType x)
+template<class DerivedType, class MType>
+inline DerivedType& 
+OMathPrimitive<DerivedType, MType>::operator*=(ValueType x)
 {
 	_glmInternal *= x;
-	return *this;
+	return *reinterpret_cast<DerivedType*>(this);
 }
 
-template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(ValueType x) const
+template<class DerivedType, class MType>
+inline DerivedType 
+OMathPrimitive<DerivedType, MType>::operator*(ValueType x) const
 {
-	OMathPrimitive<MType> res;
+	DerivedType res;
 	res._glmInternal = _glmInternal * x;
 	return res;
 }
 
-template<class MType>
-inline OMathPrimitive<MType>& OMathPrimitive<MType>::operator/=(ValueType x)
+template<class DerivedType, class MType>
+inline DerivedType& 
+OMathPrimitive<DerivedType, MType>::operator/=(ValueType x)
 {
 	_glmInternal /= x;
 	return *this;
 }
 
-template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator/(ValueType x) const
+template<class DerivedType, class MType>
+inline DerivedType 
+OMathPrimitive<DerivedType, MType>::operator/(ValueType x) const
 {
-	OMathPrimitive<MType> res;
+	DerivedType res;
 	res._glmInternal = _glmInternal / x;
 	return res;
 }
 
-template<class MType>
-inline bool OMathPrimitive<MType>::operator==(const OMathPrimitive<MType>& in) const
+template<class DerivedType, class MType>
+inline bool OMathPrimitive<DerivedType, MType>::operator==(const DerivedType& in) const
 {
 	return (_glmInternal == in._glmInternal);
 }
 
-template<class MType>
-inline bool OMathPrimitive<MType>::operator!=(const OMathPrimitive<MType>& in) const
+template<class DerivedType, class MType>
+inline bool OMathPrimitive<DerivedType, MType>::operator!=(const DerivedType& in) const
 {
 	return (_glmInternal != in._glmInternal);
 }
 
-template<class MType>
-inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator=(const MType & in)
+template<class DerivedType, class MType>
+inline DerivedType & OMathPrimitive<DerivedType, MType>::operator=(const MType & in)
 {
 	_glmInternal = in;
 	return *this;
 }
 
-template<class MType>
-inline OMathPrimitive<MType> & OMathPrimitive<MType>::operator*=(const MType & in)
+template<class DerivedType, class MType>
+inline DerivedType & OMathPrimitive<DerivedType, MType>::operator*=(const MType & in)
 {
 	_glmInternal *= in;
-	return *this;
+	return *reinterpret_cast<DerivedType*>(this);
 }
 
-template<class MType>
-inline OMathPrimitive<MType> OMathPrimitive<MType>::operator*(const MType & in)
+template<class DerivedType, class MType>
+inline DerivedType OMathPrimitive<DerivedType, MType>::operator*(const MType & in)
 {
-	OMathPrimitive<MType> res;
+	DerivedType res;
 	res = _glmInternal * in;
-	return *this;
+	return res;
 }
 
-template<class MType>
-inline bool OMathPrimitive<MType>::operator==(const MType & in) const
+template<class DerivedType, class MType>
+inline bool OMathPrimitive<DerivedType, MType>::operator==(const MType & in) const
 {
 	return (_glmInternal == in);
 }
 
-template<class MType>
-inline bool OMathPrimitive<MType>::operator!=(const MType & in) const
+template<class DerivedType, class MType>
+inline bool OMathPrimitive<DerivedType, MType>::operator!=(const MType & in) const
 {
 	return (_glmInternal != in);
 }
 
-template<class MType>
-inline void OMathPrimitive<MType>::setGlm(const MType & glm)
+template<class DerivedType, class MType>
+inline void OMathPrimitive<DerivedType, MType>::setGlm(const MType & glm)
 {
 	_glmInternal = glm;
 }
 
-template<class MType>
-inline const MType & OMathPrimitive<MType>::glm() const
+template<class DerivedType, class MType>
+inline const MType & OMathPrimitive<DerivedType, MType>::glm() const
 {
 	return _glmInternal;
 }
@@ -281,8 +288,8 @@ inline const MType & OMathPrimitive<MType>::glm() const
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-template<class MType>
-inline const GLfloat * OMathPrimitive<MType>::glArea() const
+template<class DerivedType, class MType>
+inline const GLfloat * OMathPrimitive<DerivedType, MType>::glArea() const
 {
 	return glm::value_ptr(_glmInternal);
 }

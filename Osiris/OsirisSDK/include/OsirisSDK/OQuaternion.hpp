@@ -10,10 +10,10 @@
 #include "OsirisSDK/OQuaternionDefs.h"
 
 template <typename T = float, glm::qualifier Q = glm::defaultp>
-class OBaseQuaternion : public OMathPrimitive<glm::qua<T, Q>>
+class OBaseQuaternion : public OMathPrimitive<OBaseQuaternion<T, Q>, glm::qua<T, Q>>
 {
 private:
-	using Super = OMathPrimitive<glm::qua<T, Q>>;
+	using Super = OMathPrimitive<OBaseQuaternion<T, Q>, glm::qua<T, Q>>;
 
 public:
 	using Super::GLMType;

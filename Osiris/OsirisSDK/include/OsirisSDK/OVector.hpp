@@ -15,11 +15,11 @@
 /**
  @brief Base template vector class.
  */
-template <uint8_t Dim, typename T, glm::qualifier Q = glm::defaultp>
-class OVector : public OMathPrimitive<glm::vec<Dim, T, Q>>
+template <typename DerivedType, uint8_t Dim, typename T, glm::qualifier Q = glm::defaultp>
+class OVector : public OMathPrimitive<DerivedType, glm::vec<Dim, T, Q>>
 {
 private:
-	using Super = OMathPrimitive<glm::vec<Dim, T, Q>>;
+	using Super = OMathPrimitive<DerivedType, glm::vec<Dim, T, Q>>;
 
 protected:
 	using Super::GLMType;
@@ -68,32 +68,32 @@ public:
 	const T& operator[](OVectorAxis aComponent) const;
 };
 
-template<uint8_t Dim, typename T, glm::qualifier Q>
-inline OVector<Dim, T, Q>::OVector(const Super & aOther) :
+template<typename DerivedType, uint8_t Dim, typename T, glm::qualifier Q>
+inline OVector<DerivedType, Dim, T, Q>::OVector(const Super & aOther) :
 	Super(aOther)
 {
 }
 
-template<uint8_t Dim, typename T, glm::qualifier Q>
-inline OVector<Dim, T, Q>::OVector(const typename Super::GLMType & aGLM) :
+template<typename DerivedType, uint8_t Dim, typename T, glm::qualifier Q>
+inline OVector<DerivedType, Dim, T, Q>::OVector(const typename Super::GLMType & aGLM) :
 	Super(aGLM)
 {
 }
 
-template<uint8_t Dim, typename T, glm::qualifier Q>
-inline const T & OVector<Dim, T, Q>::getComponent(OVectorAxis aComponent) const
+template<typename DerivedType, uint8_t Dim, typename T, glm::qualifier Q>
+inline const T & OVector<DerivedType, Dim, T, Q>::getComponent(OVectorAxis aComponent) const
 {
 	return static_cast<const T&>(const_cast<OVector*>(this)->getComponent(aComponent));
 }
 
-template <uint8_t Dim, typename T, glm::qualifier Q>
-inline T& OVector<Dim, T, Q>::operator[](OVectorAxis aComponent)
+template<typename DerivedType, uint8_t Dim, typename T, glm::qualifier Q>
+inline T& OVector<DerivedType, Dim, T, Q>::operator[](OVectorAxis aComponent)
 {
 	return getComponent(aComponent);
 }
 
-template<uint8_t Dim, typename T, glm::qualifier Q>
-inline const T & OVector<Dim, T, Q>::operator[](OVectorAxis aComponent) const
+template<typename DerivedType, uint8_t Dim, typename T, glm::qualifier Q>
+inline const T & OVector<DerivedType, Dim, T, Q>::operator[](OVectorAxis aComponent) const
 {
 	return getComponent(aComponent);
 }
@@ -102,10 +102,10 @@ inline const T & OVector<Dim, T, Q>::operator[](OVectorAxis aComponent) const
  @brief Represents two-dimentional vectors.
  */
 template <typename T, glm::qualifier Q = glm::defaultp>
-class OVector2 : public OVector<2, T, Q>
+class OVector2 : public OVector<OVector2<T, Q>, 2, T, Q>
 {
 private:
-	using Super=OVector<2, T, Q>;
+	using Super=OVector<OVector2<T, Q>, 2, T, Q>;
 	using Super::GLMType;
 
 public:
@@ -140,24 +140,6 @@ public:
 	 */
 	~OVector2() = default;
 	
-	/**
-	 @brief Assignment operator.
-	 @param aOther GLM base object. 
-	 */
-	OVector2& operator= (const typename Super::GLMType& aOther);
-
-	/**
-	 @brief Addition operator.
-	 @param aOther The vector to be added.
-	 */
-	OVector2& operator+ (const OVector2& aOther);
-
-	/**
-	 @brief Subtraction operator.
-	 @param aOther The vector to be subtracted from.
-	 */
-	OVector2& operator- (const OVector2& aOther);
-
 	/**
 	 @copydoc OVector::getComponent(OVectorAxis)
 	 */
@@ -209,28 +191,6 @@ inline OVector2<T, Q>::OVector2(T aX, T aY) :
 }
 
 template<typename T, glm::qualifier Q>
-inline OVector2<T, Q>& OVector2<T, Q>::operator=(const typename Super::GLMType& aOther)
-{
-	Super::operator=(aOther);
-	return *this;
-}
-
-template<typename T, glm::qualifier Q>
-inline OVector2<T, Q>& OVector2<T, Q>::operator+(const OVector2& aOther)
-{
-	Super::operator+(aOther);
-	return *this;
-}
-
-template<typename T, glm::qualifier Q>
-inline OVector2<T, Q>& OVector2<T, Q>::operator-(const OVector2& aOther)
-{
-	Super::operator-(aOther);
-	return *this;
-}
-
-
-template<typename T, glm::qualifier Q>
 inline T & OVector2<T, Q>::getComponent(OVectorAxis aComponent)
 {
 	switch (aComponent) {
@@ -268,10 +228,10 @@ inline T OVector2<T, Q>::y() const
  @brief Represents three-dimentional vectors.
 */
 template <typename T, glm::qualifier Q = glm::defaultp>
-class OVector3 : public OVector<3, T, Q>
+class OVector3 : public OVector<OVector3<T, Q>, 3, T, Q>
 {
 private:
-	using Super = OVector<3, T, Q>;
+	using Super = OVector<OVector3<T, Q>, 3, T, Q>;
 	using Super::GLMType;
 
 public:
@@ -310,36 +270,6 @@ public:
 	 @brief Class destructor.
 	*/
 	virtual ~OVector3() = default;
-
-	/**
-	 @brief Assignment operator.
-	 @param aOther GLM base object. 
-	 */
-	OVector3& operator= (const typename Super::GLMType& aOther);
-
-	/**
-	 @brief Addition operator.
-	 @param aOther The vector to be added.
-	 */
-	OVector3& operator+ (const OVector3& aOther);
-
-	/**
-	 @brief Subtraction operator.
-	 @param  aOther The vector to be subtracted from.
-	 */
-	OVector3& operator- (const OVector3& aOther);
-
-	/**
-	 @brief Multiplies the vector components by a factor.
-	 @param aFactor The factor the components are to be multiplied by. 
-	 */
-	OVector3& operator*(double aFactor);
-
-	/**
-	 @brief Divides the vector components by a factor.
-	 @param aFactor The factor the components are to be divided by. 
-	 */
-	OVector3& operator/ (double aFactor);
 
 	/**
 	 @copydoc OVector::getComponent(OVectorAxis)
@@ -469,41 +399,6 @@ template<typename T, glm::qualifier Q>
 inline OVector3<T, Q>::OVector3(T aX, T aY, T aZ) :
 	Super(GLMType(aX, aY, aZ))
 {
-}
-
-template<typename T, glm::qualifier Q>
-inline OVector3<T, Q>& OVector3<T, Q>::operator=(const typename Super::GLMType& aOther)
-{
-	Super::operator=(aOther);
-	return *this;
-}
-
-template<typename T, glm::qualifier Q>
-inline OVector3<T, Q>& OVector3<T, Q>::operator+(const OVector3& aOther)
-{
-	Super::operator+(aOther);
-	return *this;
-}
-
-template<typename T, glm::qualifier Q>
-inline OVector3<T, Q>& OVector3<T, Q>::operator-(const OVector3& aOther)
-{
-	Super::operator-(aOther);
-	return *this;
-}
-
-template<typename T, glm::qualifier Q>
-inline OVector3<T, Q>& OVector3<T, Q>::operator*(double aFactor)
-{
-	Super::operator*(aFactor);
-	return *this;
-}
-
-template<typename T, glm::qualifier Q>
-inline OVector3<T, Q>& OVector3<T, Q>::operator/(double aFactor)
-{
-	Super::operator/(aFactor);
-	return *this;
 }
 
 template<typename T, glm::qualifier Q>
@@ -638,10 +533,10 @@ inline OVector3<T, Q> OVector3<T, Q>::toCartesian() const
  @brief Represents four-dimentional vectors.
 */
 template <typename T, glm::qualifier Q>
-class OVector4 : public OVector<4, T, Q> 
+class OVector4 : public OVector<OVector4<T, Q>, 4, T, Q> 
 {
 private:
-	using Super = OVector<4, T, Q>; 
+	using Super = OVector<OVector4<T, Q>, 4, T, Q>; 
 	using Super::GLMType;
 
 public:
@@ -691,25 +586,6 @@ public:
 	virtual ~OVector4() = default;
 	
 	/**
-	 @brief Assignment operator.
-	 @param aOther GLM base object. 
-	 */
-	OVector4& operator= (const typename Super::GLMType& aOther);
-
-	/**
-	 @brief Addition operator.
-	 @param aOther The vector to be added.
-	 */
-	OVector4& operator+ (const OVector4& aOther);
-
-	/**
-	 @brief Subtraction operator.
-	 @param  aOther The vector to be subtracted from.
-	 */
-	OVector4& operator- (const OVector4& aOther);
-
-
-	/**
 	 @copydoc OVector::getComponent(OVectorAxis)
 	 */
 	T& getComponent(OVectorAxis aComponent) override;
@@ -757,19 +633,19 @@ public:
 
 template<typename T, glm::qualifier Q>
 inline OVector4<T, Q>::OVector4(const OVector4 & aOther) :
-	OVector(aOther)
+	Super(aOther)
 {
 }
 
 template<typename T, glm::qualifier Q>
 inline OVector4<T, Q>::OVector4(const typename Super::GLMType & aOther) :
-	OVector(aOther)
+	Super(aOther)
 {
 }
 
 template<typename T, glm::qualifier Q>
 inline OVector4<T, Q>::OVector4(T aValue) :
-	OVector(GLMType(aValue))
+	Super(GLMType(aValue))
 {
 }
 
@@ -783,27 +659,6 @@ template<typename T, glm::qualifier Q>
 inline OVector4<T, Q>::OVector4(const OVector3<T, Q>& aVec3, float aW) :
 	Super(GLMType(aVec3.x(), aVec3.y(), aVec3.z(), aW))
 {
-}
-
-template<typename T, glm::qualifier Q>
-inline OVector4<T, Q>& OVector4<T, Q>::operator=(const typename Super::GLMType& aOther)
-{
-	Super::operator=(aOther);
-	return *this;
-}
-
-template<typename T, glm::qualifier Q>
-inline OVector4<T, Q>& OVector4<T, Q>::operator+(const OVector4& aOther)
-{
-	Super::operator+(aOther);
-	return *this;
-}
-
-template<typename T, glm::qualifier Q>
-inline OVector4<T, Q>& OVector4<T, Q>::operator-(const OVector4& aOther)
-{
-	Super::operator-(aOther);
-	return *this;
 }
 
 template<typename T, glm::qualifier Q>
