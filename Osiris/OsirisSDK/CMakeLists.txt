@@ -6,6 +6,8 @@ set(SHADER_DIR shaders)
 set (BASE_SOURCES
 	${SRC_DIR}/OApplication.cpp
 	${HDR_DIR}/OApplication.h
+	${SRC_DIR}/OError.cpp
+	${HDR_DIR}/OError.h
 	${SRC_DIR}/OEvent.cpp
 	${HDR_DIR}/OEvent.h
 	${HDR_DIR}/OEventDefs.h
