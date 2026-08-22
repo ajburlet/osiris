@@ -139,21 +139,21 @@ OState * OCamera::state()
 
 OMatrixStack* OCamera::transform()
 {
-	/* perspective transformation */
-	bool popCameraTransform = true;
+	// perspective transformation
 	if (_impl->perspectiveChanged) {
-		if (!_impl->transform.isEmpty()) {
-			_impl->transform.pop(); /* pop camera */
-			_impl->transform.pop(); /* pop perspective */
-		}
+		_impl->transform.clear();
 		_impl->transform.perspective(_impl->fieldOfViewDeg, _impl->aspectRatio, _impl->zNear, _impl->zFar);
-		
-		popCameraTransform = false; /* camera transform will still be created */
+	} else {
+		// pop camera transform
+		_impl->transform.pop(); 
 	}
 
-	if (popCameraTransform) _impl->transform.pop();
 	_impl->transform.push();
-	_impl->transform.camera(state()->position(), state()->position() + state()->orientation()*OVector3F(0.0f, 0.0f, -1.0f));
+
+	const auto position = state()->position();
+	const auto orientation = state()->orientation()*OVector3F(0.0f, 0.0f, -1.0f);
+	_impl->transform.camera(position, position + orientation);
+
 	return &_impl->transform;
 }
 
