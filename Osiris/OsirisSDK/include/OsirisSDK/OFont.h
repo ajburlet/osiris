@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "OsirisSDK/defs.h"
 
@@ -81,7 +82,7 @@ private:
 	 @cond HIDDEN
 	 */
 	struct Impl;
-	Impl* _impl = nullptr;
+	std::unique_ptr<Impl> _impl;
 	/**
 	 @endcond
 	 */
@@ -90,9 +91,4 @@ private:
 	void loadToCache(uint8_t aSize);
 };
 
-inline OFont::OFont(OFont&& aOther)
-{
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
-}
 

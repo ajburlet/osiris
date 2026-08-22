@@ -19,6 +19,10 @@ using namespace std;
 
 
 struct OFont::Impl {
+	~Impl();
+
+	void cleanCache();
+
 	struct CacheEntry {
 		ORenderComponents*	renderComponents	= nullptr;
 		uint16_t		advanceX		= 0;
@@ -40,14 +44,35 @@ struct OFont::Impl {
 	static OVertexBufferDescriptor*	vertexBufferDescriptor;
 };
 
+OFont::Impl::~Impl()
+{
+	if (face != nullptr) FT_Done_Face(face);
+	this->cleanCache();	
+}
+
+void OFont::Impl::cleanCache()
+{
+	for (auto& entry : cache) {
+		if (entry != nullptr) {
+			for (auto ce: *entry) {
+				if (ce.renderComponents != nullptr) {
+					renderingEngine->unload(ce.renderComponents);
+					renderingEngine->trashBin().trash(ce.renderComponents);
+				}
+			}
+			delete entry;
+		}
+	}
+	cache.clear();
+}
+
 FT_Library OFont::Impl::library = nullptr;
 OVertexBufferDescriptor* OFont::Impl::vertexBufferDescriptor = nullptr;
 
 OFont::OFont(ORenderingEngine* aRenderingEngine, const char* aFontName)
+	: _impl(std::make_unique<OFont::Impl>())
 {
-	OExPointerCheck(_impl = new Impl);
-	_impl->cache.changeCapacity(Impl::maxFontSize - Impl::minFontSize);
-	for (uint32_t i = 0; i < _impl->cache.capacity(); i++) _impl->cache[i] = nullptr;
+	_impl->cache.resizeInit(Impl::maxFontSize - Impl::minFontSize, nullptr);
 	_impl->renderingEngine = aRenderingEngine;
 	init();
 
@@ -72,37 +97,22 @@ OFont::OFont(ORenderingEngine* aRenderingEngine, const char* aFontName)
 	}
 }
 
-OFont::~OFont()
+OFont::OFont(OFont&& aOther)
 {
-	cleanCache();
-	if (_impl->face != NULL) FT_Done_Face(_impl->face);
-	if (_impl != nullptr) delete _impl;
+	_impl = std::move(aOther)._impl;
 }
+
+OFont::~OFont() = default;
 
 OFont& OFont::operator=(OFont&& aOther)
 {
-	if (_impl != nullptr) {
-		delete _impl;
-	}
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
+	_impl = std::move(aOther)._impl;
 	return *this;
 }
 
 void OFont::cleanCache()
 {
-	for (auto& entry : _impl->cache) {
-		if (entry != nullptr) {
-			for (auto ce: *entry) {
-				if (ce.renderComponents != nullptr) {
-					_impl->renderingEngine->unload(ce.renderComponents);
-					_impl->renderingEngine->trashBin().trash(ce.renderComponents);
-				}
-			}
-			delete entry;
-		}
-	}
-	_impl->cache.clear();
+	_impl->cleanCache();
 }
 
 void OFont::loadGlyph(OGlyph& aGlyph, char aCharCode, uint8_t aSize, const OVector4FL& aColor)
@@ -136,7 +146,7 @@ void OFont::loadToCache(uint8_t aSize)
 	auto& sizeCache = _impl->cache[aSize-Impl::minFontSize];
 	if (sizeCache != nullptr) throw OEx("Font size already loaded.");
 
-	OExPointerCheck(sizeCache = new Impl::GlyphArray(UINT8_MAX+1));
+	OExPointerCheck(sizeCache = new Impl::GlyphArray(UINT8_MAX+1, true));
 	ORenderComponents* renderComponents = nullptr;
 	OVertexBuffer* vertexBuffer = nullptr;
 	OTexture* texture = nullptr;
