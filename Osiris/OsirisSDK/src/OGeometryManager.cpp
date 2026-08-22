@@ -1,12 +1,13 @@
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OMap.hpp"
+#include "OsirisSDK/OList.hpp"
 #include "OsirisSDK/OString.hpp"
 #include "OsirisSDK/ORefCountObject.hpp"
 #include "OsirisSDK/OMeshGeometry.h"
 #include "OsirisSDK/OVertexBuffer.h"
 #include "OsirisSDK/OIndexBuffer.h"
 #include "OsirisSDK/OShaderArgument.h"
-#include "OsirisSDK/OWavefrontObjectFile.h"
+#include "OsirisSDK/OObjMeshFile.h"
 #include "OsirisSDK/OGeometryManager.h"
 
 using Allocator = OGraphicsAllocators::Default;
@@ -73,7 +74,7 @@ void OGeometryManager::registerFile(FileType aFileType, const OString& aFilename
 	OMeshFile* file = nullptr;
 	switch (aFileType) {
 	case FileType::WavefrontObjectFile:
-		file = new OWavefrontObjectFile(aFilename);
+		file = new OObjMeshFile(aFilename);
 		break;
 	}
 	OExPointerCheck(file);

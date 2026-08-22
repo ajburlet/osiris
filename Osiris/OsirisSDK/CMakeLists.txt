@@ -63,6 +63,10 @@ set (GRAPHICS_SOURCES
 	${SRC_DIR}/OMeshFile.cpp
 	${HDR_DIR}/OMeshFile.h
 	${HDR_DIR}/OMeshGeometry.h
+	${HDR_DIR}/OObjMeshFile.h
+	${SRC_DIR}/OObjMeshFile.cpp
+	${SRC_DIR}/OObjMeshFileTokenizer.h
+	${SRC_DIR}/OObjMeshFileTokenizer.cpp
 	${SRC_DIR}/ORenderable.cpp
 	${HDR_DIR}/ORenderable.h
 	${SRC_DIR}/ORenderComponents.cpp

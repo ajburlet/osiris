@@ -33,6 +33,7 @@ struct OMeshFile::RawData::Impl {
 	IndexMap		indexMap;
 	VertexDataArray		vertexDataArray;
 	OIndexedDrawInfo::Array	indexDrawInfoArray;
+	OString			currentMaterialName;
 
 	uint32_t getIndex(const Index& aIndex);
 };
@@ -115,14 +116,12 @@ void OMeshFile::RawData::addFace(const Face& aFace)
 void OMeshFile::RawData::useMaterial(OMaterial* aMaterial)
 {
 	_impl->indexDrawInfoArray.append(OIndexedDrawInfo(aMaterial));
+	_impl->currentMaterialName = aMaterial != nullptr ? aMaterial->name() : nullptr;
 }
 
 const OString& OMeshFile::RawData::currentMaterial() const
 {
-	if (_impl->indexDrawInfoArray.size() == 0 || _impl->indexDrawInfoArray.tail().material() == nullptr) {
-		return nullptr;
-	}
-	return _impl->indexDrawInfoArray.tail().material()->name();
+	return _impl->currentMaterialName;
 }
 
 OMeshFile::RawData::TexCoord& OMeshFile::RawData::texCoord(uint32_t aIndex)
