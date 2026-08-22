@@ -411,7 +411,7 @@ void ORenderingEngine::Impl::loadMeshUniforms(OMesh* aMesh)
 	// uniforms
 	addUniformToRenderable(aMesh, OVarType::Float4x4, 1, cMeshUniformMVPTransform,
 		[](OShaderUniformArgument& aArgumentInstance, const ORenderable* aMesh) {
-			aArgumentInstance.copyFrom(reinterpret_cast<const OMesh*>(aMesh)->matrixStack()->top().glArea());
+			aArgumentInstance.copyFrom(reinterpret_cast<const OMesh*>(aMesh)->mvp().glArea());
 	});
 }
 
