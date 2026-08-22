@@ -1,14 +1,16 @@
 #pragma once
 
+#include <memory>
+
 #include "GLdefs.h"
 #include "defs.h"
 
 #include "OsirisSDK/ORenderable.h"
 #include "OsirisSDK/OVisualObject.h"
 #include "OsirisSDK/OVectorDefs.h"
+#include "OsirisSDK/OMatrixDefs.h"
 #include "OsirisSDK/OCamera.h"
 
-class OMatrixStack;
 class ORenderingEngine;
 template <class RefCountT> class ORefCountPtr;
 class OMeshGeometry;
@@ -55,14 +57,9 @@ public:
 	OMesh& operator=(OMesh&& aOther);
 
 	/**
-	 @brief Sets the pointer to the matrix stack. 
+	 @brief Returns the mvp matrix. 
 	 */
-	void setMatrixStack(OMatrixStack* aMatrixStack);
-
-	/**
-	 @brief Returns the matrix stack.
-	 */
-	OMatrixStack* matrixStack() const;
+	const OMatrix4x4F& mvp() const;
 
 	/**
 	 @brief Sets the mesh geometry.
@@ -88,15 +85,9 @@ private:
 	 @cond HIDDEN
 	 */
 	struct Impl;
-	Impl* _impl = nullptr;
+	std::unique_ptr<Impl> _impl;
 	/**
 	 @endcond
 	 */
 
 };
-
-inline OMesh::OMesh(OMesh && aOther) : ORenderable(std::move(aOther))
-{
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
-}

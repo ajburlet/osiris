@@ -1,5 +1,6 @@
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/ORenderingEngine.h"
+#include "OsirisSDK/OMatrix.hpp"
 #include "OsirisSDK/OMatrixStack.h"
 #include "OsirisSDK/ORenderComponents.h"
 #include "OsirisSDK/ORefCountObject.hpp"
@@ -12,43 +13,42 @@
 struct OMesh::Impl {
 	ORefCountPtr<OMeshGeometry>	geometry	= nullptr;
 	ORefCountPtr<OTexture>		texture		= nullptr;
-	OMatrixStack*			matrixStack	= nullptr;
+	OMatrix4x4F					mvp{1.0f};
 };
 
-OMesh::OMesh() : ORenderable(ORenderable::Type::Mesh)
+OMesh::OMesh() 
+	: ORenderable(ORenderable::Type::Mesh)
+	, _impl(std::make_unique<OMesh::Impl>())
 {
-	OExPointerCheck(_impl = new Impl);
 	auto renderComponents = new ORenderComponents;
 	OExPointerCheck(renderComponents);
 	setRenderComponents(renderComponents);
 }
 
-OMesh::~OMesh()
+OMesh::OMesh(OMesh && aOther) 
+	: ORenderable(std::move(aOther))
+	, _impl(std::move(aOther)._impl)
 {
-	if (_impl != nullptr) delete _impl;
 }
 
-OMesh & OMesh::operator=(OMesh && aOther)
+OMesh::~OMesh() = default;
+
+OMesh & OMesh::operator=(OMesh&& aOther)
 {
 	if (renderComponents() != nullptr) {
 		delete renderComponents();
 		setRenderComponents(nullptr);
 	}
 
-	if (_impl) delete _impl;
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
+	_impl = std::move(aOther)._impl;
+
 	return *this;
 }
 
-void OMesh::setMatrixStack(OMatrixStack* aMatrixStack)
-{
-	_impl->matrixStack = aMatrixStack;
-}
 
-OMatrixStack* OMesh::matrixStack() const
+const OMatrix4x4F& OMesh::mvp() const
 {
-	return _impl->matrixStack;
+	return _impl->mvp;
 }
 
 void OMesh::setGeometry(ORefCountPtr<OMeshGeometry>& aGeometry, uint32_t aIndex)
@@ -77,6 +77,6 @@ void OMesh::setTexture(ORefCountPtr<OTexture>& aTexture)
 
 inline void OMesh::render(ORenderingEngine * aRenderingEngine, OMatrixStack * aMatrixStack)
 {
-	setMatrixStack(aMatrixStack);
+	_impl->mvp = aMatrixStack->top();
 	aRenderingEngine->render(this);
 }
