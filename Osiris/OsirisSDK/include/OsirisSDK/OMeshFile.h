@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OFile.h"
 #include "OsirisSDK/OMemoryManagedObject.h"
@@ -170,7 +172,7 @@ public:
 		/**
 		 @brief Array of indexed draw info (index buffer + material).
 		 */
-		OIndexedDrawInfo::Array&& indexedDrawInfoArray();
+		OIndexedDrawInfo::Array& indexedDrawInfoArray();
 
 		/**
 		 @brief Returns true if the geometry includes texture coordinates.
@@ -216,7 +218,7 @@ public:
 		 @cond HIDDEN
 		 */
 		struct Impl;
-		Impl* _impl = nullptr;
+		std::unique_ptr<Impl> _impl;
 		/**
 		 @endcond
 		 */

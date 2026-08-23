@@ -76,14 +76,11 @@ uint32_t OMeshFile::RawData::Impl::getIndex(const Index& aIndex)
 // Rawdata Implementation
 // ****************************************************************************
 OMeshFile::RawData::RawData()
+	: _impl(std::make_unique<OMeshFile::RawData::Impl>())
 {
-	OExPointerCheck(_impl = new Impl);
 }
 
-OMeshFile::RawData::~RawData()
-{
-	if (_impl != nullptr) delete _impl;
-}
+OMeshFile::RawData::~RawData() = default;
 
 void OMeshFile::RawData::addTexCoordinate(const TexCoord& aTexCoord)
 {
@@ -156,9 +153,9 @@ uint32_t OMeshFile::RawData::vertexCount () const
 	return _impl->vertexDataArray.size();
 }
 
-OIndexedDrawInfo::Array&& OMeshFile::RawData::indexedDrawInfoArray()
+OIndexedDrawInfo::Array& OMeshFile::RawData::indexedDrawInfoArray()
 {
-	return std::move(_impl->indexDrawInfoArray);
+	return _impl->indexDrawInfoArray;
 }
 
 bool OMeshFile::RawData::hasTexCoords() const
