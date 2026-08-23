@@ -164,7 +164,7 @@ inline DerivedType&
 OMathPrimitive<DerivedType, MType>::operator+=(const DerivedType& in)
 {
 	_glmInternal += in._glmInternal;
-	return *reinterpret_cast<DerivedType>(this);
+	return *reinterpret_cast<DerivedType*>(this);
 }
 
 template<class DerivedType, class MType>
