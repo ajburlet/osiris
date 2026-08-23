@@ -252,10 +252,11 @@ void OState::update(const OTimeIndex& timeIndex, int step_us)
 
 	/* update position */
 	if (_impl->components.size() > 0) {
+		const auto displacement = _impl->components[0] * (float)step_us;
 		if (_impl->orientationRef == Object) {
-			_impl->position += _impl->orientation * _impl->components[0] * (float)step_us;
+			_impl->position += _impl->orientation * displacement;
 		} else {
-			_impl->position += _impl->components[0] * (float)step_us;
+			_impl->position += displacement;
 		}
 	}
 }
