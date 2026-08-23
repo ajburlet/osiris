@@ -63,6 +63,11 @@ uint32_t OIndexBuffer::faceCount() const
 	return _impl->array.size();
 }
 
+uint32_t OIndexBuffer::indexCount() const
+{
+	return faceCount()*3;
+}
+
 uint32_t OIndexBuffer::size() const
 {
 	return faceCount() * sizeof(Point);

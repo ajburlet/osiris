@@ -77,6 +77,11 @@ public:
 	uint32_t faceCount() const;
 
 	/**
+	 @brief Returns the number of indices.
+	 */
+	uint32_t indexCount() const;
+
+	/**
 	 @brief Returns the total buffer size.
 	 */
 	uint32_t size() const;

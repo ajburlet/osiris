@@ -125,9 +125,12 @@ void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents * aRende
 	encode(Bind(aRenderComponents->depthTestingEnabled() ? glEnable : glDisable, GL_DEPTH_TEST));
 	encode(Bind(glDepthMask, aRenderComponents->depthBufferWriteEnabled() ? GL_TRUE : GL_FALSE));
 
-	encode([this, aRenderComponents]() {
-		glBindVertexArray(aRenderComponents->gpuHandleCastTo<GLuint>());
-	});
+	if (aRenderComponents->indexBuffer() != nullptr)
+	{
+		encode(Bind(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, aRenderComponents->indexBuffer()->gpuHandleCastTo<GLuint>()));
+	}
+
+	encode(Bind(glBindVertexArray, aRenderComponents->gpuHandleCastTo<GLuint>()));
 }
 
 void OOpenGLRenderCommandEncoder::setUniformArgument(OShaderUniformArgument * aUniformArgument)
@@ -237,7 +240,7 @@ void OOpenGLRenderCommandEncoder::draw(ORenderMode aRenderType)
 		encode(Bind(glDrawArrays, GL_TRIANGLES, 0, _vertexBuffer->vertexCount()));
 		break;
 	case ORenderMode::IndexedTriangle:
-		encode(Bind(glDrawElements, GL_TRIANGLES, _indexBuffer->faceCount(), GL_UNSIGNED_INT, nullptr));
+		encode(Bind(glDrawElements, GL_TRIANGLES, _indexBuffer->indexCount(), GL_UNSIGNED_INT, nullptr));
 		break;
 	case ORenderMode::TriangleStrip:
 		encode(Bind(glDrawArrays, GL_TRIANGLE_STRIP, 0, _vertexBuffer->vertexCount()));
