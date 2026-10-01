@@ -1,22 +1,30 @@
 #pragma once
 
+#include <memory>
+
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OVectorDefs.h"
+#include "OsirisSDK/OStringDefs.h"
 #include "OsirisSDK/OMemoryManagedObject.h"
 #include "OsirisSDK/OGraphicsAllocators.h"
+#include "OsirisSDK/OResource.h"
 
 /**
  @brief Mesh material definition class.
  */
-class OAPI OMaterial : public OMemoryManagedObject<OGraphicsAllocators::Default>
+class OAPI OMaterial : public OMemoryManagedObject<OGraphicsAllocators::Default>,
+					   public OResource
 {
+private:
+	using Super = OResource;
+
 public:
 	using Allocator = OGraphicsAllocators::Default;
 
 	/**
 	 @brief Class constructor.
 	 */
-	OMaterial(const char* aName);
+	OMaterial(OString&& aName="");
 
 	/**
 	 @brief Copy constructor.
@@ -34,19 +42,14 @@ public:
 	~OMaterial();
 
 	/**
-	 @brief Copy assignment operator.
-	 */
-	OMaterial& operator=(const OMaterial& aOther);
-
-	/**
 	 @brief Move assignment operator.
 	 */
 	OMaterial& operator=(OMaterial&& aOther);
 
 	/**
-	 @brief Returns material name.
+	 @brief Copy assignment operator.
 	 */
-	const char* name() const;
+	OMaterial& operator=(const OMaterial& aOther);
 
 	/**
 	 @brief Sets the ambient color.
@@ -151,7 +154,7 @@ private:
 	 @cond HIDDEN
 	 */
 	struct Impl;
-	Impl* _impl = nullptr;
+	std::unique_ptr<Impl> _impl;
 	/**
 	 @endcond
 	 */

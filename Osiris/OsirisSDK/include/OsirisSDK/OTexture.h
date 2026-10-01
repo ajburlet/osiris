@@ -1,48 +1,44 @@
 #pragma once
 
+#include <memory>
+
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OGraphicsDefinitions.h"
 #include "OsirisSDK/OGPUObject.h"
-#include "OsirisSDK/ORefCountObject.hpp"
+#include "OsirisSDK/OResource.h"
+#include "OsirisSDK/OMemoryManagedObject.h"
+#include "OsirisSDK/OGraphicsAllocators.h"
 
 /**
- @brief Represents the texture entity in GPUs. 
+ * @brief Represents the texture entity in GPUs. 
  */
-class OTexture : public OGPUObject, public ORefCountObject<>
+class OTexture : public OMemoryManagedObject<OGraphicsAllocators::Default>, 
+				 public OGPUObject, 
+				 public OResource
 {
 public:
 	/**
-	 @brief Class constructor.
+	 * @brief Class constructor.
 	 */
-	OTexture();
+	OTexture(OString&& name="");
 
 	/**
-	 @brief Deleted copy constructor.
+	 * @brief Move constructor.
 	 */
-	OTexture(const OTexture& aOther) = delete;
+	OTexture(OTexture&& other);
 
 	/**
-	 @brief Move constructor.
-	 */
-	OTexture(OTexture&& aOther);
-
-	/**
-	 @brief Class destructor.
+	 * @brief Class destructor.
 	 */
 	~OTexture();
 
 	/**
-	 @brief Deleted copy assignment operator.
-	 */
-	OTexture& operator=(const OTexture& aOther) = delete;
-
-	/**
-	 @brief Move assignment operator.
+	 * @brief Move assignment operator.
 	 */
 	OTexture& operator=(OTexture&& aOther);
 
 	/**
-	 @brief Filter type, to determine fragment color value between texture pixels.
+	 * @brief Filter type, to determine fragment color value between texture pixels.
 	 */
 	enum class FilterType {
 		Nearest=0,		/**< Uses nearest pixel value. */
@@ -55,27 +51,27 @@ public:
 	};
 
 	/**
-	 @brief Sets the minifying filter type.
+	 * @brief Sets the minifying filter type.
 	 */
 	void setMinFilter(FilterType aFilter);
 
 	/**
-	 @brief Sets the magnification filter type.
+	 * @brief Sets the magnification filter type.
 	 */
 	void setMagFilter(FilterType aFilter);
 
 	/**
-	 @brief Returns the minifying filter.
+	 * @brief Returns the minifying filter.
 	 */
 	FilterType minFilter() const;
 
 	/**
-	 @brief Returns the magnification filter.
+	 * @brief Returns the magnification filter.
 	 */
 	FilterType magFilter() const;
 
 	/**
-	 @brief Texture wrap mode.
+	 * @brief Texture wrap mode.
 	 */
 	enum WrapMode {
 		ClampToEdge=0,
@@ -87,7 +83,7 @@ public:
 	};
 
 	/**
-	 @brief Texture coordinate.
+	 * @brief Texture coordinate.
 	 */
 	enum Coordinate {
 		S,
@@ -96,20 +92,20 @@ public:
 	};
 
 	/**
-	 @brief Sets the texture wrap paramter for a texture coordinate.
-	 @param aCoordinate Texture coordinate.
-	 @param aWrapType The texture wrapping parameter.
+	 * @brief Sets the texture wrap paramter for a texture coordinate.
+	 * @param coordinate Texture coordinate.
+	 * @param wrapType The texture wrapping parameter.
 	 */
-	void setWrapType(Coordinate aCoordinate, WrapMode aWrapType);
+	void setWrapType(Coordinate coordinate, WrapMode wrapType);
 
 	/**
-	 @brief Returns the wrap parameter for a given texture coodinate.
-	 @param aCoordinate Texture coordinate.
+	 * @brief Returns the wrap parameter for a given texture coodinate.
+	 * @param coordinate Texture coordinate.
 	 */
-	WrapMode wrapType(Coordinate aCoordinate) const;
+	WrapMode wrapType(Coordinate coordinate) const;
 
 	/**
-	 @brief Pixel format.
+	 * @brief Pixel format.
 	 */
 	enum class PixelFormat {
 		Undefined,
@@ -132,7 +128,7 @@ public:
 	};
 
 	/**
-	 @brief Pixel data type.
+	 * @brief Pixel data type.
 	 */
 	enum class PixelDataType {
 		Undefined,
@@ -159,42 +155,42 @@ public:
 	};
 
 	/**
-	 @brief Sets the pixel format.
-	 @param aSrcPixelFormat Describes how the components are organized in the source texture data.
-	 @param aPixelDataType Data type of the pixel components.
-	 @param aDstPixelFormat Describes how the components should be organized when uploaded to the GPU.
-	 @note If <code>aDstPixelFormat</code> is left as undefined, it will assume the value of aSrcPixelFormat.
+	 * @brief Sets the pixel format.
+	 * @param srcPixelFormat Describes how the components are organized in the source texture data.
+	 * @param pixelDataType Data type of the pixel components.
+	 * @param dstPixelFormat Describes how the components should be organized when uploaded to the GPU.
+	 * @note If <code>aDstPixelFormat</code> is left as undefined, it will assume the value of aSrcPixelFormat.
 	 */
-	void setPixelFormat(PixelFormat aSrcPixelFormat, PixelDataType aPixelDataType, 
-			    PixelFormat aDstPixelFormat=PixelFormat::Undefined);
+	void setPixelFormat(PixelFormat srcPixelFormat, PixelDataType pixelDataType, 
+			    PixelFormat dstPixelFormat=PixelFormat::Undefined);
 
 	/**
-	 @brief Returns the pixel format of the source texture data.
+	 * @brief Returns the pixel format of the source texture data.
 	 */
 	PixelFormat sourcePixelFormat() const;
 
 	/**
-	 @brief Returns the pixel format of the destination GPU format.
+	 * @brief Returns the pixel format of the destination GPU format.
 	 */
 	PixelFormat destinationPixelFormat() const;
 
 	/**
-	 @brief Returns the pixel data type.
+	 * @brief Returns the pixel data type.
 	 */
 	PixelDataType pixelDataType() const;
 
 	/**
-	 @brief Sets the number of mipmap levels.
+	 * @brief Sets the number of mipmap levels.
 	 */
 	void setMipmapLevelCount(uint32_t aMipmapLevelCount);
 
 	/**
-	 @brief Returns the number of mipmap levels.
+	 * @brief Returns the number of mipmap levels.
 	 */
 	uint32_t mipmapLevelCount() const;
 
 	/**
-	 @brief The allowed byte alignment for the start of each pixel row. 
+	 * @brief The allowed byte alignment for the start of each pixel row. 
 	 */
 	enum class RowAlignment {
 		Byte=1,
@@ -205,63 +201,58 @@ public:
 	};
 
 	/**
-	 @brief Sets the pack pixel row byte alignment.
+	 * @brief Sets the pack pixel row byte alignment.
 	 */
-	void setPackAlignment(RowAlignment aAlignment);
+	void setPackAlignment(RowAlignment alignment);
 
 	/**
-	 @brief Sets the pack pixel row byte alignment.
+	 * @brief Sets the pack pixel row byte alignment.
 	 */
-	void setUnpackAlignment(RowAlignment aAlignment);
+	void setUnpackAlignment(RowAlignment alignment);
 
 	/**
-	 @brief Returns the pack pixel row byte aligbment.
+	 * @brief Returns the pack pixel row byte aligbment.
 	 */
 	RowAlignment packAlignment() const;
 
 	/**
-	 @brief Returns the unpack pixel row byte aligbment.
+	 * @brief Returns the unpack pixel row byte aligbment.
 	 */
 	RowAlignment unpackAlignment() const;
 
 	/**
 	 * @brief Sets the mipmap level count.
 	 */
-	void setMipMapLevelCount(std::size_t aLevelCount);
+	void setMipMapLevelCount(std::size_t levelCount);
 
 	/**
-	 @brief Sets the texture content for a given mipmap level.
-	 @param aMipmapLevel Mipmap level.
-	 @param aWidth Texture width (number of rows).
-	 @param aHeight Texture height (number of lines).
-	 @param aData Texture content.
-	 @param aSize Size of the texture data.
+	 * @brief Sets the texture content for a given mipmap level.
+	 * @param mipmapLevel Mipmap level.
+	 * @param width Texture width (number of rows).
+	 * @param height Texture height (number of lines).
+	 * @param data Texture content.
+	 * @param size Size of the texture data.
 	 */
-	void setContent(uint32_t aMipmapLevel, uint32_t aWidth, uint32_t aHeight, uint8_t* aData, uint32_t aSize);
+	void setContent(uint32_t mipmapLevel, uint32_t width, uint32_t height, uint8_t* data, uint32_t size);
 
 	/**
-	 @brief Retrieves the texture content for a given mipmap level.
-	 @param aMipmapLevel Mipmap level.
-	 @param aWidth A reference to an integer where the width will be written.
-	 @param aHeight A reference to an integer where the height will be written.
-	 @param aSize A reference to an integer where the size of the mipmap content will be written.
-	 @return A pointer to the content buffer.
+	 * @brief Retrieves the texture content for a given mipmap level.
+	 * @param mipmapLevel Mipmap level.
+	 * @param width A reference to an integer where the width will be written.
+	 * @param height A reference to an integer where the height will be written.
+	 * @param size A reference to an integer where the size of the mipmap content will be written.
+	 * @return A pointer to the content buffer.
 	 */
-	uint8_t* content(uint32_t aMipmapLevel, uint32_t& aWidth, uint32_t& aHeight, uint32_t& aSize) const;
+	uint8_t* content(uint32_t mipmapLevel, uint32_t& width, uint32_t& height, uint32_t& size) const;
 
 private:
 	/**
 	 @cond HIDDEN
 	 */
 	struct Impl;
-	Impl* _impl = nullptr;
+	std::unique_ptr<Impl> _impl;
 	/**
 	 @endcond
 	 */
 };
 
-inline OTexture::OTexture(OTexture&& aOther)
-{
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
-}

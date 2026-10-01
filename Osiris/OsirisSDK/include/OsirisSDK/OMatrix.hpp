@@ -16,7 +16,7 @@ class OMatrix : public OMathPrimitive<DerivedType, glm::mat<L, C, T, Q>>
 private:
 	using Super = OMathPrimitive<DerivedType, glm::mat<L, C, T, Q>>;
 
-public:
+protected:
 	using Super::GLMType;
 
 public:
@@ -76,7 +76,10 @@ template <typename T, glm::qualifier Q>
 class OMatrix4x4 : public OMatrix<OMatrix4x4<T, Q>, 4, 4, T, Q> 
 {
 private:
-	using Super = OMatrix<OMatrix4x4<T, Q>, 4, 4, T, Q>; 
+	using Super = OMatrix<OMatrix4x4<T, Q>, 4, 4, T, Q>;
+	
+public:
+	using Super::GLMType;
 
 public:
 	/**

@@ -14,7 +14,7 @@
 #include "OsirisSDK/OCamera.h"
 #include "OsirisSDK/ORenderingEngine.h"
 #include "OsirisSDK/OOpenGL.h"
-#include "OsirisSDK/OGeometryManager.h"
+#include "OsirisSDK/OResourceFactory.h"
 
 #include "OsirisSDK/OApplication.h"
 
@@ -48,7 +48,7 @@ struct OApplication::Impl {
 	uint32_t		targetFPS;
 	uint32_t		simulationStep_us;
 	ORenderingEngine*	engine				= nullptr;
-	OGeometryManager*	geometryManager			= nullptr;
+	OResourceFactory resourceFactory;
 	OCamera			cam;
 	OTrashBin		trashBin;
 	EventRecipientMap	eventRecipients;
@@ -72,7 +72,7 @@ OApplication::OApplication(const char* aTitle, int aArgc, char **aArgv, Graphics
 	if (_activeInstance != NULL) throw OEx("There is already an OApplication instance created.");
 	_activeInstance = this;
 
-	OExPointerCheck(_impl = new Impl(aTargetFPS, aSimulationStep_us));
+	_impl = std::make_unique<Impl>(aTargetFPS, aSimulationStep_us);
 
 	/* GLUT init */
 	glutInit(&aArgc, aArgv);
@@ -103,9 +103,6 @@ OApplication::OApplication(const char* aTitle, int aArgc, char **aArgv, Graphics
 	}
 	OExPointerCheckCb(_impl->engine = new ORenderingEngine(graphics_api), error_cb);
 
-	/* resource managers */
-	OExPointerCheck(_impl->geometryManager = new OGeometryManager);
-
 	/* setup callbacks */
 	glutDisplayFunc(displayCallback);
 	glutKeyboardFunc(keyboardCallback);
@@ -121,17 +118,16 @@ OApplication::OApplication(const char* aTitle, int aArgc, char **aArgv, Graphics
 	_impl->lastRenderTimeIndex = 0;
 }
 
-OApplication::~OApplication()
-{
-	_activeInstance = NULL;
-	delete _impl;
-}
+OApplication::OApplication(OApplication&& aOther)
+	: _impl(std::move(aOther)._impl)
+{}
 
-OApplication & OApplication::operator=(OApplication && aOther)
+OApplication::~OApplication()
+= default;
+
+OApplication& OApplication::operator=(OApplication&& aOther)
 {
-	if (_impl != nullptr) delete _impl;
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
+	_impl = std::move(aOther)._impl;
 	return *this;
 }
 
@@ -203,9 +199,9 @@ ORenderingEngine& OApplication::renderingEngine()
 	return *(_impl->engine);
 }
 
-OGeometryManager& OApplication::geometryManager()
+OResourceFactory& OApplication::resourceFactory()
 {
-	return *(_impl->geometryManager);
+	return _impl->resourceFactory;
 }
 
 const OStats<float>& OApplication::fpsStats() const

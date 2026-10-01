@@ -15,7 +15,7 @@ template<class TKey,
 	 class TValue, 
 	 class Allocator = OSystemMemoryAllocator<OMemoryManagerScope::Default>,
 	 class Compare = std::less<TKey>>
-class OMap : public OMemoryManagedObject<Allocator>, ONonCopiableT<OMap<TKey, TValue, Allocator, Compare>>
+class OMap : public OMemoryManagedObject<Allocator>, public ONonCopiable
 {
 protected:
 	using MapType = std::map<TKey, TValue, Compare, OSTLAllocator<Allocator, std::pair<const TKey, TValue>>>;
@@ -116,7 +116,11 @@ public:
 	 */
 	OMap(OMap&& aOther);
 
-	void cloneTo(OMap& aTarget) const override;
+	/**
+	 * @brief Creates a copy of the present map in another.
+	 */
+	void cloneTo(OMap& aTarget) const 
+	requires OCopiable<TValue> || OClonable<TValue>; 
 
 	/**
 	 @brief Class destructor.
@@ -194,6 +198,20 @@ public:
 	void clear();
 
 	/**
+	 @brief Iterate through all items.
+	 @param callbackFn Callback function in the form void(const TKey&, TValue&).
+	 */
+	template <typename CallbackFn>
+	void forEach(CallbackFn callbackFn);
+
+	/**
+	 @brief Iterate through all items (const).
+	 @param callbackFn Callback function in the form void(const TKey&, const TValue&).
+	 */
+	template <typename CallbackFn>
+	void forEach(CallbackFn callbackFn) const;
+
+	/**
 	 @brief Move assignment operator.
 	 */
 	OMap& operator=(OMap&& aOther);
@@ -221,8 +239,9 @@ inline OMap<TKey, TValue, Allocator, Compare>::OMap(OMap && aOther) :
 
 template<class TKey, class TValue, class Allocator, class Compare>
 inline void OMap<TKey, TValue, Allocator, Compare>::cloneTo(OMap & aTarget) const
+requires OCopiable<TValue> || OClonable<TValue>
 {
-	if constexpr(std::is_base_of<ONonCopiable, TValue>::value) {
+	if constexpr(OClonable<TValue>) {
 		for (auto it=begin(); it != end(); ++it) {
 			Iterator it_insert;
 			aTarget.insert(it.key(), TValue(), &it_insert);
@@ -311,6 +330,24 @@ template<class TKey, class TValue, class Allocator, class Compare>
 inline void OMap<TKey, TValue, Allocator, Compare>::clear()
 {
 	_map.clear();
+}
+
+template<class TKey, class TValue, class Allocator, class Compare>
+template<typename CallbackFn>
+inline void OMap<TKey, TValue, Allocator, Compare>::forEach(CallbackFn callbackFn)
+{
+	for (auto it = begin(); it != end(); ++it) {
+		callbackFn(it.key(), it.value());
+	}
+}
+
+template<class TKey, class TValue, class Allocator, class Compare>
+template<typename CallbackFn>
+inline void OMap<TKey, TValue, Allocator, Compare>::forEach(CallbackFn callbackFn) const
+{
+	for (auto it = begin(); it != end(); ++it) {
+		callbackFn(it.key(), it.value());
+	}
 }
 
 template<class TKey, class TValue, class Allocator, class Compare>

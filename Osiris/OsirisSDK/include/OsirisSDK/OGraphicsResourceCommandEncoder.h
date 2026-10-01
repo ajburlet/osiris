@@ -9,6 +9,7 @@ class OVertexBufferDescriptor;
 class OIndexBuffer;
 class OShaderUniformArgument;
 class OTexture;
+class OShaderStorageBuffer;
 class ORenderComponents;
 
 /**
@@ -69,6 +70,16 @@ public:
 	 @brief Encodes commands to unload a texture.
 	 */
 	virtual void unload(OTexture* aTexture) = 0;
+
+	/**
+	 * @brief Encodes commands to load a shader storage buffer.
+	 */
+	virtual void load(OShaderStorageBuffer* aStorageBuffer) = 0;
+
+	/**
+	 * @brief Encodes commnds to unload a shader storage buffer.
+	 */
+	virtual void unload(OShaderStorageBuffer* aStorageBuffer) = 0;
 
 	/**
 	 @brief Loads a shader uniform attribute instance.

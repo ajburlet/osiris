@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OEventDefs.h"
 
@@ -9,7 +11,7 @@ class OTrashBin;
 template <typename T> class OStats;
 class OCamera;
 class ORenderingEngine;
-class OGeometryManager;
+class OResourceFactory;
 class OEvent;
 
 #ifndef OAPPLICATION_DEFAULT_POSX
@@ -173,7 +175,7 @@ public:
 	/**
 	 @brief Geometry manager. 
 	 */
-	OGeometryManager& geometryManager();
+	OResourceFactory& resourceFactory();
 
 	/**
 	 @brief Frames-per-second statistics.
@@ -249,8 +251,8 @@ private:
 	 @cond HIDDEN
 	 */
 	struct Impl;
-	Impl*			_impl			= nullptr;
-	static OApplication*	_activeInstance;
+	std::unique_ptr<Impl> _impl;
+	static OApplication* _activeInstance;
 	/**
 	 @endcond
 	 */
@@ -268,9 +270,3 @@ private:
 	static void resizeCallback(int width, int height);
 	static void displayCallback();
 };
-
-inline OApplication::OApplication(OApplication&& aOther)
-{
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
-}

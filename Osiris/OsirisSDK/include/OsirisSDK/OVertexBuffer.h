@@ -4,6 +4,7 @@
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OGraphicsDefinitions.h"
 #include "OsirisSDK/OGPUObject.h"
+#include "OsirisSDK/OShaderArgument.h"
 
 class OShaderVertexArgument;
 
@@ -148,7 +149,7 @@ public:
 	/**
 	 @brief Returns the vertex descriptor.
 	 */
-	OVertexBufferDescriptor& descriptor();
+	OVertexBufferDescriptor& descriptor() const;
 
 	/**
 	 @brief Returns the pointer to the buffer memory.
@@ -207,7 +208,7 @@ inline uint32_t OVertexBuffer::vertexCount() const
 	return _vertexCount;
 }
 
-inline OVertexBufferDescriptor& OVertexBuffer::descriptor()
+inline OVertexBufferDescriptor& OVertexBuffer::descriptor() const
 {
 	return *_descriptor;
 }

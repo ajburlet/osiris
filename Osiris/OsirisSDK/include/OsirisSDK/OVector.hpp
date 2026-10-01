@@ -106,6 +106,8 @@ class OVector2 : public OVector<OVector2<T, Q>, 2, T, Q>
 {
 private:
 	using Super=OVector<OVector2<T, Q>, 2, T, Q>;
+
+public:
 	using Super::GLMType;
 
 public:
@@ -232,6 +234,8 @@ class OVector3 : public OVector<OVector3<T, Q>, 3, T, Q>
 {
 private:
 	using Super = OVector<OVector3<T, Q>, 3, T, Q>;
+
+public:
 	using Super::GLMType;
 
 public:
@@ -536,7 +540,9 @@ template <typename T, glm::qualifier Q>
 class OVector4 : public OVector<OVector4<T, Q>, 4, T, Q> 
 {
 private:
-	using Super = OVector<OVector4<T, Q>, 4, T, Q>; 
+	using Super = OVector<OVector4<T, Q>, 4, T, Q>;
+
+public:
 	using Super::GLMType;
 
 public:

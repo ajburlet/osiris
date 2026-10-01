@@ -31,6 +31,8 @@ public:
 	virtual void unload(OIndexBuffer * aIndexBuffer) override;
 	virtual void load(OTexture * aTexture) override;
 	virtual void unload(OTexture * aTexture) override;
+	virtual void load(OShaderStorageBuffer* aStorageBuffer) override;
+	virtual void unload(OShaderStorageBuffer* aStorageBuffer) override;
 	virtual void load(OShaderUniformArgument * aAttributeInstance, OShaderProgram * aShader, const char * aName) override;
 	virtual void unload(OShaderUniformArgument* aAttributeInstance) override;
 

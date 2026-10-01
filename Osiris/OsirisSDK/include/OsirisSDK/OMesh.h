@@ -12,9 +12,7 @@
 #include "OsirisSDK/OCamera.h"
 
 class ORenderingEngine;
-template <class RefCountT> class ORefCountPtr;
-class OMeshGeometry;
-class OTexture;
+class ORenderComponents;
 
 /**
  @brief Base class that represents a group of vertices that together make a geometrical shape.
@@ -62,16 +60,10 @@ public:
 	const OMatrix4x4F& mvp() const;
 
 	/**
-	 @brief Sets the mesh geometry.
-	 @param aGeometry The reference countable pointer to the mesh geometry.
-	 @param aIndex The index of the couple material x index buffer to be used for this geometry.
+	 * @brief Returns the components used to render this mesh.
 	 */
-	void setGeometry(ORefCountPtr<OMeshGeometry>& aGeometry, uint32_t aIndex=0);
+	ORenderComponents& renderComponents();
 
-	/**
-	 @brief Sets the mesh texture.
-	 */
-	void setTexture(ORefCountPtr<OTexture>& aTexture);
 
 	/**
 	 @brief Starts the rendering process for the object.

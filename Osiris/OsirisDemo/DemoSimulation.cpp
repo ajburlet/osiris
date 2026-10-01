@@ -2,12 +2,10 @@
 #include <OsirisSDK/OVector.hpp>
 #include <OsirisSDK/OMesh.h>
 #include <OsirisSDK/OQuaternion.hpp>
-#include <OsirisSDK/OWavefrontObjectFile.h>
 #include <OsirisSDK/OParameterList.h>
 #include <OsirisSDK/OStats.hpp>
-#include <OsirisSDK/OMeshGeometry.h>
 #include <OsirisSDK/ORenderingEngine.h>
-#include <OsirisSDK/OGeometryManager.h>
+#include <OsirisSDK/OResourceFactory.h>
 
 #include "DemoSimulation.h"
 #include "PieceBehavior.h"
@@ -53,15 +51,13 @@ void DemoSimulation::init()
 	/* subscribe to keyboard event */
 	addEventRecipient(OEventType::KeyboardPressEvent, this);
 
-	geometryManager().registerFile(OGeometryManager::FileType::WavefrontObjectFile,
-					OSIRIS_DEMO_BASEDIR "/Meshes/Cube.mesh.obj",
-					"TestTorus");
-	auto torus_geometry = geometryManager().loadFromFile("TestTorus", "Cube", "TestTorus");
-
-	auto torus = new OMesh;
-	OExPointerCheck(torus);
-	torus->setGeometry(torus_geometry);
-	renderingEngine().load(torus);
+	resourceFactory().registerFile(OResourceFactory::FileType::WavefrontObjectFile,
+					OSIRIS_DEMO_BASEDIR "/Meshes/ColorCube.obj",
+					"ColorCube");
+	auto colorCube = new OMesh;
+	OExPointerCheck(colorCube);
+	resourceFactory().loadFromFile("ColorCube", "Cube", "ColorCube", *colorCube);
+	renderingEngine().load(colorCube);
 
 	/* setting up the cube */
 	//OVertexColorMesh *cube = new OVertexColorMesh();
@@ -115,10 +111,10 @@ void DemoSimulation::init()
 	//torus->init();
 
 	/* creating the table entity */
-	//_table = new OEntity(NULL, NULL, cube);
-	//_table->state()->curr()->position() = OVector3F(0.0f, -0.25f/2, 0.0f);
-	//_table->state()->curr()->scale() = OVector3F(3.0f, 0.15f, 7.0f);
-	//entities()->add(_table);
+	// _table = new OEntity(NULL, NULL, cube);
+	// _table->state()->curr()->position() = OVector3F(0.0f, -0.25f/2, 0.0f);
+	// _table->state()->curr()->scale() = OVector3F(3.0f, 0.15f, 7.0f);
+	// entities()->add(_table);
 
 	/* creating moving piece */
 	PieceBehavior *behavior = new PieceBehavior();
@@ -127,10 +123,11 @@ void DemoSimulation::init()
 	(*attributeList)[PieceBehavior::attrMinZ] = -3.5f;
 	(*attributeList)[PieceBehavior::attrMaxX] = 1.5f;
 	(*attributeList)[PieceBehavior::attrMaxZ] = 3.5f;
-	_movingPiece = new OEntity(attributeList, behavior, torus);
+	_movingPiece = new OEntity(attributeList, behavior, colorCube);
+	_movingPiece->setRenderingPriority(0);
 	_movingPiece->state()->curr()->position() = OVector3F(0.0f, 0.0f, 0.0f);
-	_movingPiece->state()->curr()->setMotionComponent(1, OVector3F(0.3f, 0.0f, 0.3f) / 1e6, OState::Object);
-	_movingPiece->state()->curr()->scale() = OVector3F(0.25);
+	// _movingPiece->state()->curr()->setMotionComponent(1, OVector3F(0.3f, 0.0f, 0.3f) / 1e6, OState::Object);
+	// _movingPiece->state()->curr()->scale() = OVector3F(0.25);
 	addEntity(_movingPiece);
 
 	/* creating text */
@@ -181,7 +178,7 @@ void DemoSimulation::update(const OTimeIndex & idx, int step_us)
 	/* camera speed and position */
 	OVector3F camSpeed = camera()->state()->motionComponent(1, OState::Scene) * 1e6;
 	OVector3F orientation = camera()->state()->orientation().toEulerAngles();
-	snprintf(buff, 128, "Camera @ (%.02f, %.02f, %.02f), spd: (%.02f, %.02f, %.02f)/sec, or: Euler(%.02f, %.02f, %.02f)",
+	snprintf(buff, 128, "Camera @ (%.05f, %.05f, %.05f), spd: (%.02f, %.02f, %.02f)/sec, or: Euler(%.02f, %.02f, %.02f)",
 		camera()->position().x(), camera()->position().y(), camera()->position().z(),
 		camSpeed.x(), camSpeed.y(), camSpeed.z(),
 		orientation.x(), orientation.y(), orientation.z()

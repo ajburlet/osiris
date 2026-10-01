@@ -17,7 +17,6 @@ set (BASE_SOURCES
 	${SRC_DIR}/OObject.cpp
 	${HDR_DIR}/OObject.h
 	${HDR_DIR}/ORefCountObject.hpp
-	${HDR_DIR}/OResourceManagerInterface.h
 	${HDR_DIR}/OSingleton.hpp
 	${SRC_DIR}/OStat.cpp
 	${HDR_DIR}/OStat.h
@@ -45,8 +44,6 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OCameraController.h
 	${SRC_DIR}/OFont.cpp
 	${HDR_DIR}/OFont.h
-	${HDR_DIR}/OGeometryManager.h
-	${SRC_DIR}/OGeometryManager.cpp
 	${SRC_DIR}/OGlyph.cpp
 	${HDR_DIR}/OGlyph.h
 	${HDR_DIR}/OGPUObject.h
@@ -54,15 +51,18 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OGraphicsDefinitions.h
 	${SRC_DIR}/OIndexBuffer.cpp
 	${HDR_DIR}/OIndexBuffer.h
-	${SRC_DIR}/OIndexedDrawInfo.cpp
-	${HDR_DIR}/OIndexedDrawInfo.h
 	${SRC_DIR}/OMaterial.cpp
 	${HDR_DIR}/OMaterial.h
+	${SRC_DIR}/OMaterialSet.cpp
+	${HDR_DIR}/OMaterialSet.h
 	${SRC_DIR}/OMesh.cpp
 	${HDR_DIR}/OMesh.h
-	${SRC_DIR}/OMeshFile.cpp
 	${HDR_DIR}/OMeshFile.h
+	${HDR_DIR}/OMeshRawData.h
+	${SRC_DIR}/OMeshBuilder.cpp
+	${HDR_DIR}/OMeshBuilder.h
 	${HDR_DIR}/OMeshGeometry.h
+	${HDR_DIR}/OGeometry.h
 	${HDR_DIR}/OObjMeshFile.h
 	${SRC_DIR}/OObjMeshFile.cpp
 	${SRC_DIR}/OObjMeshFileTokenizer.h
@@ -73,12 +73,18 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/ORenderComponents.h
 	${SRC_DIR}/ORenderingEngine.cpp
 	${HDR_DIR}/ORenderingEngine.h
+	${HDR_DIR}/OResource.h
+	${HDR_DIR}/OResourceFactory.h
+	${SRC_DIR}/OResourceFactory.cpp
+	${HDR_DIR}/OResourceManager.h
+	${HDR_DIR}/OResourceManagerDefs.h
 	${SRC_DIR}/OShaderArgument.cpp
 	${HDR_DIR}/OShaderArgument.h
 	${SRC_DIR}/OShaderObject.cpp
 	${HDR_DIR}/OShaderObject.h
 	${SRC_DIR}/OShaderProgram.cpp
 	${HDR_DIR}/OShaderProgram.h
+	${HDR_DIR}/OShaderStorageBuffer.h
 	${SRC_DIR}/OText2D.cpp
 	${HDR_DIR}/OText2D.h
 	${SRC_DIR}/OTexture.cpp
@@ -88,8 +94,6 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OVisualObject.h
 	${SRC_DIR}/OWavefrontMaterialFile.cpp
 	${HDR_DIR}/OWavefrontMaterialFile.h
-	${SRC_DIR}/OWavefrontObjectFile.cpp
-	${HDR_DIR}/OWavefrontObjectFile.h
 	${SRC_DIR}/OWavefrontParser.cpp
 	${HDR_DIR}/OWavefrontParser.h
 )

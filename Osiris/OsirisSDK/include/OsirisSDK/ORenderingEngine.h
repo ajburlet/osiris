@@ -8,6 +8,7 @@ class ORenderComponents;
 class OVertexBuffer;
 class OIndexBuffer;
 class OTexture;
+class OShaderStorageBuffer;
 class OTrashBin;
 
 /**
@@ -73,6 +74,11 @@ public:
 	virtual void load(OTexture* aTexture);
 
 	/**
+	 * @brief Loads a shader storage buffer.
+	 */
+	virtual void load(OShaderStorageBuffer* aStorageBuffer);
+
+	/**
 	 @brief Unloads vertices and textures from the GPU.
 	 @param aRenderable The renderable object to be unloaded.
 	 @param aUnloadAll Unloads all rendering resources (buffers, textures, etc.).
@@ -100,6 +106,11 @@ public:
 	 @brief Unloads texture.
 	 */
 	virtual void unload(OTexture* aTexture);
+
+	/**
+	 * @brief Unloads a material set.
+	 */
+	virtual void unload(OShaderStorageBuffer* aStorageBuffer);
 
 	/**
 	 @brief Issues the appropriate render commands.

@@ -5,9 +5,10 @@
 #include "OsirisSDK/OArray.hpp"
 #include "OsirisSDK/OTexture.h"
 
-using Allocator = OSystemMemoryAllocator<OMemoryManagerScope::Graphics>;
+using Allocator = OGraphicsAllocators::Default;
 
-struct OTexture::Impl {
+struct OTexture::Impl : public OMemoryManagedObject<Allocator>
+{
 	struct MipmapEntry {
 		uint32_t	width	= 0;
 		uint32_t	height	= 0;
@@ -29,24 +30,29 @@ struct OTexture::Impl {
 	RowAlignment	unpackAlignment		= RowAlignment::Default;
 };
 
-OTexture::OTexture()
+OTexture::OTexture(OString&& name)
+	: OResource(std::move(name))
+	, _impl(std::make_unique<OTexture::Impl>())
 {
-	OExPointerCheck(_impl = new Impl);
+}
+
+OTexture::OTexture(OTexture&& aOther)
+{
+	_impl = std::move(aOther)._impl;
 }
 
 OTexture::~OTexture()
 {
+	if (_impl == nullptr) return;
+
 	for (auto entry : _impl->mipmap) {
 		if (entry.data != nullptr) Allocator().deallocate(entry.data, entry.size);
 	}
-	if (_impl) delete _impl;
 }
 
-OTexture & OTexture::operator=(OTexture && aOther)
+OTexture& OTexture::operator=(OTexture && aOther)
 {
-	if (_impl != nullptr) delete _impl;
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
+	_impl = std::move(aOther)._impl;
 	return *this;
 }
 

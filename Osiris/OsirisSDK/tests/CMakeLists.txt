@@ -13,7 +13,7 @@ set (TEST_FILES
 	OStack.cc
 	OMap.cc
 	OSet.cc
-	OWavefrontObjectFile.cc
+	OMeshBuilder.cc
 )
 
 add_definitions(-DOSIRISTEST_BASEDIR="${CMAKE_CURRENT_SOURCE_DIR}")

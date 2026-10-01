@@ -5,7 +5,6 @@
 #include "OsirisSDK/OMaterial.h"
 
 struct OMaterial::Impl : public OMemoryManagedObject<Allocator> {
-	std::string	name;
 	OVector3F	ka;	// ambient
 	OVector3F	kd;	// diffuse
 	OVector3F	ke;	// emmited
@@ -16,40 +15,36 @@ struct OMaterial::Impl : public OMemoryManagedObject<Allocator> {
 	IllumModel	illum = OMaterial::IllumModel::NotSet;
 };
 
-OMaterial::OMaterial(const char* aName)
-{
-	OExPointerCheck(_impl = new Impl);
-	_impl->name = aName;
-}
+OMaterial::OMaterial(OString&& aName)
+	: OResource(std::move(aName))
+	, _impl(std::make_unique<OMaterial::Impl>())
+{}
 
-OMaterial::OMaterial(const OMaterial & aOther)
-{
-	OExPointerCheck(_impl = new Impl);
-	*_impl = *aOther._impl;
-}
+OMaterial::OMaterial(const OMaterial& aOther)
+	: OResource(OString(aOther.name()))
+	, _impl(std::make_unique<OMaterial::Impl>(*aOther._impl))
+{}
 
-OMaterial::OMaterial(OMaterial && aOther)
-{
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
-}
+OMaterial::OMaterial(OMaterial&& aOther)
+	: OResource(std::move(aOther))
+	, _impl(std::move(aOther)._impl)
+{}
 
-OMaterial::~OMaterial()
-{
-	if (_impl != nullptr) delete _impl;
-}
+OMaterial::~OMaterial() = default;
 
-OMaterial & OMaterial::operator=(OMaterial && aOther)
+OMaterial & OMaterial::operator=(OMaterial&& aOther)
 {
-	if (_impl != nullptr) delete _impl;
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
+	Super::operator=(std::move(aOther));
+	_impl = std::move(aOther)._impl;
 	return *this;
 }
 
-const char * OMaterial::name() const
+OMaterial& OMaterial::operator=(const OMaterial& aOther)
 {
-	return _impl->name.c_str();
+	if (this != &aOther) {
+		_impl = std::make_unique<OMaterial::Impl>(*aOther._impl);
+	}
+	return *this;
 }
 
 void OMaterial::setAmbientColor(const OVector3F & aColor)

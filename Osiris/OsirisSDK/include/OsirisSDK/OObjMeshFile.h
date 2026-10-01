@@ -15,7 +15,4 @@ public:
 
     virtual void loadMesh(const OString& aObjName, RawData& aRawData) override;
 
-private:
-    struct Impl;
-    Impl* _impl = nullptr;
 };

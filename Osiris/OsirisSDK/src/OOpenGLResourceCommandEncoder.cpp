@@ -133,15 +133,15 @@ OOpenGLResourceCommandEncoder::OOpenGLResourceCommandEncoder(OOpenGLCommandBuffe
 
 void OOpenGLResourceCommandEncoder::load(ORenderComponents* aRenderComponents)
 {
-	auto& vertexDescriptor = aRenderComponents->vertexBuffer()->descriptor();
+	auto& vertexDescriptor = aRenderComponents->geometry()->vertexBuffer().descriptor();
 
 	createHandle(aRenderComponents);
 	encode([aRenderComponents]() {
 		glGenVertexArrays(1, &(aRenderComponents->gpuHandleCastTo<GLuint>()));
 		glBindVertexArray(aRenderComponents->gpuHandleCastTo<GLuint>());
-		glBindBuffer(GL_ARRAY_BUFFER, aRenderComponents->vertexBuffer()->gpuHandleCastTo<GLuint>());
-		if (aRenderComponents->indexBuffer() != nullptr) {
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, aRenderComponents->indexBuffer()->gpuHandleCastTo<GLuint>());
+		glBindBuffer(GL_ARRAY_BUFFER, aRenderComponents->geometry()->vertexBuffer().gpuHandleCastTo<GLuint>());
+		if (aRenderComponents->geometry()->drawMode() == ORenderMode::IndexedTriangle) {
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, aRenderComponents->geometry()->indexBuffer().gpuHandleCastTo<GLuint>());
 		}
 	});
 
@@ -222,7 +222,7 @@ void OOpenGLResourceCommandEncoder::unload(ORenderComponents* aRenderComponents)
 	});
 }
 
-void OOpenGLResourceCommandEncoder::load(OVertexBuffer * aVertexBuffer)
+void OOpenGLResourceCommandEncoder::load(OVertexBuffer* aVertexBuffer)
 {
 	GLenum usage = getUsageType(aVertexBuffer);
 	createHandle(aVertexBuffer);
@@ -235,7 +235,7 @@ void OOpenGLResourceCommandEncoder::load(OVertexBuffer * aVertexBuffer)
 
 }
 
-void OOpenGLResourceCommandEncoder::unload(OVertexBuffer * aVertexBuffer)
+void OOpenGLResourceCommandEncoder::unload(OVertexBuffer* aVertexBuffer)
 {
 	encode([&] {
 		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aVertexBuffer->gpuHandle()));
@@ -255,7 +255,7 @@ void OOpenGLResourceCommandEncoder::load(OIndexBuffer * aIndexBuffer)
 	});
 }
 
-void OOpenGLResourceCommandEncoder::unload(OIndexBuffer * aIndexBuffer)
+void OOpenGLResourceCommandEncoder::unload(OIndexBuffer* aIndexBuffer)
 {
 	encode([&]() {
 		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aIndexBuffer->gpuHandle()));
@@ -309,6 +309,26 @@ void OOpenGLResourceCommandEncoder::unload(OTexture * aTexture)
 	encode([&]() {
 		glDeleteTextures(1, reinterpret_cast<GLuint*>(aTexture->gpuHandle()));
 		destroyHandle(aTexture);
+	});
+}
+
+void OOpenGLResourceCommandEncoder::load(OShaderStorageBuffer* aStorageBuffer)
+{
+	GLenum usage = getUsageType(aStorageBuffer);
+	createHandle(aStorageBuffer);
+	encode([aStorageBuffer, usage]() {
+		auto handle = reinterpret_cast<GLuint*>(aStorageBuffer->gpuHandle());
+		glGenVertexArrays(1, handle);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *handle);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, aStorageBuffer->size(), aStorageBuffer->data(), usage);
+	});
+}
+
+void OOpenGLResourceCommandEncoder::unload(OShaderStorageBuffer* aStorageBuffer)
+{
+	encode([&](){
+		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aStorageBuffer->gpuHandle()));
+		destroyHandle(aStorageBuffer);
 	});
 }
 

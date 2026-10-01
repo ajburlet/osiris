@@ -62,11 +62,13 @@ struct ORenderingEngine::Impl {
 	void load(OVertexBuffer* aVertexBuffer);
 	void load(OIndexBuffer* aIndexBuffer);
 	void load(OTexture* aTexture);
+	void load(OShaderStorageBuffer* aStorageBuffer);
 	void unload(ORenderable* aRenderable);
 	void unload(ORenderComponents* aRenderComponents);
 	void unload(OVertexBuffer* aVertexBuffer);
 	void unload(OIndexBuffer* aIndexBuffer);
 	void unload(OTexture* aTexture);
+	void unload(OShaderStorageBuffer* aStorageBuffer);
 
 	// render
 	void render(ORenderable* aRenderable);
@@ -141,7 +143,12 @@ void ORenderingEngine::load(OIndexBuffer * aIndexBuffer)
 
 void ORenderingEngine::load(OTexture * aTexture)
 {
-	load(aTexture);
+	_impl->load(aTexture);
+}
+
+void ORenderingEngine::load(OShaderStorageBuffer* aStorageBuffer)
+{
+	_impl->load(aStorageBuffer);
 }
 
 void ORenderingEngine::unload(ORenderable * aRenderable, bool aUnloadAll)
@@ -155,9 +162,10 @@ void ORenderingEngine::unload(ORenderable * aRenderable, bool aUnloadAll)
 void ORenderingEngine::unload(ORenderComponents * aRenderComponents, bool aUnloadAll)
 {
 	if (aUnloadAll) {
-		_impl->unload(aRenderComponents->vertexBuffer());
-		_impl->unload(aRenderComponents->indexBuffer());
+		_impl->unload(&aRenderComponents->geometry()->vertexBuffer());
+		_impl->unload(&aRenderComponents->geometry()->indexBuffer());
 		_impl->unload(aRenderComponents->texture());
+		_impl->unload(aRenderComponents->materialSet());
 	}
 	_impl->unload(aRenderComponents);
 }
@@ -175,6 +183,11 @@ void ORenderingEngine::unload(OIndexBuffer * aIndexBuffer)
 void ORenderingEngine::unload(OTexture * aTexture)
 {
 	_impl->unload(aTexture);
+}
+
+void ORenderingEngine::unload(OShaderStorageBuffer* aStorageBuffer)
+{
+	_impl->unload(aStorageBuffer);
 }
 
 void ORenderingEngine::render(ORenderable* aRenderable)
@@ -234,9 +247,7 @@ uint32_t ORenderingEngine::Impl::shaderKey(ORenderable* aRenderable)
 	uint32_t key = 0;
 	switch (aRenderable->type()) {
 	case ORenderable::Type::Mesh:
-		if (aRenderable->renderComponents()->texture() != nullptr) {
-			key |= (1 << 1);
-		}
+		if (aRenderable->renderComponents()->texture() != nullptr) key |= (1 << 1);
 		break;
 	case ORenderable::Type::Glyph:
 		// no special option
@@ -384,9 +395,10 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 
 void ORenderingEngine::Impl::load(ORenderComponents * aRenderComponents)
 {
-	load(aRenderComponents->vertexBuffer());
-	load(aRenderComponents->indexBuffer());
+	load(&aRenderComponents->geometry()->vertexBuffer());
+	load(&aRenderComponents->geometry()->indexBuffer());
 	load(aRenderComponents->texture());
+	load(aRenderComponents->materialSet());
 	if (aRenderComponents->needsLoading()) {
 		getResourceEncoder()->load(aRenderComponents);
 		aRenderComponents->setNeedsLoading(false);
@@ -459,6 +471,15 @@ void ORenderingEngine::Impl::load(OTexture * aTexture)
 	}
 }
 
+void ORenderingEngine::Impl::load(OShaderStorageBuffer* aStorageBuffer)
+{
+	if (aStorageBuffer == nullptr || aStorageBuffer->needsLoading() == false) {
+		return;
+	}
+
+	getResourceEncoder()->load(aStorageBuffer);
+}
+
 void ORenderingEngine::Impl::unload(ORenderable * aRenderable)
 {
 	auto encoder = getResourceEncoder();
@@ -498,7 +519,13 @@ void ORenderingEngine::Impl::unload(OTexture * aTexture)
 	}
 }
 
-void ORenderingEngine::Impl::render(ORenderable * aRenderable)
+void ORenderingEngine::Impl::unload(OShaderStorageBuffer* aStorageBuffer)
+{
+	if (aStorageBuffer == nullptr) return;
+	getResourceEncoder()->unload(aStorageBuffer);
+}
+
+void ORenderingEngine::Impl::render(ORenderable* aRenderable)
 {
 	auto renderEncoder = getRenderEncoder();
 
@@ -514,9 +541,9 @@ void ORenderingEngine::Impl::render(ORenderable * aRenderable)
 	}
 
 	// vertex, index & texture
-	renderEncoder->setVertexBuffer(aRenderable->renderComponents()->vertexBuffer());
-	if (aRenderable->renderComponents()->indexBuffer()) 
-		renderEncoder->setIndexBuffer(aRenderable->renderComponents()->indexBuffer());
+	renderEncoder->setVertexBuffer(&aRenderable->renderComponents()->geometry()->vertexBuffer());
+	if (aRenderable->renderComponents()->geometry()->drawMode() == ORenderMode::IndexedTriangle) 
+		renderEncoder->setIndexBuffer(&aRenderable->renderComponents()->geometry()->indexBuffer());
 	if (aRenderable->renderComponents()->texture()) 
 		renderEncoder->setTexture(aRenderable->renderComponents()->texture());
 	renderEncoder->setRenderComponents(aRenderable->renderComponents());

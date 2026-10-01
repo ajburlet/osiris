@@ -10,9 +10,9 @@
 #define THROW_PARSE_EXCEPTION(aErrStr) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", filename().cString(), currLine()));
 #define THROW_PARSE_EXCEPTION_FMT(aErrStr, ...) throw OEx(OString::Fmt(aErrStr " (%s:%" PRIu32 ").", __VA_ARGS__, filename().cString(), currLine()));
 
-void OWavefrontMaterialFile::loadMaterials(MaterialMap & aMaterialList)
+OWavefrontMaterialFile::List OWavefrontMaterialFile::loadMaterials()
 {
-	OMaterial* current_mat = nullptr;
+	List list;
 	while (readNextLine() == 0) {
 		auto firstWord = readNextWord();
 		if (!firstWord || !strcmp(firstWord, "#") || *firstWord == 0) {
@@ -20,35 +20,34 @@ void OWavefrontMaterialFile::loadMaterials(MaterialMap & aMaterialList)
 			continue;
 		}
 		else if (!strcmp(firstWord, "newmtl")) {
-			MaterialMap::Iterator it;
 			auto materialName = readNextWord();
-			aMaterialList.insert(materialName, OMaterial(materialName), &it);
-			current_mat = &(it.value());
+			list.append(OMaterial(std::move(materialName)));
 		}
 		else {
-			if (current_mat == nullptr) {
+			if (list.size() == 0) {
 				THROW_PARSE_EXCEPTION("No material instanced");
 			}
+			auto& current = list.tail();
 			if (!strcmp(firstWord, "Ka")) {
-				current_mat->setAmbientColor(OVector3F(readNextFloat(), readNextFloat(), readNextFloat()));
+				current.setAmbientColor(OVector3F(readNextFloat(), readNextFloat(), readNextFloat()));
 			}
 			else if (!strcmp(firstWord, "Kd")) {
-				current_mat->setDiffuseColor(OVector3F(readNextFloat(), readNextFloat(), readNextFloat()));
+				current.setDiffuseColor(OVector3F(readNextFloat(), readNextFloat(), readNextFloat()));
 			}
 			else if (!strcmp(firstWord, "Ks")) {
-				current_mat->setSpectralColor(OVector3F(readNextFloat(), readNextFloat(), readNextFloat()));
+				current.setSpectralColor(OVector3F(readNextFloat(), readNextFloat(), readNextFloat()));
 			}
 			else if (!strcmp(firstWord, "Ns")) {
-				current_mat->setSpectralExponent(readNextFloat());
+				current.setSpectralExponent(readNextFloat());
 			}
 			else if (!strcmp(firstWord, "d")) {
-				current_mat->setDissolve(readNextFloat());
+				current.setDissolve(readNextFloat());
 			}
 			else if (!strcmp(firstWord, "Tr")) {
-				current_mat->setDissolve(1 - readNextFloat());
+				current.setDissolve(1 - readNextFloat());
 			}
 			else if (!strcmp(firstWord, "Ni")) {
-				current_mat->setOpticalDensity(readNextFloat());
+				current.setOpticalDensity(readNextFloat());
 			}
 			else if (!strcmp(firstWord, "illum")) {
 				OMaterial::IllumModel model = OMaterial::IllumModel::NotSet;
@@ -84,11 +83,12 @@ void OWavefrontMaterialFile::loadMaterials(MaterialMap & aMaterialList)
 					model = OMaterial::IllumModel::TranspGlassReflectionRayTraceOff;
 					break;
 				}
-				current_mat->setIllumModel(model);
+				current.setIllumModel(model);
 			}
 			else if (!strcmp(firstWord, "Tf")) {
 				continue; // ignored for now.
 			}
 		}
 	}
+	return list;
 }

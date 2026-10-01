@@ -1,7 +1,7 @@
 #pragma once
 
 #include "OsirisSDK/defs.h"
-#include "OsirisSDK/Omap.hpp"
+#include "OsirisSDK/OArray.hpp"
 #include "OsirisSDK/OStringDefs.h"
 #include "OsirisSDK/OFile.h"
 #include "OsirisSDK/OGraphicsAllocators.h"
@@ -31,12 +31,12 @@ public:
 	virtual ~OWavefrontMaterialFile() = default;
 	
 	/**
-	 @brief Material dictionary, name is the key.
+	 @brief Material list. 
 	 */
-	using MaterialMap = OMap<OString, OMaterial, Allocator>;
+	using List = ODynArray<OMaterial, Allocator>;
 
 	/**
 	 @brief Loads material list.
 	 */
-	void loadMaterials(MaterialMap& aMaterialList);
+	List loadMaterials();
 };

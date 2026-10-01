@@ -1,6 +1,7 @@
 #include <string>
 
 #include <ft2build.h>
+#include <cinttypes>
 #include FT_FREETYPE_H
 
 #include "OsirisSDK/OException.h"
@@ -13,6 +14,7 @@
 #include "OsirisSDK/OGlyph.h"
 #include "OsirisSDK/ORenderingEngine.h"
 #include "OsirisSDK/OTrashBin.h"
+#include "OsirisSDK/OResourceManager.h"
 #include "OsirisSDK/OFont.h"
 
 using namespace std;
@@ -42,6 +44,9 @@ struct OFont::Impl {
 	
 	static FT_Library		library;
 	static OVertexBufferDescriptor*	vertexBufferDescriptor;
+
+	OResourceManager<OTexture> textureManager;
+	OResourceManager<OGeometry> geometryManager;
 };
 
 OFont::Impl::~Impl()
@@ -147,65 +152,59 @@ void OFont::loadToCache(uint8_t aSize)
 	if (sizeCache != nullptr) throw OEx("Font size already loaded.");
 
 	OExPointerCheck(sizeCache = new Impl::GlyphArray(UINT8_MAX+1, true));
-	ORenderComponents* renderComponents = nullptr;
-	OVertexBuffer* vertexBuffer = nullptr;
-	OTexture* texture = nullptr;
 
-	try {
-		for (uint16_t charCode = 0; charCode <= UINT8_MAX; charCode++) {
-			if (FT_Load_Char(_impl->face, charCode, FT_LOAD_RENDER) != 0) continue;
+	for (uint16_t charCode = 0; charCode <= UINT8_MAX; charCode++) {
+		if (FT_Load_Char(_impl->face, charCode, FT_LOAD_RENDER) != 0) continue;
 
-			auto& cacheEntry = (*sizeCache)[charCode];
-			OExPointerCheck(cacheEntry.renderComponents = new ORenderComponents);
-			cacheEntry.renderComponents->setRenderMode(ORenderMode::TriangleStrip);
-			cacheEntry.renderComponents->setColorBlending(true, OBlendFactor::SourceAlpha,
-								      OBlendFactor::OneMinusSourceAlpha);
-			cacheEntry.renderComponents->setFaceCulling(false);
+		auto& cacheEntry = (*sizeCache)[charCode];
+		OExPointerCheck(cacheEntry.renderComponents = new ORenderComponents);
+		cacheEntry.renderComponents->setRenderMode(ORenderMode::TriangleStrip);
+		cacheEntry.renderComponents->setColorBlending(true, OBlendFactor::SourceAlpha,
+									OBlendFactor::OneMinusSourceAlpha);
+		cacheEntry.renderComponents->setFaceCulling(false);
 
-			cacheEntry.advanceX = static_cast<uint16_t>(_impl->face->glyph->advance.x);
-			cacheEntry.advanceY = static_cast<uint16_t>(_impl->face->glyph->advance.y);
+		cacheEntry.advanceX = static_cast<uint16_t>(_impl->face->glyph->advance.x);
+		cacheEntry.advanceY = static_cast<uint16_t>(_impl->face->glyph->advance.y);
 
-			OExPointerCheck(vertexBuffer = new OVertexBuffer(*Impl::vertexBufferDescriptor, 4));
-			float x2 = (float)_impl->face->glyph->bitmap_left;
-			float y2 = (float)-_impl->face->glyph->bitmap_top;
-			float w = (float)_impl->face->glyph->bitmap.width;
-			float h = (float)_impl->face->glyph->bitmap.rows;
-			float data[4][4] = {
-				{ x2, -y2, 0, 0 },
-				{ x2 + w, -y2, 1, 0 },
-				{ x2, -y2 - h, 0, 1 },
-				{ x2 + w, -y2 - h, 1, 1 },
-			};
-			vertexBuffer->setAttributeValue(0, 0, data[0]);
-			vertexBuffer->setAttributeValue(0, 1, data[1]);
-			vertexBuffer->setAttributeValue(0, 2, data[2]);
-			vertexBuffer->setAttributeValue(0, 3, data[3]);
+		auto vertexBuffer = OVertexBuffer(*Impl::vertexBufferDescriptor, 4);
+		float x2 = (float)_impl->face->glyph->bitmap_left;
+		float y2 = (float)-_impl->face->glyph->bitmap_top;
+		float w = (float)_impl->face->glyph->bitmap.width;
+		float h = (float)_impl->face->glyph->bitmap.rows;
+		float data[4][4] = {
+			{ x2, -y2, 0, 0 },
+			{ x2 + w, -y2, 1, 0 },
+			{ x2, -y2 - h, 0, 1 },
+			{ x2 + w, -y2 - h, 1, 1 },
+		};
+		vertexBuffer.setAttributeValue(0, 0, data[0]);
+		vertexBuffer.setAttributeValue(0, 1, data[1]);
+		vertexBuffer.setAttributeValue(0, 2, data[2]);
+		vertexBuffer.setAttributeValue(0, 3, data[3]);
 
-			OExPointerCheck(texture = new OTexture);
-			texture->setMipmapLevelCount(1);
-			texture->setMinFilter(OTexture::FilterType::Linear);
-			texture->setMagFilter(OTexture::FilterType::Linear);
-			texture->setWrapType(OTexture::Coordinate::S, OTexture::WrapMode::ClampToEdge);
-			texture->setWrapType(OTexture::Coordinate::T, OTexture::WrapMode::ClampToEdge);
-			texture->setPixelFormat(OTexture::PixelFormat::R, OTexture::PixelDataType::UnsignedByte,
-				OTexture::PixelFormat::R);
-			texture->setUnpackAlignment(OTexture::RowAlignment::Byte);
-			texture->setContent(0, _impl->face->glyph->bitmap.width, _impl->face->glyph->bitmap.rows,
-					    _impl->face->glyph->bitmap.buffer,
-					    _impl->face->glyph->bitmap.width*_impl->face->glyph->bitmap.rows);
+		auto key = OString::Fmt("%" PRIu16, charCode);
 
-			cacheEntry.renderComponents->setVertexBuffer(vertexBuffer);
-			cacheEntry.renderComponents->setTexture(texture);
-			vertexBuffer = nullptr;
-			texture = nullptr;
-		}
-	} catch (OException& e) {
-		if (vertexBuffer != nullptr) delete vertexBuffer;
-		if (texture != nullptr) delete texture;
-		if (renderComponents != nullptr) delete renderComponents;
-		throw e;
-	}
+		auto geometry = OGeometry(OString(key), ORenderMode::TriangleStrip, std::move(vertexBuffer));
 
+		auto texture = OTexture(OString(key));
+		texture.setMipmapLevelCount(1);
+		texture.setMinFilter(OTexture::FilterType::Linear);
+		texture.setMagFilter(OTexture::FilterType::Linear);
+		texture.setWrapType(OTexture::Coordinate::S, OTexture::WrapMode::ClampToEdge);
+		texture.setWrapType(OTexture::Coordinate::T, OTexture::WrapMode::ClampToEdge);
+		texture.setPixelFormat(OTexture::PixelFormat::R, 
+								OTexture::PixelDataType::UnsignedByte,
+								OTexture::PixelFormat::R);
+		texture.setUnpackAlignment(OTexture::RowAlignment::Byte);
+		texture.setContent(0, 
+							_impl->face->glyph->bitmap.width, 
+							_impl->face->glyph->bitmap.rows,
+							_impl->face->glyph->bitmap.buffer,
+							_impl->face->glyph->bitmap.width*_impl->face->glyph->bitmap.rows);
+
+		cacheEntry.renderComponents->setGeometry(_impl->geometryManager.add(std::move(geometry)));
+		cacheEntry.renderComponents->setTexture(_impl->textureManager.add(std::move(texture)));
+	} 
 }
 
 void OFont::init()

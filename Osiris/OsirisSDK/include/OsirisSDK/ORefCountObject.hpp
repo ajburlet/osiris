@@ -243,7 +243,7 @@ inline ORefCountPtr<RefCountT> & ORefCountPtr<RefCountT>::operator=(ORefCountPtr
 template<class RefCountT>
 inline ORefCountPtr<RefCountT> & ORefCountPtr<RefCountT>::operator=(RefCountT * aPtr)
 {
-	set(aPtr);
+	setPtr(aPtr);
 	return *this;
 }
 

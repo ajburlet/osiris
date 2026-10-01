@@ -11,13 +11,6 @@
 #include "OsirisSDK/OObjMeshFile.h"
 #include "OsirisSDK/OString.hpp"
 
-struct OObjMeshFile::Impl
-{
-    using MaterialMap = OWavefrontMaterialFile::MaterialMap;
-
-    MaterialMap materials;
-};
-
 namespace
 {
 using RawData = OMeshFile::RawData;
@@ -111,28 +104,23 @@ void handleFace(OObjMeshFileTokenizer& aTokenizer, RawData& aRawData,
     }
 
     if (aFaceIndices.size() < 3) parseError("Face must have at least three vertices");
-    for (size_t index = 1; index + 1 < aFaceIndices.size(); ++index) {
-        aRawData.addFace({ aFaceIndices[0], aFaceIndices[index], aFaceIndices[index + 1] });
-    }
+    aRawData.addFace({ aFaceIndices, 0 });
 }
 }
 
 OObjMeshFile::OObjMeshFile(const OString& aFilename)
-    : OMeshFile(aFilename), _impl(new Impl)
+    : OMeshFile(aFilename)
 {
 }
 
 OObjMeshFile::~OObjMeshFile()
-{
-    delete _impl;
-}
+= default;
 
 void OObjMeshFile::loadMesh(const OString& aObjName, RawData& aRawData)
 {
     open();
     aRawData.setPositionComponents(3);
     aRawData.setTextureComponents(2);
-    _impl->materials.clear();
 
     constexpr uint32_t bufferSize = 4096;
     char lineBuffer[bufferSize];
@@ -164,22 +152,20 @@ void OObjMeshFile::loadMesh(const OString& aObjName, RawData& aRawData)
             const auto materialFileFullPath = basePath / materialFile;
             OWavefrontMaterialFile materialFileParser(OString(materialFileFullPath.string().c_str()));
             materialFileParser.open();
-            materialFileParser.loadMaterials(_impl->materials);
+            auto materials = materialFileParser.loadMaterials();
             materialFileParser.close();
+            for (auto& mat : materials) {
+				aRawData.addMaterial(std::move(mat));
+			};
             continue;
         }
 
         if (!targetObjectFound) continue;
 
         if (command == "usemtl") {
-            const std::string_view materialName = tokenizer.nextToken();
+            const std::string materialName = std::string(tokenizer.nextToken());
             if (materialName.empty()) parseError("Expected material name");
-
-            std::string materialNameString(materialName);
-            OString name(materialNameString.c_str());
-            auto material = _impl->materials.find(name);
-            if (material == _impl->materials.end()) parseError("Material not found");
-            aRawData.useMaterial(&material.value());
+            aRawData.useMaterial(OString(materialName.c_str()));
         } else if (command == "v") {
             handleVertex(tokenizer, aRawData);
         } else if (command == "vt") {

@@ -2,6 +2,9 @@
 #include "OsirisSDK/OVertexBuffer.h"
 #include "OsirisSDK/OIndexBuffer.h"
 #include "OsirisSDK/OTexture.h"
+#include "OsirisSDK/OGeometry.h"
+#include "OsirisSDK/OMaterial.h"
+#include "OsirisSDK/OMaterialSet.h"
 #include "OsirisSDK/ORenderComponents.h"
 
 
@@ -20,10 +23,18 @@ ORenderMode ORenderComponents::renderMode() const
 
 bool ORenderComponents::componentsLoaded() const
 {
-	if (_vertexBuffer == nullptr || _vertexBuffer->needsLoading() || (_indexBuffer != nullptr && _indexBuffer->needsLoading()) ||
-	    (_texture != nullptr && _texture->needsLoading())) {
+	if ( _geometry->vertexBuffer().needsLoading() || 
+		(_geometry->drawMode() == ORenderMode::IndexedTriangle && _geometry->indexBuffer().needsLoading()) ||
+	    (!_texture.isNull() && _texture->needsLoading()) ||
+		(!_materialSet.isNull() && _materialSet->needsLoading())) {
 		return false;
 	}
 	return true;
+}
+
+void ORenderComponents::setGeometry(OGeometry& aGeometry)
+{
+	_geometry = &aGeometry;
+	setRenderMode(aGeometry.drawMode());
 }
 

@@ -52,7 +52,7 @@ OOpenGLRenderCommandEncoder::OOpenGLRenderCommandEncoder(OOpenGLCommandBuffer* a
 	for (auto& tex : _texture) tex = nullptr;
 }
 
-void OOpenGLRenderCommandEncoder::setShaderProgram(OShaderProgram * aShaderProgram)
+void OOpenGLRenderCommandEncoder::setShaderProgram(OShaderProgram* aShaderProgram)
 {
 	encode([this, aShaderProgram]() {
 		glUseProgram((aShaderProgram != nullptr) ? handle(aShaderProgram) : 0);
@@ -60,17 +60,17 @@ void OOpenGLRenderCommandEncoder::setShaderProgram(OShaderProgram * aShaderProgr
 	_shaderProgram = aShaderProgram;
 }
 
-void OOpenGLRenderCommandEncoder::setVertexBuffer(OVertexBuffer * aVertexBuffer)
+void OOpenGLRenderCommandEncoder::setVertexBuffer(OVertexBuffer* aVertexBuffer)
 {
 	_vertexBuffer = aVertexBuffer;
 }
 
-void OOpenGLRenderCommandEncoder::setIndexBuffer(OIndexBuffer * aIndexBuffer)
+void OOpenGLRenderCommandEncoder::setIndexBuffer(OIndexBuffer* aIndexBuffer)
 {
 	_indexBuffer = aIndexBuffer;
 }
 
-void OOpenGLRenderCommandEncoder::setTexture(OTexture * aTexture, uint32_t aIndex)
+void OOpenGLRenderCommandEncoder::setTexture(OTexture* aTexture, uint32_t aIndex)
 {
 	encode(Bind(glActiveTexture, gOpenGLTextureID[aIndex]));
 	encode([this, aTexture]() {
@@ -79,7 +79,7 @@ void OOpenGLRenderCommandEncoder::setTexture(OTexture * aTexture, uint32_t aInde
 	_texture[aIndex] = aTexture;
 }
 
-void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents * aRenderComponents)
+void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents* aRenderComponents)
 {
 	auto GetBlendGLFactor = [](OBlendFactor aFactor) {
 		switch (aFactor) {
@@ -125,12 +125,22 @@ void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents * aRende
 	encode(Bind(aRenderComponents->depthTestingEnabled() ? glEnable : glDisable, GL_DEPTH_TEST));
 	encode(Bind(glDepthMask, aRenderComponents->depthBufferWriteEnabled() ? GL_TRUE : GL_FALSE));
 
-	if (aRenderComponents->indexBuffer() != nullptr)
+	if (aRenderComponents->geometry()->drawMode() == ORenderMode::IndexedTriangle)
 	{
-		encode(Bind(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, aRenderComponents->indexBuffer()->gpuHandleCastTo<GLuint>()));
+		encode(Bind(glBindBuffer, 
+					GL_ELEMENT_ARRAY_BUFFER, 
+					aRenderComponents->geometry()->indexBuffer().gpuHandleCastTo<GLuint>()));
 	}
 
 	encode(Bind(glBindVertexArray, aRenderComponents->gpuHandleCastTo<GLuint>()));
+
+	if (aRenderComponents->materialSet() != nullptr && aRenderComponents->materialSet()->count() > 0)
+	{
+		encode(Bind(glBindBufferBase, 
+					GL_SHADER_STORAGE_BUFFER,
+					0, 
+					aRenderComponents->materialSet()->gpuHandleCastTo<GLuint>()));
+	}
 }
 
 void OOpenGLRenderCommandEncoder::setUniformArgument(OShaderUniformArgument * aUniformArgument)

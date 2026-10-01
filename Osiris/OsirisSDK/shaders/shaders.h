@@ -5,7 +5,7 @@
 #include "OShaderID.h"
 
 constexpr char glsl_OGlyph_fragment[] = R"(
-#version 330 
+#version 430 
 
 varying mediump vec2 voTexcoord;
 out lowp vec4 foOutColor;
@@ -20,7 +20,7 @@ void main(void)
 )";
 
 constexpr char glsl_OGlyph_vertex[] = R"(
-#version 330 
+#version 430 
 
 layout (location = 0) in vec4 aPosition;
 varying mediump vec2 voTexcoord;
@@ -35,37 +35,42 @@ void main(void)
 )";
 
 constexpr char glsl_OMesh_fragment[] = R"(
-#version 330
+#version 430
 
-smooth in vec4 smoothColor;
+struct Material {
+    vec3 color; 
+};
 
-out vec4 outputColor;
+layout(std430, binding = 0) readonly buffer MaterialBuffer {
+    Material materials[];
+};
+
+flat in uint aMaterialIndex; 
+
+out vec4 oColor;
 
 void main()
 {
-	outputColor = vec4(0.0f, 0.0f, 1.0f, 0.5f);
-	outputColor = smoothColor;
+	oColor = vec4(materials[aMaterialIndex].color, 1.0);
 }
-
 
 )";
 
 constexpr char glsl_OMesh_vertex[] = R"(
-#version 330
+#version 430
 
-layout (location = 0) in vec4 position;
-layout (location = 1) in vec4 color;
+layout (location = 0) in vec4 aPosition;
+layout (location = 3) in uint aMaterialIndex;
 
-smooth out vec4 smoothColor;
+flat out uint oMaterialIndex;
 
 uniform mat4 uMvpTransform;
 
 void main()
 {
-	gl_Position = uMvpTransform * position;
-	smoothColor = color;
+	gl_Position = uMvpTransform * aPosition;
+	oMaterialIndex = aMaterialIndex;
 }
-
 
 )";
 

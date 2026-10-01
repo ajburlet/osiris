@@ -5,10 +5,14 @@
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OGraphicsDefinitions.h"
 #include "OsirisSDK/OGPUObject.h"
+#include "OsirisSDK/ORefCountObject.hpp"
+#include "OsirisSDK/OGeometry.h"
+#include "OsirisSDK/OTexture.h"
+#include "OsirisSDK/OMaterial.h"
+#include "OsirisSDK/OMaterialSet.h"
 
 class OVertexBuffer;
 class OIndexBuffer;
-class OTexture;
 class OShaderProgram;
 class OShaderUniformArgument;
 
@@ -34,19 +38,19 @@ public:
 	ORenderMode renderMode() const;
 
 	/**
-	 @brief Returns the vertex buffer.
+	 * @brief Returns the associated geometry.
 	 */
-	OVertexBuffer* vertexBuffer();
-
-	/**
-	 @brief Returns the index buffer.
-	 */
-	OIndexBuffer* indexBuffer();
+	OGeometry* geometry();
 
 	/**
 	 @brief Returns the texture.
 	 */
 	OTexture* texture();
+
+	/**
+	 * @brief Returns the material set.
+	 */
+	OMaterialSet* materialSet();
 
 	/**
 	 @brief Returns the shader program.
@@ -104,22 +108,20 @@ public:
 	void setRenderMode(ORenderMode aRenderMode);
 
 	/**
-	 @brief Sets the vertex buffer.
-	 @param aVertexBuffer The vertex buffer to be set.
+	 * @brief Sets the geometry.
 	 */
-	void setVertexBuffer(OVertexBuffer* aVertexBuffer);
+	void setGeometry(OGeometry& aGeometry);
 
 	/**
-	 @brief Sets the index buffer.
-	 @param aIndexBuffer The index buffer to be set.
+	 * @brief Sets the material set.
 	 */
-	void setIndexBuffer(OIndexBuffer* aIndexBuffer);
+	void setMaterialSet(OMaterialSet& aMaterialSet);
 
 	/**
 	 @brief Sets the texture.
 	 @param aTexture The texture to be set.
 	 */
-	void setTexture(OTexture* aTexture);
+	void setTexture(OTexture& aTexture);
 
 	/**
 	 @brief Sets the shader program.
@@ -158,35 +160,34 @@ public:
 	void setDepthTesting(bool aTestEnabled, bool aBufferWrite);
 
 private:
-	ORenderMode			_renderMode		= ORenderMode::Undefined;
-	OVertexBuffer*			_vertexBuffer		= nullptr;
-	OIndexBuffer*			_indexBuffer		= nullptr;
-	OTexture*			_texture		= nullptr;
-	OShaderProgram*			_shaderProgram		= nullptr;
-	bool				_blendingEnabled	= false;
-	OBlendFactor			_blendSourceFactor	= OBlendFactor::One;
-	OBlendFactor			_blendDestinationFactor = OBlendFactor::Zero;
-	bool				_faceCullingEnabled	= false;
-	OCullFace			_cullFace		= OCullFace::Undefined;
-	OCullFront			_cullFront		= OCullFront::Undefined;
-	bool				_depthTestEnabled	= false;
-	bool				_depthBufferWrite	= false;
+	ORenderMode					_renderMode				= ORenderMode::Undefined;
+	ORefCountPtr<OGeometry>		_geometry;
+	ORefCountPtr<OMaterialSet>	_materialSet;
+	ORefCountPtr<OTexture>		_texture				= nullptr;
+	OShaderProgram*				_shaderProgram			= nullptr;
+	bool						_blendingEnabled		= false;
+	OBlendFactor				_blendSourceFactor		= OBlendFactor::One;
+	OBlendFactor				_blendDestinationFactor = OBlendFactor::Zero;
+	bool						_faceCullingEnabled		= false;
+	OCullFace					_cullFace				= OCullFace::Undefined;
+	OCullFront					_cullFront				= OCullFront::Undefined;
+	bool						_depthTestEnabled		= false;
+	bool						_depthBufferWrite		= false;
 };
 
-
-inline OVertexBuffer * ORenderComponents::vertexBuffer()
+inline OGeometry* ORenderComponents::geometry()
 {
-	return _vertexBuffer;
-}
-
-inline OIndexBuffer * ORenderComponents::indexBuffer()
-{
-	return _indexBuffer;
+	return _geometry.getPtr();
 }
 
 inline OTexture * ORenderComponents::texture()
 {
-	return _texture;
+	return _texture.getPtr();
+}
+
+inline OMaterialSet* ORenderComponents::materialSet()
+{
+	return _materialSet.getPtr();
 }
 
 inline OShaderProgram * ORenderComponents::shaderProgram()
@@ -239,19 +240,14 @@ inline void ORenderComponents::setRenderMode(ORenderMode aRenderMode)
 	_renderMode = aRenderMode;
 }
 
-inline void ORenderComponents::setVertexBuffer(OVertexBuffer * aVertexBuffer)
+inline void ORenderComponents::setTexture(OTexture& aTexture)
 {
-	_vertexBuffer = aVertexBuffer;
+	_texture = &aTexture;
 }
 
-inline void ORenderComponents::setIndexBuffer(OIndexBuffer * aIndexBuffer)
+inline void ORenderComponents::setMaterialSet(OMaterialSet& aMaterialSet)
 {
-	_indexBuffer = aIndexBuffer;
-}
-
-inline void ORenderComponents::setTexture(OTexture * aTexture)
-{
-	_texture = aTexture;
+	_materialSet = &aMaterialSet;
 }
 
 inline void ORenderComponents::setShaderProgram(OShaderProgram * aShaderProgram)

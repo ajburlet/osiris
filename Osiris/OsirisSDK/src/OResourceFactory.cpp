@@ -3,36 +3,44 @@
 #include "OsirisSDK/OList.hpp"
 #include "OsirisSDK/OString.hpp"
 #include "OsirisSDK/ORefCountObject.hpp"
-#include "OsirisSDK/OMeshGeometry.h"
+#include "OsirisSDK/OMeshBuilder.h"
+#include "OsirisSDK/OTexture.h"
+#include "OsirisSDK/OMaterial.h"
 #include "OsirisSDK/OVertexBuffer.h"
 #include "OsirisSDK/OIndexBuffer.h"
 #include "OsirisSDK/OShaderArgument.h"
 #include "OsirisSDK/OObjMeshFile.h"
-#include "OsirisSDK/OGeometryManager.h"
+#include "OsirisSDK/OMesh.h"
+#include "OsirisSDK/ORenderComponents.h"
+#include "OsirisSDK/OResourceFactory.h"
 
 using Allocator = OGraphicsAllocators::Default;
 
-struct OGeometryManager::Impl {
-	using GeometryMap = OMap<OString, OMeshGeometry, Allocator>;
+struct OResourceFactory::Impl {
 	using MeshFileMap = OMap<OString, OMeshFile*, Allocator>;
 
 	enum class VertexDescrType {
 		PositionsOnly	= 0,
 		Normals		= 1 << 0,
 		Texture		= 1 << 1,
-		All		= Normals | Texture,
+		Material		= 1 << 2,
+		All		= Normals | Texture | Material,
 		Count
 	};
 	static constexpr uint32_t VertexDescrTypeCount = static_cast<uint32_t>(VertexDescrType::Count);
 
-	GeometryMap		geometryMap;
+	GeometryManager geometryManager;
+	TextureManager textureManager;
+	MaterialManager materialManager;
+	MaterialSetManager materialSetManager;
+
 	MeshFileMap		meshFileMap;
 	OVertexBufferDescriptor	vertexDescr[VertexDescrTypeCount];
 };
 
-OGeometryManager::OGeometryManager()
+OResourceFactory::OResourceFactory()
+	: _impl(std::make_unique<OResourceFactory::Impl>())
 {
-	OExPointerCheck(_impl = new Impl);
 	for (uint32_t type = 0; type < Impl::VertexDescrTypeCount; type++) {
 		auto& descr = _impl->vertexDescr[type];
 		descr.addAttribute(OShaderVertexArgument(OVarType::Float3, 0));
@@ -42,10 +50,16 @@ OGeometryManager::OGeometryManager()
 		if ((type & static_cast<uint32_t>(Impl::VertexDescrType::Texture))) {
 			descr.addAttribute(OShaderVertexArgument(OVarType::Float2, 2));
 		}
+		descr.addAttribute(OShaderVertexArgument(OVarType::UnsignedInt, 3));
 	}
 }
 
-OGeometryManager::~OGeometryManager()
+OResourceFactory::OResourceFactory(OResourceFactory&& aOther) 
+	: _impl(std::move(aOther)._impl)
+{
+}
+
+OResourceFactory::~OResourceFactory()
 {
 	if (_impl != nullptr) {
 		for (auto it = _impl->meshFileMap.begin(); it != _impl->meshFileMap.end(); it++) {
@@ -53,19 +67,36 @@ OGeometryManager::~OGeometryManager()
 				delete it.value();
 			}
 		}
-		delete _impl;
 	}
 }
 
-OGeometryManager & OGeometryManager::operator=(OGeometryManager && aOther)
+OResourceFactory & OResourceFactory::operator=(OResourceFactory && aOther)
 {
-	if (_impl != nullptr) delete _impl;
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
+	aOther._impl = std::move(aOther)._impl;
 	return *this;
 }
 
-void OGeometryManager::registerFile(FileType aFileType, const OString& aFilename, const OString& aFileID)
+OResourceFactory::GeometryManager& OResourceFactory::geometryManager()
+{
+	return _impl->geometryManager;
+}
+
+OResourceFactory::TextureManager& OResourceFactory::textureManager()
+{
+	return _impl->textureManager;
+}
+
+OResourceFactory::MaterialManager& OResourceFactory::materialManager()
+{
+	return _impl->materialManager;
+}
+
+OResourceFactory::MaterialSetManager& OResourceFactory::materialSetManager()
+{
+	return _impl->materialSetManager;
+}
+
+void OResourceFactory::registerFile(FileType aFileType, const OString& aFilename, const OString& aFileID)
 {
 	if (_impl->meshFileMap.find(aFileID) != _impl->meshFileMap.end()) {
 		throw OEx("File ID already exists");
@@ -87,27 +118,25 @@ void OGeometryManager::registerFile(FileType aFileType, const OString& aFilename
 	}
 }
 
-void OGeometryManager::unRegisterFile(const OString& aFileID)
+void OResourceFactory::unRegisterFile(const OString& aFileID)
 {
 	auto it = _impl->meshFileMap.find(aFileID);
 	if (it == _impl->meshFileMap.end()) {
 		throw OEx("File ID not found.");
 	}
-	trashBin().trash(it.value());
+	delete it.value();
 	_impl->meshFileMap.remove(it);
 }
 
-OGeometryManager::ResourcePtr OGeometryManager::loadFromFile(const OString& aFileID, const OString& aObjectName, const OString& aKey)
+OResourceFactory::MeshResources OResourceFactory::loadMeshResources(const OString& aFileID, const OString& aObjectName, const OString& aKey)
 {
-	OMeshFile::RawData rawData;
-
 	auto file_it = _impl->meshFileMap.find(aFileID);
 	if (file_it == _impl->meshFileMap.end()) {
 		throw OEx("File ID not found.");
 	}
 
+	OMeshFile::RawData rawData;
 	file_it.value()->loadMesh(aObjectName, rawData);
-
 	if (rawData.positionComponents() != 3) {
 		throw OEx("Only three position components are currently supported by the geometry manager.");
 	}
@@ -122,63 +151,27 @@ OGeometryManager::ResourcePtr OGeometryManager::loadFromFile(const OString& aFil
 		}
 		type |= static_cast<uint32_t>(Impl::VertexDescrType::Texture);
 	}
+	type |= static_cast<uint32_t>(Impl::VertexDescrType::Material);
 
-	OVertexBuffer vertexBuffer(_impl->vertexDescr[type], rawData.vertexCount());
-	for (uint32_t i = 0; i < rawData.vertexCount(); i++) {
-		auto vertexData = rawData.vertexData(i);
-
-		uint8_t attrIndex = 0;
-		vertexBuffer.setAttributeValue(attrIndex++, i, vertexData.pos);
-		if (rawData.hasNormals()) {
-			vertexBuffer.setAttributeValue(attrIndex++, i, vertexData.normal);
-		}
-		if (rawData.hasTexCoords()) {
-			vertexBuffer.setAttributeValue(attrIndex++, i, vertexData.texCoord);
-		}
-	}
-	
-	Impl::GeometryMap::Iterator it;
-	OMeshGeometry geometry((rawData.hasIndices()) ? ORenderMode::IndexedTriangle : ORenderMode::Triangle,
-						   std::move(vertexBuffer), std::move(rawData.indexedDrawInfoArray()));
-	_impl->geometryMap.insert(aKey, std::move(geometry), &it);
-
-	return ResourcePtr(&it.value());
+	OMeshBuilder builder(_impl->geometryManager, _impl->materialManager, _impl->materialSetManager, _impl->vertexDescr[type]);
+	auto built = builder.build(aKey, aObjectName, rawData);
+	return { std::move(built.geometry), std::move(built.materials) };
 }
 
-OGeometryManager::ResourcePtr OGeometryManager::fetchResource(const OString& aKey)
+void OResourceFactory::loadFromFile(const OString& aFileID, const OString& aObjectName,
+	const OString& aKey, ORenderComponents& aRenderComponents)
 {
-	OMeshGeometry* geometry = nullptr;
-	auto it = _impl->geometryMap.find(aKey);
-	if (it != _impl->geometryMap.end()) geometry = &it.value();
-	return ResourcePtr(geometry);
-}
-
-void OGeometryManager::purge()
-{
-	OList<OString,Allocator> to_remove; 
-	for (auto it=_impl->geometryMap.begin(); it != _impl->geometryMap.end(); ++it) {
-		if (it.value().referenceCount() == 1) {
-			to_remove.pushBack(it.key());
-		}
-	}
-
-	for (auto& key : to_remove) {
-		_impl->geometryMap.remove(key);
+	auto resources = loadMeshResources(aFileID, aObjectName, aKey);
+	aRenderComponents.setGeometry(*resources.geometry);
+	if (resources.materials != nullptr) {
+		aRenderComponents.setMaterialSet(*resources.materials);
 	}
 }
 
-void OGeometryManager::forEach(IterationCallbackFn aCallbackFn)
+void OResourceFactory::loadFromFile(const OString& aFileID, const OString& aObjectName,
+	const OString& aKey, OMesh& aMesh)
 {
-	for (auto it = _impl->geometryMap.begin(); it != _impl->geometryMap.end(); ++it) {
-		aCallbackFn(it.key().cString(), it.value());
-	}
-}
-
-void OGeometryManager::forEach(IterationConstCallbackFn aCallbackFn) const
-{
-	for (auto it = _impl->geometryMap.begin(); it != _impl->geometryMap.end(); ++it) {
-		aCallbackFn(it.key().cString(), it.value());
-	}
+	loadFromFile(aFileID, aObjectName, aKey, aMesh.renderComponents());
 }
 
 

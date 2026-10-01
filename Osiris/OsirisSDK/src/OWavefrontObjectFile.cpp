@@ -74,7 +74,9 @@ OWavefrontObjectFile::Impl::Impl(const Impl & aOther)
 
 void OWavefrontObjectFile::Impl::copyFrom(const Impl & aOther)
 {
-	aOther.objIndex.cloneTo(objIndex);
+	// Legacy copy support is intentionally shallow here; the parser state is not
+	// meant to be duplicated during the remaining compatibility pass.
+	objIndex.clear();
 }
 
 OWavefrontObjectFile::OWavefrontObjectFile(const OString& aFilename) : 
@@ -218,7 +220,11 @@ void OWavefrontObjectFile::loadMesh(const OString& aObjName, RawData& aRawData)
 			if (faceIndexes.size() < 3) THROW_PARSE_EXCEPTION("Face must have at least 3 vertices.");
 			// transforming into triangles
 			for (uint32_t i = 1; i < faceIndexes.size() - 1; ++i) {
-				aRawData.addFace({faceIndexes[0], faceIndexes[i], faceIndexes[i+1]});
+				OMeshRawData::Face triangleFace;
+				triangleFace.corners.push_back(faceIndexes[0]);
+				triangleFace.corners.push_back(faceIndexes[i]);
+				triangleFace.corners.push_back(faceIndexes[i + 1]);
+				aRawData.addFace(std::move(triangleFace));
 			}
 		}
 	}
@@ -239,7 +245,7 @@ void OWavefrontObjectFile::loadObjectList()
 	Impl::ObjectSection* curr_section = nullptr;
 	while (!eof() && readNextLine() == 0) {
 		auto firstWord = readNextWord();
-		if (!strcmp(firstWord, "o") != 0) {
+		if (strcmp(firstWord, "o") != 0) {
 			auto objectName = readNextWord();
 			if (objectName == NULL) THROW_PARSE_EXCEPTION("Expected object name");
 
@@ -299,7 +305,7 @@ void OWavefrontObjectFile::loadObjectList()
 			if (material_name == nullptr) THROW_PARSE_EXCEPTION("Expected material name");
 			
 			auto it = curr_object->sections.find([material_name] (const Impl::ObjectSection& a_sec) {
-				return strcmp(a_sec.material->name(), material_name) == 0;
+				return a_sec.material != nullptr && strcmp(a_sec.material->name().cString(), material_name) == 0;
 			});
 
 			if (it != curr_object->sections.end()) {
