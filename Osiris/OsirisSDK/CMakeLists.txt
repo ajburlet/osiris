@@ -80,6 +80,7 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OResourceManagerDefs.h
 	${SRC_DIR}/OShaderArgument.cpp
 	${HDR_DIR}/OShaderArgument.h
+	${HDR_DIR}/OShaderArrayBuffer.hpp
 	${SRC_DIR}/OShaderObject.cpp
 	${HDR_DIR}/OShaderObject.h
 	${SRC_DIR}/OShaderProgram.cpp

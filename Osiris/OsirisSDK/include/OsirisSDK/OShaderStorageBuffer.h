@@ -26,7 +26,7 @@ public:
     virtual std::size_t size() const = 0;
 
     /**
-     * @brief 
+     * @brief Pointer to the memory area.
      */
     virtual const std::uint8_t* data() const = 0;
 };
