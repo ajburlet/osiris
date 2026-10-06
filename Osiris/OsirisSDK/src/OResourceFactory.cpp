@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OMap.hpp"
 #include "OsirisSDK/OList.hpp"
@@ -17,7 +19,7 @@
 using Allocator = OGraphicsAllocators::Default;
 
 struct OResourceFactory::Impl {
-	using MeshFileMap = OMap<OString, OMeshFile*, Allocator>;
+	using MeshFileMap = OMap<OString, std::unique_ptr<OMeshFile>, Allocator>;
 
 	enum class VertexDescrType {
 		PositionsOnly	= 0,
@@ -50,25 +52,15 @@ OResourceFactory::OResourceFactory()
 		if ((type & static_cast<uint32_t>(Impl::VertexDescrType::Texture))) {
 			descr.addAttribute(OShaderVertexArgument(OVarType::Float2, 2));
 		}
-		descr.addAttribute(OShaderVertexArgument(OVarType::UnsignedInt, 3));
 	}
 }
 
 OResourceFactory::OResourceFactory(OResourceFactory&& aOther) 
 	: _impl(std::move(aOther)._impl)
-{
-}
+{}
 
 OResourceFactory::~OResourceFactory()
-{
-	if (_impl != nullptr) {
-		for (auto it = _impl->meshFileMap.begin(); it != _impl->meshFileMap.end(); it++) {
-			if (it.value() != nullptr) {
-				delete it.value();
-			}
-		}
-	}
-}
+{}
 
 OResourceFactory & OResourceFactory::operator=(OResourceFactory && aOther)
 {
@@ -102,20 +94,15 @@ void OResourceFactory::registerFile(FileType aFileType, const OString& aFilename
 		throw OEx("File ID already exists");
 	}
 
-	OMeshFile* file = nullptr;
+	std::unique_ptr<OMeshFile> file;
 	switch (aFileType) {
 	case FileType::WavefrontObjectFile:
-		file = new OObjMeshFile(aFilename);
+		file = std::make_unique<OObjMeshFile>(aFilename);
 		break;
 	}
 	OExPointerCheck(file);
 
-	try {
-		_impl->meshFileMap.insert(aFileID, file);
-	} catch (OException& e) {
-		delete file;
-		throw e;
-	}
+	_impl->meshFileMap.insert(aFileID, std::move(file));
 }
 
 void OResourceFactory::unRegisterFile(const OString& aFileID)
@@ -124,7 +111,6 @@ void OResourceFactory::unRegisterFile(const OString& aFileID)
 	if (it == _impl->meshFileMap.end()) {
 		throw OEx("File ID not found.");
 	}
-	delete it.value();
 	_impl->meshFileMap.remove(it);
 }
 

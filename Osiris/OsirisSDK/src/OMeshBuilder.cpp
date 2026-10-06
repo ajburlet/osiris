@@ -1,4 +1,7 @@
 #include <map>
+#include <limits>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "OsirisSDK/OException.h"
@@ -12,35 +15,11 @@
 
 namespace
 {
-struct RenderVertexKey
-{
-    OMeshRawData::Index source;
-    uint32_t materialIndex = 0;
-
-    bool operator<(const RenderVertexKey& aOther) const
-    {
-        if (source < aOther.source) return true;
-        if (aOther.source < source) return false;
-        return materialIndex < aOther.materialIndex;
-    }
-};
-
-struct SourceVertexKey
-{
-    OMeshRawData::Index source;
-
-    bool operator<(const SourceVertexKey& aOther) const
-    {
-        return source < aOther.source;
-    }
-};
-
 struct RenderVertex
 {
     OMeshRawData::Position position{};
     OMeshRawData::Normal normal{};
     OMeshRawData::TexCoord texCoord{};
-    uint32_t materialIndex = 0;
 };
 }
 
@@ -57,9 +36,28 @@ OMeshBuilder::OMeshBuilder(GeometryManager& aGeometryManager,
 
 OMeshBuilder::Result OMeshBuilder::build(const OString& aMeshName,
                                          const OString& aMaterialFileStem,
-                                         const OMeshRawData& aRawData,
-                                         const Options& aOptions)
+                                         const OMeshRawData& aRawData)
 {
+    using MaterialIndexType = OGeometry::MaterialIndexBuffer::ItemType;
+
+    const size_t maxMaterialCount =
+        static_cast<size_t>(std::numeric_limits<MaterialIndexType>::max()) + 1;
+    if (aRawData.materialCount() > maxMaterialCount) {
+        throw OEx("Mesh has more materials than its material index buffer can represent.");
+    }
+
+    size_t triangleCount = 0;
+    const size_t maxTriangleCount = std::numeric_limits<uint32_t>::max();
+    for (uint32_t faceIndex = 0; faceIndex < aRawData.faceCount(); ++faceIndex) {
+        const size_t cornerCount = aRawData.face(faceIndex).corners.size();
+        if (cornerCount < 3) throw OEx("Mesh face must have at least three corners.");
+        const size_t faceTriangleCount = cornerCount - 2;
+        if (faceTriangleCount > maxTriangleCount - triangleCount) {
+            throw OEx("Mesh has too many triangles.");
+        }
+        triangleCount += faceTriangleCount;
+    }
+
     auto materialSetName = OString::Fmt("%s:%s", aMeshName.cString(), aMaterialFileStem.cString());
 
     OMaterialSet materialSet(std::move(materialSetName));
@@ -76,86 +74,47 @@ OMeshBuilder::Result OMeshBuilder::build(const OString& aMeshName,
 
     auto& materials = _materialSetManager.add(std::move(materialSet));
 
-    std::map<RenderVertexKey, uint32_t> materialVertexMap;
-    std::map<SourceVertexKey, uint32_t> sourceVertexMap;
+    std::map<OMeshRawData::Index, uint32_t> vertexMap;
     std::vector<RenderVertex> vertices;
-    OIndexBuffer indexBuffer;
+    if (triangleCount > vertices.max_size() / 3) throw OEx("Mesh has too many vertices.");
+    vertices.reserve(triangleCount * 3);
 
-    auto addVertex = [&](const OMeshRawData::Index& aSourceIndex, uint32_t aMaterialIndex) {
+    OIndexBuffer indexBuffer(static_cast<uint32_t>(triangleCount));
+    OGeometry::MaterialIndexBuffer::Array materialIndices(triangleCount, true);
+    size_t materialIndex = 0;
+
+    auto getVertexIndex = [&](OMeshRawData::Index aSourceIndex) {
+        if (!aRawData.hasNormals()) aSourceIndex.norm = 0;
+        if (!aRawData.hasTexCoords()) aSourceIndex.tex = 0;
+        const auto found = vertexMap.find(aSourceIndex);
+        if (found != vertexMap.end()) return found->second;
+
         RenderVertex renderVertex;
         renderVertex.position = aRawData.position(aSourceIndex.vert);
         if (aRawData.hasNormals()) renderVertex.normal = aRawData.normal(aSourceIndex.norm);
         if (aRawData.hasTexCoords()) renderVertex.texCoord = aRawData.texCoord(aSourceIndex.tex);
-        renderVertex.materialIndex = aMaterialIndex;
+        if (vertices.size() >= std::numeric_limits<uint32_t>::max()) {
+            throw OEx("Mesh has too many vertices.");
+        }
         const uint32_t index = static_cast<uint32_t>(vertices.size());
         vertices.push_back(renderVertex);
-        materialVertexMap.emplace(RenderVertexKey{aSourceIndex, aMaterialIndex}, index);
+        vertexMap.emplace(aSourceIndex, index);
         return index;
     };
 
     for (uint32_t faceIndex = 0; faceIndex < aRawData.faceCount(); ++faceIndex) {
         const auto& polygon = aRawData.face(faceIndex);
-        if (polygon.corners.size() < 3) throw OEx("Mesh face must have at least three corners.");
         for (size_t corner = 1; corner + 1 < polygon.corners.size(); ++corner) {
             const OMeshRawData::Index triangle[3] = {
                 polygon.corners[0], polygon.corners[corner], polygon.corners[corner + 1]
             };
-            uint32_t indices[3]{};
-            if (aOptions.vertexMaterialMode == Options::VertexMaterialMode::Duplicated) {
-                for (uint32_t vertex = 0; vertex < 3; ++vertex) {
-                    const RenderVertexKey key{triangle[vertex], polygon.materialIndex};
-                    auto found = materialVertexMap.find(key);
-                    indices[vertex] = found == materialVertexMap.end()
-                        ? addVertex(triangle[vertex], polygon.materialIndex)
-                        : found->second;
-                }
-            } else {
-                uint32_t provokingCorner = 0;
-                bool foundCompatibleCorner = false;
-                for (uint32_t vertex = 0; vertex < 3; ++vertex) {
-                    const auto found = sourceVertexMap.find(SourceVertexKey{triangle[vertex]});
-                    if (found != sourceVertexMap.end() &&
-                        vertices[found->second].materialIndex == polygon.materialIndex) {
-                        provokingCorner = vertex;
-                        foundCompatibleCorner = true;
-                        break;
-                    }
-                }
-                if (!foundCompatibleCorner) {
-                    for (uint32_t vertex = 0; vertex < 3; ++vertex) {
-                        if (sourceVertexMap.find(SourceVertexKey{triangle[vertex]}) == sourceVertexMap.end()) {
-                            provokingCorner = vertex;
-                            foundCompatibleCorner = true;
-                            break;
-                        }
-                    }
-                }
-
-                for (uint32_t vertex = 0; vertex < 3; ++vertex) {
-                    const uint32_t corner = (provokingCorner + vertex + 1) % 3;
-                    const SourceVertexKey sourceKey{triangle[corner]};
-                    auto found = sourceVertexMap.find(sourceKey);
-                    if (corner == provokingCorner) {
-                        if (found != sourceVertexMap.end() &&
-                            vertices[found->second].materialIndex == polygon.materialIndex) {
-                            indices[vertex] = found->second;
-                        } else {
-                            const RenderVertexKey materialKey{triangle[corner], polygon.materialIndex};
-                            auto materialFound = materialVertexMap.find(materialKey);
-                            indices[vertex] = materialFound == materialVertexMap.end()
-                                ? addVertex(triangle[corner], polygon.materialIndex)
-                                : materialFound->second;
-                            if (found == sourceVertexMap.end()) sourceVertexMap.emplace(sourceKey, indices[vertex]);
-                        }
-                    } else if (found == sourceVertexMap.end()) {
-                        indices[vertex] = addVertex(triangle[corner], polygon.materialIndex);
-                        sourceVertexMap.emplace(sourceKey, indices[vertex]);
-                    } else {
-                        indices[vertex] = found->second;
-                    }
-                }
-            }
+            const uint32_t indices[3] = {
+                getVertexIndex(triangle[0]),
+                getVertexIndex(triangle[1]),
+                getVertexIndex(triangle[2])
+            };
             indexBuffer.addFace(indices[0], indices[1], indices[2]);
+            materialIndices[materialIndex++] = static_cast<MaterialIndexType>(polygon.materialIndex);
         }
     }
 
@@ -165,13 +124,13 @@ OMeshBuilder::Result OMeshBuilder::build(const OString& aMeshName,
         vertexBuffer.setAttributeValue(attribute++, index, &vertices[index].position.x);
         if (aRawData.hasNormals()) vertexBuffer.setAttributeValue(attribute++, index, &vertices[index].normal.x);
         if (aRawData.hasTexCoords()) vertexBuffer.setAttributeValue(attribute++, index, &vertices[index].texCoord.u);
-        vertexBuffer.setAttributeValue(attribute, index, &vertices[index].materialIndex);
     }
 
     OGeometry geometry(OString(aMeshName), 
                        ORenderMode::IndexedTriangle, 
                        std::move(vertexBuffer), 
-                       std::move(indexBuffer));
+                       std::move(indexBuffer),
+                       OGeometry::MaterialIndexBuffer(std::move(materialIndices)));
     auto& geometryResource = _geometryManager.add(std::move(geometry));
 
     return {.geometry = &geometryResource, .materials = &materials};

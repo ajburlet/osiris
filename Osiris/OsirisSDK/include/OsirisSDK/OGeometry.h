@@ -21,7 +21,7 @@ public:
     /**
      * @brief Maps the material index for each triangle.
      */
-    using MaterialIndexBuffer = OShaderArrayBuffer<std::uint8_t>;
+    using MaterialIndexBuffer = OShaderArrayBuffer<std::uint32_t>;
 
 public:
     /**

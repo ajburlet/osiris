@@ -1,11 +1,21 @@
-#version 330
+#version 430
 
-smooth in vec4 smoothColor;
+struct Material {
+	vec3 color;
+};
 
-out vec4 outputColor;
+layout(std430, binding = 0) readonly buffer MaterialBuffer {
+	Material materials[];
+};
+
+layout(std430, binding = 1) readonly buffer TriangleMaterialIndexBuffer {
+	uint materialIndices[];
+};
+
+out vec4 oColor;
 
 void main()
 {
-	outputColor = smoothColor;
+	oColor = vec4(materials[materialIndices[gl_PrimitiveID]].color, 1.0);
 }
 

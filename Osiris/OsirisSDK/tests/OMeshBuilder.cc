@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cstdint>
 #include <vector>
 
 #include <OsirisSDK/OMaterial.h>
@@ -65,7 +66,6 @@ OTEST_START(MeshBuilder, CubeFacePerMaterial) {
 	descriptor.addAttribute(OShaderVertexArgument(OVarType::Float3, 0));
 	descriptor.addAttribute(OShaderVertexArgument(OVarType::Float3, 1));
 	descriptor.addAttribute(OShaderVertexArgument(OVarType::Float2, 2));
-	descriptor.addAttribute(OShaderVertexArgument(OVarType::UnsignedInt, 3));
 
 	OMeshBuilder builder(factory.geometryManager(), factory.materialManager(),
 		factory.materialSetManager(), descriptor);
@@ -73,13 +73,57 @@ OTEST_START(MeshBuilder, CubeFacePerMaterial) {
 
 	ASSERT_FALSE(result.geometry.isNull());
 	ASSERT_FALSE(result.materials.isNull());
-	ASSERT_EQ(result.materials->size(), 6u);
+	ASSERT_EQ(result.materials->count(), 6u);
 	ASSERT_EQ(result.geometry->vertexBuffer().vertexCount(), 24u);
 	ASSERT_EQ(result.geometry->indexBuffer().faceCount(), 12u);
+	ASSERT_EQ(result.geometry->indexBuffer().indexCount(), 36u);
+	ASSERT_EQ(result.geometry->materialIndexBuffer().size(), 12u);
+
+	const auto& vertexBuffer = result.geometry->vertexBuffer();
+	const auto* vertexData = static_cast<const uint8_t*>(vertexBuffer.buffer());
+	const auto& indexBuffer = result.geometry->indexBuffer();
+	const auto* indices = static_cast<const uint32_t*>(indexBuffer.buffer());
+	const auto* materialIndices = result.geometry->materialIndexBuffer().data();
+	for (uint32_t face = 0; face < 6; ++face) {
+		const auto color = result.materials->at(face)->diffuseColor();
+		ASSERT_EQ(color.x(), float(face + 1) / 6.0f);
+		ASSERT_EQ(color.y(), 0.25f);
+		ASSERT_EQ(color.z(), 0.5f);
+		const uint32_t baseVertex = face * 4;
+		const uint32_t expectedIndices[] = {
+			baseVertex, baseVertex + 1, baseVertex + 2,
+			baseVertex, baseVertex + 2, baseVertex + 3
+		};
+		for (uint32_t index = 0; index < 6; ++index) {
+			ASSERT_EQ(indices[face * 6 + index], expectedIndices[index]);
+		}
+		ASSERT_EQ(materialIndices[face * 2], face);
+		ASSERT_EQ(materialIndices[face * 2 + 1], face);
+
+		for (uint32_t corner = 0; corner < 4; ++corner) {
+			const uint32_t vertex = baseVertex + corner;
+			const auto& source = cubeFaces[face][corner];
+			float position[3]{};
+			float normal[3]{};
+			float texCoord[2]{};
+			const uint8_t* data = vertexData + vertex * vertexBuffer.descriptor().stride();
+			std::memcpy(position, data + vertexBuffer.descriptor().offset(0), sizeof(position));
+			std::memcpy(normal, data + vertexBuffer.descriptor().offset(1), sizeof(normal));
+			std::memcpy(texCoord, data + vertexBuffer.descriptor().offset(2), sizeof(texCoord));
+			ASSERT_EQ(position[0], positions[source.vert].x);
+			ASSERT_EQ(position[1], positions[source.vert].y);
+			ASSERT_EQ(position[2], positions[source.vert].z);
+			ASSERT_EQ(normal[0], normals[source.norm].x);
+			ASSERT_EQ(normal[1], normals[source.norm].y);
+			ASSERT_EQ(normal[2], normals[source.norm].z);
+			ASSERT_EQ(texCoord[0], texCoords[source.tex].u);
+			ASSERT_EQ(texCoord[1], texCoords[source.tex].v);
+		}
+	}
 }
 OTEST_END
 
-OTEST_START(MeshBuilder, ProvokingVertexMaterial) {
+OTEST_START(MeshBuilder, SharedCornersAcrossMaterialsWithoutUVs) {
 	OResourceFactory factory;
 	OMeshRawData rawData;
 	rawData.setPositionComponents(3);
@@ -101,36 +145,23 @@ OTEST_START(MeshBuilder, ProvokingVertexMaterial) {
 
 	OVertexBufferDescriptor descriptor;
 	descriptor.addAttribute(OShaderVertexArgument(OVarType::Float3, 0));
-	descriptor.addAttribute(OShaderVertexArgument(OVarType::UnsignedInt, 1));
 
 	OMeshBuilder builder(factory.geometryManager(), factory.materialManager(),
 		factory.materialSetManager(), descriptor);
-	const auto duplicated = builder.build("DuplicatedMaterial", "DuplicatedMaterial", rawData);
+	const auto result = builder.build("SharedMaterial", "SharedMaterial", rawData);
+	ASSERT_EQ(result.geometry->vertexBuffer().descriptor().attributeCount(), 1u);
+	ASSERT_EQ(result.geometry->vertexBuffer().vertexCount(), 4u);
+	ASSERT_EQ(result.geometry->indexBuffer().faceCount(), 3u);
+	ASSERT_EQ(result.geometry->indexBuffer().indexCount(), 9u);
+	ASSERT_EQ(result.materials->count(), 2u);
 
-	OMeshBuilder::Options options;
-	options.vertexMaterialMode = OMeshBuilder::Options::VertexMaterialMode::ProvokingVertex;
-	const auto provoking = builder.build("ProvokingMaterial", "ProvokingMaterial", rawData, options);
-
-	ASSERT_EQ(duplicated.geometry->vertexBuffer().vertexCount(), 9u);
-	ASSERT_EQ(duplicated.geometry->indexBuffer().faceCount(), 3u);
-	ASSERT_EQ(provoking.materials->size(), 2u);
-	ASSERT_EQ(provoking.geometry->vertexBuffer().vertexCount(), 5u);
-	ASSERT_EQ(provoking.geometry->indexBuffer().faceCount(), 3u);
-
-	auto& vertexBuffer = provoking.geometry->vertexBuffer();
-	const auto& indexBuffer = provoking.geometry->indexBuffer();
-	const auto* indices = static_cast<const uint32_t*>(indexBuffer.buffer());
-	const auto* vertexData = static_cast<const uint8_t*>(vertexBuffer.buffer());
-	const auto materialAt = [&](uint32_t aVertexIndex) {
-		uint32_t materialIndex = 0;
-		std::memcpy(&materialIndex,
-			vertexData + aVertexIndex * vertexBuffer.descriptor().stride() + vertexBuffer.descriptor().offset(1),
-			sizeof(materialIndex));
-		return materialIndex;
-	};
-
-	ASSERT_EQ(materialAt(indices[2]), 0u);
-	ASSERT_EQ(materialAt(indices[5]), 1u);
-	ASSERT_EQ(materialAt(indices[8]), 1u);
+	const uint32_t expectedIndices[] = { 0, 1, 2, 0, 2, 3, 0, 1, 2 };
+	const auto* indices = static_cast<const uint32_t*>(result.geometry->indexBuffer().buffer());
+	for (uint32_t index = 0; index < 9; ++index) ASSERT_EQ(indices[index], expectedIndices[index]);
+	const auto* materialIndices = result.geometry->materialIndexBuffer().data();
+	ASSERT_EQ(result.geometry->materialIndexBuffer().size(), 3u);
+	ASSERT_EQ(materialIndices[0], 0u);
+	ASSERT_EQ(materialIndices[1], 1u);
+	ASSERT_EQ(materialIndices[2], 1u);
 }
 OTEST_END

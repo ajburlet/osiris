@@ -133,11 +133,17 @@ void ORenderingEngine::load(ORenderComponents * aRenderComponents)
 
 void ORenderingEngine::load(OVertexBuffer * aVertexBuffer)
 {
+	if (aVertexBuffer->size() == 0) {
+		throw OEx("Attempted to load an empty vertex buffer.");
+	}
 	_impl->load(aVertexBuffer);
 }
 
 void ORenderingEngine::load(OIndexBuffer * aIndexBuffer)
 {
+	if (aIndexBuffer == nullptr || aIndexBuffer->size() == 0) { 
+		return;
+	}
 	_impl->load(aIndexBuffer);
 }
 
@@ -164,6 +170,7 @@ void ORenderingEngine::unload(ORenderComponents * aRenderComponents, bool aUnloa
 	if (aUnloadAll) {
 		_impl->unload(&aRenderComponents->geometry()->vertexBuffer());
 		_impl->unload(&aRenderComponents->geometry()->indexBuffer());
+		_impl->unload(&aRenderComponents->geometry()->materialIndexBuffer());
 		_impl->unload(aRenderComponents->texture());
 		_impl->unload(aRenderComponents->materialSet());
 	}
@@ -393,16 +400,14 @@ void ORenderingEngine::Impl::load(ORenderable * aRenderable)
 	load(aRenderable->renderComponents());
 }
 
-void ORenderingEngine::Impl::load(ORenderComponents * aRenderComponents)
+void ORenderingEngine::Impl::load(ORenderComponents* aRenderComponents)
 {
-	load(&aRenderComponents->geometry()->vertexBuffer());
-	load(&aRenderComponents->geometry()->indexBuffer());
-	load(aRenderComponents->texture());
-	load(aRenderComponents->materialSet());
 	if (aRenderComponents->needsLoading()) {
 		getResourceEncoder()->load(aRenderComponents);
 		aRenderComponents->setNeedsLoading(false);
 	}
+	load(aRenderComponents->texture());
+	load(aRenderComponents->materialSet());
 }
 
 OShaderUniformArgument& ORenderingEngine::Impl::addUniformToRenderable(ORenderable * aRenderable, 

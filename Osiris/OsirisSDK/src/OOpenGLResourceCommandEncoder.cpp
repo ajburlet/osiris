@@ -139,11 +139,11 @@ void OOpenGLResourceCommandEncoder::load(ORenderComponents* aRenderComponents)
 	encode([aRenderComponents]() {
 		glGenVertexArrays(1, &(aRenderComponents->gpuHandleCastTo<GLuint>()));
 		glBindVertexArray(aRenderComponents->gpuHandleCastTo<GLuint>());
-		glBindBuffer(GL_ARRAY_BUFFER, aRenderComponents->geometry()->vertexBuffer().gpuHandleCastTo<GLuint>());
-		if (aRenderComponents->geometry()->drawMode() == ORenderMode::IndexedTriangle) {
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, aRenderComponents->geometry()->indexBuffer().gpuHandleCastTo<GLuint>());
-		}
 	});
+	load(&aRenderComponents->geometry()->vertexBuffer());
+	if (aRenderComponents->geometry()->drawMode() == ORenderMode::IndexedTriangle) {
+		load(&aRenderComponents->geometry()->indexBuffer());
+	}
 
 	uint32_t cummulative_size = 0;
 	for (uint32_t i = 0; i < vertexDescriptor.attributeCount(); i++) {
@@ -210,8 +210,10 @@ void OOpenGLResourceCommandEncoder::load(ORenderComponents* aRenderComponents)
 	}
 
 	encode(Bind(glBindVertexArray, 0));
-	encode(Bind(glBindBuffer, GL_ARRAY_BUFFER, 0));
-	encode(Bind(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0));
+	auto& materialIndexBuffer = aRenderComponents->geometry()->materialIndexBuffer();
+	if (materialIndexBuffer.size() > 0) {
+		load(&materialIndexBuffer);
+	}
 }
 
 void OOpenGLResourceCommandEncoder::unload(ORenderComponents* aRenderComponents)
@@ -228,9 +230,9 @@ void OOpenGLResourceCommandEncoder::load(OVertexBuffer* aVertexBuffer)
 	createHandle(aVertexBuffer);
 	encode([aVertexBuffer, usage]() {
 		glGenBuffers(1, reinterpret_cast<GLuint*>(aVertexBuffer->gpuHandle()));
-		glBindBuffer(GL_ARRAY_BUFFER, *reinterpret_cast<GLuint*>(aVertexBuffer->gpuHandle())); 
+		glBindBuffer(GL_ARRAY_BUFFER, aVertexBuffer->gpuHandleCastTo<GLuint>()); 
 		glBufferData(GL_ARRAY_BUFFER, aVertexBuffer->size(), aVertexBuffer->buffer(), usage);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		// glBindBuffer(GL_ARRAY_BUFFER, 0);
 	});
 
 }
@@ -251,7 +253,7 @@ void OOpenGLResourceCommandEncoder::load(OIndexBuffer * aIndexBuffer)
 		glGenBuffers(1, reinterpret_cast<GLuint*>(aIndexBuffer->gpuHandle()));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *reinterpret_cast<GLuint*>(aIndexBuffer->gpuHandle()));
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, aIndexBuffer->size(), aIndexBuffer->buffer(), usage);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	});
 }
 

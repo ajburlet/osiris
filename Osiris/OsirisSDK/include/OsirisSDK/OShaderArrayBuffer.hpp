@@ -18,6 +18,7 @@ private:
     using Super = OShaderStorageBuffer;
 
 public:
+    using ItemType = T;
     using Array = OArray<T, ReallocPolicy, OGraphicsAllocators::Default>;
 
 public:

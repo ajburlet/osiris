@@ -19,15 +19,6 @@ public:
     using MaterialManager = OResourceManager<OMaterial>;
     using MaterialSetManager = OResourceManager<OMaterialSet>;
 
-    struct Options {
-        enum class VertexMaterialMode {
-            Duplicated,
-            ProvokingVertex
-        };
-
-        VertexMaterialMode vertexMaterialMode = VertexMaterialMode::Duplicated;
-    };
-
     struct Result {
         GeometryManager::ResourcePtr geometry;
         MaterialSetManager::ResourcePtr materials;
@@ -39,7 +30,7 @@ public:
                  OVertexBufferDescriptor& aVertexDescriptor);
 
     Result build(const OString& aMeshName, const OString& aMaterialFileStem,
-                 const OMeshRawData& aRawData, const Options& aOptions = {});
+                 const OMeshRawData& aRawData);
 
 private:
     GeometryManager& _geometryManager;

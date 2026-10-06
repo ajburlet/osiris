@@ -38,20 +38,23 @@ constexpr char glsl_OMesh_fragment[] = R"(
 #version 430
 
 struct Material {
-    vec3 color; 
+	vec3 color;
+	float x;
 };
 
 layout(std430, binding = 0) readonly buffer MaterialBuffer {
     Material materials[];
 };
 
-flat in uint aMaterialIndex; 
+layout(std430, binding = 1) readonly buffer TriangleMaterialIndexBuffer {
+	uint materialIndices[];
+};
 
 out vec4 oColor;
 
 void main()
 {
-	oColor = vec4(materials[aMaterialIndex].color, 1.0);
+	oColor = vec4(materials[materialIndices[gl_PrimitiveID]].color, 1.0);
 }
 
 )";
@@ -60,16 +63,12 @@ constexpr char glsl_OMesh_vertex[] = R"(
 #version 430
 
 layout (location = 0) in vec4 aPosition;
-layout (location = 3) in uint aMaterialIndex;
-
-flat out uint oMaterialIndex;
 
 uniform mat4 uMvpTransform;
 
 void main()
 {
 	gl_Position = uMvpTransform * aPosition;
-	oMaterialIndex = aMaterialIndex;
 }
 
 )";
