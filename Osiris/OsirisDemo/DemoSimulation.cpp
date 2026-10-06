@@ -6,6 +6,7 @@
 #include <OsirisSDK/OStats.hpp>
 #include <OsirisSDK/ORenderingEngine.h>
 #include <OsirisSDK/OResourceFactory.h>
+#include <OsirisSDK/ORenderComponents.h>
 
 #include "DemoSimulation.h"
 #include "PieceBehavior.h"
@@ -57,6 +58,7 @@ void DemoSimulation::init()
 	auto colorCube = new OMesh;
 	OExPointerCheck(colorCube);
 	resourceFactory().loadFromFile("ColorCube", "Cube", "ColorCube", *colorCube);
+	colorCube->renderComponents().setDepthTesting(true, true);
 	renderingEngine().load(colorCube);
 
 	/* setting up the cube */

@@ -59,7 +59,7 @@ struct OApplication::Impl {
 	OStats<float>		simulationPerformanceStats;
 	OTimeIndex		simulationTimeIndex;
 	OTimeIndex		lastRenderTimeIndex;
-	float			depthBufferClearValue		= 0.0f;
+	float			depthBufferClearValue		= 1.0f;
 	OVector4F		clearColor;
 };
 
