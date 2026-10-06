@@ -214,6 +214,9 @@ void OOpenGLResourceCommandEncoder::load(ORenderComponents* aRenderComponents)
 	if (materialIndexBuffer.size() > 0) {
 		load(&materialIndexBuffer);
 	}
+	encode([aRenderComponents]() {
+		aRenderComponents->setNeedsLoading(false);
+	});
 }
 
 void OOpenGLResourceCommandEncoder::unload(ORenderComponents* aRenderComponents)
@@ -233,6 +236,7 @@ void OOpenGLResourceCommandEncoder::load(OVertexBuffer* aVertexBuffer)
 		glBindBuffer(GL_ARRAY_BUFFER, aVertexBuffer->gpuHandleCastTo<GLuint>()); 
 		glBufferData(GL_ARRAY_BUFFER, aVertexBuffer->size(), aVertexBuffer->buffer(), usage);
 		// glBindBuffer(GL_ARRAY_BUFFER, 0);
+		aVertexBuffer->setNeedsLoading(false);
 	});
 
 }
@@ -254,6 +258,7 @@ void OOpenGLResourceCommandEncoder::load(OIndexBuffer * aIndexBuffer)
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *reinterpret_cast<GLuint*>(aIndexBuffer->gpuHandle()));
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, aIndexBuffer->size(), aIndexBuffer->buffer(), usage);
 		// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		aIndexBuffer->setNeedsLoading(false);
 	});
 }
 
@@ -303,6 +308,7 @@ void OOpenGLResourceCommandEncoder::load(OTexture * aTexture)
 		}
 
 		glBindTexture(GL_TEXTURE_2D, 0);
+		aTexture->setNeedsLoading(false);
 	});
 }
 
@@ -320,9 +326,10 @@ void OOpenGLResourceCommandEncoder::load(OShaderStorageBuffer* aStorageBuffer)
 	createHandle(aStorageBuffer);
 	encode([aStorageBuffer, usage]() {
 		auto handle = reinterpret_cast<GLuint*>(aStorageBuffer->gpuHandle());
-		glGenVertexArrays(1, handle);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *handle);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, aStorageBuffer->size(), aStorageBuffer->data(), usage);
+		glGenBuffers(1, handle);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, *handle);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, aStorageBuffer->size(), aStorageBuffer->data(), usage);
+		aStorageBuffer->setNeedsLoading(false);
 	});
 }
 
@@ -340,8 +347,8 @@ void OOpenGLResourceCommandEncoder::load(OShaderUniformArgument * aAttributeInst
 	encode([aAttributeInstance, aShader, aName]() {
 		auto uniform = glGetUniformLocation(*reinterpret_cast<GLuint*>(aShader->gpuHandle()), aName);
 		*reinterpret_cast<GLint*>(aAttributeInstance->gpuHandle()) = uniform;
+		aAttributeInstance->setNeedsLoading(false);
 	});
-	aAttributeInstance->setNeedsLoading(false);
 }
 
 void OOpenGLResourceCommandEncoder::unload(OShaderUniformArgument * aAttributeInstance)

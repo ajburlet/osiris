@@ -404,7 +404,6 @@ void ORenderingEngine::Impl::load(ORenderComponents* aRenderComponents)
 {
 	if (aRenderComponents->needsLoading()) {
 		getResourceEncoder()->load(aRenderComponents);
-		aRenderComponents->setNeedsLoading(false);
 	}
 	load(aRenderComponents->texture());
 	load(aRenderComponents->materialSet());
@@ -456,7 +455,6 @@ void ORenderingEngine::Impl::load(OVertexBuffer * aVertexBuffer)
 {
 	if (aVertexBuffer->needsLoading()) {
 		getResourceEncoder()->load(aVertexBuffer);
-		aVertexBuffer->setNeedsLoading(false);
 	}
 }
 
@@ -464,7 +462,6 @@ void ORenderingEngine::Impl::load(OIndexBuffer * aIndexBuffer)
 {
 	if (aIndexBuffer != nullptr && aIndexBuffer->needsLoading()) {
 		getResourceEncoder()->load(aIndexBuffer);
-		aIndexBuffer->setNeedsLoading(false);
 	}
 }
 
@@ -472,7 +469,6 @@ void ORenderingEngine::Impl::load(OTexture * aTexture)
 {
 	if (aTexture != nullptr && aTexture->needsLoading()) {
 		getResourceEncoder()->load(aTexture);
-		aTexture->setNeedsLoading(false);
 	}
 }
 
@@ -532,27 +528,32 @@ void ORenderingEngine::Impl::unload(OShaderStorageBuffer* aStorageBuffer)
 
 void ORenderingEngine::Impl::render(ORenderable* aRenderable)
 {
+	auto renderComponents = aRenderable->renderComponents();
+	if (renderComponents->needsLoading() || !renderComponents->componentsLoaded()) {
+		return;
+	}
+
 	auto renderEncoder = getRenderEncoder();
 
-	if (aRenderable->renderComponents()->shaderProgram() == nullptr) {
+	if (renderComponents->shaderProgram() == nullptr) {
 		throw OEx("Unable to find shader program.");
 	}
 
 	// shader & arguments
 	aRenderable->updateUniforms();
-	renderEncoder->setShaderProgram(aRenderable->renderComponents()->shaderProgram());
+	renderEncoder->setShaderProgram(renderComponents->shaderProgram());
 	for (auto& arg : aRenderable->uniforms()) {
 		renderEncoder->setUniformArgument(&arg);
 	}
 
 	// vertex, index & texture
-	renderEncoder->setVertexBuffer(&aRenderable->renderComponents()->geometry()->vertexBuffer());
-	if (aRenderable->renderComponents()->geometry()->drawMode() == ORenderMode::IndexedTriangle) 
-		renderEncoder->setIndexBuffer(&aRenderable->renderComponents()->geometry()->indexBuffer());
-	if (aRenderable->renderComponents()->texture()) 
-		renderEncoder->setTexture(aRenderable->renderComponents()->texture());
-	renderEncoder->setRenderComponents(aRenderable->renderComponents());
+	renderEncoder->setVertexBuffer(&renderComponents->geometry()->vertexBuffer());
+	if (renderComponents->geometry()->drawMode() == ORenderMode::IndexedTriangle)
+		renderEncoder->setIndexBuffer(&renderComponents->geometry()->indexBuffer());
+	if (renderComponents->texture())
+		renderEncoder->setTexture(renderComponents->texture());
+	renderEncoder->setRenderComponents(renderComponents);
 
-	renderEncoder->draw(aRenderable->renderComponents()->renderMode());
+	renderEncoder->draw(renderComponents->renderMode());
 }
 
