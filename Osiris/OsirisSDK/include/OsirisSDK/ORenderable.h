@@ -61,12 +61,13 @@ public:
 	/**
 	 @brief Sets the render components reference.
 	 */
-	void setRenderComponents(ORenderComponents* aRenderComponents);
+	void setRenderComponents(ORenderComponents& aRenderComponents);
 
 	/**
 	 @brief Render components.
 	 */
-	ORenderComponents* renderComponents();
+	ORenderComponents& renderComponents();
+	const ORenderComponents& renderComponents() const;
 
 	/**
 	 @brief Provides access to the shader uniform argument list.
@@ -111,14 +112,9 @@ inline ORenderable::Type ORenderable::type() const
 	return _type;
 }
 
-inline void ORenderable::setRenderComponents(ORenderComponents * aRenderComponents)
+inline void ORenderable::setRenderComponents(ORenderComponents& aRenderComponents)
 {
-	_renderComponents = aRenderComponents;
-}
-
-inline ORenderComponents * ORenderable::renderComponents()
-{
-	return _renderComponents;
+	_renderComponents = &aRenderComponents;
 }
 
 inline ORenderable::UniformList & ORenderable::uniforms()

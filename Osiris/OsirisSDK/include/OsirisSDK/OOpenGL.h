@@ -23,5 +23,5 @@ public:
 
 	virtual OGraphicsCommandQueue * createCommandQueue() override;
 
-	virtual void compile(OShaderProgram * aProgram) override;
+	virtual void compile(OShaderProgram& aProgram) override;
 };

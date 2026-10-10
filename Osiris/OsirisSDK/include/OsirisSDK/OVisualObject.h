@@ -64,7 +64,7 @@ public:
 	 @param aRenderingEngine The rendering engine.
 	 @param aMatrixStack Stacked transformation matrices.
 	 */
-	virtual void render(ORenderingEngine* aRenderingEngine, OMatrixStack* aMatrixStack = nullptr) = 0;
+	virtual void render(ORenderingEngine& aRenderingEngine, OMatrixStack* aMatrixStack = nullptr) = 0;
 
 private:
 	RenderPriority _renderPriority;

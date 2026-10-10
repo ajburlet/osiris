@@ -25,7 +25,7 @@ public:
 	 @note If running under windows without providing a path, the constructor will look on the default font 
 	       directory (%WINDIR%/fonts).
 	 */
-	OFont(ORenderingEngine* aRenderingEngine, const char *aFontName);
+	OFont(ORenderingEngine& aRenderingEngine, const char *aFontName);
 
 	/**
 	 @brief Deleted copy constructor.

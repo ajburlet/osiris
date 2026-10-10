@@ -184,7 +184,7 @@ const char * OText2D::content() const
 	return _impl->content.c_str();
 }
 
-void OText2D::render(ORenderingEngine* aRenderingEngine, OMatrixStack*)
+void OText2D::render(ORenderingEngine& aRenderingEngine, OMatrixStack*)
 {
 	/* now we iterate through every character and render */
 	if (_impl->redraw) {
@@ -208,7 +208,7 @@ void OText2D::render(ORenderingEngine* aRenderingEngine, OMatrixStack*)
 	}
 
 	for (auto& glyph : _impl->glyphs) {
-		aRenderingEngine->render(&glyph);
+		aRenderingEngine.render(glyph);
 	}
 }
 

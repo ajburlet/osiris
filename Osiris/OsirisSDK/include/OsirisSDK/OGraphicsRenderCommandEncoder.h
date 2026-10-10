@@ -55,12 +55,12 @@ public:
 	/**
 	 @brief Sets the render components (buffers, textures and programs) needed.
 	 */
-	virtual void setRenderComponents(ORenderComponents* aRenderComponents) = 0;
+	virtual void setRenderComponents(const ORenderComponents& aRenderComponents) = 0;
 
 	/**
 	 @brief Sets a shader uniform argument.
 	 */
-	virtual void setUniformArgument(OShaderUniformArgument* aUniformArgument) = 0;
+	virtual void setUniformArgument(OShaderUniformArgument& aUniformArgument) = 0;
 
 	/**
 	 @brief Returns a pointer to a shader program object.

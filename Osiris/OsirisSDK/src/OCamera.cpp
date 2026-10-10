@@ -39,32 +39,30 @@ struct OCamera::Impl {
 };
 
 OCamera::OCamera(float aFieldOfViewDeg, float aAspectRatio, float aZNear, float aZFar)
+	: _impl(std::make_unique<Impl>(aFieldOfViewDeg, aAspectRatio, aZNear, aZFar))
 {
-	OExPointerCheck(_impl = new Impl(aFieldOfViewDeg, aAspectRatio, aZNear, aZFar));
 	setPosition(DefaultPosition);
 	setOrientation(DefaultOrientation);
 }
 
 OCamera::OCamera(const OVector3F & aPosition, const OVector3F & aOrientation, float aFieldOfViewDeg,
-		 float aAspectRatio, float aZNear, float aZFar) 
+		 		 float aAspectRatio, float aZNear, float aZFar)
+	: _impl(std::make_unique<Impl>(aFieldOfViewDeg, aAspectRatio, aZNear, aZFar))
 {
-	OExPointerCheck(_impl = new Impl(aFieldOfViewDeg, aAspectRatio, aZNear, aZFar));
 	setPosition(aPosition);
 	setOrientation(aOrientation);
 }
 
+OCamera::OCamera(OCamera&& aOther)
+	: _impl(std::move(aOther)._impl)
+{}
+
 OCamera::~OCamera()
-{
-	if (_impl != nullptr) delete _impl;
-}
+= default;
 
 OCamera & OCamera::operator=(OCamera && aOther)
 {
-	if (_impl != nullptr) {
-		delete _impl;
-	}
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
+	_impl = std::move(aOther)._impl;
 	return *this;
 }
 
@@ -137,7 +135,7 @@ OState * OCamera::state()
 	return &_impl->state;
 }
 
-OMatrixStack* OCamera::transform()
+OMatrixStack& OCamera::transform()
 {
 	// perspective transformation
 	if (_impl->perspectiveChanged) {
@@ -154,6 +152,6 @@ OMatrixStack* OCamera::transform()
 	const auto orientation = state()->orientation()*OVector3F(0.0f, 0.0f, -1.0f);
 	_impl->transform.camera(position, position + orientation);
 
-	return &_impl->transform;
+	return _impl->transform;
 }
 

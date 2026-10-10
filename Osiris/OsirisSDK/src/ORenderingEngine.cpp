@@ -38,12 +38,12 @@ constexpr char	cGlyphUniformColor[]		= "uColor";
 // ORenderingController implementation structure
 // ----------------------------------------------------------------------------------------------
 struct ORenderingEngine::Impl {
-	Impl(OGraphicsAPI* aGraphicsAPI);
+	Impl(OGraphicsAPI& aGraphicsAPI);
 	~Impl();
 
 	// shaders
-	uint32_t shaderKey(ORenderable* aRenderable);
-	OShaderProgram* createProgram(ORenderable* aRenderable, const char* aVertexSrc, const char* aFragmentSrc);
+	uint32_t shaderKey(ORenderable& aRenderable);
+	OShaderProgram* createProgram(ORenderable& aRenderable, const char* aVertexSrc, const char* aFragmentSrc);
 
 	// encoders
 	void endEncoder();
@@ -52,26 +52,26 @@ struct ORenderingEngine::Impl {
 	void flush();
 
 	// load
-	void load(ORenderable* aRenderable);
-	void load(ORenderComponents* aRenderComponents);
-	OShaderUniformArgument& addUniformToRenderable(ORenderable* aRenderable, OVarType aType,
+	void load(ORenderable& aRenderable);
+	void load(ORenderComponents& aRenderComponents);
+	OShaderUniformArgument& addUniformToRenderable(ORenderable& aRenderable, OVarType aType,
 							uint8_t aArrayLength, const char* aName, 
 							OShaderUniformArgument::UpdateCallbackFn aCallbackFn);
-	void loadMeshUniforms(OMesh* aMesh);
-	void loadGlyphUniforms(OGlyph* aText);
-	void load(OVertexBuffer* aVertexBuffer);
-	void load(OIndexBuffer* aIndexBuffer);
-	void load(OTexture* aTexture);
-	void load(OShaderStorageBuffer* aStorageBuffer);
-	void unload(ORenderable* aRenderable);
-	void unload(ORenderComponents* aRenderComponents);
-	void unload(OVertexBuffer* aVertexBuffer);
-	void unload(OIndexBuffer* aIndexBuffer);
-	void unload(OTexture* aTexture);
-	void unload(OShaderStorageBuffer* aStorageBuffer);
+	void loadMeshUniforms(OMesh& aMesh);
+	void loadGlyphUniforms(OGlyph& aGlyph);
+	void load(OVertexBuffer& aVertexBuffer);
+	void load(OIndexBuffer& aIndexBuffer);
+	void load(OTexture& aTexture);
+	void load(OShaderStorageBuffer& aStorageBuffer);
+	void unload(ORenderable& aRenderable);
+	void unload(ORenderComponents& aRenderComponents);
+	void unload(OVertexBuffer& aVertexBuffer);
+	void unload(OIndexBuffer& aIndexBuffer);
+	void unload(OTexture& aTexture);
+	void unload(OShaderStorageBuffer& aStorageBuffer);
 
 	// render
-	void render(ORenderable* aRenderable);
+	void render(ORenderable& aRenderable);
 
 	struct ShaderKey {
 		ORenderable::Type	renderableType;
@@ -88,7 +88,7 @@ struct ORenderingEngine::Impl {
 	using CommandBufferList = OList<OGraphicsCommandBuffer*>;
 
 	// class members
-	OGraphicsAPI*			_api			= nullptr;
+	OGraphicsAPI&			_api;
 	OShaderSourceTable		_shaderSourceTable;
 	ShaderProgramCache		_shaderProgramCache;
 	OGraphicsCommandBuffer*		_currentBuffer		= nullptr;
@@ -102,7 +102,7 @@ struct ORenderingEngine::Impl {
 // ----------------------------------------------------------------------------------------------
 // ORenderingController
 // ----------------------------------------------------------------------------------------------
-ORenderingEngine::ORenderingEngine(OGraphicsAPI* aGraphicsAPI)
+ORenderingEngine::ORenderingEngine(OGraphicsAPI& aGraphicsAPI)
 {
 	OExPointerCheck(_impl = new Impl(aGraphicsAPI));
 }
@@ -121,83 +121,84 @@ ORenderingEngine & ORenderingEngine::operator=(ORenderingEngine && aOther)
 	return *this;
 }
 
-void ORenderingEngine::load(ORenderable* aRenderable)
+void ORenderingEngine::load(ORenderable& aRenderable)
 {
 	_impl->load(aRenderable);
 }
 
-void ORenderingEngine::load(ORenderComponents * aRenderComponents)
+void ORenderingEngine::load(ORenderComponents& aRenderComponents)
 {
 	_impl->load(aRenderComponents);
 }
 
-void ORenderingEngine::load(OVertexBuffer * aVertexBuffer)
+void ORenderingEngine::load(OVertexBuffer& aVertexBuffer)
 {
-	if (aVertexBuffer->size() == 0) {
+	if (aVertexBuffer.size() == 0) {
 		throw OEx("Attempted to load an empty vertex buffer.");
 	}
 	_impl->load(aVertexBuffer);
 }
 
-void ORenderingEngine::load(OIndexBuffer * aIndexBuffer)
+void ORenderingEngine::load(OIndexBuffer& aIndexBuffer)
 {
-	if (aIndexBuffer == nullptr || aIndexBuffer->size() == 0) { 
+	if (aIndexBuffer.size() == 0) {
 		return;
 	}
 	_impl->load(aIndexBuffer);
 }
 
-void ORenderingEngine::load(OTexture * aTexture)
+void ORenderingEngine::load(OTexture& aTexture)
 {
 	_impl->load(aTexture);
 }
 
-void ORenderingEngine::load(OShaderStorageBuffer* aStorageBuffer)
+void ORenderingEngine::load(OShaderStorageBuffer& aStorageBuffer)
 {
 	_impl->load(aStorageBuffer);
 }
 
-void ORenderingEngine::unload(ORenderable * aRenderable, bool aUnloadAll)
+void ORenderingEngine::unload(ORenderable& aRenderable, bool aUnloadAll)
 {
 	if (aUnloadAll) {
-		unload(aRenderable->renderComponents(), true);
+		unload(aRenderable.renderComponents(), true);
 	}
 	_impl->unload(aRenderable);
 }
 
-void ORenderingEngine::unload(ORenderComponents * aRenderComponents, bool aUnloadAll)
+void ORenderingEngine::unload(ORenderComponents& aRenderComponents, bool aUnloadAll)
 {
 	if (aUnloadAll) {
-		_impl->unload(&aRenderComponents->geometry()->vertexBuffer());
-		_impl->unload(&aRenderComponents->geometry()->indexBuffer());
-		_impl->unload(&aRenderComponents->geometry()->materialIndexBuffer());
-		_impl->unload(aRenderComponents->texture());
-		_impl->unload(aRenderComponents->materialSet());
+		OExPointerCheck(aRenderComponents.geometry());
+		_impl->unload(aRenderComponents.geometry()->vertexBuffer());
+		_impl->unload(aRenderComponents.geometry()->indexBuffer());
+		_impl->unload(aRenderComponents.geometry()->materialIndexBuffer());
+		if (auto texture = aRenderComponents.texture()) _impl->unload(*texture);
+		if (auto materialSet = aRenderComponents.materialSet()) _impl->unload(*materialSet);
 	}
 	_impl->unload(aRenderComponents);
 }
 
-void ORenderingEngine::unload(OVertexBuffer * aVertexBuffer)
+void ORenderingEngine::unload(OVertexBuffer& aVertexBuffer)
 {
 	_impl->unload(aVertexBuffer);
 }
 
-void ORenderingEngine::unload(OIndexBuffer * aIndexBuffer)
+void ORenderingEngine::unload(OIndexBuffer& aIndexBuffer)
 {
 	_impl->unload(aIndexBuffer);
 }
 
-void ORenderingEngine::unload(OTexture * aTexture)
+void ORenderingEngine::unload(OTexture& aTexture)
 {
 	_impl->unload(aTexture);
 }
 
-void ORenderingEngine::unload(OShaderStorageBuffer* aStorageBuffer)
+void ORenderingEngine::unload(OShaderStorageBuffer& aStorageBuffer)
 {
 	_impl->unload(aStorageBuffer);
 }
 
-void ORenderingEngine::render(ORenderable* aRenderable)
+void ORenderingEngine::render(ORenderable& aRenderable)
 {
 	_impl->render(aRenderable);
 }
@@ -237,10 +238,10 @@ void ORenderingEngine::waitUntilCompleted()
 // ----------------------------------------------------------------------------------------------
 // ORenderingController::Impl
 // ----------------------------------------------------------------------------------------------
-ORenderingEngine::Impl::Impl(OGraphicsAPI* aGraphicsAPI) :
+ORenderingEngine::Impl::Impl(OGraphicsAPI& aGraphicsAPI) :
 	_api(aGraphicsAPI)
 {
-	_currentQueue = aGraphicsAPI->createCommandQueue();
+	_currentQueue = aGraphicsAPI.createCommandQueue();
 	createShaderTable(_shaderSourceTable);
 }
 
@@ -249,12 +250,12 @@ ORenderingEngine::Impl::~Impl()
 	if (_currentQueue) delete _currentQueue;
 }
 
-uint32_t ORenderingEngine::Impl::shaderKey(ORenderable* aRenderable)
+uint32_t ORenderingEngine::Impl::shaderKey(ORenderable& aRenderable)
 {
 	uint32_t key = 0;
-	switch (aRenderable->type()) {
+	switch (aRenderable.type()) {
 	case ORenderable::Type::Mesh:
-		if (aRenderable->renderComponents()->texture() != nullptr) key |= (1 << 1);
+		if (aRenderable.renderComponents().texture() != nullptr) key |= (1 << 1);
 		break;
 	case ORenderable::Type::Glyph:
 		// no special option
@@ -265,7 +266,7 @@ uint32_t ORenderingEngine::Impl::shaderKey(ORenderable* aRenderable)
 	return key;
 }
 
-OShaderProgram * ORenderingEngine::Impl::createProgram(ORenderable* aRenderable, const char * aVertexSrc, 
+OShaderProgram * ORenderingEngine::Impl::createProgram(ORenderable& aRenderable, const char * aVertexSrc,
 						       const char * aFragmentSrc)
 {
 	OShaderProgram*	program		= nullptr;
@@ -296,9 +297,9 @@ OShaderProgram * ORenderingEngine::Impl::createProgram(ORenderable* aRenderable,
 			program->addObject(fragment);
 		}
 		
-		switch (aRenderable->type()) {
+		switch (aRenderable.type()) {
 		case ORenderable::Type::Mesh:
-			if (aRenderable->renderComponents()->texture() != nullptr) {
+			if (aRenderable.renderComponents().texture() != nullptr) {
 				program->addPreprocessorMacro("USE_TEXTURE");
 			}
 			break;
@@ -356,204 +357,201 @@ void ORenderingEngine::Impl::flush()
 	_currentBuffer = nullptr;
 }
 
-void ORenderingEngine::Impl::load(ORenderable * aRenderable)
+void ORenderingEngine::Impl::load(ORenderable& aRenderable)
 {
 	// shader loading/referencing
 	OShaderProgram* shader = nullptr;
 	auto shader_key = shaderKey(aRenderable);
 	
-	auto shaderIt = _shaderProgramCache.find({ aRenderable->type(), shader_key });
+	auto shaderIt = _shaderProgramCache.find({ aRenderable.type(), shader_key });
 	if (shaderIt == _shaderProgramCache.end()) {
-		auto vertSrcIt = _shaderSourceTable.find({ _api->type(), 
+		auto vertSrcIt = _shaderSourceTable.find({ _api.type(),
 								 OShaderObject::Type::Vertex, 
-								 aRenderable->type() });
-		auto fragSrcIt = _shaderSourceTable.find({ _api->type(), 
+								 aRenderable.type() });
+		auto fragSrcIt = _shaderSourceTable.find({ _api.type(),
 								 OShaderObject::Type::Fragment, 
-								 aRenderable->type() });
+								 aRenderable.type() });
 		shader = createProgram(aRenderable, vertSrcIt.value().c_str(), fragSrcIt.value().c_str());
 		OExForwardCb([&]() { delete shader; }, 
-			_shaderProgramCache.insert({ aRenderable->type(), shader_key }, shader);
-			_api->compile(shader);
+			_shaderProgramCache.insert({ aRenderable.type(), shader_key }, shader);
+			_api.compile(*shader);
 		);
 	} else {
 		shader = shaderIt.value();
 	}
-	aRenderable->renderComponents()->setShaderProgram(shader);
+	aRenderable.renderComponents().setShaderProgram(shader);
 
 
 	// uniforms
-	if (aRenderable->uniformsLoaded() == false) {
-		switch (aRenderable->type()) {
+	if (aRenderable.uniformsLoaded() == false) {
+		switch (aRenderable.type()) {
 		case ORenderable::Type::Mesh:
-			loadMeshUniforms(reinterpret_cast<OMesh*>(aRenderable));
+			loadMeshUniforms(static_cast<OMesh&>(aRenderable));
 			break;
 
 		case ORenderable::Type::Glyph:
-			loadGlyphUniforms(reinterpret_cast<OGlyph*>(aRenderable));
+			loadGlyphUniforms(static_cast<OGlyph&>(aRenderable));
 			break;
 		default:
 			throw OEx("Invalid renderable.");
 		}
-		aRenderable->setUniformsLoaded(true);
+		aRenderable.setUniformsLoaded(true);
 	}
 
-	load(aRenderable->renderComponents());
+	load(aRenderable.renderComponents());
 }
 
-void ORenderingEngine::Impl::load(ORenderComponents* aRenderComponents)
+void ORenderingEngine::Impl::load(ORenderComponents& aRenderComponents)
 {
-	if (aRenderComponents->needsLoading()) {
+	OExPointerCheck(aRenderComponents.geometry());
+	if (aRenderComponents.needsLoading()) {
 		getResourceEncoder()->load(aRenderComponents);
 	}
-	load(aRenderComponents->texture());
-	load(aRenderComponents->materialSet());
+	if (auto texture = aRenderComponents.texture()) load(*texture);
+	if (auto materialSet = aRenderComponents.materialSet()) load(*materialSet);
 }
 
-OShaderUniformArgument& ORenderingEngine::Impl::addUniformToRenderable(ORenderable * aRenderable, 
+OShaderUniformArgument& ORenderingEngine::Impl::addUniformToRenderable(ORenderable& aRenderable,
 									OVarType aType, 
 									uint8_t aArrayLength, 
 									const char * aName,
 						    OShaderUniformArgument::UpdateCallbackFn aCallbackFn)
 {
-	aRenderable->uniforms().pushBack(OShaderUniformArgument(aType, aArrayLength));
-	auto& uniform = aRenderable->uniforms().tail();
+	aRenderable.uniforms().pushBack(OShaderUniformArgument(aType, aArrayLength));
+	auto& uniform = aRenderable.uniforms().tail();
 	uniform.setUpdateCallbackFunction(aCallbackFn);
-	getResourceEncoder()->load(&uniform, aRenderable->renderComponents()->shaderProgram(), aName);
+	auto* shader = aRenderable.renderComponents().shaderProgram();
+	OExPointerCheck(shader);
+	getResourceEncoder()->load(uniform, *shader, aName);
 	return uniform;
 }
 
-void ORenderingEngine::Impl::loadMeshUniforms(OMesh* aMesh)
+void ORenderingEngine::Impl::loadMeshUniforms(OMesh& aMesh)
 {
 	// uniforms
 	addUniformToRenderable(aMesh, OVarType::Float4x4, 1, cMeshUniformMVPTransform,
-		[](OShaderUniformArgument& aArgumentInstance, const ORenderable* aMesh) {
-			aArgumentInstance.copyFrom(reinterpret_cast<const OMesh*>(aMesh)->mvp().glArea());
+		[](OShaderUniformArgument& aArgumentInstance, const ORenderable& aRenderable) {
+			aArgumentInstance.copyFrom(static_cast<const OMesh&>(aRenderable).mvp().glArea());
 	});
 }
 
-void ORenderingEngine::Impl::loadGlyphUniforms(OGlyph* aGlyph)
+void ORenderingEngine::Impl::loadGlyphUniforms(OGlyph& aGlyph)
 {
 	// uniforms
 	addUniformToRenderable(aGlyph, OVarType::Float2, 1, cGlyphUniformPosOffset,
-		[](OShaderUniformArgument& aArgumentInstance, const ORenderable* aGlyph) {
-			aArgumentInstance.copyFrom(static_cast<const OGlyph*>(aGlyph)->positionOffset().glArea());
+		[](OShaderUniformArgument& aArgumentInstance, const ORenderable& aRenderable) {
+			aArgumentInstance.copyFrom(static_cast<const OGlyph&>(aRenderable).positionOffset().glArea());
 		});
 	addUniformToRenderable(aGlyph, OVarType::Float2, 1, cGlyphUniformScale, 
-		[](OShaderUniformArgument& aArgumentInstance, const ORenderable* aGlyph) {
-			aArgumentInstance.copyFrom(static_cast<const OGlyph*>(aGlyph)->scale().glArea());
+		[](OShaderUniformArgument& aArgumentInstance, const ORenderable& aRenderable) {
+			aArgumentInstance.copyFrom(static_cast<const OGlyph&>(aRenderable).scale().glArea());
 		});
 	addUniformToRenderable(aGlyph, OVarType::Float4, 1, cGlyphUniformColor,
-		[](OShaderUniformArgument& aArgumentInstance, const ORenderable* aGlyph) {
-			aArgumentInstance.copyFrom(static_cast<const OGlyph*>(aGlyph)->color().glArea());
+		[](OShaderUniformArgument& aArgumentInstance, const ORenderable& aRenderable) {
+			aArgumentInstance.copyFrom(static_cast<const OGlyph&>(aRenderable).color().glArea());
 		});
 	
 	auto& texUniform = addUniformToRenderable(aGlyph, OVarType::Int, 1, cGlyphUniformTexture, nullptr);
 	texUniform.castTo<int32_t>() = 0; // texture index always set to zero
 }
 
-void ORenderingEngine::Impl::load(OVertexBuffer * aVertexBuffer)
+void ORenderingEngine::Impl::load(OVertexBuffer& aVertexBuffer)
 {
-	if (aVertexBuffer->needsLoading()) {
+	if (aVertexBuffer.needsLoading()) {
 		getResourceEncoder()->load(aVertexBuffer);
 	}
 }
 
-void ORenderingEngine::Impl::load(OIndexBuffer * aIndexBuffer)
+void ORenderingEngine::Impl::load(OIndexBuffer& aIndexBuffer)
 {
-	if (aIndexBuffer != nullptr && aIndexBuffer->needsLoading()) {
+	if (aIndexBuffer.needsLoading()) {
 		getResourceEncoder()->load(aIndexBuffer);
 	}
 }
 
-void ORenderingEngine::Impl::load(OTexture * aTexture)
+void ORenderingEngine::Impl::load(OTexture& aTexture)
 {
-	if (aTexture != nullptr && aTexture->needsLoading()) {
+	if (aTexture.needsLoading()) {
 		getResourceEncoder()->load(aTexture);
 	}
 }
 
-void ORenderingEngine::Impl::load(OShaderStorageBuffer* aStorageBuffer)
+void ORenderingEngine::Impl::load(OShaderStorageBuffer& aStorageBuffer)
 {
-	if (aStorageBuffer == nullptr || aStorageBuffer->needsLoading() == false) {
+	if (aStorageBuffer.needsLoading() == false) {
 		return;
 	}
 
 	getResourceEncoder()->load(aStorageBuffer);
 }
 
-void ORenderingEngine::Impl::unload(ORenderable * aRenderable)
+void ORenderingEngine::Impl::unload(ORenderable& aRenderable)
 {
 	auto encoder = getResourceEncoder();
-	for (auto& uniform : aRenderable->uniforms()) {
-		encoder->unload(&uniform);
+	for (auto& uniform : aRenderable.uniforms()) {
+		encoder->unload(uniform);
 	}
-	aRenderable->setUniformsLoaded(false);
+	aRenderable.setUniformsLoaded(false);
 }
 
-void ORenderingEngine::Impl::unload(ORenderComponents* aRenderComponents)
+void ORenderingEngine::Impl::unload(ORenderComponents& aRenderComponents)
 {
 	getResourceEncoder()->unload(aRenderComponents);
-	aRenderComponents->setNeedsLoading(true);
+	aRenderComponents.setNeedsLoading(true);
 }
 
-void ORenderingEngine::Impl::unload(OVertexBuffer * aVertexBuffer)
+void ORenderingEngine::Impl::unload(OVertexBuffer& aVertexBuffer)
 {
-	if (aVertexBuffer != nullptr) {
-		getResourceEncoder()->unload(aVertexBuffer);
-		aVertexBuffer->setNeedsLoading(true);
-	}
+	getResourceEncoder()->unload(aVertexBuffer);
+	aVertexBuffer.setNeedsLoading(true);
 }
 
-void ORenderingEngine::Impl::unload(OIndexBuffer * aIndexBuffer)
+void ORenderingEngine::Impl::unload(OIndexBuffer& aIndexBuffer)
 {
-	if (aIndexBuffer != nullptr) {
-		getResourceEncoder()->unload(aIndexBuffer);
-		aIndexBuffer->setNeedsLoading(true);
-	}
+	getResourceEncoder()->unload(aIndexBuffer);
+	aIndexBuffer.setNeedsLoading(true);
 }
 
-void ORenderingEngine::Impl::unload(OTexture * aTexture)
+void ORenderingEngine::Impl::unload(OTexture& aTexture)
 {
-	if (aTexture != nullptr) {
-		getResourceEncoder()->unload(aTexture);
-		aTexture->setNeedsLoading(true);
-	}
+	getResourceEncoder()->unload(aTexture);
+	aTexture.setNeedsLoading(true);
 }
 
-void ORenderingEngine::Impl::unload(OShaderStorageBuffer* aStorageBuffer)
+void ORenderingEngine::Impl::unload(OShaderStorageBuffer& aStorageBuffer)
 {
-	if (aStorageBuffer == nullptr) return;
 	getResourceEncoder()->unload(aStorageBuffer);
 }
 
-void ORenderingEngine::Impl::render(ORenderable* aRenderable)
+void ORenderingEngine::Impl::render(ORenderable& aRenderable)
 {
-	auto renderComponents = aRenderable->renderComponents();
-	if (renderComponents->needsLoading() || !renderComponents->componentsLoaded()) {
+	auto& renderComponents = aRenderable.renderComponents();
+	OExPointerCheck(renderComponents.geometry());
+	if (renderComponents.needsLoading() || !renderComponents.componentsLoaded()) {
 		return;
 	}
 
 	auto renderEncoder = getRenderEncoder();
 
-	if (renderComponents->shaderProgram() == nullptr) {
+	if (renderComponents.shaderProgram() == nullptr) {
 		throw OEx("Unable to find shader program.");
 	}
 
 	// shader & arguments
-	aRenderable->updateUniforms();
-	renderEncoder->setShaderProgram(renderComponents->shaderProgram());
-	for (auto& arg : aRenderable->uniforms()) {
-		renderEncoder->setUniformArgument(&arg);
+	aRenderable.updateUniforms();
+	renderEncoder->setShaderProgram(renderComponents.shaderProgram());
+	for (auto& arg : aRenderable.uniforms()) {
+		renderEncoder->setUniformArgument(arg);
 	}
 
 	// vertex, index & texture
-	renderEncoder->setVertexBuffer(&renderComponents->geometry()->vertexBuffer());
-	if (renderComponents->geometry()->drawMode() == ORenderMode::IndexedTriangle)
-		renderEncoder->setIndexBuffer(&renderComponents->geometry()->indexBuffer());
-	if (renderComponents->texture())
-		renderEncoder->setTexture(renderComponents->texture());
+	renderEncoder->setVertexBuffer(&renderComponents.geometry()->vertexBuffer());
+	if (renderComponents.geometry()->drawMode() == ORenderMode::IndexedTriangle)
+		renderEncoder->setIndexBuffer(&renderComponents.geometry()->indexBuffer());
+	if (renderComponents.texture())
+		renderEncoder->setTexture(renderComponents.texture());
 	renderEncoder->setRenderComponents(renderComponents);
 
-	renderEncoder->draw(renderComponents->renderMode());
+	renderEncoder->draw(renderComponents.renderMode());
 }
 

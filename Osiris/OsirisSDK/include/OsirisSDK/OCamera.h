@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OVectorDefs.h"
 
@@ -155,22 +157,17 @@ public:
 	 @brief Calculates the perspective and camera transformations.
 	 @return Matrix stack containing the transformation matrix.
 	 */
-	OMatrixStack* transform();
+	OMatrixStack& transform();
 	
 private:
 	/**
 	 @cond HIDDEN
 	 */
 	struct Impl;
-	Impl* _impl = nullptr;
+	std::unique_ptr<Impl> _impl;
 	/**
 	 @endcond
 	 */
 };
 
-inline OCamera::OCamera(OCamera&& aOther)
-{
-	_impl = aOther._impl;
-	aOther._impl = nullptr;
-}
 

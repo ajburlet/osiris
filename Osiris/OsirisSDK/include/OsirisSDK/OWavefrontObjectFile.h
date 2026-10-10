@@ -5,8 +5,6 @@
 #include "OsirisSDK/OMeshFile.h"
 #include "OsirisSDK/OWavefrontParser.h"
 
-class OMeshGeometry;
-
 /**
  @brief Mesh file handler for Wavefront object files. 
  */

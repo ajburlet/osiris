@@ -127,7 +127,7 @@ public:
 
 	 The function is in the form of <code>void function(OShaderUniformArgument&)</code>.
 	 */
-	using UpdateCallbackFn = std::function<void(OShaderUniformArgument&, const ORenderable*)>;
+	using UpdateCallbackFn = std::function<void(OShaderUniformArgument&, const ORenderable&)>;
 
 	/**
 	 @brief Default class constructor.
@@ -178,7 +178,7 @@ public:
 	/**
 	 @brief Executes the update callback function for a given renderable.
 	 */
-	void update(const ORenderable* aRenderable);
+	void update(const ORenderable& aRenderable);
 
 	/**
 	 @brief Creates and initializes an argument instance.
@@ -206,7 +206,7 @@ inline void OShaderUniformArgument::setUpdateCallbackFunction(UpdateCallbackFn a
 	_updateCallback = aCallback;
 }
 
-inline void OShaderUniformArgument::update(const ORenderable* aRenderable)
+inline void OShaderUniformArgument::update(const ORenderable& aRenderable)
 {
 	if (_updateCallback) _updateCallback(*this, aRenderable);
 }

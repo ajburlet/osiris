@@ -45,7 +45,7 @@ public:
 	/**
 	 @brief Compiles the shader object and links the program.
 	 */
-	virtual void compile(OShaderProgram* aProgram) = 0;
+	virtual void compile(OShaderProgram& aProgram) = 0;
 
 private:
 	Type _type;

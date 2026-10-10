@@ -22,16 +22,16 @@ public:
 	~OOpenGLRenderCommandEncoder() = default;
 
 	// OGraphicsRenderCommandEncoder interface
-	virtual void setShaderProgram(OShaderProgram * aShaderProgram) override;
-	virtual void setVertexBuffer(OVertexBuffer * aVertexBuffer) override;
-	virtual void setIndexBuffer(OIndexBuffer * aIndexBuffer) override;
+	virtual void setShaderProgram(OShaderProgram* aShaderProgram) override;
+	virtual void setVertexBuffer(OVertexBuffer* aVertexBuffer) override;
+	virtual void setIndexBuffer(OIndexBuffer* aIndexBuffer) override;
 	virtual void setTexture(OTexture * aTexture, uint32_t aIndex = 0) override;
-	virtual void setRenderComponents(ORenderComponents* aRenderComponents) override;
-	virtual void setUniformArgument(OShaderUniformArgument * aUniformArguments) override;
-	virtual OShaderProgram * shaderProgram() override;
-	virtual OVertexBuffer * vertexBuffer() override;
-	virtual OIndexBuffer * indexBuffer() override;
-	virtual OTexture * texture(uint32_t aIndex = 0) override;
+	virtual void setRenderComponents(const ORenderComponents& aRenderComponents) override;
+	virtual void setUniformArgument(OShaderUniformArgument& aUniformArgument) override;
+	virtual OShaderProgram* shaderProgram() override;
+	virtual OVertexBuffer* vertexBuffer() override;
+	virtual OIndexBuffer* indexBuffer() override;
+	virtual OTexture* texture(uint32_t aIndex = 0) override;
 	virtual void clearTextures() override;
 	virtual void draw(ORenderMode aRenderType) override;
 	virtual void clearRenderTarget(const OVector4F& aColor) override;

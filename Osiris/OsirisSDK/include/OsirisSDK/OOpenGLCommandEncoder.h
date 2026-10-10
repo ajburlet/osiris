@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OsirisSDK/defs.h"
+#include "OsirisSDK/GLdefs.h"
 #include "OsirisSDK/OException.h"
 #include "OsirisSDK/OGPUObject.h"
 #include "OsirisSDK/OOpenGLCommandBuffer.h"
@@ -32,20 +33,7 @@ protected:
 	 @brief Returns the OpenGL handle.
 	 @param aGPUObject The GPU object.
 	 */
-	uint32_t& handle(OGPUObject* aGPUObject);
-
-	/**
-	 @brief Allocates a new OpenGL handle and assigns to the GPU object.
-	 @param aGPUObject The GPU object.
-	 @return A reference to the newly created handle.
-	 */
-	uint32_t& createHandle(OGPUObject* aGPUObject);
-
-	/**
-	 @brief Encodes the destruction of the OpenGL handle.
-	 @param aGPUObject The GPU object.
-	 */
-	void destroyHandle(OGPUObject* aGPUObject);
+	GLuint& handle(OGPUObject& aGPUObject);
 
 private:
 	OOpenGLCommandBuffer* _commandBuffer;
@@ -63,23 +51,7 @@ inline void OOpenGLCommandEncoder::encode(OOpenGLCommandBuffer::CommandItem aCom
 	_commandBuffer->addCommandItem(aCommandItem);
 }
 
-inline uint32_t& OOpenGLCommandEncoder::handle(OGPUObject* aGPUObject)
+inline GLuint& OOpenGLCommandEncoder::handle(OGPUObject& aGPUObject)
 {
-	return * reinterpret_cast<uint32_t*>(aGPUObject->gpuHandle());
-}
-
-inline uint32_t & OOpenGLCommandEncoder::createHandle(OGPUObject * aGPUObject)
-{
-	uint32_t *newHandle = nullptr;
-	OExPointerCheck(newHandle = new uint32_t);
-	aGPUObject->setGpuHandle(newHandle);
-	return *newHandle;
-}
-
-inline void OOpenGLCommandEncoder::destroyHandle(OGPUObject * aGPUObject)
-{
-	encode([aGPUObject]() {
-		delete reinterpret_cast<uint32_t*>(aGPUObject->gpuHandle());
-		aGPUObject->setGpuHandle(nullptr);
-	});
+	return *reinterpret_cast<GLuint*>(aGPUObject.gpuHandle());
 }

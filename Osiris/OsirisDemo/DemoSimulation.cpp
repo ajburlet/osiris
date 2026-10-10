@@ -59,7 +59,7 @@ void DemoSimulation::init()
 	OExPointerCheck(colorCube);
 	resourceFactory().loadFromFile("ColorCube", "Cube", "ColorCube", *colorCube);
 	colorCube->renderComponents().setDepthTesting(true, true);
-	renderingEngine().load(colorCube);
+	renderingEngine().load(*colorCube);
 
 	/* setting up the cube */
 	//OVertexColorMesh *cube = new OVertexColorMesh();
@@ -133,7 +133,7 @@ void DemoSimulation::init()
 	addEntity(_movingPiece);
 
 	/* creating text */
-	_fontCourier = new OFont(&renderingEngine(), "cour.ttf");
+	_fontCourier = new OFont(renderingEngine(), "cour.ttf");
 	_title = new OText2D(_fontCourier, 12, OVector2I32(10, 12), OVector4FL(0.0f, 1.0f, 0.0f, 1.0f));
 	_title->setContent("Osiris Framework\nDemo Application");
 	_infoText = new OText2D(_fontCourier, 12, OVector2I32(400, 12), OVector4FL(0.0f, 1.0f, 0.0f, 1.0f));

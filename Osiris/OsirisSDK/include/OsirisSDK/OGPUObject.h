@@ -44,12 +44,15 @@ public:
 	 @brief Access to the pointer to the GPU handle (use meant for graphics engine only).
 	 */
 	void* gpuHandle();
+	const void* gpuHandle() const;
 
 	/**
 	 @brief Returns a cast to the GPU handler (use meant for graphics engine only).
 	 */
 	template <typename T>
 	T& gpuHandleCastTo();
+	template <typename T>
+	const T& gpuHandleCastTo() const;
 
 	/**
 	 @brief Returns true if the object needs loading to the GPU.
@@ -91,10 +94,21 @@ inline void * OGPUObject::gpuHandle()
 	return _gpuHandle;
 }
 
+inline const void* OGPUObject::gpuHandle() const
+{
+	return _gpuHandle;
+}
+
 template<typename T>
 inline T & OGPUObject::gpuHandleCastTo()
 {
 	return *reinterpret_cast<T*>(_gpuHandle);
+}
+
+template<typename T>
+inline const T& OGPUObject::gpuHandleCastTo() const
+{
+	return *reinterpret_cast<const T*>(_gpuHandle);
 }
 
 inline bool OGPUObject::needsLoading() const

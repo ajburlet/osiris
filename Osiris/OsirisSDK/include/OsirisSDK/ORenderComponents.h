@@ -41,21 +41,25 @@ public:
 	 * @brief Returns the associated geometry.
 	 */
 	OGeometry* geometry();
+	const OGeometry* geometry() const;
 
 	/**
 	 @brief Returns the texture.
 	 */
 	OTexture* texture();
+	const OTexture* texture() const;
 
 	/**
 	 * @brief Returns the material set.
 	 */
 	OMaterialSet* materialSet();
+	const OMaterialSet* materialSet() const;
 
 	/**
 	 @brief Returns the shader program.
 	 */
 	OShaderProgram* shaderProgram();
+	const OShaderProgram* shaderProgram() const;
 
 	/**
 	 @brief Returns true if color blending is enabled.
@@ -113,19 +117,19 @@ public:
 	void setGeometry(OGeometry& aGeometry);
 
 	/**
-	 * @brief Sets the material set.
+	 * @brief Sets the optional material set. Passing nullptr clears it.
 	 */
-	void setMaterialSet(OMaterialSet& aMaterialSet);
+	void setMaterialSet(OMaterialSet* aMaterialSet);
 
 	/**
-	 @brief Sets the texture.
+	 @brief Sets the optional texture. Passing nullptr clears it.
 	 @param aTexture The texture to be set.
 	 */
-	void setTexture(OTexture& aTexture);
+	void setTexture(OTexture* aTexture);
 
 	/**
-	 @brief Sets the shader program.
-	 @param aShaderProgram The shader program to be set.
+	 @brief Sets the optional shader program. Passing nullptr clears it.
+	 @param aShaderProgram The shader program to be set, or nullptr to clear it.
 	 */
 	void setShaderProgram(OShaderProgram* aShaderProgram);
 
@@ -163,7 +167,7 @@ private:
 	ORenderMode					_renderMode				= ORenderMode::Undefined;
 	ORefCountPtr<OGeometry>		_geometry;
 	ORefCountPtr<OMaterialSet>	_materialSet;
-	ORefCountPtr<OTexture>		_texture				= nullptr;
+	ORefCountPtr<OTexture>		_texture;
 	OShaderProgram*				_shaderProgram			= nullptr;
 	bool						_blendingEnabled		= false;
 	OBlendFactor				_blendSourceFactor		= OBlendFactor::One;
@@ -180,7 +184,17 @@ inline OGeometry* ORenderComponents::geometry()
 	return _geometry.getPtr();
 }
 
+inline const OGeometry* ORenderComponents::geometry() const
+{
+	return _geometry.getPtr();
+}
+
 inline OTexture * ORenderComponents::texture()
+{
+	return _texture.getPtr();
+}
+
+inline const OTexture* ORenderComponents::texture() const
 {
 	return _texture.getPtr();
 }
@@ -190,7 +204,17 @@ inline OMaterialSet* ORenderComponents::materialSet()
 	return _materialSet.getPtr();
 }
 
+inline const OMaterialSet* ORenderComponents::materialSet() const
+{
+	return _materialSet.getPtr();
+}
+
 inline OShaderProgram * ORenderComponents::shaderProgram()
+{
+	return _shaderProgram;
+}
+
+inline const OShaderProgram* ORenderComponents::shaderProgram() const
 {
 	return _shaderProgram;
 }
@@ -240,14 +264,14 @@ inline void ORenderComponents::setRenderMode(ORenderMode aRenderMode)
 	_renderMode = aRenderMode;
 }
 
-inline void ORenderComponents::setTexture(OTexture& aTexture)
+inline void ORenderComponents::setTexture(OTexture* aTexture)
 {
-	_texture = &aTexture;
+	_texture = aTexture;
 }
 
-inline void ORenderComponents::setMaterialSet(OMaterialSet& aMaterialSet)
+inline void ORenderComponents::setMaterialSet(OMaterialSet* aMaterialSet)
 {
-	_materialSet = &aMaterialSet;
+	_materialSet = aMaterialSet;
 }
 
 inline void ORenderComponents::setShaderProgram(OShaderProgram * aShaderProgram)

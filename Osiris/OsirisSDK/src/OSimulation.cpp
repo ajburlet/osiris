@@ -83,8 +83,8 @@ void OSimulation::update(const OTimeIndex & timeIndex, int step_us)
 
 void OSimulation::render()
 {
-	auto mtxTransform = camera()->transform();
+	auto& mtxTransform = camera()->transform();
 	for (auto& item : _impl->visual_objects) {
-		item.visualObject->render(&renderingEngine(), mtxTransform);
+		item.visualObject->render(renderingEngine(), &mtxTransform);
 	}
 }

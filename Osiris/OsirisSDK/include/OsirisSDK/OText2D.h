@@ -145,7 +145,7 @@ public:
 	 @param aRenderingEngine The rendering engine.
 	 @param aMatrixStack Matrix stack (not relevant for this class).
 	 */
-	void render(ORenderingEngine* aRenderingEngine, OMatrixStack* aMatrixStack = nullptr);
+	void render(ORenderingEngine& aRenderingEngine, OMatrixStack* aMatrixStack = nullptr);
 
 	/**
 	 @copydoc OObject::onScreenResize(const OResizeEvent*)

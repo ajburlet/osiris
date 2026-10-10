@@ -29,7 +29,7 @@ OGraphicsCommandQueue * OOpenGL::createCommandQueue()
 	return new OOpenGLCommandQueue;
 }
 
-void OOpenGL::compile(OShaderProgram * aProgram)
+void OOpenGL::compile(OShaderProgram& aProgram)
 {
 	auto GetGlShaderType = [&](OShaderObject* aObject) -> GLuint {
 		switch (aObject->type()) {
@@ -42,9 +42,9 @@ void OOpenGL::compile(OShaderProgram * aProgram)
 
 	auto programHandle = new GLuint(glCreateProgram());
 	OExPointerCheck(programHandle);
-	aProgram->setGpuHandle(programHandle);
+	aProgram.setGpuHandle(programHandle);
 
-	aProgram->ForEachObject([&](OShaderObject* aObj) {
+	aProgram.ForEachObject([&](OShaderObject* aObj) {
 		auto objHandle = new GLuint(glCreateShader(GetGlShaderType(aObj)));
 		OExPointerCheck(objHandle);
 		aObj->setGpuHandle(objHandle);

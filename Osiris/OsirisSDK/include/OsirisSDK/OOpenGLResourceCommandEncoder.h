@@ -23,20 +23,24 @@ public:
 
 
 	// OGraphicsResourceCommandEncoder interface
-	virtual void load(ORenderComponents* aRenderComponents) override;
-	virtual void unload(ORenderComponents* aVertexBufferDescriptor) override;
-	virtual void load(OVertexBuffer * aVertexBuffer) override;
-	virtual void unload(OVertexBuffer * aVertexBuffer) override;
-	virtual void load(OIndexBuffer * aIndexBuffer) override;
-	virtual void unload(OIndexBuffer * aIndexBuffer) override;
-	virtual void load(OTexture * aTexture) override;
-	virtual void unload(OTexture * aTexture) override;
-	virtual void load(OShaderStorageBuffer* aStorageBuffer) override;
-	virtual void unload(OShaderStorageBuffer* aStorageBuffer) override;
-	virtual void load(OShaderUniformArgument * aAttributeInstance, OShaderProgram * aShader, const char * aName) override;
-	virtual void unload(OShaderUniformArgument* aAttributeInstance) override;
+	virtual void load(ORenderComponents& aRenderComponents) override;
+	virtual void unload(ORenderComponents& aRenderComponents) override;
+	virtual void load(OVertexBuffer& aVertexBuffer) override;
+	virtual void unload(OVertexBuffer& aVertexBuffer) override;
+	virtual void load(OIndexBuffer& aIndexBuffer) override;
+	virtual void unload(OIndexBuffer& aIndexBuffer) override;
+	virtual void load(OTexture& aTexture) override;
+	virtual void unload(OTexture& aTexture) override;
+	virtual void load(OShaderStorageBuffer& aStorageBuffer) override;
+	virtual void unload(OShaderStorageBuffer& aStorageBuffer) override;
+	virtual void load(OShaderUniformArgument& aAttributeInstance, OShaderProgram& aShader, const char* aName) override;
+	virtual void unload(OShaderUniformArgument& aAttributeInstance) override;
 
 	// Inherited via OGraphicsCommandEncoder interface
 	virtual void end() override;
+
+private:
+	void createHandle(OGPUObject& object);
+	void destroyHandle(OGPUObject& object);
 
 };

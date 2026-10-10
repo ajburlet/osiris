@@ -101,7 +101,7 @@ OApplication::OApplication(const char* aTitle, int aArgc, char **aArgv, Graphics
 		error_cb();
 		throw OEx("Unknow graphics API.");
 	}
-	OExPointerCheckCb(_impl->engine = new ORenderingEngine(graphics_api), error_cb);
+	OExPointerCheckCb(_impl->engine = new ORenderingEngine(*graphics_api), error_cb);
 
 	/* setup callbacks */
 	glutDisplayFunc(displayCallback);

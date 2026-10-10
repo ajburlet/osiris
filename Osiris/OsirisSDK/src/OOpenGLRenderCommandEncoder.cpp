@@ -55,7 +55,7 @@ OOpenGLRenderCommandEncoder::OOpenGLRenderCommandEncoder(OOpenGLCommandBuffer* a
 void OOpenGLRenderCommandEncoder::setShaderProgram(OShaderProgram* aShaderProgram)
 {
 	encode([this, aShaderProgram]() {
-		glUseProgram((aShaderProgram != nullptr) ? handle(aShaderProgram) : 0);
+		glUseProgram((aShaderProgram != nullptr) ? handle(*aShaderProgram) : 0);
 	});
 	_shaderProgram = aShaderProgram;
 }
@@ -74,12 +74,12 @@ void OOpenGLRenderCommandEncoder::setTexture(OTexture* aTexture, uint32_t aIndex
 {
 	encode(Bind(glActiveTexture, gOpenGLTextureID[aIndex]));
 	encode([this, aTexture]() {
-		glBindTexture(GL_TEXTURE_2D, (aTexture != nullptr) ? handle(aTexture) : 0); 
+		glBindTexture(GL_TEXTURE_2D, (aTexture != nullptr) ? handle(*aTexture) : 0); 
 	});
 	_texture[aIndex] = aTexture;
 }
 
-void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents* aRenderComponents)
+void OOpenGLRenderCommandEncoder::setRenderComponents(const ORenderComponents& aRenderComponents)
 {
 	auto GetBlendGLFactor = [](OBlendFactor aFactor) {
 		switch (aFactor) {
@@ -108,34 +108,34 @@ void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents* aRender
 		return GL_ONE;
 	};
 
-	if (aRenderComponents->colorBlendingEnabled()) {
+	if (aRenderComponents.colorBlendingEnabled()) {
 		encode(Bind(glEnable, GL_BLEND));
-		encode(Bind(glBlendFunc, GetBlendGLFactor(aRenderComponents->colorBlendingSourceFactor()),
-					 GetBlendGLFactor(aRenderComponents->colorBlendingDestinationFactor())));
+		encode(Bind(glBlendFunc, GetBlendGLFactor(aRenderComponents.colorBlendingSourceFactor()),
+					 GetBlendGLFactor(aRenderComponents.colorBlendingDestinationFactor())));
 	}
 
-	if (aRenderComponents->faceCullingEnabled()) {
+	if (aRenderComponents.faceCullingEnabled()) {
 		encode(Bind(glEnable, GL_CULL_FACE));
-		encode(Bind(glCullFace, (aRenderComponents->cullingFace() == OCullFace::Back) ? GL_BACK : GL_FRONT));
-		encode(Bind(glFrontFace, (aRenderComponents->cullingFrontFace() == OCullFront::CCW) ? GL_CCW : GL_CW));
+		encode(Bind(glCullFace, (aRenderComponents.cullingFace() == OCullFace::Back) ? GL_BACK : GL_FRONT));
+		encode(Bind(glFrontFace, (aRenderComponents.cullingFrontFace() == OCullFront::CCW) ? GL_CCW : GL_CW));
 	} else {
 		encode(Bind(glDisable, GL_CULL_FACE));
 	}
 
-	encode(Bind(aRenderComponents->depthTestingEnabled() ? glEnable : glDisable, GL_DEPTH_TEST));
-	encode(Bind(glDepthMask, aRenderComponents->depthBufferWriteEnabled() ? GL_TRUE : GL_FALSE));
+	encode(Bind(aRenderComponents.depthTestingEnabled() ? glEnable : glDisable, GL_DEPTH_TEST));
+	encode(Bind(glDepthMask, aRenderComponents.depthBufferWriteEnabled() ? GL_TRUE : GL_FALSE));
 
-	encode(Bind(glBindVertexArray, aRenderComponents->gpuHandleCastTo<GLuint>()));
+	encode(Bind(glBindVertexArray, aRenderComponents.gpuHandleCastTo<GLuint>()));
 
-	if (aRenderComponents->materialSet() != nullptr && aRenderComponents->materialSet()->count() > 0)
+	if (aRenderComponents.materialSet() != nullptr && aRenderComponents.materialSet()->count() > 0)
 	{
 		encode(Bind(glBindBufferBase, 
 					GL_SHADER_STORAGE_BUFFER,
 					0, 
-					aRenderComponents->materialSet()->gpuHandleCastTo<GLuint>()));
+					aRenderComponents.materialSet()->gpuHandleCastTo<GLuint>()));
 	}
 
-	auto& materialIndexBuffer = aRenderComponents->geometry()->materialIndexBuffer();
+	auto& materialIndexBuffer = aRenderComponents.geometry()->materialIndexBuffer();
 	if (materialIndexBuffer.size() > 0)
 	{
 		encode(Bind(glBindBufferBase, 
@@ -145,69 +145,68 @@ void OOpenGLRenderCommandEncoder::setRenderComponents(ORenderComponents* aRender
 	}
 }
 
-void OOpenGLRenderCommandEncoder::setUniformArgument(OShaderUniformArgument * aUniformArgument)
+void OOpenGLRenderCommandEncoder::setUniformArgument(OShaderUniformArgument& aUniformArgument)
 {
-	encode([this, aUniformArgument]() {
-		switch (aUniformArgument->type()) {
-
+	encode([this, &aUniformArgument]() {
+		switch (aUniformArgument.type()) {
 		case OVarType::Float:
-			glUniform1fv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLfloat*>());
+			glUniform1fv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float2:
-			glUniform2fv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLfloat*>());
+			glUniform2fv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float3:
-			glUniform3fv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLfloat*>());
+			glUniform3fv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float4:
-			glUniform4fv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLfloat*>());
+			glUniform4fv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLfloat*>());
 			break;
 			
 		case OVarType::Float2x2:
-			glUniformMatrix2fv(handle(aUniformArgument), aUniformArgument->arrayLength(), false, aUniformArgument->castTo<GLfloat*>());
+			glUniformMatrix2fv(handle(aUniformArgument), aUniformArgument.arrayLength(), false, aUniformArgument.castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Float3x3:
-			glUniformMatrix3fv(handle(aUniformArgument), aUniformArgument->arrayLength(), false, aUniformArgument->castTo<GLfloat*>());
+			glUniformMatrix3fv(handle(aUniformArgument), aUniformArgument.arrayLength(), false, aUniformArgument.castTo<GLfloat*>());
 			break;
 
 		case OVarType::Float4x4:
-			glUniformMatrix4fv(handle(aUniformArgument), aUniformArgument->arrayLength(), false, aUniformArgument->castTo<GLfloat*>());
+			glUniformMatrix4fv(handle(aUniformArgument), aUniformArgument.arrayLength(), false, aUniformArgument.castTo<GLfloat*>());
 			break;
 		
 		case OVarType::Int:
-			glUniform1iv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLint*>());
+			glUniform1iv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLint*>());
 			break;
 
 		case OVarType::Int2:
-			glUniform2iv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLint*>());
+			glUniform2iv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLint*>());
 			break;
 
 		case OVarType::Int3:
-			glUniform3iv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLint*>());
+			glUniform3iv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLint*>());
 			break;
 
 		case OVarType::Int4:
-			glUniform4iv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLint*>());
+			glUniform4iv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLint*>());
 			break;
 
 		case OVarType::UnsignedInt:
-			glUniform1uiv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLuint*>());
+			glUniform1uiv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLuint*>());
 			break;
 
 		case OVarType::UnsignedInt2:
-			glUniform2uiv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLuint*>());
+			glUniform2uiv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLuint*>());
 			break;
 
 		case OVarType::UnsignedInt3:
-			glUniform3uiv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLuint*>());
+			glUniform3uiv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLuint*>());
 			break;
 
 		case OVarType::UnsignedInt4:
-			glUniform4uiv(handle(aUniformArgument), aUniformArgument->arrayLength(), aUniformArgument->castTo<GLuint*>());
+			glUniform4uiv(handle(aUniformArgument), aUniformArgument.arrayLength(), aUniformArgument.castTo<GLuint*>());
 			break;
 
 		default:

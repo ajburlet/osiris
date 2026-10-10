@@ -14,10 +14,11 @@
 // ****************************************************************************
 // utils
 // ****************************************************************************
-GLenum getUsageType(OGPUObject* aObject)
+
+GLenum getUsageType(OGPUObject& aObject)
 {
 	GLenum usage;
-	switch (aObject->usage()) {
+	switch (aObject.usage()) {
 	case OGPUObject::Usage::GPU:
 		usage = GL_STATIC_DRAW;
 		break;
@@ -131,18 +132,18 @@ OOpenGLResourceCommandEncoder::OOpenGLResourceCommandEncoder(OOpenGLCommandBuffe
 {
 }
 
-void OOpenGLResourceCommandEncoder::load(ORenderComponents* aRenderComponents)
+void OOpenGLResourceCommandEncoder::load(ORenderComponents& aRenderComponents)
 {
-	auto& vertexDescriptor = aRenderComponents->geometry()->vertexBuffer().descriptor();
+	auto& vertexDescriptor = aRenderComponents.geometry()->vertexBuffer().descriptor();
 
 	createHandle(aRenderComponents);
-	encode([aRenderComponents]() {
-		glGenVertexArrays(1, &(aRenderComponents->gpuHandleCastTo<GLuint>()));
-		glBindVertexArray(aRenderComponents->gpuHandleCastTo<GLuint>());
+	encode([&aRenderComponents]() {
+		glGenVertexArrays(1, &(aRenderComponents.gpuHandleCastTo<GLuint>()));
+		glBindVertexArray(aRenderComponents.gpuHandleCastTo<GLuint>());
 	});
-	load(&aRenderComponents->geometry()->vertexBuffer());
-	if (aRenderComponents->geometry()->drawMode() == ORenderMode::IndexedTriangle) {
-		load(&aRenderComponents->geometry()->indexBuffer());
+	load(aRenderComponents.geometry()->vertexBuffer());
+	if (aRenderComponents.geometry()->drawMode() == ORenderMode::IndexedTriangle) {
+		load(aRenderComponents.geometry()->indexBuffer());
 	}
 
 	uint32_t cummulative_size = 0;
@@ -210,94 +211,94 @@ void OOpenGLResourceCommandEncoder::load(ORenderComponents* aRenderComponents)
 	}
 
 	encode(Bind(glBindVertexArray, 0));
-	auto& materialIndexBuffer = aRenderComponents->geometry()->materialIndexBuffer();
+	auto& materialIndexBuffer = aRenderComponents.geometry()->materialIndexBuffer();
 	if (materialIndexBuffer.size() > 0) {
-		load(&materialIndexBuffer);
+		load(materialIndexBuffer);
 	}
-	encode([aRenderComponents]() {
-		aRenderComponents->setNeedsLoading(false);
+	encode([&aRenderComponents]() {
+		aRenderComponents.setNeedsLoading(false);
 	});
 }
 
-void OOpenGLResourceCommandEncoder::unload(ORenderComponents* aRenderComponents)
+void OOpenGLResourceCommandEncoder::unload(ORenderComponents& aRenderComponents)
 {
-	encode([&]() {
-		glDeleteVertexArrays(1, &(aRenderComponents->gpuHandleCastTo<GLuint>()));
+	encode([this, &aRenderComponents]() {
+		glDeleteVertexArrays(1, &(aRenderComponents.gpuHandleCastTo<GLuint>()));
 		destroyHandle(aRenderComponents);
 	});
 }
 
-void OOpenGLResourceCommandEncoder::load(OVertexBuffer* aVertexBuffer)
+void OOpenGLResourceCommandEncoder::load(OVertexBuffer& aVertexBuffer)
 {
 	GLenum usage = getUsageType(aVertexBuffer);
 	createHandle(aVertexBuffer);
-	encode([aVertexBuffer, usage]() {
-		glGenBuffers(1, reinterpret_cast<GLuint*>(aVertexBuffer->gpuHandle()));
-		glBindBuffer(GL_ARRAY_BUFFER, aVertexBuffer->gpuHandleCastTo<GLuint>()); 
-		glBufferData(GL_ARRAY_BUFFER, aVertexBuffer->size(), aVertexBuffer->buffer(), usage);
+	encode([&aVertexBuffer, usage]() {
+		glGenBuffers(1, reinterpret_cast<GLuint*>(aVertexBuffer.gpuHandle()));
+		glBindBuffer(GL_ARRAY_BUFFER, aVertexBuffer.gpuHandleCastTo<GLuint>()); 
+		glBufferData(GL_ARRAY_BUFFER, aVertexBuffer.size(), aVertexBuffer.buffer(), usage);
 		// glBindBuffer(GL_ARRAY_BUFFER, 0);
-		aVertexBuffer->setNeedsLoading(false);
+		aVertexBuffer.setNeedsLoading(false);
 	});
 
 }
 
-void OOpenGLResourceCommandEncoder::unload(OVertexBuffer* aVertexBuffer)
+void OOpenGLResourceCommandEncoder::unload(OVertexBuffer& aVertexBuffer)
 {
-	encode([&] {
-		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aVertexBuffer->gpuHandle()));
+	encode([this, &aVertexBuffer] {
+		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aVertexBuffer.gpuHandle()));
 		destroyHandle(aVertexBuffer);
 	});
 }
 
-void OOpenGLResourceCommandEncoder::load(OIndexBuffer * aIndexBuffer)
+void OOpenGLResourceCommandEncoder::load(OIndexBuffer& aIndexBuffer)
 {
 	GLenum usage = getUsageType(aIndexBuffer);
 	createHandle(aIndexBuffer);
-	encode([aIndexBuffer, usage]() {
-		glGenBuffers(1, reinterpret_cast<GLuint*>(aIndexBuffer->gpuHandle()));
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *reinterpret_cast<GLuint*>(aIndexBuffer->gpuHandle()));
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, aIndexBuffer->size(), aIndexBuffer->buffer(), usage);
+	encode([&aIndexBuffer, usage]() {
+		glGenBuffers(1, reinterpret_cast<GLuint*>(aIndexBuffer.gpuHandle()));
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *reinterpret_cast<GLuint*>(aIndexBuffer.gpuHandle()));
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, aIndexBuffer.size(), aIndexBuffer.buffer(), usage);
 		// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		aIndexBuffer->setNeedsLoading(false);
+		aIndexBuffer.setNeedsLoading(false);
 	});
 }
 
-void OOpenGLResourceCommandEncoder::unload(OIndexBuffer* aIndexBuffer)
+void OOpenGLResourceCommandEncoder::unload(OIndexBuffer& aIndexBuffer)
 {
-	encode([&]() {
-		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aIndexBuffer->gpuHandle()));
+	encode([this, &aIndexBuffer]() {
+		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aIndexBuffer.gpuHandle()));
 		destroyHandle(aIndexBuffer);
 	});
 }
 
-void OOpenGLResourceCommandEncoder::load(OTexture * aTexture)
+void OOpenGLResourceCommandEncoder::load(OTexture& aTexture)
 {
 	createHandle(aTexture);
-	encode([aTexture]() {
-		glGenTextures(1, reinterpret_cast<GLuint*>(aTexture->gpuHandle()));
-		glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<GLuint*>(aTexture->gpuHandle()));
+	encode([&aTexture]() {
+		glGenTextures(1, reinterpret_cast<GLuint*>(aTexture.gpuHandle()));
+		glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<GLuint*>(aTexture.gpuHandle()));
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapModeConvert(aTexture->wrapType(OTexture::Coordinate::S)));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapModeConvert(aTexture->wrapType(OTexture::Coordinate::T)));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapModeConvert(aTexture.wrapType(OTexture::Coordinate::S)));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapModeConvert(aTexture.wrapType(OTexture::Coordinate::T)));
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterConvert(aTexture->minFilter()));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterConvert(aTexture->magFilter()));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterConvert(aTexture.minFilter()));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterConvert(aTexture.magFilter()));
 
-		glPixelStorei(GL_PACK_ALIGNMENT, static_cast<GLint>(aTexture->packAlignment()));
-		glPixelStorei(GL_UNPACK_ALIGNMENT, static_cast<GLint>(aTexture->unpackAlignment()));
+		glPixelStorei(GL_PACK_ALIGNMENT, static_cast<GLint>(aTexture.packAlignment()));
+		glPixelStorei(GL_UNPACK_ALIGNMENT, static_cast<GLint>(aTexture.unpackAlignment()));
 
 		bool isCompressed;
-		GLenum srcFmt = pixelFormatConvert(aTexture->sourcePixelFormat(), isCompressed);
-		GLenum dstFmt = pixelFormatConvert(aTexture->destinationPixelFormat());
-		GLenum pxDataType = pixelDataTypeConvert(aTexture->pixelDataType());
+		GLenum srcFmt = pixelFormatConvert(aTexture.sourcePixelFormat(), isCompressed);
+		GLenum dstFmt = pixelFormatConvert(aTexture.destinationPixelFormat());
+		GLenum pxDataType = pixelDataTypeConvert(aTexture.pixelDataType());
 
-		for (uint32_t i = 0; i < aTexture->mipmapLevelCount(); i++) {
+		for (uint32_t i = 0; i < aTexture.mipmapLevelCount(); i++) {
 			uint32_t width = 0;
 			uint32_t height = 0;
 			uint8_t* data = nullptr;
 			uint32_t size = 0;
 
-			data = aTexture->content(i, width, height, size);
+			data = aTexture.content(i, width, height, size);
 
 			if (isCompressed) {
 				glCompressedTexImage2D(GL_TEXTURE_2D, i, srcFmt, width, height, 0, 
@@ -308,50 +309,52 @@ void OOpenGLResourceCommandEncoder::load(OTexture * aTexture)
 		}
 
 		glBindTexture(GL_TEXTURE_2D, 0);
-		aTexture->setNeedsLoading(false);
+		aTexture.setNeedsLoading(false);
 	});
 }
 
-void OOpenGLResourceCommandEncoder::unload(OTexture * aTexture)
+void OOpenGLResourceCommandEncoder::unload(OTexture& aTexture)
 {
-	encode([&]() {
-		glDeleteTextures(1, reinterpret_cast<GLuint*>(aTexture->gpuHandle()));
+	encode([this, &aTexture]() {
+		glDeleteTextures(1, reinterpret_cast<GLuint*>(aTexture.gpuHandle()));
 		destroyHandle(aTexture);
 	});
 }
 
-void OOpenGLResourceCommandEncoder::load(OShaderStorageBuffer* aStorageBuffer)
+void OOpenGLResourceCommandEncoder::load(OShaderStorageBuffer& aStorageBuffer)
 {
 	GLenum usage = getUsageType(aStorageBuffer);
 	createHandle(aStorageBuffer);
-	encode([aStorageBuffer, usage]() {
-		auto handle = reinterpret_cast<GLuint*>(aStorageBuffer->gpuHandle());
+	encode([&aStorageBuffer, usage]() {
+		auto handle = reinterpret_cast<GLuint*>(aStorageBuffer.gpuHandle());
 		glGenBuffers(1, handle);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, *handle);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, aStorageBuffer->size(), aStorageBuffer->data(), usage);
-		aStorageBuffer->setNeedsLoading(false);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, aStorageBuffer.size(), aStorageBuffer.data(), usage);
+		aStorageBuffer.setNeedsLoading(false);
 	});
 }
 
-void OOpenGLResourceCommandEncoder::unload(OShaderStorageBuffer* aStorageBuffer)
+void OOpenGLResourceCommandEncoder::unload(OShaderStorageBuffer& aStorageBuffer)
 {
-	encode([&](){
-		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aStorageBuffer->gpuHandle()));
+	encode([this, &aStorageBuffer](){
+		glDeleteBuffers(1, reinterpret_cast<GLuint*>(aStorageBuffer.gpuHandle()));
 		destroyHandle(aStorageBuffer);
 	});
 }
 
-void OOpenGLResourceCommandEncoder::load(OShaderUniformArgument * aAttributeInstance, OShaderProgram * aShader, const char * aName)
+void OOpenGLResourceCommandEncoder::load(OShaderUniformArgument& aAttributeInstance, 
+										 OShaderProgram& aShader, 
+										 const char* aName)
 {
 	createHandle(aAttributeInstance);
-	encode([aAttributeInstance, aShader, aName]() {
-		auto uniform = glGetUniformLocation(*reinterpret_cast<GLuint*>(aShader->gpuHandle()), aName);
-		*reinterpret_cast<GLint*>(aAttributeInstance->gpuHandle()) = uniform;
-		aAttributeInstance->setNeedsLoading(false);
+	encode([&aAttributeInstance, &aShader, aName]() {
+		auto uniform = glGetUniformLocation(*reinterpret_cast<GLuint*>(aShader.gpuHandle()), aName);
+		*reinterpret_cast<GLint*>(aAttributeInstance.gpuHandle()) = uniform;
+		aAttributeInstance.setNeedsLoading(false);
 	});
 }
 
-void OOpenGLResourceCommandEncoder::unload(OShaderUniformArgument * aAttributeInstance)
+void OOpenGLResourceCommandEncoder::unload(OShaderUniformArgument& aAttributeInstance)
 {
 	destroyHandle(aAttributeInstance);
 }
@@ -360,3 +363,17 @@ void OOpenGLResourceCommandEncoder::end()
 {
 }
 
+void OOpenGLResourceCommandEncoder::createHandle(OGPUObject& aGPUObject)
+{
+	GLuint *newHandle;
+	OExPointerCheck(newHandle = new GLuint);
+	aGPUObject.setGpuHandle(newHandle);
+}
+
+void OOpenGLResourceCommandEncoder::destroyHandle(OGPUObject& aGPUObject)
+{
+	encode([&aGPUObject]() {
+		delete reinterpret_cast<GLuint*>(aGPUObject.gpuHandle());
+		aGPUObject.setGpuHandle(nullptr);
+	});
+}

@@ -33,7 +33,19 @@ ORenderable & ORenderable::operator=(ORenderable && aOther)
 
 void ORenderable::updateUniforms()
 {
-	for (auto& uniform : *_uniforms) uniform.update(this);
+	for (auto& uniform : *_uniforms) uniform.update(*this);
+}
+
+ORenderComponents& ORenderable::renderComponents()
+{
+	OExPointerCheck(_renderComponents);
+	return *_renderComponents;
+}
+
+const ORenderComponents& ORenderable::renderComponents() const
+{
+	OExPointerCheck(_renderComponents);
+	return *_renderComponents;
 }
 
 void ORenderable::setUniformsLoaded(bool aLoaded)

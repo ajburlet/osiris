@@ -150,7 +150,7 @@ void OResourceFactory::loadFromFile(const OString& aFileID, const OString& aObje
 	auto resources = loadMeshResources(aFileID, aObjectName, aKey);
 	aRenderComponents.setGeometry(*resources.geometry);
 	if (resources.materials != nullptr) {
-		aRenderComponents.setMaterialSet(*resources.materials);
+		aRenderComponents.setMaterialSet(resources.materials.getPtr());
 	}
 }
 

@@ -22,6 +22,9 @@ class ORenderComponents;
 */
 class OAPI OMesh : public ORenderable, public OVisualObject
 {
+private:
+	using Super = ORenderable;
+
 public:
 	/**
 	 @brief Class constructor.
@@ -63,6 +66,7 @@ public:
 	 * @brief Returns the components used to render this mesh.
 	 */
 	ORenderComponents& renderComponents();
+	const ORenderComponents& renderComponents() const;
 
 
 	/**
@@ -70,7 +74,7 @@ public:
 	 @param aRenderingEngine The rendering engine.
 	 @param aMatrixStack Pointer to the matrix stack that contains all the transformations.
 	*/
-	virtual void render(ORenderingEngine* aRenderingEngine, OMatrixStack *aMatrixStack = nullptr) override;
+	virtual void render(ORenderingEngine& aRenderingEngine, OMatrixStack *aMatrixStack = nullptr) override;
 
 private:
 	/**

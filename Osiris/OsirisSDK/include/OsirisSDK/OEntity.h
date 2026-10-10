@@ -48,7 +48,7 @@ public:
 	
 	void swapState(const OTimeIndex& timeIndex, int step_us);
 
-	virtual void render(ORenderingEngine* aRenderingEngine, OMatrixStack* aMatrixStack) override;
+	virtual void render(ORenderingEngine& aRenderingEngine, OMatrixStack* aMatrixStack) override;
 
 	/**
 	 @brief Set object behavior.

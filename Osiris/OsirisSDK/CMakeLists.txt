@@ -61,7 +61,6 @@ set (GRAPHICS_SOURCES
 	${HDR_DIR}/OMeshRawData.h
 	${SRC_DIR}/OMeshBuilder.cpp
 	${HDR_DIR}/OMeshBuilder.h
-	${HDR_DIR}/OMeshGeometry.h
 	${HDR_DIR}/OGeometry.h
 	${HDR_DIR}/OObjMeshFile.h
 	${SRC_DIR}/OObjMeshFile.cpp

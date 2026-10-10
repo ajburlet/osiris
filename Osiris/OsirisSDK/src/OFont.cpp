@@ -21,6 +21,7 @@ using namespace std;
 
 
 struct OFont::Impl {
+	explicit Impl(ORenderingEngine& aRenderingEngine) : renderingEngine(aRenderingEngine) {}
 	~Impl();
 
 	void cleanCache();
@@ -37,7 +38,7 @@ struct OFont::Impl {
 	static constexpr uint8_t minFontSize = 7;
 	static constexpr uint8_t maxFontSize = 100;
 
-	ORenderingEngine*		renderingEngine	= nullptr;
+	ORenderingEngine&	renderingEngine;
 	string				fontName;
 	FT_Face				face		= nullptr;
 	GlyphCache			cache;
@@ -61,8 +62,8 @@ void OFont::Impl::cleanCache()
 		if (entry != nullptr) {
 			for (auto ce: *entry) {
 				if (ce.renderComponents != nullptr) {
-					renderingEngine->unload(ce.renderComponents);
-					renderingEngine->trashBin().trash(ce.renderComponents);
+					renderingEngine.unload(*ce.renderComponents);
+					renderingEngine.trashBin().trash(ce.renderComponents);
 				}
 			}
 			delete entry;
@@ -74,11 +75,10 @@ void OFont::Impl::cleanCache()
 FT_Library OFont::Impl::library = nullptr;
 OVertexBufferDescriptor* OFont::Impl::vertexBufferDescriptor = nullptr;
 
-OFont::OFont(ORenderingEngine* aRenderingEngine, const char* aFontName)
-	: _impl(std::make_unique<OFont::Impl>())
+OFont::OFont(ORenderingEngine& aRenderingEngine, const char* aFontName)
+	: _impl(std::make_unique<OFont::Impl>(aRenderingEngine))
 {
 	_impl->cache.resizeInit(Impl::maxFontSize - Impl::minFontSize, nullptr);
-	_impl->renderingEngine = aRenderingEngine;
 	init();
 
 #ifdef WIN32
@@ -131,12 +131,12 @@ void OFont::loadGlyph(OGlyph& aGlyph, char aCharCode, uint8_t aSize, const OVect
 	auto cacheEntry = _impl->cache[fontIdx]->get(aCharCode);
 	if (cacheEntry.renderComponents == nullptr) throw OEx("No corresponding font glyph for char code.");
 
-	aGlyph.setRenderComponents(cacheEntry.renderComponents);
+	aGlyph.setRenderComponents(*cacheEntry.renderComponents);
 	aGlyph.setCharCode(aCharCode);
 	aGlyph.setColor(aColor);
 	aGlyph.setAdvanceX(cacheEntry.advanceX);
 	aGlyph.setAdvanceY(cacheEntry.advanceY);
-	_impl->renderingEngine->load(&aGlyph);
+	_impl->renderingEngine.load(aGlyph);
 }
 
 int OFont::lineSpacing() const
@@ -203,7 +203,7 @@ void OFont::loadToCache(uint8_t aSize)
 							_impl->face->glyph->bitmap.width*_impl->face->glyph->bitmap.rows);
 
 		cacheEntry.renderComponents->setGeometry(_impl->geometryManager.add(std::move(geometry)));
-		cacheEntry.renderComponents->setTexture(_impl->textureManager.add(std::move(texture)));
+		cacheEntry.renderComponents->setTexture(&_impl->textureManager.add(std::move(texture)));
 	} 
 }
 

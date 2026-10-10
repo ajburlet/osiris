@@ -34,52 +34,52 @@ public:
 	/**
 	 @brief Encodes commands to load general rendering definitions for all render components. 
 	 */
-	virtual void load(ORenderComponents* aRenderComponents) = 0;
+	virtual void load(ORenderComponents& aRenderComponents) = 0;
 
 	/**
 	 @brief Encodes commands to unload general rendering definitions for all render components. 
 	 */
-	virtual void unload(ORenderComponents* aRenderComponents) = 0;
+	virtual void unload(ORenderComponents& aRenderComponents) = 0;
 
 	/**
 	 @brief Encodes commands to load a vertex buffer.
 	 */
-	virtual void load(OVertexBuffer* aVertexBuffer) = 0;
+	virtual void load(OVertexBuffer& aVertexBuffer) = 0;
 
 	/**
 	 @brief Encodes commands to unload a vertex buffer.
 	 */
-	virtual void unload(OVertexBuffer* aVertexBuffer) = 0;
+	virtual void unload(OVertexBuffer& aVertexBuffer) = 0;
 
 	/**
 	 @brief Encodes commands to load an index buffer.
 	 */
-	virtual void load(OIndexBuffer* aIndexBuffer) = 0;
+	virtual void load(OIndexBuffer& aIndexBuffer) = 0;
 
 	/**
 	 @brief Encodes commands to unload an index buffer.
 	 */
-	virtual void unload(OIndexBuffer* aIndexBuffer) = 0;
+	virtual void unload(OIndexBuffer& aIndexBuffer) = 0;
 
 	/**
 	 @brief Encodes commands to load a texture.
 	 */
-	virtual void load(OTexture* aTexture) = 0;
+	virtual void load(OTexture& aTexture) = 0;
 
 	/**
 	 @brief Encodes commands to unload a texture.
 	 */
-	virtual void unload(OTexture* aTexture) = 0;
+	virtual void unload(OTexture& aTexture) = 0;
 
 	/**
 	 * @brief Encodes commands to load a shader storage buffer.
 	 */
-	virtual void load(OShaderStorageBuffer* aStorageBuffer) = 0;
+	virtual void load(OShaderStorageBuffer& aStorageBuffer) = 0;
 
 	/**
 	 * @brief Encodes commnds to unload a shader storage buffer.
 	 */
-	virtual void unload(OShaderStorageBuffer* aStorageBuffer) = 0;
+	virtual void unload(OShaderStorageBuffer& aStorageBuffer) = 0;
 
 	/**
 	 @brief Loads a shader uniform attribute instance.
@@ -87,12 +87,12 @@ public:
 	 @param aShader The shader program to which the attribute relates.
 	 @param aName The name the argument assumes in the shader.
 	 */
-	virtual void load(OShaderUniformArgument* aAttributeInstance, OShaderProgram* aShader, const char* aName) = 0;
+	virtual void load(OShaderUniformArgument& aAttributeInstance, OShaderProgram& aShader, const char* aName) = 0;
 
 	/**
 	 @brief Unloads a shader uniform attribute instance.
 	 */
-	virtual void unload(OShaderUniformArgument* aAttributeInstance) = 0;
+	virtual void unload(OShaderUniformArgument& aAttributeInstance) = 0;
 };
 
 inline OGraphicsResourceCommandEncoder::OGraphicsResourceCommandEncoder() :

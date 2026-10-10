@@ -21,7 +21,7 @@ public:
 	 @brief Class constructor.
 	 @param aGraphicsAPI The graphics API.
 	 */
-	ORenderingEngine(OGraphicsAPI* aGraphicsAPI);
+	ORenderingEngine(OGraphicsAPI& aGraphicsAPI);
 
 	/**
 	 @brief Deleted copy constructor.
@@ -51,71 +51,71 @@ public:
 	/**
 	 @brief Loads vertices, textures and shaders to the GPU (if needed).
 	 */
-	virtual void load(ORenderable* aRenderable);
+	virtual void load(ORenderable& aRenderable);
 
 	/**
 	 @brief Loads vertices, textures and shaders to the GPU (if needed).
 	 */
-	virtual void load(ORenderComponents* aRenderComponents);
+	virtual void load(ORenderComponents& aRenderComponents);
 
 	/**
 	 @brief Loads vertex buffer.
 	 */
-	virtual void load(OVertexBuffer* aVertexBuffer);
+	virtual void load(OVertexBuffer& aVertexBuffer);
 
 	/**
 	 @brief Loads index buffer.
 	 */
-	virtual void load(OIndexBuffer* aIndexBuffer);
+	virtual void load(OIndexBuffer& aIndexBuffer);
 
 	/**
 	 @brief Loads texture.
 	 */
-	virtual void load(OTexture* aTexture);
+	virtual void load(OTexture& aTexture);
 
 	/**
 	 * @brief Loads a shader storage buffer.
 	 */
-	virtual void load(OShaderStorageBuffer* aStorageBuffer);
+	virtual void load(OShaderStorageBuffer& aStorageBuffer);
 
 	/**
 	 @brief Unloads vertices and textures from the GPU.
 	 @param aRenderable The renderable object to be unloaded.
 	 @param aUnloadAll Unloads all rendering resources (buffers, textures, etc.).
 	 */
-	virtual void unload(ORenderable* aRenderable, bool aUnloadAll=false);
+	virtual void unload(ORenderable& aRenderable, bool aUnloadAll=false);
 
 	/**
 	 @brief Unloads vertices and textures from the GPU.
 	 @param aRenderComponents The rendering components containing the GPU resources to be unloaded.
 	 @param aUnloadAll Unloads all rendering resources (buffers, textures, etc.).
 	 */
-	virtual void unload(ORenderComponents* aRenderComponents, bool aUnloadAll=false);
+	virtual void unload(ORenderComponents& aRenderComponents, bool aUnloadAll=false);
 
 	/**
 	 @brief Unloads vertex buffer.
 	 */
-	virtual void unload(OVertexBuffer* aVertexBuffer);
+	virtual void unload(OVertexBuffer& aVertexBuffer);
 
 	/**
 	 @brief Unloads index buffer.
 	 */
-	virtual void unload(OIndexBuffer* aIndexBuffer);
+	virtual void unload(OIndexBuffer& aIndexBuffer);
 
 	/**
 	 @brief Unloads texture.
 	 */
-	virtual void unload(OTexture* aTexture);
+	virtual void unload(OTexture& aTexture);
 
 	/**
 	 * @brief Unloads a material set.
 	 */
-	virtual void unload(OShaderStorageBuffer* aStorageBuffer);
+	virtual void unload(OShaderStorageBuffer& aStorageBuffer);
 
 	/**
 	 @brief Issues the appropriate render commands.
 	 */
-	virtual void render(ORenderable* aRenderable);
+	virtual void render(ORenderable& aRenderable);
 
 	/**
 	 @brief Flushes all pending commands to the GPU.

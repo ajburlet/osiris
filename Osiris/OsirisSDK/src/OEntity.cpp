@@ -40,7 +40,7 @@ void OEntity::swapState(const OTimeIndex & timeIndex, int step_us)
 	_state.swap();
 }
 
-void OEntity::render(ORenderingEngine* aRenderingEngine, OMatrixStack * aMatrixStack)
+void OEntity::render(ORenderingEngine& aRenderingEngine, OMatrixStack* aMatrixStack)
 {
 	if (isHidden()) return;
 	aMatrixStack->push();
