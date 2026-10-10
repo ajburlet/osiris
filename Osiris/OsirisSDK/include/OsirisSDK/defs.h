@@ -8,6 +8,8 @@
 #	else
 #		define OAPI __declspec(dllimport)
 #	endif
+#elif defined(__GNUC__) || defined(__clang__)
+#define OAPI __attribute__((visibility("default")))
 #else
 #	define OAPI
 #endif
