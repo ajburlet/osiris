@@ -38,6 +38,7 @@ add_subdirectory(dependencies/FreeGLUT/freeglut/freeglut)
 add_subdirectory(dependencies/freetype2)
 add_subdirectory(dependencies/glload)
 add_subdirectory(dependencies/googletest)
+add_subdirectory(dependencies/glfw)
 
 #
 # SDK & Demo

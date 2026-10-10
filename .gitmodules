@@ -10,3 +10,6 @@
 [submodule "Osiris/dependencies/googletest"]
 	path = Osiris/dependencies/googletest
 	url = https://github.com/google/googletest
+[submodule "Osiris/dependencies/glfw"]
+	path = Osiris/dependencies/glfw
+	url = https://github.com/glfw/glfw.git
