@@ -125,7 +125,7 @@ const OVector3F& OCamera::position() const
 	return _impl->state.position();
 }
 
-const OVector3F & OCamera::orientation() const
+OVector3F OCamera::orientation() const
 {
 	return _impl->state.orientation().toEulerAngles();
 }

@@ -146,7 +146,7 @@ public:
 	 @brief Retrieves the camera orientation from the state object.
 	 @return Camera orientation vector in terms of Euler angles.
 	*/
-	const OVector3F& orientation() const;
+	OVector3F orientation() const;
 
 	/**
 	 @brief Direct access to the camera state object.
