@@ -6,6 +6,7 @@ set(SHADER_DIR shaders)
 set (BASE_SOURCES
 	${SRC_DIR}/OApplication.cpp
 	${HDR_DIR}/OApplication.h
+	${HDR_DIR}/OBaseAllocators.h
 	${SRC_DIR}/OError.cpp
 	${HDR_DIR}/OError.h
 	${SRC_DIR}/OEvent.cpp
@@ -16,6 +17,7 @@ set (BASE_SOURCES
 	${HDR_DIR}/ONonCopiable.h
 	${SRC_DIR}/OObject.cpp
 	${HDR_DIR}/OObject.h
+	${HDR_DIR}/OPagedBuffer.hpp
 	${HDR_DIR}/ORefCountObject.hpp
 	${HDR_DIR}/OSingleton.hpp
 	${SRC_DIR}/OStat.cpp
