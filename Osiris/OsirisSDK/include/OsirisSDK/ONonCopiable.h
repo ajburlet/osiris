@@ -5,6 +5,9 @@
 #include "OsirisSDK/defs.h"
 #include "OsirisSDK/OException.h"
 
+/**
+ * @brief Estabilishes a non-copiable class.
+ */
 class OAPI ONonCopiable
 {
 public:

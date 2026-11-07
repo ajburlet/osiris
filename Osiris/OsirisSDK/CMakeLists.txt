@@ -15,6 +15,7 @@ set (BASE_SOURCES
 	${SRC_DIR}/OFile.cpp
 	${HDR_DIR}/OFile.h
 	${HDR_DIR}/ONonCopiable.h
+	${HDR_DIR}/ONonMovable.h
 	${SRC_DIR}/OObject.cpp
 	${HDR_DIR}/OObject.h
 	${HDR_DIR}/OPagedBuffer.hpp
