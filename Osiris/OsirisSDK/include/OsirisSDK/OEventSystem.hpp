@@ -30,7 +30,7 @@ public:
     /**
      * @brief Class destructor.
      */
-    ~OEventSystem();
+    virtual ~OEventSystem();
 
     /**
      * @brief Queues an event for dispatch by consume().

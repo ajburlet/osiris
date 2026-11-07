@@ -2,6 +2,8 @@
 #include "OsirisSDK/OArray.hpp"
 #include "OsirisSDK/OEventSystem.hpp"
 
+constexpr size_t kEventSystemPageSize = 16384; // 16K page size
+
 // PIMPL structure storing the nested Osiris OArray containers
 struct OEventSystem::Impl {
     using ReallocPolicy = OArrayLinearResizingPolicy<16>;
@@ -25,7 +27,8 @@ struct OEventSystem::Impl {
 };
 
 OEventSystem::OEventSystem()
-    : _impl(std::make_unique<Impl>()) {}
+    : _buffer(kEventSystemPageSize)
+    , _impl(std::make_unique<Impl>()) {}
 
 OEventSystem::~OEventSystem() = default;
 
