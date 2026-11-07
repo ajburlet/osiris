@@ -14,6 +14,7 @@ set (TEST_FILES
 	OMap.cc
 	OSet.cc
 	OMeshBuilder.cc
+	OPagedBuffer.cc
 )
 
 add_definitions(-DOSIRISTEST_BASEDIR="${CMAKE_CURRENT_SOURCE_DIR}")
