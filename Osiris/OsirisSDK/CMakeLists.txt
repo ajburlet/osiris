@@ -20,6 +20,7 @@ set (BASE_SOURCES
 	${HDR_DIR}/OObject.h
 	${HDR_DIR}/OPagedBuffer.hpp
 	${HDR_DIR}/ORefCountObject.hpp
+	${HDR_DIR}/OScopeGuard.hpp
 	${HDR_DIR}/OSingleton.hpp
 	${SRC_DIR}/OStat.cpp
 	${HDR_DIR}/OStat.h
