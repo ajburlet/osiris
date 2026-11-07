@@ -12,6 +12,10 @@ set (BASE_SOURCES
 	${SRC_DIR}/OEvent.cpp
 	${HDR_DIR}/OEvent.h
 	${HDR_DIR}/OEventDefs.h
+	${HDR_DIR}/OEventListener.hpp
+	${HDR_DIR}/OEventSystem.hpp
+	${SRC_DIR}/OEventSystem.cpp
+	${HDR_DIR}/OEventType.hpp
 	${SRC_DIR}/OFile.cpp
 	${HDR_DIR}/OFile.h
 	${HDR_DIR}/ONonCopiable.h

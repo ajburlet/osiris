@@ -9,6 +9,7 @@ set (TEST_FILES
 	OsirisTests.h
 	OArray.cc
 	ODynArray.cc
+	OEventSystem.cc
 	OList.cc
 	OStack.cc
 	OMap.cc
@@ -23,4 +24,4 @@ add_executable(OsirisTests ${TEST_FILES})
 #set_property(TARGET OsirisSDK PROPERTY CXX_STANDARD 230)
 target_compile_features(OsirisTests PRIVATE cxx_std_23)
 target_link_libraries(OsirisTests OsirisSDK gtest_main)
-add_test(OsirisTests OsirisTests)
+add_test(NAME OsirisTests COMMAND OsirisTests)
