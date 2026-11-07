@@ -28,6 +28,11 @@ struct TestC
     int b=0;
 };
 
+struct alignas(std::max_align_t) AlignedTest
+{
+    std::uint8_t value;
+};
+
 struct Dispatcher
 {
     Dispatcher(OPagedBuffer<>& aBuffer) : buffer(aBuffer) {}
@@ -90,5 +95,25 @@ OTEST_START(OPagedBuffer, Emplace)
 
     ASSERT_EQ(dispatcher.recvC.a, false);
     ASSERT_EQ(dispatcher.recvC.b, 5);
+}
+OTEST_END
+
+OTEST_START(OPagedBuffer, AlignsPayload)
+{
+    OPagedBuffer buf;
+    bool aligned = false;
+
+    buf.emplace<AlignedTest>([](const void* aData, void* aContext)
+    {
+        auto& isAligned = *reinterpret_cast<bool*>(aContext);
+        isAligned = reinterpret_cast<std::uintptr_t>(aData) % alignof(AlignedTest) == 0;
+    }, AlignedTest{42});
+
+    buf.forEach([&aligned](const OPagedBuffer<>::Header& aHeader, const void* aData)
+    {
+        aHeader.dispatcher(aData, &aligned);
+    });
+
+    ASSERT_EQ(aligned, true);
 }
 OTEST_END

@@ -6,32 +6,19 @@
 #include <type_traits>
 #include <new>
 #include <concepts>
+#include <cstddef>
 
+#include "OsirisSDK/OException.h"
 #include "OsirisSDK/OArray.hpp"
 #include "OsirisSDK/OMemoryManagedObject.h"
 #include "OsirisSDK/OBaseAllocators.h"
 
 /**
- * @brief Concept that requires paged buffer objects to be trivially destructible.
+ * @brief Concept for objects that can be stored in a paged buffer.
  */
 template<typename T>
-concept OPagedBufferObject = std::is_trivially_destructible_v<T>;
-
-/**
- * @brief Compile-time unique event identifier provider.
- */
-class OPagedBufferObjectType {
-public:
-    template<typename T>
-    static uint32_t getId() 
-    {
-        static const uint32_t id = s_counter++;
-        return id;
-    }
-
-private:
-    inline static uint32_t s_counter = 0;
-};
+concept OPagedBufferObject = std::is_trivially_destructible_v<T>
+    && alignof(T) <= alignof(std::max_align_t);
 
 /**
  * @brief A fast paged buffer implementation.
@@ -51,10 +38,9 @@ private:
 public:
     using DispatcherFn = void(*)(const void* eventData, void* context);
 
-    struct Header 
+    struct alignas(std::max_align_t) Header
     {
-        uint32_t typeId;
-        uint32_t size;
+        size_t size;
         DispatcherFn dispatcher;
     };
 
@@ -141,36 +127,35 @@ template <typename Allocator>
 template<OPagedBufferObject T, typename... Args>
 inline void OPagedBuffer<Allocator>::emplace(DispatcherFn&& aDispatcher, Args&&... aArgs) 
 {
-    const auto typeId = OPagedBufferObjectType::getId<T>();
+    constexpr size_t itemSize = sizeof(T);
+    auto recordOffset = alignOffset(_currentOffset);
+    auto payloadOffset = recordOffset + sizeof(Header);
 
-    constexpr size_t headerSize = sizeof(Header);
-    constexpr size_t itemSize  = sizeof(T);
-    const size_t totalNeeded = headerSize + itemSize;
+    if (payloadOffset > _pageSize || itemSize > _pageSize - payloadOffset) {
+        if (recordOffset == 0) {
+            throw OEx("OPagedBuffer page is too small for this object");
+        }
 
-    const auto alignedOffset = alignOffset(_currentOffset);
-
-    if (alignedOffset + totalNeeded > _pageSize) {
         _activePageIndex++;
         
         if (_activePageIndex >= _pages.size()) {
             allocateNewPage();
         }
+
         _currentOffset = 0;
-    } else {
-        _currentOffset = alignedOffset;
+        recordOffset = 0;
+        payloadOffset = sizeof(Header);
+        if (payloadOffset > _pageSize || itemSize > _pageSize - payloadOffset) [[unlikely]]{
+            throw OEx("OPagedBuffer page is too small for this object");
+        }
     }
 
-    uint8_t* dest = _pages[_activePageIndex].get() + _currentOffset;
-    Header* header = reinterpret_cast<Header*>(dest);
+    auto* page = _pages[_activePageIndex].get();
+    new (page + recordOffset) Header{itemSize, aDispatcher};
 
-    header->typeId = typeId;
-    header->size = static_cast<uint32_t>(itemSize);
-    header->dispatcher = aDispatcher;
+    new (page + payloadOffset) T(std::forward<Args>(aArgs)...);
 
-    // Construct payload in-place with zero destructor tracking overhead
-    new (dest + headerSize) T(std::forward<Args>(aArgs)...);
-
-    _currentOffset += totalNeeded;
+    _currentOffset = payloadOffset + itemSize;
     _totalItems++;
 
     // Keep the active page's limit updated
@@ -184,23 +169,21 @@ inline void OPagedBuffer<Allocator>::forEach(Fn&& callback) const
 {
     for (size_t p = 0; p < _pages.size(); ++p) {
         size_t pageOffset = 0;
-        // Use the recorded limit for this specific page, avoiding trailing empty space
-        const size_t limit = _pageUsage[p];
 
         const auto pageStart = _pages[p].get();
-        while (pageOffset < limit) {
+        while (pageOffset < _pageUsage[p]) {
             pageOffset = alignOffset(pageOffset);
 
-            if (pageOffset >= limit) break;
+            if (pageOffset >= _pageUsage[p]) break;
 
             const auto current = pageStart + pageOffset;
             const auto* header = reinterpret_cast<const Header*>(current);
-            const void* data = current + sizeof(Header);
+            const auto payloadOffset = pageOffset + sizeof(Header);
+            const void* data = pageStart + payloadOffset;
 
             callback(*header, data);
 
-            // Advance by header size plus payload size plus alignment
-            pageOffset += sizeof(Header) + header->size;
+            pageOffset = payloadOffset + header->size;
         }
     }
 }
