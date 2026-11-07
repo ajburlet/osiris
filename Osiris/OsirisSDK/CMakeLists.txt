@@ -18,6 +18,9 @@ set (BASE_SOURCES
 	${HDR_DIR}/OEventType.hpp
 	${SRC_DIR}/OFile.cpp
 	${HDR_DIR}/OFile.h
+	${HDR_DIR}/OGlobalEventEmitter.hpp
+	${HDR_DIR}/OGlobalEventListener.hpp
+	${HDR_DIR}/OGlobalEventSystem.h
 	${HDR_DIR}/ONonCopiable.h
 	${HDR_DIR}/ONonMovable.h
 	${SRC_DIR}/OObject.cpp
